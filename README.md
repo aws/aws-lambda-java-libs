@@ -14,7 +14,7 @@ To get started writing AWS Lambda functions in Java, check out the [official doc
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
@@ -22,18 +22,18 @@ To get started writing AWS Lambda functions in Java, check out the [official doc
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.0.0'
-'com.amazonaws:aws-lambda-java-events:1.0.0'
+'com.amazonaws:aws-lambda-java-events:1.1.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.0.0"]
-[com.amazonaws/aws-lambda-java-events "1.0.0"]
+[com.amazonaws/aws-lambda-java-events "1.1.0"]
 ```
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.0.0"
-"com.amazonaws" % "aws-lambda-java-events" % "1.0.0"
+"com.amazonaws" % "aws-lambda-java-events" % "1.1.0"
 ```

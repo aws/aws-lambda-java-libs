@@ -1,7 +1,11 @@
 # AWS Lambda Java Support Libraries 
 Interface definitions for Java code running on the AWS Lambda platform.
 
+For issues and questions, you can start with our [FAQ](https://aws.amazon.com/lambda/faqs/) and the [AWS forums](https://forums.aws.amazon.com/forum.jspa?forumID=186)
+
 To get started writing AWS Lambda functions in Java, check out the [official documentation] (http://docs.aws.amazon.com/lambda/latest/dg/java-gs.html).
+
+___
 
 [Maven](https://maven.apache.org)
 
@@ -31,6 +35,7 @@ To get started writing AWS Lambda functions in Java, check out the [official doc
 [com.amazonaws/aws-lambda-java-core "1.0.0"]
 [com.amazonaws/aws-lambda-java-events "1.1.0"]
 ```
+
 [sbt](http://www.scala-sbt.org)
 
 ```scala

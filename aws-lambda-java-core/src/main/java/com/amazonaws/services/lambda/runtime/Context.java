@@ -58,6 +58,18 @@ public interface Context {
 	public String getFunctionName();
 
 	/**
+	 * Gets the version of the function being executed.
+	 * 
+	 */
+	public String getFunctionVersion();
+
+	/**
+	 * Gets the function Arn of the resource being invoked.
+	 * 
+	 */
+	public String getInvokedFunctionArn();
+
+	/**
 	 * Gets information about the Amazon Cognito identity provider when invoked
 	 * through the AWS Mobile SDK. It can be null
 	 * 

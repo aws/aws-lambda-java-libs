@@ -9,6 +9,11 @@ package com.amazonaws.services.lambda.runtime;
 public interface Client {
 
     /**
+    * Gets the application's installation id
+    */
+    public String getInstallationId();
+
+    /**
      * Gets the application's title
      *  
      */

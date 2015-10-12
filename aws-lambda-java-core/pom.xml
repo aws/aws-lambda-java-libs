@@ -3,7 +3,7 @@
   
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
   
   <name>AWS Lambda Java Core Library</name>
@@ -45,6 +45,9 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.9.1</version>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>    
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -78,6 +81,9 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.9.1</version>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration> 
             <executions>
               <execution>
                 <id>attach-javadocs</id>

@@ -40,7 +40,7 @@ ___
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.1.0"]
 [com.amazonaws/aws-lambda-java-events "1.1.0"]
-[com.amazonaws/aws-lambda-java-logj4 "1.0.0"]
+[com.amazonaws/aws-lambda-java-log4j "1.0.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
@@ -48,5 +48,5 @@ ___
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
 "com.amazonaws" % "aws-lambda-java-events" % "1.1.0"
-"com.amazonaws" % "aws-lambda-java-logj4" % "1.0.0"
+"com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0"
 ```

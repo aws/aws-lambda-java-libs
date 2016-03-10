@@ -16,9 +16,26 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 import java.io.Serializable;
 
 /**
- * LambdaAppender is the custom log4j appender
- * to be used in the log4j.properties file.
+ * LambdaAppender is the custom log4j 2 appender
+ * to be used in the log4j2.xml file.
  * You should not be required to use this class directly.
+ *
+ * You can use this appender like this:
+ * <pre>
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+ * &lt;Configuration status="WARN"&gt;
+ *      &lt;Appenders&gt;
+ *          &lt;Lambda name="Lambda"&gt;
+ *              &lt;PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/&gt;
+ *          &lt;/Lambda&gt;
+ *      &lt;/Appenders&gt;
+ *      &lt;Loggers&gt;
+ *          &lt;Root level="error"&gt;
+ *              &lt;AppenderRef ref="Lambda"/&gt;
+ *          &lt;/Root&gt;
+ *      &lt;/Loggers&gt;
+ * &lt;/Configuration&gt;
+ * </pre>
  */
 @Plugin(name = "Lambda", category = "Core", elementType = "appender", printObject = true)
 public class LambdaAppender extends AbstractAppender {

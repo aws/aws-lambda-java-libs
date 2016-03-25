@@ -3,7 +3,7 @@
   
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
 
   <name>AWS Lambda Java Events Library</name>
@@ -40,22 +40,22 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>[1.10.5,)</version>
+      <version>1.10.64</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-sns</artifactId>
-      <version>[1.10.5,)</version>
+      <version>1.10.64</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-cognitoidentity</artifactId>
-      <version>[1.10.5,)</version>
+      <version>1.10.64</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-kinesis</artifactId>
-      <version>[1.10.5,)</version>
+      <version>1.10.64</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>

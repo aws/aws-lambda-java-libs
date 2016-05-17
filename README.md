@@ -18,7 +18,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -31,7 +31,7 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.1.0'
-'com.amazonaws:aws-lambda-java-events:1.2.0'
+'com.amazonaws:aws-lambda-java-events:1.3.0'
 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 ```
 
@@ -39,7 +39,7 @@ ___
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.1.0"]
-[com.amazonaws/aws-lambda-java-events "1.2.0"]
+[com.amazonaws/aws-lambda-java-events "1.3.0"]
 [com.amazonaws/aws-lambda-java-log4j "1.0.0"]
 ```
 
@@ -47,6 +47,6 @@ ___
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
-"com.amazonaws" % "aws-lambda-java-events" % "1.2.0"
+"com.amazonaws" % "aws-lambda-java-events" % "1.3.0"
 "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0"
 ```

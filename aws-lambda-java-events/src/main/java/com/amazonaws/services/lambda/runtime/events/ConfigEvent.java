@@ -1,29 +1,51 @@
+/*
+ * Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 package com.amazonaws.services.lambda.runtime.events;
+
+import java.io.Serializable;
 
 /**
  * Represents an event for an AWS Config rule's function.
  */
-public class ConfigEvent {
+public class ConfigEvent implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -3484211708255634243L;
 
     private String version;
-    
+
     private String invokingEvent;
-    
+
     private String ruleParameters;
-    
+
     private String resultToken;
-    
+
     private String configRuleArn;
-    
+
     private String configRuleId;
-    
+
     private String configRuleName;
-    
+
     private String accountId;
-    
+
     private String executionRoleArn;
-    
+
     private boolean eventLeftScope;
+
+    /**
+     * default constructor
+     */
+    public ConfigEvent() {}
 
     /**
      * Gets the AWS Config event version.
@@ -42,6 +64,15 @@ public class ConfigEvent {
     }
 
     /**
+     * @param version config event version
+     * @return Config Event
+     */
+    public ConfigEvent withVersion(String version) {
+        setVersion(version);
+        return this;
+    }
+    
+    /**
      * Gets the JSON-encoded notification published by AWS Config.
      * 
      */
@@ -57,6 +88,15 @@ public class ConfigEvent {
         this.invokingEvent = invokingEvent;
     }
 
+    /**
+     * @param invokingEvent invoking event
+     * @return Config Event
+     */
+    public ConfigEvent withInvokingEvent(String invokingEvent) {
+        setInvokingEvent(invokingEvent);
+        return this;
+    }
+    
     /**
      * Gets the JSON-encoded map containing the AWS Config rule parameters.
      * 
@@ -74,6 +114,15 @@ public class ConfigEvent {
     }
 
     /**
+     * @param ruleParameters String with rule paramters
+     * @return ConfigEvent
+     */
+    public ConfigEvent withRuleParameters(String ruleParameters) {
+        setRuleParameters(ruleParameters);
+        return this;
+    }
+    
+    /**
      * Gets the token associated with the invocation of the AWS Config rule's Lambda function.
      * 
      */
@@ -89,6 +138,15 @@ public class ConfigEvent {
         this.resultToken = resultToken;
     }
 
+    /**
+     * @param resultToken result token
+     * @return ConfigEvent
+     */
+    public ConfigEvent withResultToken(String resultToken) {
+        setResultToken(resultToken);
+        return this;
+    }
+    
     /**
      * Gets the ARN of the AWS Config rule that triggered the event.
      * 
@@ -106,6 +164,15 @@ public class ConfigEvent {
     }
 
     /**
+     * @param configRuleArn config rule for arn
+     * @return ConfigEvent
+     */
+    public ConfigEvent withConfigRuleArn(String configRuleArn) {
+        setConfigRuleArn(configRuleArn);
+        return this;
+    }
+    
+    /**
      * Gets the ID of the AWS Config rule that triggered the event.
      * 
      */
@@ -121,6 +188,15 @@ public class ConfigEvent {
         this.configRuleId = configRuleId;
     }
 
+    /**
+     * @param configRuleId config rule id
+     * @return ConfigEvent
+     */
+    public ConfigEvent withConfigRuleId(String configRuleId) {
+        setConfigRuleId(configRuleId);
+        return this;
+    }
+    
     /**
      * Gets the name of the AWS Config rule that triggered the event.
      * 
@@ -138,6 +214,15 @@ public class ConfigEvent {
     }
 
     /**
+     * @param configRuleName config rule name
+     * @return ConfigEvent
+     */
+    public ConfigEvent withConfigRuleName(String configRuleName) {
+        setConfigRuleName(configRuleName);
+        return this;
+    }
+    
+    /**
      * Gets the account ID of the AWS Config rule that triggered the event.
      * 
      */
@@ -153,6 +238,15 @@ public class ConfigEvent {
         this.accountId = accountId;
     }
 
+    /**
+     * @param accountId Account id 
+     * @return Config Event
+     */
+    public ConfigEvent withAccountId(String accountId) {
+        setAccountId(accountId);
+        return this;
+    }
+    
     /**
      * Gets the ARN of the IAM role that is assigned to AWS Config.
      * 
@@ -170,10 +264,19 @@ public class ConfigEvent {
     }
 
     /**
+     * @param executionRoleArn execution role arn
+     * @return ConfigEvent
+     */
+    public ConfigEvent withExecutionRoleArn(String executionRoleArn) {
+        setExecutionRoleArn(executionRoleArn);
+        return this;
+    }
+    
+    /**
      * Whether the AWS resource to be evaluated has been removed from the AWS Config rule's scope.
      * 
      */
-    public boolean isEventLeftScope() {
+    public boolean getEventLeftScope() {
         return eventLeftScope;
     }
 
@@ -183,6 +286,49 @@ public class ConfigEvent {
      */
     public void setEventLeftScope(boolean eventLeftScope) {
         this.eventLeftScope = eventLeftScope;
+    }
+
+    /**
+     * @param eventLeftScope event left scope
+     * @return ConfigEvent
+     */
+    public ConfigEvent withEventLeftScope(Boolean eventLeftScope) {
+        setEventLeftScope(eventLeftScope);
+        return this;
+    }
+
+    /**
+     * Returns a string representation of this object; useful for testing and debugging.
+     *
+     * @return A string representation of this object.
+     *
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        if (getAccountId() != null)
+            sb.append("accountId: ").append(getAccountId()).append(",");
+        if (getConfigRuleArn() != null)
+            sb.append("configRuleArn: ").append(getConfigRuleArn()).append(",");
+        if (getConfigRuleId() != null)
+            sb.append("configRulelId: ").append(getConfigRuleId()).append(",");
+        if (getConfigRuleName() != null)
+            sb.append("configRuleName: ").append(getConfigRuleName()).append(",");
+        sb.append("eventLeftScope: ").append(getEventLeftScope()).append(",");
+        if (getExecutionRoleArn() != null)
+            sb.append("executionRoleArn: ").append(getExecutionRoleArn()).append(",");
+        if (getInvokingEvent() != null)
+            sb.append("invokingEvent: ").append(getInvokingEvent()).append(",");
+        if (getResultToken() != null)
+            sb.append("resultToken: ").append(getResultToken()).append(",");
+        if (getRuleParameters() != null)
+            sb.append("ruleParameters: ").append(getRuleParameters()).append(",");
+        if (getVersion() != null)
+            sb.append("version: ").append(getVersion());
+        sb.append("}");
+        return sb.toString();
     }
 
 
@@ -260,6 +406,15 @@ public class ConfigEvent {
         } else if (!version.equals(other.version))
             return false;
         return true;
+    }
+
+    @Override
+    public ConfigEvent clone() {
+        try {
+            return (ConfigEvent) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
+        }
     }
 
 }

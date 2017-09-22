@@ -46,19 +46,19 @@
        <groupId>com.amazonaws</groupId>
        <artifactId>aws-java-sdk-s3</artifactId>
        <version>1.11.163</version>
-       <scope>provided</scope>
+       <scope>provided</scope><!--USER PROVIDED! SEE https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events/README.md-->
      </dependency>
      <dependency>
        <groupId>com.amazonaws</groupId>
        <artifactId>aws-java-sdk-kinesis</artifactId>
        <version>1.11.163</version>
-       <scope>provided</scope>
+       <scope>provided</scope><!--USER PROVIDED! SEE https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events/README.md-->
      </dependency>
      <dependency>
        <groupId>com.amazonaws</groupId>
        <artifactId>aws-java-sdk-dynamodb</artifactId>
        <version>1.11.163</version>
-       <scope>provided</scope>
+       <scope>provided</scope><!--USER PROVIDED! SEE https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events/README.md-->
      </dependency>
    </dependencies>
 

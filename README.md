@@ -9,8 +9,7 @@ To get started writing AWS Lambda functions in Java, check out the [official doc
 
 Each of the supplied packages should be used without modification. Removing
 dependencies, adding conflicting dependencies, or selectively including classes
-from the packages can result in unexpected behavior, which the AWS Lambda team
-is not responsible for.
+from the packages can result in unexpected behavior.
 
 # Recent Updates!
 
@@ -31,7 +30,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>2.0</version>
+  <version>2.0.1</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -49,7 +48,7 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.1.0'
-'com.amazonaws:aws-lambda-java-events:2.0'
+'com.amazonaws:aws-lambda-java-events:2.0.1'
 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 'com.amazonaws:aws-lambda-java-log4j2:1.0.0'
 ```
@@ -58,7 +57,7 @@ ___
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.1.0"]
-[com.amazonaws/aws-lambda-java-events "2.0"]
+[com.amazonaws/aws-lambda-java-events "2.0.1"]
 [com.amazonaws/aws-lambda-java-log4j "1.0.0"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.0.0"]
 ```
@@ -67,7 +66,7 @@ ___
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
-"com.amazonaws" % "aws-lambda-java-events" % "2.0"
+"com.amazonaws" % "aws-lambda-java-events" % "2.0.1"
 "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.0.0"
 ```

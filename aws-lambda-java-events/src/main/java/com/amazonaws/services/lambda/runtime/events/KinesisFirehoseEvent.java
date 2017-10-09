@@ -13,8 +13,6 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -53,7 +51,7 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
 
         private Long approximateArrivalEpoch;
 
-        private DateTime approximateArrivalTimestamp;
+        private Long approximateArrivalTimestamp;
 
         private Map<String, String> kinesisRecordMetadata;
 
@@ -155,14 +153,14 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
         /**
          * @return approximate arrival timestamp
          */
-        public DateTime getApproximateArrivalTimestamp() {
+        public Long getApproximateArrivalTimestamp() {
             return this.approximateArrivalTimestamp;
         }
 
         /**
          * @param approximateArrivalTimestamp approximate arrival timestamp
          */
-        public void setApproximateArrivalTimestamp(DateTime approximateArrivalTimestamp) {
+        public void setApproximateArrivalTimestamp(Long approximateArrivalTimestamp) {
             this.approximateArrivalTimestamp = approximateArrivalTimestamp;
         }
 
@@ -170,7 +168,7 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
          * @param approximateArrivalTimestamp approximate arrival timestamp
          * @return Record
          */
-        public Record withApproximateArrivalTimestamp(DateTime approximateArrivalTimestamp) {
+        public Record withApproximateArrivalTimestamp(Long approximateArrivalTimestamp) {
             setApproximateArrivalTimestamp(approximateArrivalTimestamp);
             return this;
         }
@@ -210,7 +208,7 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             if (getData() != null)
-                sb.append("data: ").append(new String(Base64.getDecoder().decode(getData().array()), StandardCharsets.UTF_8)).append(",");
+                sb.append("data: ").append(getData().toString()).append(",");
             if (getRecordId() != null)
                 sb.append("recordId: ").append(getRecordId()).append(",");
             if (getApproximateArrivalEpoch() != null)

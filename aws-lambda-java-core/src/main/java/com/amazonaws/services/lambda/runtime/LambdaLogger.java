@@ -23,8 +23,14 @@ public interface LambdaLogger {
     * </ul>
     * </p>
     * 
-    * @param string A string containing the event to log.
+    * @param message A string containing the event to log.
     */
-    public void log(String string);
+    public void log(String message);
+
+    /**
+     * Logs a byte array to AWS CloudWatch Logs
+     * @param message byte array containing logs
+     */
+    public void log(byte[] message);
 }
 

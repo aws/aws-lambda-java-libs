@@ -17,7 +17,7 @@ public interface Context {
 	 * is reused for retries on the same request.
 	 * </p>
 	 */
-	public String getAwsRequestId();
+	String getAwsRequestId();
 
 	/**
 	 * Gets the CloudWatch log group that this container is configured to log
@@ -27,13 +27,13 @@ public interface Context {
 	 * <ul>
 	 * <li>
 	 * If the container is not configured to log to CloudWatch.</li>
-	 * <li>
+         * <li>
 	 * If the role provided to the function does not have sufficient
 	 * permissions.</li>
 	 * </ul>
 	 * </p>
 	 */
-	public String getLogGroupName();
+	String getLogGroupName();
 
 	/**
 	 * Gets the CloudWatch log stream that this container is configured to log
@@ -49,55 +49,55 @@ public interface Context {
 	 * </ul>
 	 * </p>
 	 */
-	public String getLogStreamName();
+	String getLogStreamName();
 
 	/**
 	 * Gets the name of the function being executed.
 	 * 
 	 */
-	public String getFunctionName();
+	String getFunctionName();
 
 	/**
 	 * Gets the version of the function being executed.
 	 * 
 	 */
-	public String getFunctionVersion();
+	String getFunctionVersion();
 
 	/**
 	 * Gets the function Arn of the resource being invoked.
 	 * 
 	 */
-	public String getInvokedFunctionArn();
+	String getInvokedFunctionArn();
 
 	/**
 	 * Gets information about the Amazon Cognito identity provider when invoked
 	 * through the AWS Mobile SDK. It can be null
 	 * 
 	 */
-	public CognitoIdentity getIdentity();
+	CognitoIdentity getIdentity();
 
 	/**
 	 * Gets information about the client application and device when invoked
 	 * through the AWS Mobile SDK. It can be null.
 	 * 
 	 */
-	public ClientContext getClientContext();
+	ClientContext getClientContext();
 
 	/**
 	 * Gets the time remaining for this execution in milliseconds
 	 */
-	public int getRemainingTimeInMillis();
+	int getRemainingTimeInMillis();
 
 	/**
 	 * Gets the memory size configured for the Lambda function
 	 * 
 	 */
-	public int getMemoryLimitInMB();
+	int getMemoryLimitInMB();
 
 	/**
-	 * Gets a the lambda logger instance associated with the context object
+	 * Gets the lambda logger instance associated with the context object
 	 * 
 	 */
-	public LambdaLogger getLogger();
+	LambdaLogger getLogger();
 
 }

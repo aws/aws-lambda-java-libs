@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * 
- * Provides information about cLient configuration and execution environment.
+ * Provides information about client configuration and execution environment.
  *
  */
 public interface ClientContext {

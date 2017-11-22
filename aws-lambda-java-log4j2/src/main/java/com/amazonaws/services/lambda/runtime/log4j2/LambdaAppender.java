@@ -1,6 +1,8 @@
 package com.amazonaws.services.lambda.runtime.log4j2;
 
+import com.amazonaws.services.lambda.runtime.LambdaRuntime;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -9,7 +11,6 @@ import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -23,6 +24,8 @@ public class LambdaAppender extends AbstractAppender {
     public static final String PLUGIN_NAME = "Lambda";
     public static final String PLUGIN_CATEGORY = "Core";
     public static final String PLUGIN_TYPE = "appender";
+
+    private LambdaLogger logger = LambdaRuntime.getLogger();
 
     /**
      * Builder class that follows log4j2 plugin convention
@@ -68,12 +71,6 @@ public class LambdaAppender extends AbstractAppender {
      * @param event log4j event
      */
     public void append(LogEvent event) {
-        try {
-            System.out.write(super.getLayout().toByteArray(event));
-            System.out.flush();
-            System.out.print(System.lineSeparator());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        logger.log(super.getLayout().toByteArray(event));
     }
 }

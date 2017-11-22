@@ -28,6 +28,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
     private String body;
 
+    private Boolean isBase64Encoded;
+
     /**
      * class that represents proxy request context
      */
@@ -50,6 +52,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         private String httpMethod;
 
         private String apiId;
+
+        private String path;
 
         /**
          * default constructor
@@ -241,6 +245,29 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return The API Gateway path (Does not include base url)
+         */
+        public String getPath() {
+            return this.path;
+        }
+
+        /**
+         * @param path The API Gateway path (Does not include base url)
+         */
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        /**
+         * @param path The API Gateway path (Does not include base url)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withPath(String path) {
+            this.setPath(path);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -266,7 +293,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             if (getHttpMethod() != null)
                 sb.append("httpMethod: ").append(getHttpMethod()).append(",");
             if (getApiId() != null)
-                sb.append("apiId: ").append(getApiId());
+                sb.append("apiId: ").append(getApiId()).append(",");
+            if (getPath() != null)
+                sb.append("path: ").append(getPath());
             sb.append("}");
             return sb.toString();
         }
@@ -313,6 +342,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getApiId() != null && other.getApiId().equals(this.getApiId()) == false)
                 return false;
+            if (other.getPath() == null ^ this.getPath() == null)
+                return false;
+            if (other.getPath() != null && other.getPath().equals(this.getPath()) == false)
+                return false;
             return true;
         }
 
@@ -329,6 +362,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getResourcePath() == null) ? 0 : getResourcePath().hashCode());
             hashCode = prime * hashCode + ((getHttpMethod() == null) ? 0 : getHttpMethod().hashCode());
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
+            hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
             return hashCode;
         }
 
@@ -368,6 +402,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         private String userAgent;
 
         private String user;
+
+        private String accessKey;
 
         /**
          * default constructor
@@ -628,6 +664,29 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return access key
+         */
+        public String getAccessKey() {
+            return this.accessKey;
+        }
+
+        /**
+         * @param accessKey Cognito access key
+         */
+        public void setAccessKey(String accessKey) {
+            this.accessKey = accessKey;
+        }
+
+        /**
+         * @param accessKey Cognito access key
+         * @return RequestIdentity
+         */
+        public RequestIdentity withAccessKey(String accessKey) {
+            this.setAccessKey(accessKey);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -659,7 +718,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             if (getUserAgent() != null)
                 sb.append("userAgent: ").append(getUserAgent()).append(",");
             if (getUser() != null)
-                sb.append("user: ").append(getUser());
+                sb.append("user: ").append(getUser()).append(",");
+            if (getAccessKey() != null)
+                sb.append("accessKey: ").append(getAccessKey());
             sb.append("}");
             return sb.toString();
         }
@@ -718,6 +779,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getUser() != null && other.getUser().equals(this.getUser()) == false)
                 return false;
+            if (other.getAccessKey() == null ^ this.getAccessKey() == null)
+                return false;
+            if (other.getAccessKey() != null && other.getAccessKey().equals(this.getAccessKey()) == false)
+                return false;
             return true;
         }
 
@@ -738,6 +803,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getUserArn() == null) ? 0 : getUserArn().hashCode());
             hashCode = prime * hashCode + ((getUserAgent() == null) ? 0 : getUserAgent().hashCode());
             hashCode = prime * hashCode + ((getUser() == null) ? 0 : getUser().hashCode());
+            hashCode = prime * hashCode + ((getAccessKey() == null) ? 0 : getAccessKey().hashCode());
             return hashCode;
         }
 
@@ -954,11 +1020,38 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         this.body = body;
     }
 
+    /**
+     * @param body The HTTP request body
+     * @return APIGatewayProxyRequestEvent
+     */
     public APIGatewayProxyRequestEvent withBody(String body) {
         this.setBody(body);
         return this;
     }
 
+    /**
+     * @return whether the body String is base64 encoded.
+     */
+    public Boolean getIsBase64Encoded() {
+        return this.isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     */
+    public void setIsBase64Encoded(Boolean isBase64Encoded) {
+        this.isBase64Encoded = isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     * @return APIGatewayProxyRequestEvent
+     */
+    public APIGatewayProxyRequestEvent withIsBase64Encoded(Boolean isBase64Encoded) {
+        this.setIsBase64Encoded(isBase64Encoded);
+        return this;
+    }
+    
     /**
      * Returns a string representation of this object; useful for testing and debugging.
      *
@@ -987,7 +1080,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         if (getRequestContext() != null)
             sb.append("requestContext: ").append(getRequestContext().toString()).append(",");
         if (getBody() != null)
-            sb.append("body: ").append(getBody());
+            sb.append("body: ").append(getBody()).append(",");
+        if (getIsBase64Encoded() != null)
+            sb.append("isBase64Encoded: ").append(getIsBase64Encoded());
         sb.append("}");
         return sb.toString();
     }
@@ -1038,6 +1133,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             return false;
         if (other.getBody() != null && other.getBody().equals(this.getBody()) == false)
             return false;
+        if (other.getIsBase64Encoded() == null ^ this.getIsBase64Encoded() == null)
+            return false;
+        if (other.getIsBase64Encoded() != null && other.getIsBase64Encoded().equals(this.getIsBase64Encoded()) == false)
+            return false;
         return true;
     }
 
@@ -1055,6 +1154,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         hashCode = prime * hashCode + ((getStageVariables() == null) ? 0 : getStageVariables().hashCode());
         hashCode = prime * hashCode + ((getRequestContext() == null) ? 0 : getRequestContext().hashCode());
         hashCode = prime * hashCode + ((getBody() == null) ? 0 : getBody().hashCode());
+        hashCode = prime * hashCode + ((getIsBase64Encoded() == null) ? 0 : getIsBase64Encoded().hashCode());
         return hashCode;
     }
 

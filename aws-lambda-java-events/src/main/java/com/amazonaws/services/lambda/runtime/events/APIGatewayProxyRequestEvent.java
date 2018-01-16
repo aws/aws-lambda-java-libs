@@ -55,6 +55,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private String path;
 
+        private Map<String, String> authorizer;
+
         /**
          * default constructor
          */
@@ -267,6 +269,19 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             return this;
         }
 
+        public Map<String, String> getAuthorizer() {
+            return authorizer;
+        }
+
+        public void setAuthorizer(Map<String, String> authorizer) {
+            this.authorizer = authorizer;
+        }
+
+        public ProxyRequestContext withAuthorizer(Map<String, String> authorizer) {
+            this.authorizer = authorizer;
+            return this;
+        }
+
         /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
@@ -296,6 +311,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("apiId: ").append(getApiId()).append(",");
             if (getPath() != null)
                 sb.append("path: ").append(getPath());
+            if (getAuthorizer() != null)
+                sb.append("authorizer: ").append(getAuthorizer().toString()).append(",");
             sb.append("}");
             return sb.toString();
         }
@@ -346,6 +363,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getPath() != null && other.getPath().equals(this.getPath()) == false)
                 return false;
+            if (other.getAuthorizer() != null && other.getAuthorizer().equals(this.getAuthorizer()) == false)
+                return false;
             return true;
         }
 
@@ -363,6 +382,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getHttpMethod() == null) ? 0 : getHttpMethod().hashCode());
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
+            hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
             return hashCode;
         }
 

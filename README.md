@@ -13,6 +13,7 @@ from the packages can result in unexpected behavior.
 
 # Recent Updates!
 
+* ### [Kinesis Analytics Support](https://github.com/aws/aws-lambda-java-libs/commit/943352c7f0256afe82773e664e887e1593303508)
 * ### [2017 Java Events Update](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events)
 * ### [Log4j2 Support](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-log4j2)
 
@@ -30,7 +31,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -48,7 +49,7 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.1.0'
-'com.amazonaws:aws-lambda-java-events:2.0.1'
+'com.amazonaws:aws-lambda-java-events:2.1.0'
 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 'com.amazonaws:aws-lambda-java-log4j2:1.0.0'
 ```
@@ -57,7 +58,7 @@ ___
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.1.0"]
-[com.amazonaws/aws-lambda-java-events "2.0.1"]
+[com.amazonaws/aws-lambda-java-events "2.1.0"]
 [com.amazonaws/aws-lambda-java-log4j "1.0.0"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.0.0"]
 ```
@@ -66,7 +67,7 @@ ___
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
-"com.amazonaws" % "aws-lambda-java-events" % "2.0.1"
+"com.amazonaws" % "aws-lambda-java-events" % "2.1.0"
 "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.0.0"
 ```

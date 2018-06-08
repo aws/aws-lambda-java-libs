@@ -77,7 +77,7 @@ Add the following file `<project-dir>/src/main/resources/log4j2.xml`
     </Lambda>
   </Appenders>
   <Loggers>
-    <Root level="debug">
+    <Root level="info">
       <AppenderRef ref="Lambda" />
     </Root>
   </Loggers>

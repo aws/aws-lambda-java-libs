@@ -200,7 +200,7 @@ public class SQSEvent implements Serializable, Cloneable {
 
     }
 
-    private static class SQSMessage implements Serializable, Cloneable {
+    public static class SQSMessage implements Serializable, Cloneable {
 
         private static final long serialVersionUID = -2300083946005987098L;
 

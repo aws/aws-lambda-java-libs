@@ -32,7 +32,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -50,7 +50,7 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.1.0'
-'com.amazonaws:aws-lambda-java-events:2.2.0'
+'com.amazonaws:aws-lambda-java-events:2.2.1'
 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 'com.amazonaws:aws-lambda-java-log4j2:1.0.0'
 ```
@@ -59,7 +59,7 @@ ___
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.1.0"]
-[com.amazonaws/aws-lambda-java-events "2.2.0"]
+[com.amazonaws/aws-lambda-java-events "2.2.1"]
 [com.amazonaws/aws-lambda-java-log4j "1.0.0"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.0.0"]
 ```
@@ -68,7 +68,7 @@ ___
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.1.0"
-"com.amazonaws" % "aws-lambda-java-events" % "2.2.0"
+"com.amazonaws" % "aws-lambda-java-events" % "2.2.1"
 "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.0.0"
 ```

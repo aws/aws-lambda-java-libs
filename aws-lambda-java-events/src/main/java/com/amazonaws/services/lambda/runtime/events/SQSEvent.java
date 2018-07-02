@@ -227,7 +227,7 @@ public class SQSEvent implements Serializable, Cloneable {
         /**
          * Default constructor
          */
-        private SQSMessage() {}
+        public SQSMessage() {}
 
         /**
          * Gets the message id

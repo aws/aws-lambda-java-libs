@@ -932,7 +932,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param queryStringParameters The query string parameters that were part of the request
      * @return APIGatewayProxyRequestEvent
      */
-    public APIGatewayProxyRequestEvent withQueryStringParamters(Map<String, String> queryStringParameters) {
+    public APIGatewayProxyRequestEvent withQueryStringParameters(Map<String, String> queryStringParameters) {
         this.setQueryStringParameters(queryStringParameters);
         return this;
     }
@@ -952,10 +952,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     }
 
     /**
-     * @param pathParameters The path paramters that were part of the request
+     * @param pathParameters The path parameters that were part of the request
      * @return APIGatewayProxyRequestEvent object
      */
-    public APIGatewayProxyRequestEvent withPathParamters(Map<String, String> pathParameters) {
+    public APIGatewayProxyRequestEvent withPathParameters(Map<String, String> pathParameters) {
         this.setPathParameters(pathParameters);
         return this;
     }

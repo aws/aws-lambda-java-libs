@@ -45,19 +45,19 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.11.163</version>
+      <version>1.11.369</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-kinesis</artifactId>
-      <version>1.11.163</version>
+      <version>1.11.369</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <version>1.11.163</version>
+      <version>1.11.369</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

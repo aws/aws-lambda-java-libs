@@ -1,6 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +19,11 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
     private Map<String, String> headers;
 
+    private Map<String, List<String>> multiValueHeaders;
+
     private Map<String, String> queryStringParameters;
+
+    private Map<String, List<String>> multiValueQueryStringParameters;
 
     private Map<String, String> pathParameters;
 
@@ -915,6 +920,29 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     }
 
     /**
+     * @return The multi value headers sent with the request
+     */
+    public Map<String, List<String>> getMultiValueHeaders() {
+        return multiValueHeaders;
+    }
+
+    /**
+     * @param multiValueHeaders The multi value headers sent with the request
+     */
+    public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+        this.multiValueHeaders = multiValueHeaders;
+    }
+
+    /**
+     * @param multiValueHeaders The multi value headers sent with the request
+     * @return APIGatewayProxyRequestEvent object
+     */
+    public APIGatewayProxyRequestEvent withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+        this.setMultiValueHeaders(multiValueHeaders);
+        return this;
+    }
+
+    /**
      * @return The query string parameters that were part of the request
      */
     public Map<String, String> getQueryStringParameters() {
@@ -934,6 +962,29 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      */
     public APIGatewayProxyRequestEvent withQueryStringParamters(Map<String, String> queryStringParameters) {
         this.setQueryStringParameters(queryStringParameters);
+        return this;
+    }
+
+    /**
+     * @return The multi value query string parameters that were part of the request
+     */
+    public Map<String, List<String>> getMultiValueQueryStringParameters() {
+        return multiValueQueryStringParameters;
+    }
+
+    /**
+     * @param multiValueQueryStringParameters The multi value query string parameters that were part of the request
+     */
+    public void setMultiValueQueryStringParameters(Map<String, List<String>> multiValueQueryStringParameters) {
+        this.multiValueQueryStringParameters = multiValueQueryStringParameters;
+    }
+
+    /**
+     * @param multiValueQueryStringParameters The multi value query string parameters that were part of the request
+     * @return APIGatewayProxyRequestEvent
+     */
+    public APIGatewayProxyRequestEvent withMultiValueQueryStringParameters(Map<String, List<String>> multiValueQueryStringParameters) {
+        this.setMultiValueQueryStringParameters(multiValueQueryStringParameters);
         return this;
     }
 
@@ -1071,8 +1122,12 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             sb.append("httpMethod: ").append(getHttpMethod()).append(",");
         if (getHeaders() != null)
             sb.append("headers: ").append(getHeaders().toString()).append(",");
+        if (getMultiValueHeaders() != null)
+            sb.append("multiValueHeaders: ").append(getMultiValueHeaders().toString()).append(",");
         if (getQueryStringParameters() != null)
             sb.append("queryStringParameters: ").append(getQueryStringParameters().toString()).append(",");
+        if (getMultiValueQueryStringParameters() != null)
+            sb.append("multiValueQueryStringParameters: ").append(getMultiValueQueryStringParameters().toString()).append(",");
         if (getPathParameters() != null)
             sb.append("pathParameters: ").append(getPathParameters().toString()).append(",");
         if (getStageVariables() != null)
@@ -1113,9 +1168,17 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             return false;
         if (other.getHeaders() != null && other.getHeaders().equals(this.getHeaders()) == false)
             return false;
+        if (other.getMultiValueHeaders() == null ^ this.getMultiValueHeaders() == null)
+            return false;
+        if (other.getMultiValueHeaders() != null && other.getMultiValueHeaders().equals(this.getMultiValueHeaders()) == false)
+            return false;
         if (other.getQueryStringParameters() == null ^ this.getQueryStringParameters() == null)
             return false;
         if (other.getQueryStringParameters() != null && other.getQueryStringParameters().equals(this.getQueryStringParameters()) == false)
+            return false;
+        if (other.getMultiValueQueryStringParameters() == null ^ this.getMultiValueQueryStringParameters() == null)
+            return false;
+        if (other.getMultiValueQueryStringParameters() != null && other.getMultiValueQueryStringParameters().equals(this.getMultiValueQueryStringParameters()) == false)
             return false;
         if (other.getPathParameters() == null ^ this.getPathParameters() == null)
             return false;
@@ -1149,7 +1212,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
         hashCode = prime * hashCode + ((getHttpMethod() == null) ? 0 : getHttpMethod().hashCode());
         hashCode = prime * hashCode + ((getHeaders() == null) ? 0 : getHeaders().hashCode());
+        hashCode = prime * hashCode + ((getMultiValueHeaders() == null) ? 0 : getMultiValueHeaders().hashCode());
         hashCode = prime * hashCode + ((getQueryStringParameters() == null) ? 0 : getQueryStringParameters().hashCode());
+        hashCode = prime * hashCode + ((getMultiValueQueryStringParameters() == null) ? 0 : getMultiValueQueryStringParameters().hashCode());
         hashCode = prime * hashCode + ((getPathParameters() == null) ? 0 : getPathParameters().hashCode());
         hashCode = prime * hashCode + ((getStageVariables() == null) ? 0 : getStageVariables().hashCode());
         hashCode = prime * hashCode + ((getRequestContext() == null) ? 0 : getRequestContext().hashCode());

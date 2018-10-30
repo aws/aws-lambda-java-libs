@@ -68,7 +68,7 @@ Add the following file `<project-dir>/src/main/resources/log4j2.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2.LambdaAppender">
+<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
   <Appenders>
     <Lambda name="Lambda">
       <PatternLayout>

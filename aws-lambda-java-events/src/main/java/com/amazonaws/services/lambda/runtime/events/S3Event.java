@@ -5,6 +5,7 @@ package com.amazonaws.services.lambda.runtime.events;
 import com.amazonaws.services.s3.event.S3EventNotification;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,14 @@ import java.util.List;
 public class S3Event extends S3EventNotification implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -8094860465750962044L;
+
+    /**
+     * default constructor
+     * (Not available in v1)
+     */
+    public S3Event() {
+        super(new ArrayList<S3EventNotificationRecord>());
+    }
 
     /**
      * Create a new instance of S3Event

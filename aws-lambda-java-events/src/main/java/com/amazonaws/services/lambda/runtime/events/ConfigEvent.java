@@ -114,7 +114,7 @@ public class ConfigEvent implements Serializable, Cloneable {
     }
 
     /**
-     * @param ruleParameters String with rule paramters
+     * @param ruleParameters String with rule parameters
      * @return ConfigEvent
      */
     public ConfigEvent withRuleParameters(String ruleParameters) {

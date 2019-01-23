@@ -27,7 +27,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>

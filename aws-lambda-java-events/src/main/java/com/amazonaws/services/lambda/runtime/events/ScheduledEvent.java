@@ -13,9 +13,8 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
 
     private String id;
 
-    private DateTime time;
+    private ZonedDateTime time;
 
     private List<String> resources;
 
@@ -165,14 +164,14 @@ public class ScheduledEvent implements Serializable, Cloneable {
     /**
      * @return the timestamp for when the event is scheduled
      */
-    public DateTime getTime() {
+    public ZonedDateTime getTime() {
         return this.time;
     }
 
     /**
      * @param time the timestamp for when the event is scheduled
      */
-    public void setTime(DateTime time) {
+    public void setTime(ZonedDateTime time) {
         this.time = time;
     }
 
@@ -180,7 +179,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
      * @param time the timestamp for when the event is scheduled
      * @return ScheduledEvent
      */
-    public ScheduledEvent withTime(DateTime time) {
+    public ScheduledEvent withTime(ZonedDateTime time) {
         setTime(time);
         return this;
     }

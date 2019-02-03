@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2012-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -68,7 +68,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setAccount(account);
         return this;
     }
-    
+
     /**
      * @return the aws region
      */
@@ -91,7 +91,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setRegion(region);
         return this;
     }
-    
+
     /**
      * @return The details of the events (usually left blank)
      */
@@ -114,7 +114,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetail(detail);
         return this;
     }
-    
+
     /**
      * @return The details type - see cloud watch events for more info
      */
@@ -137,7 +137,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetailType(detailType);
         return this;
     }
-    
+
     /**
      * @return the soruce of the event
      */
@@ -160,7 +160,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setSource(source);
         return this;
     }
-    
+
     /**
      * @return the timestamp for when the event is scheduled
      */
@@ -183,7 +183,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setTime(time);
         return this;
     }
-    
+
     /**
      * @return the id of the event
      */
@@ -206,7 +206,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setId(id);
         return this;
     }
-    
+
     /**
      * @return the resources used by event
      */
@@ -330,5 +330,5 @@ public class ScheduledEvent implements Serializable, Cloneable {
             throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
         }
     }
-    
+
 }

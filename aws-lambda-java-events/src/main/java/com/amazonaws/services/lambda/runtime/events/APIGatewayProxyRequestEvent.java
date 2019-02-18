@@ -29,6 +29,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
     private Map<String, String> stageVariables;
 
+    private Map<String, String> authorizer;
+
     private ProxyRequestContext requestContext;
 
     private String body;
@@ -917,6 +919,14 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     public APIGatewayProxyRequestEvent withHeaders(Map<String, String> headers) {
         this.setHeaders(headers);
         return this;
+    }
+
+    private Map<String, String> getAuthorizer() {
+        return authorizer;
+    }
+
+    private void setAuthorizer(final Map<String, String> authorizer) {
+        this.authorizer = authorizer;
     }
 
     /**

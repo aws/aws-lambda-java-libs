@@ -953,6 +953,16 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     }
 
     /**
+     * @param authorizer The context properties sent with the request from Authorizer
+     * @return APIGatewayProxyRequestEvent object
+     */
+    public APIGatewayProxyRequestEvent withAuthorizer(Map<String, String> authorizer) {
+        this.setAuthorizer(authorizer);
+        return this;
+    }
+
+
+    /**
      * @return The query string parameters that were part of the request
      */
     public Map<String, String> getQueryStringParameters() {
@@ -1200,6 +1210,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             return false;
         if (other.getMultiValueHeaders() != null && other.getMultiValueHeaders().equals(this.getMultiValueHeaders()) == false)
             return false;
+        if (other.getAuthorizer() == null ^ this.getAuthorizer() == null)
+            return false;
+        if (other.getAuthorizer() != null && !other.getAuthorizer().equals(this.getAuthorizer()))
+            return false;
         if (other.getQueryStringParameters() == null ^ this.getQueryStringParameters() == null)
             return false;
         if (other.getQueryStringParameters() != null && other.getQueryStringParameters().equals(this.getQueryStringParameters()) == false)
@@ -1248,6 +1262,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         hashCode = prime * hashCode + ((getRequestContext() == null) ? 0 : getRequestContext().hashCode());
         hashCode = prime * hashCode + ((getBody() == null) ? 0 : getBody().hashCode());
         hashCode = prime * hashCode + ((getIsBase64Encoded() == null) ? 0 : getIsBase64Encoded().hashCode());
+        hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
         return hashCode;
     }
 

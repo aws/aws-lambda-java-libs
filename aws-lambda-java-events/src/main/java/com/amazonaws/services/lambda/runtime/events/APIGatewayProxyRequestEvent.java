@@ -921,11 +921,11 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         return this;
     }
 
-    private Map<String, String> getAuthorizer() {
+    public Map<String, String> getAuthorizer() {
         return authorizer;
     }
 
-    private void setAuthorizer(final Map<String, String> authorizer) {
+    public void setAuthorizer(final Map<String, String> authorizer) {
         this.authorizer = authorizer;
     }
 
@@ -1148,6 +1148,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             sb.append("httpMethod: ").append(getHttpMethod()).append(",");
         if (getHeaders() != null)
             sb.append("headers: ").append(getHeaders().toString()).append(",");
+        if (getAuthorizer() != null)
+            sb.append("authorizer: ").append(getAuthorizer().toString()).append(",");
         if (getMultiValueHeaders() != null)
             sb.append("multiValueHeaders: ").append(getMultiValueHeaders().toString()).append(",");
         if (getQueryStringParameters() != null)

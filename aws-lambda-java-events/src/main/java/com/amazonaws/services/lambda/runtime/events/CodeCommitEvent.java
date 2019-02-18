@@ -290,6 +290,8 @@ public class CodeCommitEvent implements Serializable, Cloneable {
 
         private String awsRegion;
 
+        private String customData;
+
         private Integer eventTotalParts;
 
         /**
@@ -597,6 +599,27 @@ public class CodeCommitEvent implements Serializable, Cloneable {
         }
 
         /**
+         *
+         * @return custom data
+         */
+        public String getCustomData(){ return this.customData;}
+
+        /**
+         *
+         * @param customData event custom data
+         */
+        public void setCustomData(String customData) { this.customData = customData;}
+
+        /**
+         * @param customData event
+         * @return Record
+         */
+        public Record withCustomData(String customData) {
+            setCustomData(customData);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -631,6 +654,8 @@ public class CodeCommitEvent implements Serializable, Cloneable {
                 sb.append("eventSource: ").append(getEventSource()).append(",");
             if (getAwsRegion() != null)
                 sb.append("awsRegion: ").append(getAwsRegion()).append(",");
+            if (getCustomData() != null)
+                sb.append("customData: ").append(getCustomData()).append(",");
             if (getEventTotalParts() != null)
                 sb.append("eventTotalParts: ").append(getEventTotalParts());
             sb.append("}");
@@ -699,6 +724,10 @@ public class CodeCommitEvent implements Serializable, Cloneable {
                 return false;
             if (other.getEventTotalParts() != null && other.getEventTotalParts().equals(this.getEventTotalParts()) == false)
                 return false;
+            if (other.getCustomData() == null ^ this.getCustomData() == null)
+                return false;
+            if (other.getCustomData() != null && other.getCustomData().equals(this.getCustomData()) == false)
+                return false;
             return true;
         }
 
@@ -720,6 +749,7 @@ public class CodeCommitEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getEventSource() == null) ? 0 : getEventSource().hashCode());
             hashCode = prime * hashCode + ((getAwsRegion() == null) ? 0 : getAwsRegion().hashCode());
             hashCode = prime * hashCode + ((getEventTotalParts() == null) ? 0 : getEventTotalParts().hashCode());
+            hashCode = prime * hashCode + ((getCustomData() == null) ? 0 : getCustomData().hashCode());
             return hashCode;
         }
 

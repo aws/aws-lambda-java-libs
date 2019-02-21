@@ -60,6 +60,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private String path;
 
+        private Map<String, Object> authorizer;
+
         /**
          * default constructor
          */
@@ -86,6 +88,14 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         public ProxyRequestContext withAccountId(String accountId) {
             this.setAccountId(accountId);
             return this;
+        }
+
+        public Map<String, Object> getAuthorizer() {
+            return authorizer;
+        }
+
+        public void setAuthorizer(final Map<String, Object> authorizer) {
+            this.authorizer = authorizer;
         }
 
         /**
@@ -300,7 +310,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             if (getApiId() != null)
                 sb.append("apiId: ").append(getApiId()).append(",");
             if (getPath() != null)
-                sb.append("path: ").append(getPath());
+                sb.append("path: ").append(getPath()).append(",");
+            if (getAuthorizer() != null)
+                sb.append("authorizer: ").append(getAuthorizer().toString());
             sb.append("}");
             return sb.toString();
         }
@@ -351,6 +363,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getPath() != null && other.getPath().equals(this.getPath()) == false)
                 return false;
+            if (other.getAuthorizer() == null ^ this.getAuthorizer() == null)
+                return false;
+            if (other.getAuthorizer() != null && !other.getAuthorizer().equals(this.getAuthorizer()))
+                return false;
             return true;
         }
 
@@ -368,6 +384,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getHttpMethod() == null) ? 0 : getHttpMethod().hashCode());
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
+            hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
             return hashCode;
         }
 
@@ -941,7 +958,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         this.setMultiValueHeaders(multiValueHeaders);
         return this;
     }
-
+    
     /**
      * @return The query string parameters that were part of the request
      */

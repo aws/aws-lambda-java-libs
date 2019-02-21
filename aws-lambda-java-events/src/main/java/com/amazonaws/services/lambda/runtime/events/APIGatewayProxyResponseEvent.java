@@ -16,6 +16,8 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
     
     private String body;
 
+    private Boolean isBase64Encoded;
+
     /**
      * default constructor
      */
@@ -87,6 +89,29 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
      */
     public APIGatewayProxyResponseEvent withBody(String body) {
         this.setBody(body);
+        return this;
+    }
+
+    /**
+     * @return whether the body String is base64 encoded.
+     */
+    public Boolean getIsBase64Encoded() {
+        return this.isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     */
+    public void setIsBase64Encoded(Boolean isBase64Encoded) {
+        this.isBase64Encoded = isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     * @return APIGatewayProxyRequestEvent
+     */
+    public APIGatewayProxyResponseEvent withIsBase64Encoded(Boolean isBase64Encoded) {
+        this.setIsBase64Encoded(isBase64Encoded);
         return this;
     }
 

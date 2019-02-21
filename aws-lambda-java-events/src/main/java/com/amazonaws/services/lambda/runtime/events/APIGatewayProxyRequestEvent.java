@@ -60,7 +60,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private String path;
 
-        private Map<String, String> authorizer;
+        private Map<String, Object> authorizer;
 
         /**
          * default constructor
@@ -90,11 +90,11 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             return this;
         }
 
-        public Map<String, String> getAuthorizer() {
+        public Map<String, Object> getAuthorizer() {
             return authorizer;
         }
 
-        public void setAuthorizer(final Map<String, String> authorizer) {
+        public void setAuthorizer(final Map<String, Object> authorizer) {
             this.authorizer = authorizer;
         }
 

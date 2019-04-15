@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * 
- * Represents an Amazon Congnito event sent to Lambda Functions
+ * Represents an Amazon Cognito event sent to Lambda Functions
  *
  */
 public class CognitoEvent implements Serializable, Cloneable {

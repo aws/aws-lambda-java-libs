@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @author Tim Gustafson <tjg@tgustafson.com>
+ * @author Tim Gustafson <tjg@amazon.com>
  */
 public class APIGatewayV2ProxyResponseEvent implements Serializable, Cloneable {
 
@@ -76,6 +76,24 @@ public class APIGatewayV2ProxyResponseEvent implements Serializable, Cloneable {
     }
 
     return true;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+
+    sb.append("statusCode: ").append(statusCode).append(",");
+
+    if (body != null) {
+      sb.append("body: ").append(body).append(",");
+    }
+
+    sb.append("isBase64Encoded: ").append(isBase64Encoded).append(",");
+
+    sb.append("}");
+
+    return sb.toString();
   }
 
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @author Tim Gustafson <tjg@tgustafson.com>
+ * @author Tim Gustafson <tjg@amazon.com>
  */
 public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
@@ -64,6 +64,23 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
       }
 
       return true;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append("{");
+
+      if (getSourceIp() != null) {
+        sb.append("sourceIp: ").append(getSourceIp()).append(",");
+      }
+      if (getUserAgent() != null) {
+        sb.append("userAgent: ").append(getUserAgent()).append(",");
+      }
+
+      sb.append("}");
+
+      return sb.toString();
     }
 
   }
@@ -293,6 +310,76 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
       return true;
     }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append("{");
+
+      if (routeKey != null) {
+        sb.append("routeKey: ").append(routeKey).append(",");
+      }
+
+      if (messageId != null) {
+        sb.append("messageId: ").append(messageId).append(",");
+      }
+
+      if (eventType != null) {
+        sb.append("eventType: ").append(eventType).append(",");
+      }
+
+      if (extendedRequestId != null) {
+        sb.append("extendedRequestId: ").append(extendedRequestId).append(",");
+      }
+
+      if (requestTime != null) {
+        sb.append("requestTime: ").append(requestTime).append(",");
+      }
+
+      if (messageDirection != null) {
+        sb.append("messageDirection: ").append(messageDirection).append(",");
+      }
+
+      if (stage != null) {
+        sb.append("stage: ").append(stage).append(",");
+      }
+
+      if (connectedAt != 0) {
+        sb.append("connectedAt: ").append(connectedAt).append(",");
+      }
+
+      if (messageId != null) {
+        sb.append("messageId: ").append(messageId).append(",");
+      }
+
+      if (identity != null) {
+        sb.append("identity: ").append(identity).append(",");
+      }
+
+      if (requestTimeEpoch != 0) {
+        sb.append("requestTimeEpoch: ").append(requestTimeEpoch).append(",");
+      }
+
+      if (requestId != null) {
+        sb.append("requestId: ").append(requestId).append(",");
+      }
+
+      if (domainName != null) {
+        sb.append("domainName: ").append(domainName).append(",");
+      }
+
+      if (connectionId != null) {
+        sb.append("connectionId: ").append(connectionId).append(",");
+      }
+
+      if (apiId != null) {
+        sb.append("apiId: ").append(apiId).append(",");
+      }
+
+      sb.append("}");
+
+      return sb.toString();
+    }
   }
 
   private RequestContext requestContext;
@@ -363,4 +450,25 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
     }
     return true;
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+
+    if (requestContext != null) {
+      sb.append("requestContext: ").append(requestContext).append(",");
+    }
+
+    if (body != null) {
+      sb.append("body: ").append(body).append(",");
+    }
+
+    sb.append("isBase64Encoded: ").append(isBase64Encoded).append(",");
+
+    sb.append("}");
+
+    return sb.toString();
+  }
+
 }

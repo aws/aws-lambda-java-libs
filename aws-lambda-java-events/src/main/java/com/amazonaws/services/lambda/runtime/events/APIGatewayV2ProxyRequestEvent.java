@@ -215,7 +215,7 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
     private String requestId;
     private RequestIdentity identity;
     private String ResourcePath;
-    private String authorizer;
+    private Map<String, Object> authorizer;
     private String httpMethod;
     private String apiId;
     private long connectedAt;
@@ -280,11 +280,11 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
       this.ResourcePath = ResourcePath;
     }
 
-    public String getAuthorizer() {
+    public Map<String, Object> getAuthorizer() {
       return authorizer;
     }
 
-    public void setAuthorizer(String authorizer) {
+    public void setAuthorizer(Map<String, Object> authorizer) {
       this.authorizer = authorizer;
     }
 

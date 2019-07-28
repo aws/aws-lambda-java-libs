@@ -62,6 +62,28 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private Map<String, Object> authorizer;
 
+        private String extendedRequestId;
+
+        private String requestTime;
+
+        private Long requestTimeEpoch;
+
+        private String domainName;
+
+        private String protocol;
+
+        private String connectionId;
+
+        private String routeKey;
+
+        private String messageId;
+
+        private String eventType;
+
+        private String messageDirection;
+
+        private Long connectedAt;
+
         /**
          * default constructor
          */
@@ -283,6 +305,265 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return The API Gateway Extended Request Id
+         */
+        public String getExtendedRequestId() {
+            return extendedRequestId;
+        }
+
+        /**
+         * @param extendedRequestId The API Gateway Extended Request Id
+         */
+        public void setExtendedRequestId(String extendedRequestId) {
+            this.extendedRequestId = extendedRequestId;
+        }
+
+        /**
+         * @param extendedRequestId The API Gateway Extended Request Id
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withExtendedRequestId(String extendedRequestId) {
+            this.setExtendedRequestId(extendedRequestId);
+            return this;
+        }
+
+        /**
+         * @return The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         */
+        public String getRequestTime() {
+            return requestTime;
+        }
+
+        /**
+         * @param requestTime The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         */
+        public void setRequestTime(String requestTime) {
+            this.requestTime = requestTime;
+        }
+
+        /**
+         * @param requestTime The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         * @return  ProxyRequestContext object
+         */
+        public ProxyRequestContext withRequestTime(String requestTime) {
+            this.setRequestTime(requestTime);
+            return this;
+        }
+
+        /**
+         * @return The Epoch-formatted request time (in millis)
+         */
+        public Long getRequestTimeEpoch() {
+            return requestTimeEpoch;
+        }
+
+        /**
+         * @param requestTimeEpoch The Epoch-formatted request time (in millis)
+         */
+        public void setRequestTimeEpoch(Long requestTimeEpoch) {
+            this.requestTimeEpoch = requestTimeEpoch;
+        }
+
+        /**
+         * @param requestTimeEpoch The Epoch-formatted request time (in millis)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withRequestTimeEpoch(Long requestTimeEpoch) {
+            this.setRequestTimeEpoch(requestTimeEpoch);
+            return this;
+        }
+
+        /**
+         * @return The full domain name used to invoke the API. This should be the same as the incoming Host header.
+         */
+        public String getDomainName() {
+            return domainName;
+        }
+
+        /**
+         * @param domainName The full domain name used to invoke the API.
+         *                   This should be the same as the incoming Host header.
+         */
+        public void setDomainName(String domainName) {
+            this.domainName = domainName;
+        }
+
+        /**
+         * @param domainName The full domain name used to invoke the API.
+         *                   This should be the same as the incoming Host header.
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withDomainName(String domainName) {
+            this.setDomainName(domainName);
+            return this;
+        }
+
+        /**
+         * @return The request protocol, for example, HTTP/1.1.
+         */
+        public String getProtocol() {
+            return protocol;
+        }
+
+        /**
+         * @param protocol  The request protocol, for example, HTTP/1.1.
+         */
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
+        /**
+         * @param protocol  The request protocol, for example, HTTP/1.1.
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withProtocol(String protocol) {
+            this.setProtocol(protocol);
+            return this;
+        }
+        /**
+         * @return A unique ID for the connection that can be used to make a callback to the client. (Websocket API Gateway)
+         */
+        public String getConnectionId() {
+            return connectionId;
+        }
+
+        /**
+         * @param connectionId A unique ID for the connection that can be used to make a callback to the client.
+         *                    (Websocket API Gateway)
+         */
+        public void setConnectionId(String connectionId) {
+            this.connectionId = connectionId;
+        }
+
+        /**
+         * @param connectionId  A unique ID for the connection that can be used to make a callback to the client.
+         *                      (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withConnectionId(String connectionId) {
+            this.setConnectionId(connectionId);
+            return this;
+        }
+
+        /**
+         * @return The selected route key. (Websocket API Gateway)
+         */
+        public String getRouteKey() {
+            return routeKey;
+        }
+
+        /**
+         * @param routeKey The selected route key. (Websocket API Gateway)
+         */
+        public void setRouteKey(String routeKey) {
+            this.routeKey = routeKey;
+        }
+
+        /**
+         * @param routeKey The selected route key. (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withRouteKey(String routeKey) {
+            this.setRouteKey(routeKey);
+            return this;
+        }
+
+        /**
+         * @return A unique server-side ID for a message. Available only when the eventType is MESSAGE.
+         *         (Websocket API Gateway)
+         */
+        public String getMessageId() {
+            return messageId;
+        }
+
+        /**
+         * @param messageId A unique server-side ID for a message. Available only when the eventType is MESSAGE.
+         *                  (Websocket API Gateway)
+         */
+        public void setMessageId(String messageId) {
+            this.messageId = messageId;
+        }
+
+        /**
+         * @param messageId A unique server-side ID for a message. Available only when the eventType is MESSAGE.
+         *                  (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withMessageId(String messageId) {
+            this.setMessageId(messageId);
+            return this;
+        }
+
+        /**
+         * @return The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
+         */
+        public String getEventType() {
+            return eventType;
+        }
+
+        /**
+         * @param eventType The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
+         */
+        public void setEventType(String eventType) {
+            this.eventType = eventType;
+        }
+
+        /**
+         * @param eventType The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withEventType(String eventType) {
+            this.setEventType(eventType);
+            return this;
+        }
+
+        /**
+         * @return Message direction IN, OUT. (Websocket API Gateway)
+         */
+        public String getMessageDirection() {
+            return messageDirection;
+        }
+
+        /**
+         * @param messageDirection Message direction IN, OUT. (Websocket API Gateway)
+         */
+        public void setMessageDirection(String messageDirection) {
+            this.messageDirection = messageDirection;
+        }
+
+        /**
+         * @param messageDirection Message direction IN, OUT. (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withMessageDirection(String messageDirection) {
+            this.setMessageDirection(messageDirection);
+            return this;
+        }
+
+        /**
+         * @return The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
+         */
+        public Long getConnectedAt() {
+            return connectedAt;
+        }
+
+        /**
+         * @param connectedAt The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
+         */
+        public void setConnectedAt(Long connectedAt) {
+            this.connectedAt = connectedAt;
+        }
+
+        /**
+         * @param connectedAt The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withConnectedAt(Long connectedAt) {
+            this.setConnectedAt(connectedAt);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -307,12 +588,34 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("resourcePath: ").append(getResourcePath()).append(",");
             if (getHttpMethod() != null)
                 sb.append("httpMethod: ").append(getHttpMethod()).append(",");
-            if (getApiId() != null)
-                sb.append("apiId: ").append(getApiId()).append(",");
             if (getPath() != null)
                 sb.append("path: ").append(getPath()).append(",");
             if (getAuthorizer() != null)
-                sb.append("authorizer: ").append(getAuthorizer().toString());
+                sb.append("authorizer: ").append(getAuthorizer().toString()).append(",");
+            if (getExtendedRequestId() != null)
+                sb.append("extendedRequestId: ").append(getExtendedRequestId()).append(",");
+            if (getRequestTime() != null)
+                sb.append("requestTime: ").append(getRequestTime()).append(",");
+            if (getProtocol() != null)
+                sb.append("protocol: ").append(getProtocol()).append(",");
+            if (getRequestTimeEpoch() != null)
+                sb.append("requestTimeEpoch: ").append(getRequestTimeEpoch()).append(",");
+            if (getDomainName() != null)
+                sb.append("domainName: ").append(getDomainName()).append(",");
+            if (getConnectionId() != null)
+                sb.append("connectionId: ").append(getConnectionId()).append(",");
+            if (getRouteKey() != null)
+                sb.append("routeKey: ").append(getRouteKey()).append(",");
+            if (getMessageId() != null)
+                sb.append("messageId: ").append(getMessageId()).append(",");
+            if (getEventType() != null)
+                sb.append("eventType: ").append(getEventType()).append(",");
+            if (getMessageDirection() != null)
+                sb.append("messageDirection: ").append(getMessageDirection()).append(",");
+            if (getConnectedAt() != null)
+                sb.append("connectedAt: ").append(getConnectedAt()).append(",");
+            if (getApiId() != null)
+                sb.append("apiId: ").append(getApiId());
             sb.append("}");
             return sb.toString();
         }
@@ -367,6 +670,50 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getAuthorizer() != null && !other.getAuthorizer().equals(this.getAuthorizer()))
                 return false;
+            if (other.getExtendedRequestId() == null ^ this.getExtendedRequestId() == null)
+                return false;
+            if (other.getExtendedRequestId() != null && other.getExtendedRequestId().equals(this.getExtendedRequestId()) == false)
+                return false;
+            if (other.getRequestTime() == null ^ this.getRequestTime() == null)
+                return false;
+            if (other.getRequestTime() != null && other.getRequestTime().equals(this.getRequestTime()) == false)
+                return false;
+            if (other.getRequestTimeEpoch() == null ^ this.getRequestTimeEpoch() == null)
+                return false;
+            if (other.getRequestTimeEpoch() != null && other.getRequestTimeEpoch().equals(this.getRequestTimeEpoch()) == false)
+                return false;
+            if (other.getDomainName() == null ^ this.getDomainName() == null)
+                return false;
+            if (other.getDomainName() != null && other.getDomainName().equals(this.getDomainName()) == false)
+                return false;
+            if (other.getProtocol() == null ^ this.getProtocol() == null)
+                return false;
+            if (other.getProtocol() != null && other.getProtocol().equals(this.getProtocol()) == false)
+                return false;
+            if (other.getConnectionId() == null ^ this.getConnectionId() == null)
+                return false;
+            if (other.getConnectionId() != null && other.getConnectionId().equals(this.getConnectionId()) == false)
+                return false;
+            if (other.getRouteKey() == null ^ this.getRouteKey() == null)
+                return false;
+            if (other.getRouteKey() != null && other.getRouteKey().equals(this.getRouteKey()) == false)
+                return false;
+            if (other.getMessageId() == null ^ this.getMessageId() == null)
+                return false;
+            if (other.getMessageId() != null && other.getMessageId().equals(this.getMessageId()) == false)
+                return false;
+            if (other.getEventType() == null ^ this.getEventType() == null)
+                return false;
+            if (other.getEventType() != null && other.getEventType().equals(this.getEventType()) == false)
+                return false;
+            if (other.getMessageDirection() == null ^ this.getMessageDirection() == null)
+                return false;
+            if (other.getMessageDirection() != null && other.getMessageDirection().equals(this.getMessageDirection()) == false)
+                return false;
+            if (other.getConnectedAt() == null ^ this.getConnectedAt() == null)
+                return false;
+            if (other.getConnectedAt() != null && other.getConnectedAt().equals(this.getConnectedAt()) == false)
+                return false;
             return true;
         }
 
@@ -385,6 +732,17 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
             hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
+            hashCode = prime * hashCode + ((getExtendedRequestId() == null) ? 0 : getExtendedRequestId().hashCode());
+            hashCode = prime * hashCode + ((getRequestTime() == null) ? 0 : getRequestTime().hashCode());
+            hashCode = prime * hashCode + ((getRequestTimeEpoch() == null) ? 0 : getRequestTimeEpoch().hashCode());
+            hashCode = prime * hashCode + ((getDomainName() == null) ? 0 : getDomainName().hashCode());
+            hashCode = prime * hashCode + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
+            hashCode = prime * hashCode + ((getConnectionId() == null) ? 0 : getConnectionId().hashCode());
+            hashCode = prime * hashCode + ((getRouteKey() == null) ? 0 : getRouteKey().hashCode());
+            hashCode = prime * hashCode + ((getMessageId() == null) ? 0 : getMessageId().hashCode());
+            hashCode = prime * hashCode + ((getEventType() == null) ? 0 : getEventType().hashCode());
+            hashCode = prime * hashCode + ((getMessageDirection() == null) ? 0 : getMessageDirection().hashCode());
+            hashCode = prime * hashCode + ((getConnectedAt() == null) ? 0 : getConnectedAt().hashCode());
             return hashCode;
         }
 
@@ -1135,7 +1493,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         this.setIsBase64Encoded(isBase64Encoded);
         return this;
     }
-    
+
     /**
      * Returns a string representation of this object; useful for testing and debugging.
      *

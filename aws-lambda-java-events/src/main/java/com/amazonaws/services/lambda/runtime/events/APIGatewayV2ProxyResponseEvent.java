@@ -8,6 +8,8 @@ import java.util.Map;
  */
 public class APIGatewayV2ProxyResponseEvent implements Serializable, Cloneable {
 
+  private static final long serialVersionUID = -5155789062248356200L;
+
   private boolean isBase64Encoded = false;
   private int statusCode;
   private Map<String, String> headers;

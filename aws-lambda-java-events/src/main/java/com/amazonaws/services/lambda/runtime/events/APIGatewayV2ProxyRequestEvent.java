@@ -1,6 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,7 +10,11 @@ import java.util.Objects;
  */
 public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
+  private static final long serialVersionUID = 5695319264103347099L;
+
   public static class RequestIdentity implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -3276649362684921217L;
 
     private String cognitoIdentityPoolId;
     private String accountId;
@@ -208,6 +213,8 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
   }
 
   public static class RequestContext implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -6641935365992304860L;
 
     private String accountId;
     private String resourceId;
@@ -550,9 +557,9 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
   private String path;
   private String httpMethod;
   private Map<String, String> headers;
-  private Map<String, String[]> multiValueHeaders;
+  private Map<String, List<String>> multiValueHeaders;
   private Map<String, String> queryStringParameters;
-  private Map<String, String[]> multiValueQueryStringParameters;
+  private Map<String, List<String>> multiValueQueryStringParameters;
   private Map<String, String> pathParameters;
   private Map<String, String> stageVariables;
   private RequestContext requestContext;
@@ -591,11 +598,11 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
     this.headers = headers;
   }
 
-  public Map<String, String[]> getMultiValueHeaders() {
+  public Map<String, List<String>> getMultiValueHeaders() {
     return multiValueHeaders;
   }
 
-  public void setMultiValueHeaders(Map<String, String[]> multiValueHeaders) {
+  public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
     this.multiValueHeaders = multiValueHeaders;
   }
 
@@ -607,11 +614,11 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
     this.queryStringParameters = queryStringParameters;
   }
 
-  public Map<String, String[]> getMultiValueQueryStringParameters() {
+  public Map<String, List<String>> getMultiValueQueryStringParameters() {
     return multiValueQueryStringParameters;
   }
 
-  public void setMultiValueQueryStringParameters(Map<String, String[]> multiValueQueryStringParameters) {
+  public void setMultiValueQueryStringParameters(Map<String, List<String>> multiValueQueryStringParameters) {
     this.multiValueQueryStringParameters = multiValueQueryStringParameters;
   }
 

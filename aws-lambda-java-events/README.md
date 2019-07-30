@@ -3,6 +3,8 @@
 ### New Event Models Supported
 * APIGatewayProxyRequestEvent
 * APIGatewayProxyResponseEvent
+* APIGatewayV2ProxyRequestEvent
+* APIGatewayV2ProxyResponseEvent
 * CloudFrontEvent
 * CloudWatchLogsEvent
 * CodeCommitEvent
@@ -20,6 +22,8 @@ versions do not need to make any changes to their existing code.
 The following event models do not require any SDK dependencies
 * APIGatewayProxyRequestEvent
 * APIGatewayProxyResponseEvent
+* APIGatewayV2ProxyRequestEvent
+* APIGatewayV2ProxyResponseEvent
 * CloudFrontEvent
 * CloudWatchLogsEvent
 * CodeCommitEvent

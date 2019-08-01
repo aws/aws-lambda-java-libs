@@ -6,11 +6,181 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Tim Gustafson <tjg@amazon.com>
+ *  * Class that represents an APIGatewayProxyV2RequestEvent (Websocket events)
  */
 public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 5695319264103347099L;
+
+  private String resource;
+  private String path;
+  private String httpMethod;
+  private Map<String, String> headers;
+  private Map<String, List<String>> multiValueHeaders;
+  private Map<String, String> queryStringParameters;
+  private Map<String, List<String>> multiValueQueryStringParameters;
+  private Map<String, String> pathParameters;
+  private Map<String, String> stageVariables;
+  private RequestContext requestContext;
+  private String body;
+  private boolean isBase64Encoded = false;
+
+  public String getResource() {
+    return resource;
+  }
+
+  public void setResource(String resource) {
+    this.resource = resource;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getHttpMethod() {
+    return httpMethod;
+  }
+
+  public void setHttpMethod(String httpMethod) {
+    this.httpMethod = httpMethod;
+  }
+
+  public Map<String, String> getHeaders() {
+    return headers;
+  }
+
+  public void setHeaders(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
+  public Map<String, List<String>> getMultiValueHeaders() {
+    return multiValueHeaders;
+  }
+
+  public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+    this.multiValueHeaders = multiValueHeaders;
+  }
+
+  public Map<String, String> getQueryStringParameters() {
+    return queryStringParameters;
+  }
+
+  public void setQueryStringParameters(Map<String, String> queryStringParameters) {
+    this.queryStringParameters = queryStringParameters;
+  }
+
+  public Map<String, List<String>> getMultiValueQueryStringParameters() {
+    return multiValueQueryStringParameters;
+  }
+
+  public void setMultiValueQueryStringParameters(Map<String, List<String>> multiValueQueryStringParameters) {
+    this.multiValueQueryStringParameters = multiValueQueryStringParameters;
+  }
+
+  public Map<String, String> getPathParameters() {
+    return pathParameters;
+  }
+
+  public void setPathParameters(Map<String, String> pathParameters) {
+    this.pathParameters = pathParameters;
+  }
+
+  public Map<String, String> getStageVariables() {
+    return stageVariables;
+  }
+
+  public void setStageVariables(Map<String, String> stageVariables) {
+    this.stageVariables = stageVariables;
+  }
+
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
+
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
+  }
+
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public boolean isIsBase64Encoded() {
+    return isBase64Encoded;
+  }
+
+  public void setIsBase64Encoded(boolean isBase64Encoded) {
+    this.isBase64Encoded = isBase64Encoded;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+
+    hash = 43 * hash + Objects.hashCode(this.requestContext);
+    hash = 43 * hash + Objects.hashCode(this.body);
+    hash = 43 * hash + (this.isBase64Encoded ? 1 : 0);
+
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null) {
+      return false;
+    }
+
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    final APIGatewayV2ProxyRequestEvent other = (APIGatewayV2ProxyRequestEvent) obj;
+
+    if (this.isBase64Encoded != other.isBase64Encoded) {
+      return false;
+    }
+
+    if (!Objects.equals(this.body, other.body)) {
+      return false;
+    }
+
+    if (!Objects.equals(this.requestContext, other.requestContext)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+
+    if (requestContext != null) {
+      sb.append("requestContext: ").append(requestContext).append(",");
+    }
+
+    if (body != null) {
+      sb.append("body: ").append(body).append(",");
+    }
+
+    sb.append("isBase64Encoded: ").append(isBase64Encoded).append(",");
+
+    sb.append("}");
+
+    return sb.toString();
+  }
 
   public static class RequestIdentity implements Serializable, Cloneable {
 
@@ -196,18 +366,18 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-      return "{cognitoIdentityPoolId=" + cognitoIdentityPoolId
-        + ", accountId=" + accountId
-        + ", cognitoIdentityId=" + cognitoIdentityId
-        + ", caller=" + caller
-        + ", apiKey=" + apiKey
-        + ", sourceIp=" + sourceIp
-        + ", cognitoAuthenticationType=" + cognitoAuthenticationType
-        + ", cognitoAuthenticationProvider=" + cognitoAuthenticationProvider
-        + ", userArn=" + userArn
-        + ", userAgent=" + userAgent
-        + ", user=" + user
-        + ", accessKey=" + accessKey
+      return "{cognitoIdentityPoolId: " + cognitoIdentityPoolId
+        + ", accountId: " + accountId
+        + ", cognitoIdentityId: " + cognitoIdentityId
+        + ", caller: " + caller
+        + ", apiKey: " + apiKey
+        + ", sourceIp: " + sourceIp
+        + ", cognitoAuthenticationType: " + cognitoAuthenticationType
+        + ", cognitoAuthenticationProvider: " + cognitoAuthenticationProvider
+        + ", userArn: " + userArn
+        + ", userAgent: " + userAgent
+        + ", user: " + user
+        + ", accessKey: " + accessKey
         + "}";
     }
   }
@@ -445,28 +615,28 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-      return "{accountId=" + accountId
-        + ", resourceId=" + resourceId
-        + ", stage=" + stage
-        + ", requestId=" + requestId
-        + ", identity=" + identity
-        + ", ResourcePath=" + ResourcePath
-        + ", authorizer=" + authorizer
-        + ", httpMethod=" + httpMethod
-        + ", apiId=" + apiId
-        + ", connectedAt=" + connectedAt
-        + ", connectionId=" + connectionId
-        + ", domainName=" + domainName
-        + ", error=" + error
-        + ", eventType=" + eventType
-        + ", extendedRequestId=" + extendedRequestId
-        + ", integrationLatency=" + integrationLatency
-        + ", messageDirection=" + messageDirection
-        + ", messageId=" + messageId
-        + ", requestTime=" + requestTime
-        + ", requestTimeEpoch=" + requestTimeEpoch
-        + ", routeKey=" + routeKey
-        + ", status=" + status
+      return "{accountId: " + accountId
+        + ", resourceId: " + resourceId
+        + ", stage: " + stage
+        + ", requestId: " + requestId
+        + ", identity: " + identity
+        + ", ResourcePath: " + ResourcePath
+        + ", authorizer: " + authorizer
+        + ", httpMethod: " + httpMethod
+        + ", apiId: " + apiId
+        + ", connectedAt: " + connectedAt
+        + ", connectionId: " + connectionId
+        + ", domainName: " + domainName
+        + ", error: " + error
+        + ", eventType: " + eventType
+        + ", extendedRequestId: " + extendedRequestId
+        + ", integrationLatency: " + integrationLatency
+        + ", messageDirection: " + messageDirection
+        + ", messageId: " + messageId
+        + ", requestTime: " + requestTime
+        + ", requestTimeEpoch: " + requestTimeEpoch
+        + ", routeKey: " + routeKey
+        + ", status: " + status
         + "}";
     }
 
@@ -551,176 +721,6 @@ public class APIGatewayV2ProxyRequestEvent implements Serializable, Cloneable {
       return true;
     }
 
-  }
-
-  private String resource;
-  private String path;
-  private String httpMethod;
-  private Map<String, String> headers;
-  private Map<String, List<String>> multiValueHeaders;
-  private Map<String, String> queryStringParameters;
-  private Map<String, List<String>> multiValueQueryStringParameters;
-  private Map<String, String> pathParameters;
-  private Map<String, String> stageVariables;
-  private RequestContext requestContext;
-  private String body;
-  private boolean isBase64Encoded = false;
-
-  public String getResource() {
-    return resource;
-  }
-
-  public void setResource(String resource) {
-    this.resource = resource;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public String getHttpMethod() {
-    return httpMethod;
-  }
-
-  public void setHttpMethod(String httpMethod) {
-    this.httpMethod = httpMethod;
-  }
-
-  public Map<String, String> getHeaders() {
-    return headers;
-  }
-
-  public void setHeaders(Map<String, String> headers) {
-    this.headers = headers;
-  }
-
-  public Map<String, List<String>> getMultiValueHeaders() {
-    return multiValueHeaders;
-  }
-
-  public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-    this.multiValueHeaders = multiValueHeaders;
-  }
-
-  public Map<String, String> getQueryStringParameters() {
-    return queryStringParameters;
-  }
-
-  public void setQueryStringParameters(Map<String, String> queryStringParameters) {
-    this.queryStringParameters = queryStringParameters;
-  }
-
-  public Map<String, List<String>> getMultiValueQueryStringParameters() {
-    return multiValueQueryStringParameters;
-  }
-
-  public void setMultiValueQueryStringParameters(Map<String, List<String>> multiValueQueryStringParameters) {
-    this.multiValueQueryStringParameters = multiValueQueryStringParameters;
-  }
-
-  public Map<String, String> getPathParameters() {
-    return pathParameters;
-  }
-
-  public void setPathParameters(Map<String, String> pathParameters) {
-    this.pathParameters = pathParameters;
-  }
-
-  public Map<String, String> getStageVariables() {
-    return stageVariables;
-  }
-
-  public void setStageVariables(Map<String, String> stageVariables) {
-    this.stageVariables = stageVariables;
-  }
-
-  public RequestContext getRequestContext() {
-    return requestContext;
-  }
-
-  public void setRequestContext(RequestContext requestContext) {
-    this.requestContext = requestContext;
-  }
-
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public boolean isIsBase64Encoded() {
-    return isBase64Encoded;
-  }
-
-  public void setIsBase64Encoded(boolean isBase64Encoded) {
-    this.isBase64Encoded = isBase64Encoded;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-
-    hash = 43 * hash + Objects.hashCode(this.requestContext);
-    hash = 43 * hash + Objects.hashCode(this.body);
-    hash = 43 * hash + (this.isBase64Encoded ? 1 : 0);
-
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-
-    if (obj == null) {
-      return false;
-    }
-
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    final APIGatewayV2ProxyRequestEvent other = (APIGatewayV2ProxyRequestEvent) obj;
-
-    if (this.isBase64Encoded != other.isBase64Encoded) {
-      return false;
-    }
-
-    if (!Objects.equals(this.body, other.body)) {
-      return false;
-    }
-
-    if (!Objects.equals(this.requestContext, other.requestContext)) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{");
-
-    if (requestContext != null) {
-      sb.append("requestContext: ").append(requestContext).append(",");
-    }
-
-    if (body != null) {
-      sb.append("body: ").append(body).append(",");
-    }
-
-    sb.append("isBase64Encoded: ").append(isBase64Encoded).append(",");
-
-    sb.append("}");
-
-    return sb.toString();
   }
 
 }

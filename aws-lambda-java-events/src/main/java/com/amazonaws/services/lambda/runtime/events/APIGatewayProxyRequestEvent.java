@@ -576,6 +576,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getRequestTime() == null) ? 0 : getRequestTime().hashCode());
             hashCode = prime * hashCode + ((getRequestTimeEpoch() == null) ? 0 : getRequestTimeEpoch().hashCode());
             hashCode = prime * hashCode + ((getDomainName() == null) ? 0 : getDomainName().hashCode());
+            hashCode = prime * hashCode + ((getDomainPrefix() == null) ? 0 : getDomainPrefix().hashCode());
             hashCode = prime * hashCode + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
             return hashCode;
         }

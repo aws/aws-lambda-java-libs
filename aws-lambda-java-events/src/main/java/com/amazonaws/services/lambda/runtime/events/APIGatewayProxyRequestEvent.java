@@ -70,19 +70,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private String domainName;
 
+        private String domainPrefix;
+
         private String protocol;
-
-        private String connectionId;
-
-        private String routeKey;
-
-        private String messageId;
-
-        private String eventType;
-
-        private String messageDirection;
-
-        private Long connectedAt;
 
         /**
          * default constructor
@@ -399,6 +389,28 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return The first label of the domainName. This is often used as a caller/customer identifier.
+         */
+        public String getDomainPrefix() {
+            return domainPrefix;
+        }
+
+        /**
+         * @param domainPrefix The first label of the domainName. This is often used as a caller/customer identifier.
+         */
+        public void setDomainPrefix(String domainPrefix) {
+            this.domainPrefix = domainPrefix;
+        }
+
+        /**
+         * @param domainPrefix The first label of the domainName. This is often used as a caller/customer identifier.
+         * @return
+         */
+        public ProxyRequestContext withDomainPrefix(String domainPrefix) {
+            this.setDomainPrefix(domainPrefix);
+            return this;
+        }
+        /**
          * @return The request protocol, for example, HTTP/1.1.
          */
         public String getProtocol() {
@@ -418,148 +430,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
          */
         public ProxyRequestContext withProtocol(String protocol) {
             this.setProtocol(protocol);
-            return this;
-        }
-        /**
-         * @return A unique ID for the connection that can be used to make a callback to the client. (Websocket API Gateway)
-         */
-        public String getConnectionId() {
-            return connectionId;
-        }
-
-        /**
-         * @param connectionId A unique ID for the connection that can be used to make a callback to the client.
-         *                    (Websocket API Gateway)
-         */
-        public void setConnectionId(String connectionId) {
-            this.connectionId = connectionId;
-        }
-
-        /**
-         * @param connectionId  A unique ID for the connection that can be used to make a callback to the client.
-         *                      (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withConnectionId(String connectionId) {
-            this.setConnectionId(connectionId);
-            return this;
-        }
-
-        /**
-         * @return The selected route key. (Websocket API Gateway)
-         */
-        public String getRouteKey() {
-            return routeKey;
-        }
-
-        /**
-         * @param routeKey The selected route key. (Websocket API Gateway)
-         */
-        public void setRouteKey(String routeKey) {
-            this.routeKey = routeKey;
-        }
-
-        /**
-         * @param routeKey The selected route key. (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withRouteKey(String routeKey) {
-            this.setRouteKey(routeKey);
-            return this;
-        }
-
-        /**
-         * @return A unique server-side ID for a message. Available only when the eventType is MESSAGE.
-         *         (Websocket API Gateway)
-         */
-        public String getMessageId() {
-            return messageId;
-        }
-
-        /**
-         * @param messageId A unique server-side ID for a message. Available only when the eventType is MESSAGE.
-         *                  (Websocket API Gateway)
-         */
-        public void setMessageId(String messageId) {
-            this.messageId = messageId;
-        }
-
-        /**
-         * @param messageId A unique server-side ID for a message. Available only when the eventType is MESSAGE.
-         *                  (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withMessageId(String messageId) {
-            this.setMessageId(messageId);
-            return this;
-        }
-
-        /**
-         * @return The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
-         */
-        public String getEventType() {
-            return eventType;
-        }
-
-        /**
-         * @param eventType The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
-         */
-        public void setEventType(String eventType) {
-            this.eventType = eventType;
-        }
-
-        /**
-         * @param eventType The event type: CONNECT, MESSAGE, or DISCONNECT. (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withEventType(String eventType) {
-            this.setEventType(eventType);
-            return this;
-        }
-
-        /**
-         * @return Message direction IN, OUT. (Websocket API Gateway)
-         */
-        public String getMessageDirection() {
-            return messageDirection;
-        }
-
-        /**
-         * @param messageDirection Message direction IN, OUT. (Websocket API Gateway)
-         */
-        public void setMessageDirection(String messageDirection) {
-            this.messageDirection = messageDirection;
-        }
-
-        /**
-         * @param messageDirection Message direction IN, OUT. (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withMessageDirection(String messageDirection) {
-            this.setMessageDirection(messageDirection);
-            return this;
-        }
-
-        /**
-         * @return The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
-         */
-        public Long getConnectedAt() {
-            return connectedAt;
-        }
-
-        /**
-         * @param connectedAt The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
-         */
-        public void setConnectedAt(Long connectedAt) {
-            this.connectedAt = connectedAt;
-        }
-
-        /**
-         * @param connectedAt The Epoch-formatted Websocket connection time in millis. (Websocket API Gateway)
-         * @return ProxyRequestContext object
-         */
-        public ProxyRequestContext withConnectedAt(Long connectedAt) {
-            this.setConnectedAt(connectedAt);
             return this;
         }
 
@@ -588,6 +458,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("resourcePath: ").append(getResourcePath()).append(",");
             if (getHttpMethod() != null)
                 sb.append("httpMethod: ").append(getHttpMethod()).append(",");
+            if (getApiId() != null)
+                sb.append("apiId: ").append(getApiId());
             if (getPath() != null)
                 sb.append("path: ").append(getPath()).append(",");
             if (getAuthorizer() != null)
@@ -600,22 +472,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("protocol: ").append(getProtocol()).append(",");
             if (getRequestTimeEpoch() != null)
                 sb.append("requestTimeEpoch: ").append(getRequestTimeEpoch()).append(",");
+            if (getDomainPrefix() != null)
+                sb.append("domainPrefix: ").append(getDomainPrefix()).append(",");
             if (getDomainName() != null)
-                sb.append("domainName: ").append(getDomainName()).append(",");
-            if (getConnectionId() != null)
-                sb.append("connectionId: ").append(getConnectionId()).append(",");
-            if (getRouteKey() != null)
-                sb.append("routeKey: ").append(getRouteKey()).append(",");
-            if (getMessageId() != null)
-                sb.append("messageId: ").append(getMessageId()).append(",");
-            if (getEventType() != null)
-                sb.append("eventType: ").append(getEventType()).append(",");
-            if (getMessageDirection() != null)
-                sb.append("messageDirection: ").append(getMessageDirection()).append(",");
-            if (getConnectedAt() != null)
-                sb.append("connectedAt: ").append(getConnectedAt()).append(",");
-            if (getApiId() != null)
-                sb.append("apiId: ").append(getApiId());
+                sb.append("domainName: ").append(getDomainName());
             sb.append("}");
             return sb.toString();
         }
@@ -690,30 +550,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getProtocol() != null && other.getProtocol().equals(this.getProtocol()) == false)
                 return false;
-            if (other.getConnectionId() == null ^ this.getConnectionId() == null)
-                return false;
-            if (other.getConnectionId() != null && other.getConnectionId().equals(this.getConnectionId()) == false)
-                return false;
-            if (other.getRouteKey() == null ^ this.getRouteKey() == null)
-                return false;
-            if (other.getRouteKey() != null && other.getRouteKey().equals(this.getRouteKey()) == false)
-                return false;
-            if (other.getMessageId() == null ^ this.getMessageId() == null)
-                return false;
-            if (other.getMessageId() != null && other.getMessageId().equals(this.getMessageId()) == false)
-                return false;
-            if (other.getEventType() == null ^ this.getEventType() == null)
-                return false;
-            if (other.getEventType() != null && other.getEventType().equals(this.getEventType()) == false)
-                return false;
-            if (other.getMessageDirection() == null ^ this.getMessageDirection() == null)
-                return false;
-            if (other.getMessageDirection() != null && other.getMessageDirection().equals(this.getMessageDirection()) == false)
-                return false;
-            if (other.getConnectedAt() == null ^ this.getConnectedAt() == null)
-                return false;
-            if (other.getConnectedAt() != null && other.getConnectedAt().equals(this.getConnectedAt()) == false)
-                return false;
             return true;
         }
 
@@ -737,12 +573,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getRequestTimeEpoch() == null) ? 0 : getRequestTimeEpoch().hashCode());
             hashCode = prime * hashCode + ((getDomainName() == null) ? 0 : getDomainName().hashCode());
             hashCode = prime * hashCode + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
-            hashCode = prime * hashCode + ((getConnectionId() == null) ? 0 : getConnectionId().hashCode());
-            hashCode = prime * hashCode + ((getRouteKey() == null) ? 0 : getRouteKey().hashCode());
-            hashCode = prime * hashCode + ((getMessageId() == null) ? 0 : getMessageId().hashCode());
-            hashCode = prime * hashCode + ((getEventType() == null) ? 0 : getEventType().hashCode());
-            hashCode = prime * hashCode + ((getMessageDirection() == null) ? 0 : getMessageDirection().hashCode());
-            hashCode = prime * hashCode + ((getConnectedAt() == null) ? 0 : getConnectedAt().hashCode());
             return hashCode;
         }
 

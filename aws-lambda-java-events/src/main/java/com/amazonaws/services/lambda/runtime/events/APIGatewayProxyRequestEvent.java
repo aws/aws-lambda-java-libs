@@ -546,6 +546,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getDomainName() != null && other.getDomainName().equals(this.getDomainName()) == false)
                 return false;
+            if (other.getDomainPrefix() == null ^ this.getDomainPrefix() == null)
+                return false;
+            if (other.getDomainPrefix() != null && other.getDomainPrefix().equals(this.getDomainPrefix()) == false)
+                return false;
             if (other.getProtocol() == null ^ this.getProtocol() == null)
                 return false;
             if (other.getProtocol() != null && other.getProtocol().equals(this.getProtocol()) == false)

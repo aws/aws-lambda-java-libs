@@ -214,7 +214,7 @@ public class SQSEvent implements Serializable, Cloneable {
 
         private String md5OfMessageAttributes;
 
-        private String eventSourceArn;
+        private String eventSourceARN;
 
         private String eventSource;
 
@@ -303,14 +303,14 @@ public class SQSEvent implements Serializable, Cloneable {
          * Gets the Event Source ARN
          * @return eventSourceArn
          */
-        public String getEventSourceArn() { return eventSourceArn; }
+        public String getEventSourceARN() { return eventSourceARN; }
 
         /**
          * Sets the Event Source ARN  
-         * @param eventSourceArn
+         * @param eventSourceARN
          **/
-        public void setEventSourceArn(String eventSourceArn) {
-            this.eventSourceArn = eventSourceArn;
+        public void setEventSourceARN(String eventSourceARN) {
+            this.eventSourceARN = eventSourceARN;
         }
 
         /**
@@ -386,8 +386,8 @@ public class SQSEvent implements Serializable, Cloneable {
                 sb.append("messageId: ").append(getMessageId()).append(",");
             if (getReceiptHandle() != null)
                 sb.append("receiptHandle: ").append(getReceiptHandle()).append(",");
-            if (getEventSourceArn() != null)
-                sb.append("eventSourceARN: ").append(getEventSourceArn()).append(",");
+            if (getEventSourceARN() != null)
+                sb.append("eventSourceARN: ").append(getEventSourceARN()).append(",");
             if (getEventSource() != null)
                 sb.append("eventSource: ").append(getEventSource()).append(",");
             if (getAwsRegion() != null)
@@ -423,9 +423,9 @@ public class SQSEvent implements Serializable, Cloneable {
                 return false;
             if (other.getReceiptHandle() != null && other.getReceiptHandle().equals(this.getReceiptHandle()) == false)
                 return false;
-            if (other.getEventSourceArn() == null ^ this.getEventSourceArn() == null)
+            if (other.getEventSourceARN() == null ^ this.getEventSourceARN() == null)
                 return false;
-            if (other.getEventSourceArn() != null && other.getEventSourceArn().equals(this.getEventSourceArn()) == false)
+            if (other.getEventSourceARN() != null && other.getEventSourceARN().equals(this.getEventSourceARN()) == false)
                 return false;
             if (other.getEventSource() == null ^ this.getEventSource() == null)
                 return false;
@@ -468,7 +468,7 @@ public class SQSEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getMessageAttributes() == null) ? 0 : getMessageAttributes().hashCode());
             hashCode = prime * hashCode + ((getMessageId() == null) ? 0 : getMessageId().hashCode());
             hashCode = prime * hashCode + ((getReceiptHandle() == null) ? 0 : getReceiptHandle().hashCode());
-            hashCode = prime * hashCode + ((getEventSourceArn() == null) ? 0 : getEventSourceArn().hashCode());
+            hashCode = prime * hashCode + ((getEventSourceARN() == null) ? 0 : getEventSourceARN().hashCode());
             hashCode = prime * hashCode + ((getEventSource() == null) ? 0 : getEventSource().hashCode());
             hashCode = prime * hashCode + ((getAwsRegion() == null) ? 0 : getAwsRegion().hashCode());
             hashCode = prime * hashCode + ((getBody() == null) ? 0 : getBody().hashCode());

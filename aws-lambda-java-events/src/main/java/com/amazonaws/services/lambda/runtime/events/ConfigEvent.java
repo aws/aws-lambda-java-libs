@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2012-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -71,7 +71,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setVersion(version);
         return this;
     }
-    
+
     /**
      * Gets the JSON-encoded notification published by AWS Config.
      * 
@@ -96,7 +96,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setInvokingEvent(invokingEvent);
         return this;
     }
-    
+
     /**
      * Gets the JSON-encoded map containing the AWS Config rule parameters.
      * 
@@ -121,7 +121,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setRuleParameters(ruleParameters);
         return this;
     }
-    
+
     /**
      * Gets the token associated with the invocation of the AWS Config rule's Lambda function.
      * 
@@ -146,7 +146,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setResultToken(resultToken);
         return this;
     }
-    
+
     /**
      * Gets the ARN of the AWS Config rule that triggered the event.
      * 
@@ -171,7 +171,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setConfigRuleArn(configRuleArn);
         return this;
     }
-    
+
     /**
      * Gets the ID of the AWS Config rule that triggered the event.
      * 
@@ -196,7 +196,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setConfigRuleId(configRuleId);
         return this;
     }
-    
+
     /**
      * Gets the name of the AWS Config rule that triggered the event.
      * 
@@ -221,7 +221,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setConfigRuleName(configRuleName);
         return this;
     }
-    
+
     /**
      * Gets the account ID of the AWS Config rule that triggered the event.
      * 
@@ -246,7 +246,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setAccountId(accountId);
         return this;
     }
-    
+
     /**
      * Gets the ARN of the IAM role that is assigned to AWS Config.
      * 
@@ -271,7 +271,7 @@ public class ConfigEvent implements Serializable, Cloneable {
         setExecutionRoleArn(executionRoleArn);
         return this;
     }
-    
+
     /**
      * Whether the AWS resource to be evaluated has been removed from the AWS Config rule's scope.
      * 

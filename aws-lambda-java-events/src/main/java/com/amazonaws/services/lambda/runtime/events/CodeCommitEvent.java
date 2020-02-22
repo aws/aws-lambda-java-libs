@@ -1,8 +1,19 @@
+/*
+ * Copyright 2012-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 package com.amazonaws.services.lambda.runtime.events;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -270,7 +281,7 @@ public class CodeCommitEvent implements Serializable, Cloneable {
 
         private String eventVersion;
 
-        private DateTime eventTime;
+        private ZonedDateTime eventTime;
 
         private String eventTriggerName;
 
@@ -348,14 +359,14 @@ public class CodeCommitEvent implements Serializable, Cloneable {
         /**
          * @return event timestamp
          */
-        public DateTime getEventTime() {
+        public ZonedDateTime getEventTime() {
             return this.eventTime;
         }
 
         /**
          * @param eventTime event timestamp
          */
-        public void setEventTime(DateTime eventTime) {
+        public void setEventTime(ZonedDateTime eventTime) {
             this.eventTime = eventTime;
         }
 
@@ -363,7 +374,7 @@ public class CodeCommitEvent implements Serializable, Cloneable {
          * @param eventTime event timestamp
          * @return Record
          */
-        public Record withEventTime(DateTime eventTime) {
+        public Record withEventTime(ZonedDateTime eventTime) {
             setEventTime(eventTime);
             return this;
         }

@@ -62,6 +62,33 @@ If using maven shade plugin, set the plugin configuration as follows
 </plugins>
 ```
 
+If you are using the [John Rengelman](https://github.com/johnrengelman/shadow) Gradle shadow plugin, then the plugin configuration is as follows:
+
+```groovy
+ 
+dependencies{
+  ...
+    implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.1.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j18-impl', version: log4jVersion
+}
+
+jar {
+    enabled = false
+}
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+
+build.dependsOn(shadowJar)
+
+```
+ 
+If you are using the `sam build` and `sam deploy` commands to deploy your lambda function, then you don't 
+need to use the shadow jar plugin. The `sam` cli-tool merges itself the `Log4j2Plugins.dat`
+files.
+
 ### 2. Configure log4j2 using log4j2.xml file
 
 Add the following file `<project-dir>/src/main/resources/log4j2.xml`

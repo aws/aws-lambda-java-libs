@@ -43,12 +43,12 @@ so the dependencies section in the pom.xml file would like this
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.1</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.7</version>
+        <version>2.2.8</version>
     </dependency>
     ...
 </dependencies>
@@ -64,12 +64,12 @@ For the S3 event the pom would look like this:
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.1</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.7</version>
+        <version>2.2.8</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
@@ -90,12 +90,12 @@ For the Kinesis event
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.1</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.7</version>
+        <version>2.2.8</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
@@ -116,12 +116,12 @@ For the Dynamodb event
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.1</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.7</version>
+        <version>2.2.8</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>

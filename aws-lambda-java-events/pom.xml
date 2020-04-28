@@ -5,7 +5,7 @@
 
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>2.2.7</version>
+  <version>2.2.8</version>
   <packaging>jar</packaging>
 
   <name>AWS Lambda Java Events Library</name>
@@ -30,6 +30,11 @@
       <organizationUrl>https://aws.amazon.com/</organizationUrl>
     </developer>
   </developers>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
 
   <distributionManagement>
     <repository>

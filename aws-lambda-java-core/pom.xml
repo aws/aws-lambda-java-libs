@@ -5,7 +5,7 @@
   
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <packaging>jar</packaging>
   
   <name>AWS Lambda Java Core Library</name>
@@ -30,6 +30,11 @@
       <organizationUrl>https://aws.amazon.com/</organizationUrl>
     </developer>
   </developers>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
 
   <distributionManagement>
     <repository>

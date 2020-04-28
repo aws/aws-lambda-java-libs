@@ -1,3 +1,21 @@
+### Upcoming
+`3.0.0`:
+- Removed AWS SDK v1 dependencies ([#74](https://github.com/aws/aws-lambda-java-libs/issues/74))
+  - Copied relevant S3, Kinesis and DynamoDB model classes under namespace `com.amazonaws.services.lambda.runtime.events.models`
+  - S3:
+    - `S3EventNotification`
+  - Kinesis:
+    - `EncryptionType`
+    - `Record`
+  - DynamoDB:
+    - `AttributeValue`
+    - `Identity`
+    - `OperationType`
+    - `Record`
+    - `StreamRecord`
+    - `StreamViewType`
+- Added field `operationName` to `APIGatewayProxyRequestEvent` ([#126](https://github.com/aws/aws-lambda-java-libs/pull/126))
+    
 ### Apr 28, 2020
 `2.2.8`:
 - Added missing XML namespace declarations to `pom.xml` file ([#97](https://github.com/aws/aws-lambda-java-libs/issues/97))

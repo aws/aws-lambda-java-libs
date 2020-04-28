@@ -1,9 +1,10 @@
 # AWS Lambda Java Support Libraries
 Interface definitions for Java code running on the AWS Lambda platform.
 
-For issues and questions, you can start with our [FAQ](https://aws.amazon.com/lambda/faqs/) and the [AWS forums](https://forums.aws.amazon.com/forum.jspa?forumID=186)
+For issues and questions, you can start with our [FAQ](https://aws.amazon.com/lambda/faqs/)
+ and the [AWS forums](https://forums.aws.amazon.com/forum.jspa?forumID=186)
 
-To get started writing AWS Lambda functions in Java, check out the [official documentation] (http://docs.aws.amazon.com/lambda/latest/dg/java-gs.html).
+To get started writing AWS Lambda functions in Java, check out the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-gs.html).
 
 # Disclaimer of use
 
@@ -11,12 +12,13 @@ Each of the supplied packages should be used without modification. Removing
 dependencies, adding conflicting dependencies, or selectively including classes
 from the packages can result in unexpected behavior.
 
-# Recent Updates!
+# Release Notes
 
-* ### [SQS Support](https://github.com/aws/aws-lambda-java-libs/commit/9a74fdc9d92b5d7f73ae05660090e65cbd098360)
-* ### [Kinesis Analytics Support](https://github.com/aws/aws-lambda-java-libs/commit/943352c7f0256afe82773e664e887e1593303508)
-* ### [2017 Java Events Update](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events)
-* ### [Log4j2 Support](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-log4j2)
+Check out the per-module release notes:
+- [aws-lambda-java-core](aws-lambda-java-core/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-events](aws-lambda-java-events/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-log4j](aws-lambda-java-log4j/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
 
 # Where to get packages
 ___
@@ -75,19 +77,20 @@ ___
 
 # Using aws-lambda-java-core
 
-This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/latest/dg/java-context-object.html)
-object as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler-using-predefined-interfaces.html) that Lambda accepts.
+This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/latest/dg/java-context-object.html) object
+ as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler-using-predefined-interfaces.html) that Lambda accepts.
 
 # Using aws-lambda-java-events
 
-This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts. See the [documentation](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events) for more information.
+This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts. 
+See the [documentation](aws-lambda-java-events/README.md) for more information.
 
 # Using aws-lambda-java-log4j2
 
-This package defines the Lambda adapter to use with log4j version 2. See
-[documentation](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-log4j2) for how to use the adapter.
+This package defines the Lambda adapter to use with log4j version 2. 
+See the [documentation](aws-lambda-java-log4j2/README.md) for information on how to use the adapter.
 
 # Using aws-lambda-java-log4j (Not recommended)
 
-This package defines the Lambda adapter to use with log4j version 1. See
-the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for how to use this adapter.
+This package defines the Lambda adapter to use with log4j version 1. 
+See the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use this adapter.

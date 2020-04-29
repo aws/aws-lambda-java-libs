@@ -17,6 +17,7 @@ from the packages can result in unexpected behavior.
 Check out the per-module release notes:
 - [aws-lambda-java-core](aws-lambda-java-core/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-events](aws-lambda-java-events/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-events-sdk-transformer](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-log4j](aws-lambda-java-log4j/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
 
@@ -38,6 +39,11 @@ ___
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
+  <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
+  <version>1.0.0</version>
+</dependency>
+<dependency>
+  <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-log4j</artifactId>
   <version>1.0.1</version>
 </dependency>
@@ -53,6 +59,7 @@ ___
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
 'com.amazonaws:aws-lambda-java-events:2.2.8'
+'com.amazonaws:aws-lambda-java-events-sdk-transformer:1.0.0'
 'com.amazonaws:aws-lambda-java-log4j:1.0.1'
 'com.amazonaws:aws-lambda-java-log4j2:1.1.1'
 ```
@@ -62,6 +69,7 @@ ___
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
 [com.amazonaws/aws-lambda-java-events "2.2.8"]
+[com.amazonaws/aws-lambda-java-events-sdk-transformer "1.0.0"]
 [com.amazonaws/aws-lambda-java-log4j "1.0.1"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.1.1"]
 ```
@@ -71,6 +79,7 @@ ___
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
 "com.amazonaws" % "aws-lambda-java-events" % "2.2.8"
+"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "1.0.0"
 "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.1"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.1.1"
 ```
@@ -84,6 +93,12 @@ This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/late
 
 This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts. 
 See the [documentation](aws-lambda-java-events/README.md) for more information.
+
+# Using aws-lambda-java-events-sdk-transformer
+
+This package provides helper classes/methods to use alongside `aws-lambda-java-events` in order to transform
+ Lambda input event model objects into SDK-compatible output model objects.  
+See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for more information.
 
 # Using aws-lambda-java-log4j2
 

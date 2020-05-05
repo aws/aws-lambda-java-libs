@@ -1,3 +1,7 @@
+### May 05, 2020
+`1.2.0`:
+- Updated `log4j-core` and `log4j-api` dependencies to `2.13.2`
+
 ### Apr 28, 2020
 `1.1.1`:
 - Added missing XML namespace declarations to `pom.xml` file ([#97](https://github.com/aws/aws-lambda-java-libs/issues/97))

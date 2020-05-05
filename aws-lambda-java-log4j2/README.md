@@ -71,7 +71,6 @@ dependencies{
     implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.1.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j18-impl', version: log4jVersion
 }
 
 jar {

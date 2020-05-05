@@ -5,12 +5,12 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
-    <name>AWS Lambda Java Log4j 2.8 Libraries</name>
+    <name>AWS Lambda Java Log4j 2.x Libraries</name>
     <description>
-        Support for using log4j 2.8 with AWS Lambda.
+        Support for using Log4j 2.x with AWS Lambda.
     </description>
     <url>https://aws.amazon.com/lambda/</url>
     <licenses>
@@ -34,6 +34,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <log4j.version>2.13.2</log4j.version>
     </properties>
 
     <distributionManagement>
@@ -52,12 +53,12 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.8.2</version>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.8.2</version>
+            <version>${log4j.version}</version>
         </dependency>
     </dependencies>
 

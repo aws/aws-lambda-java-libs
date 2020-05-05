@@ -24,6 +24,8 @@ jobs:
       run: mvn -B package --file aws-lambda-java-core/pom.xml
     - name: Build events with Maven
       run: mvn -B package --file aws-lambda-java-events/pom.xml
+    - name: Build events-sdk-transformer with Maven
+      run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
     - name: Build log4j with Maven
       run: mvn -B package --file aws-lambda-java-log4j/pom.xml
     - name: Build log4j2 with Maven

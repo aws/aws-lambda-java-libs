@@ -1,0 +1,13 @@
+package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
+
+import software.amazon.awssdk.services.dynamodb.model.Identity;
+
+public class DynamodbIdentityTransformer {
+
+    public static Identity toIdentityV2(final com.amazonaws.services.dynamodbv2.model.Identity identity) {
+        return Identity.builder()
+                .principalId(identity.getPrincipalId())
+                .type(identity.getType())
+                .build();
+    }
+}

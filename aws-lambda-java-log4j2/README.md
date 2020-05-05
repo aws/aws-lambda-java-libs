@@ -10,17 +10,17 @@ Example for Maven pom.xml
   <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
   </dependency>
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.8.2</version>
+    <version>2.13.2</version>
   </dependency>
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-api</artifactId>
-    <version>2.8.2</version>
+    <version>2.13.2</version>
   </dependency>
   ....
 </dependencies>

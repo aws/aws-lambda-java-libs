@@ -50,6 +50,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private String requestId;
 
+        private String operationName;
+
         private RequestIdentity identity;
 
         private String resourcePath;
@@ -283,6 +285,25 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return The name of the operation being performed
+         * */
+        public String getOperationName() {
+            return operationName;
+        }
+
+        /**
+         * @param operationName The name of the operation being performed
+         * */
+        public void setOperationName(String operationName) {
+            this.operationName = operationName;
+        }
+
+        public ProxyRequestContext withOperationName(String operationName) {
+            this.setOperationName(operationName);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -313,6 +334,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("path: ").append(getPath()).append(",");
             if (getAuthorizer() != null)
                 sb.append("authorizer: ").append(getAuthorizer().toString());
+            if (getOperationName() != null)
+                sb.append("operationName: ").append(getOperationName().toString());
             sb.append("}");
             return sb.toString();
         }
@@ -367,6 +390,10 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getAuthorizer() != null && !other.getAuthorizer().equals(this.getAuthorizer()))
                 return false;
+            if (other.getOperationName() == null ^ this.getOperationName() == null)
+                return false;
+            if (other.getOperationName() != null && !other.getOperationName().equals(this.getOperationName()))
+                return false;
             return true;
         }
 
@@ -385,6 +412,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
             hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
+            hashCode = prime * hashCode + ((getOperationName() == null) ? 0: getOperationName().hashCode());
             return hashCode;
         }
 
@@ -396,7 +424,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
             }
         }
-
     }
 
     public static class RequestIdentity implements Serializable, Cloneable {
@@ -958,7 +985,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         this.setMultiValueHeaders(multiValueHeaders);
         return this;
     }
-    
+
     /**
      * @return The query string parameters that were part of the request
      */
@@ -1135,7 +1162,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         this.setIsBase64Encoded(isBase64Encoded);
         return this;
     }
-    
+
     /**
      * Returns a string representation of this object; useful for testing and debugging.
      *

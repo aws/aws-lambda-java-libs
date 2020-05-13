@@ -14,7 +14,6 @@
     - `Record`
     - `StreamRecord`
     - `StreamViewType`
-- Added field `operationName` to `APIGatewayProxyRequestEvent` ([#126](https://github.com/aws/aws-lambda-java-libs/pull/126))
     
 ### Apr 28, 2020
 `2.2.8`:

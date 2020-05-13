@@ -14,7 +14,11 @@
     - `Record`
     - `StreamRecord`
     - `StreamViewType`
-    
+
+### May 13, 2020
+`2.2.9`:
+- Added field `operationName` to `APIGatewayProxyRequestEvent` ([#126](https://github.com/aws/aws-lambda-java-libs/pull/126))
+
 ### Apr 28, 2020
 `2.2.8`:
 - Added missing XML namespace declarations to `pom.xml` file ([#97](https://github.com/aws/aws-lambda-java-libs/issues/97))

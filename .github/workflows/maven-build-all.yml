@@ -19,11 +19,14 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-
+    
+    # Install base modules
     - name: Build core with Maven
-      run: mvn -B package --file aws-lambda-java-core/pom.xml
+      run: mvn -B install --file aws-lambda-java-core/pom.xml
     - name: Build events with Maven
-      run: mvn -B package --file aws-lambda-java-events/pom.xml
+      run: mvn -B install --file aws-lambda-java-events/pom.xml
+
+    # Package modules that depend on base modules
     - name: Build events-sdk-transformer with Maven
       run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
     - name: Build log4j with Maven

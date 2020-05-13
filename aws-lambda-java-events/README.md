@@ -30,21 +30,23 @@
 
 ### Getting Started
 
-Add the following dependencies to your Java project's dependency management tool
-
 [Maven](https://maven.apache.org)
 
 ```xml
-<dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.2.1</version>
-</dependency>
-<dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-events</artifactId>
-  <version>3.0.0</version>
-</dependency>
+<dependencies>
+    ...
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-core</artifactId>
+        <version>1.2.1</version>
+    </dependency>
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-events</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+    ...
+</dependencies>
 ```
 
 [Gradle](https://gradle.org)

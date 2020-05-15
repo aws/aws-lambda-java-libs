@@ -1,41 +1,37 @@
-# AWS Lambda Java Events v2.0
+# AWS Lambda Java Events v3.0
 
-### New Event Models Supported
-* APIGatewayProxyRequestEvent
-* APIGatewayProxyResponseEvent
-* APIGatewayV2ProxyRequestEvent
-* APIGatewayV2ProxyResponseEvent
-* CloudFrontEvent
-* CloudWatchLogsEvent
-* CodeCommitEvent
-* IoTButtonEvent
-* KinesisFirehoseEvent
-* LexEvent
-* ScheduledEvent
+### Event Models Supported
+* `APIGatewayProxyRequestEvent`
+* `APIGatewayProxyResponseEvent`
+* `APIGatewayV2ProxyRequestEvent`
+* `APIGatewayV2ProxyResponseEvent`
+* `CloudFrontEvent`
+* `CloudWatchLogsEvent`
+* `CodeCommitEvent`
+* `CognitoEvent`
+* `ConfigEvent`
+* `DynamodbEvent`
+* `IoTButtonEvent`
+* `KinesisAnalyticsFirehoseInputPreprocessingEvent`
+* `KinesisAnalyticsInputPreprocessingResponse`
+* `KinesisAnalyticsOutputDeliveryEvent`
+* `KinesisAnalyticsOutputDeliveryResponse`
+* `KinesisAnalyticsStreamsInputPreprocessingEvent`
+* `KinesisEvent`
+* `KinesisFirehoseEvent`
+* `LexEvent`
+* `S3Event`
+* `ScheduledEvent`
+* `SecretsManagerRotationEvent`
+* `SNSEvent`
+* `SQSEvent`
 
-### New package inclusion model
-The old package inclusion model required users to pull unused dependencies into
-their package. We have removed this inclusion so that users' jars will be
-smaller, which will results in reduced latency times. Customers using older
-versions do not need to make any changes to their existing code.
+*As of version `3.0.0`, users are no longer required to pull in SDK dependencies in order to use this library.*
 
-The following event models do not require any SDK dependencies
-* APIGatewayProxyRequestEvent
-* APIGatewayProxyResponseEvent
-* APIGatewayV2ProxyRequestEvent
-* APIGatewayV2ProxyResponseEvent
-* CloudFrontEvent
-* CloudWatchLogsEvent
-* CodeCommitEvent
-* CognitoEvent
-* ConfigEvent
-* IoTButtonEvent
-* KinesisFirehoseEvent
-* LexEvent
-* ScheduledEvent
-* SNSEvent
 
-so the dependencies section in the pom.xml file would like this
+### Getting Started
+
+[Maven](https://maven.apache.org)
 
 ```xml
 <dependencies>
@@ -48,86 +44,29 @@ so the dependencies section in the pom.xml file would like this
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.9</version>
+        <version>3.0.0</version>
     </dependency>
     ...
 </dependencies>
 ```
 
-#### S3 Event
+[Gradle](https://gradle.org)
 
-For the S3 event the pom would look like this:
-
-```xml
-<dependencies>
-    ...
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.2.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.9</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-s3</artifactId>
-        <version>1.11.163</version>
-    </dependency>
-    ...
-</dependencies>
+```groovy
+'com.amazonaws:aws-lambda-java-core:1.2.1'
+'com.amazonaws:aws-lambda-java-events:3.0.0'
 ```
 
-#### Kinesis Event
+[Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
-For the Kinesis event
-
-```xml
-<dependencies>
-    ....
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.2.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.9</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-kinesis</artifactId>
-        <version>1.11.163</version>
-    </dependency>
-    ...
-</dependencies>
+```clojure
+[com.amazonaws/aws-lambda-java-core "1.2.1"]
+[com.amazonaws/aws-lambda-java-events "3.0.0"]
 ```
 
-#### Dynamodb Event
+[sbt](http://www.scala-sbt.org)
 
-For the Dynamodb event
-
-```xml
-<dependencies>
-    ...
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.2.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.9</version>
-    </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-dynamodb</artifactId>
-        <version>1.11.163</version>
-    </dependency>
-    ...
-</dependencies>
+```scala
+"com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
+"com.amazonaws" % "aws-lambda-java-events" % "3.0.0"
 ```

@@ -1,4 +1,4 @@
-### Upcoming
+### May 18, 2020
 `3.0.0`:
 - Removed AWS SDK v1 dependencies ([#74](https://github.com/aws/aws-lambda-java-libs/issues/74))
   - Copied relevant S3, Kinesis and DynamoDB model classes under namespace `com.amazonaws.services.lambda.runtime.events.models`

@@ -33,7 +33,7 @@ To use this library as a transformer to the AWS DynamoDB Java SDK v2, also add t
     <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>dynamodb</artifactId>
-        <version>2.11.12</version>
+        <version>2.13.18</version>
     </dependency>
 </dependencies>
 ```

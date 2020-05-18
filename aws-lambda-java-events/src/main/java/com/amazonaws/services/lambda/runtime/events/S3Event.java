@@ -1,8 +1,18 @@
-/* Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
-
+/*
+ * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.s3.event.S3EventNotification;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +38,7 @@ public class S3Event extends S3EventNotification implements Serializable, Clonea
      * Create a new instance of S3Event
      * @param records A list of S3 event notification records
      */
-    public S3Event(List<S3EventNotification.S3EventNotificationRecord> records) {
+    public S3Event(List<S3EventNotificationRecord> records) {
         super(records);
     }
 

@@ -16,17 +16,17 @@ Add the following Apache Maven dependencies to your `pom.xml` file:
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>2.2.9</version>
+        <version>3.0.0</version>
     </dependency>
 </dependencies>
 ```
 
-To use this library as a transformer to the AWS DynamoDB Java SDK v2, also add the following dependencies to your `pom.xml` file:
+To use this library as a transformer to the AWS DynamoDB Java SDK v2, also add the following dependency to your `pom.xml` file:
 
 ```xml
 <dependencies>
@@ -35,14 +35,8 @@ To use this library as a transformer to the AWS DynamoDB Java SDK v2, also add t
         <artifactId>dynamodb</artifactId>
         <version>2.11.12</version>
     </dependency>
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-dynamodb</artifactId>
-        <version>1.11.163</version>
-    </dependency>
 </dependencies>
 ```
-*Note that because `aws-lambda-java-events` version 2 requires the DynamoDB v1 SDK, this is also required for this library.*
 
 
 ### Example Usage

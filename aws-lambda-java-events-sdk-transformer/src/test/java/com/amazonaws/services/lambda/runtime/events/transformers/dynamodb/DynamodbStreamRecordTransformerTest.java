@@ -1,7 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.StreamViewType;
+import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
+import com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamViewType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.dynamodb.model.StreamRecord;
@@ -37,62 +37,63 @@ class DynamodbStreamRecordTransformerTest {
     private static final Date approximateCreationDateTime = new Date();
 
     //region StreamRecord_event
-    public static final com.amazonaws.services.dynamodbv2.model.StreamRecord streamRecord_event = new com.amazonaws.services.dynamodbv2.model.StreamRecord()
-            .withKeys(ImmutableMap.<String, AttributeValue> builder()
-                    .put(keyNK, attributeValueN_event)
-                    .put(keyNSK, attributeValueNS_event)
-                    .put(keySK, attributeValueS_event)
-                    .put(keySSK, attributeValueSS_event)
-                    .put(keyBK, attributeValueB_event)
-                    .put(keyBSK, attributeValueBS_event)
-                    .put(keyBOOLK, attributeValueBOOL_event)
-                    .put(keyNULK, attributeValueNUL_event)
-                    .put(keyMK, attributeValueM_event)
-                    .put(keyLK, attributeValueL_event)
-                    .build()
-            )
-            .withOldImage(ImmutableMap.of(
-                    oldImageSK, attributeValueS_event,
-                    keyNK, attributeValueN_event
-            ))
-            .withNewImage(ImmutableMap.of(
-                    newImageSK, attributeValueS_event,
-                    keyNK, attributeValueN_event
-            ))
-            .withStreamViewType(StreamViewType.fromValue(streamViewType))
-            .withSequenceNumber(sequenceNumber)
-            .withSizeBytes(sizeBytes)
-            .withApproximateCreationDateTime(approximateCreationDateTime);
+    public static final com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord streamRecord_event =
+            new com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord()
+                    .withKeys(ImmutableMap.<String, AttributeValue> builder()
+                            .put(keyNK, attributeValueN_event)
+                            .put(keyNSK, attributeValueNS_event)
+                            .put(keySK, attributeValueS_event)
+                            .put(keySSK, attributeValueSS_event)
+                            .put(keyBK, attributeValueB_event)
+                            .put(keyBSK, attributeValueBS_event)
+                            .put(keyBOOLK, attributeValueBOOL_event)
+                            .put(keyNULK, attributeValueNUL_event)
+                            .put(keyMK, attributeValueM_event)
+                            .put(keyLK, attributeValueL_event)
+                            .build()
+                    )
+                    .withOldImage(ImmutableMap.of(
+                            oldImageSK, attributeValueS_event,
+                            keyNK, attributeValueN_event
+                    ))
+                    .withNewImage(ImmutableMap.of(
+                            newImageSK, attributeValueS_event,
+                            keyNK, attributeValueN_event
+                    ))
+                    .withStreamViewType(StreamViewType.fromValue(streamViewType))
+                    .withSequenceNumber(sequenceNumber)
+                    .withSizeBytes(sizeBytes)
+                    .withApproximateCreationDateTime(approximateCreationDateTime);
     //endregion
 
     //region StreamRecord_v2
     public static final StreamRecord streamRecord_v2 = StreamRecord.builder()
-                            .approximateCreationDateTime(approximateCreationDateTime.toInstant())
-                            .keys(ImmutableMap.<String, software.amazon.awssdk.services.dynamodb.model.AttributeValue> builder()
-                                    .put(keyNK, attributeValueN_v2)
-                                    .put(keyNSK, attributeValueNS_v2)
-                                    .put(keySK, attributeValueS_v2)
-                                    .put(keySSK, attributeValueSS_v2)
-                                    .put(keyBK, attributeValueB_v2)
-                                    .put(keyBSK, attributeValueBS_v2)
-                                    .put(keyBOOLK, attributeValueBOOL_v2)
-                                    .put(keyNULK, attributeValueNUL_v2)
-                                    .put(keyMK, attributeValueM_v2)
-                                    .put(keyLK, attributeValueL_v2)
-                                    .build()
-                            )
-                            .oldImage(ImmutableMap.of(
-                                    oldImageSK, attributeValueS_v2,
-                                    keyNK, attributeValueN_v2
-                            ))
-                            .newImage(ImmutableMap.of(
-                                    newImageSK, attributeValueS_v2,
-                                    keyNK, attributeValueN_v2
-                            ))
-                            .sequenceNumber(sequenceNumber)
-                            .sizeBytes(sizeBytes)
-                            .streamViewType(streamViewType)
-                            .build();
+            .approximateCreationDateTime(approximateCreationDateTime.toInstant())
+            .keys(ImmutableMap.<String, software.amazon.awssdk.services.dynamodb.model.AttributeValue> builder()
+                    .put(keyNK, attributeValueN_v2)
+                    .put(keyNSK, attributeValueNS_v2)
+                    .put(keySK, attributeValueS_v2)
+                    .put(keySSK, attributeValueSS_v2)
+                    .put(keyBK, attributeValueB_v2)
+                    .put(keyBSK, attributeValueBS_v2)
+                    .put(keyBOOLK, attributeValueBOOL_v2)
+                    .put(keyNULK, attributeValueNUL_v2)
+                    .put(keyMK, attributeValueM_v2)
+                    .put(keyLK, attributeValueL_v2)
+                    .build()
+            )
+            .oldImage(ImmutableMap.of(
+                    oldImageSK, attributeValueS_v2,
+                    keyNK, attributeValueN_v2
+            ))
+            .newImage(ImmutableMap.of(
+                    newImageSK, attributeValueS_v2,
+                    keyNK, attributeValueN_v2
+            ))
+            .sequenceNumber(sequenceNumber)
+            .sizeBytes(sizeBytes)
+            .streamViewType(streamViewType)
+            .build();
     //endregion
 
     @Test

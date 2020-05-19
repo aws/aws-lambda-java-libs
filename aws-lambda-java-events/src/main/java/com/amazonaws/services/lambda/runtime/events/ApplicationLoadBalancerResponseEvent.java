@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +23,7 @@ public class ApplicationLoadBalancerResponseEvent implements Serializable, Clone
     private String statusDescription;
     private boolean isBase64Encoded;
     private Map<String, String> headers;
+    private Map<String, List<String>> multiValueHeaders;
     private String body;
 
 }

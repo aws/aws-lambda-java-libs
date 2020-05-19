@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable, Clonea
 
     @NoArgsConstructor
     @Data
-    public class Elb implements Serializable, Cloneable {
+    public static class Elb implements Serializable, Cloneable {
 
         private String targetGroupArn;
 
@@ -28,7 +29,7 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable, Clonea
 
     @NoArgsConstructor
     @Data
-    public class RequestContext implements Serializable, Cloneable {
+    public static class RequestContext implements Serializable, Cloneable {
 
         private Elb elb;
 
@@ -39,6 +40,7 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable, Clonea
     private String path;
     private Map<String, String> queryStringParameters;
     private Map<String, String> headers;
+    private Map<String, List<String>> multiValueHeaders;
     private String body;
     private boolean isBase64Encoded;
 

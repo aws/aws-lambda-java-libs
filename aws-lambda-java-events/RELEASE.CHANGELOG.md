@@ -1,3 +1,8 @@
+### Upcoming
+- Added support for Application Load Balancer Target Events ([#131](https://github.com/aws/aws-lambda-java-libs/pull/131))
+  - `ApplicationLoadBalancerRequestEvent`
+  - `ApplicationLoadBalancerResponseEvent`
+
 ### May 18, 2020
 `3.0.0`:
 - Removed AWS SDK v1 dependencies ([#74](https://github.com/aws/aws-lambda-java-libs/issues/74))

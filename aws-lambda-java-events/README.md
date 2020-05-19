@@ -5,6 +5,8 @@
 * `APIGatewayProxyResponseEvent`
 * `APIGatewayV2ProxyRequestEvent`
 * `APIGatewayV2ProxyResponseEvent`
+* `ApplicationLoadBalancerRequestEvent`
+* `ApplicationLoadBalancerResponseEvent`
 * `CloudFrontEvent`
 * `CloudWatchLogsEvent`
 * `CodeCommitEvent`

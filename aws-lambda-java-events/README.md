@@ -3,8 +3,10 @@
 ### Event Models Supported
 * `APIGatewayProxyRequestEvent`
 * `APIGatewayProxyResponseEvent`
-* `APIGatewayV2ProxyRequestEvent`
-* `APIGatewayV2ProxyResponseEvent`
+* `APIGatewayV2HTTPEvent`
+* `APIGatewayV2HTTPResponse`
+* `APIGatewayV2WebSocketEvent`
+* `APIGatewayV2WebSocketResponse`
 * `ApplicationLoadBalancerRequestEvent`
 * `ApplicationLoadBalancerResponseEvent`
 * `CloudFrontEvent`

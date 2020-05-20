@@ -4,7 +4,7 @@ import software.amazon.awssdk.services.dynamodb.model.StreamRecord;
 
 public class DynamodbStreamRecordTransformer {
 
-    public static StreamRecord toStreamRecordV2(final com.amazonaws.services.dynamodbv2.model.StreamRecord streamRecord) {
+    public static StreamRecord toStreamRecordV2(final com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord streamRecord) {
         return StreamRecord.builder()
                 .approximateCreationDateTime(
                         streamRecord.getApproximateCreationDateTime().toInstant()

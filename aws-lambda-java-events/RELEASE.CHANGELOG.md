@@ -5,7 +5,7 @@
 - Added support for API Gateway HTTP API Events ([#123](https://github.com/aws/aws-lambda-java-libs/pull/123))
   - `APIGatewayV2HTTPEvent`
   - `APIGatewayV2HTTPResponse`
-- Aliased the existing APIGatewayV2Proxy classes as APIGatewayV2WebSocketEvent/Response ([#125](https://github.com/aws/aws-lambda-java-libs/pull/125))
+- Aliased the existing APIGatewayV2Proxy classes as `APIGatewayV2WebSocketEvent`/`APIGatewayV2WebSocketResponse` ([#125](https://github.com/aws/aws-lambda-java-libs/pull/125))
 
 ### May 18, 2020
 `3.0.0`:

@@ -10,16 +10,17 @@ class DynamodbIdentityTransformerTest {
     private static final String identityType = "type";
 
     //region Identity_event
-    public static final com.amazonaws.services.dynamodbv2.model.Identity identity_event = new com.amazonaws.services.dynamodbv2.model.Identity()
-                                .withPrincipalId(principalId)
-                                .withType(identityType);
+    public static final com.amazonaws.services.lambda.runtime.events.models.dynamodb.Identity identity_event =
+            new com.amazonaws.services.lambda.runtime.events.models.dynamodb.Identity()
+                    .withPrincipalId(principalId)
+                    .withType(identityType);
     //endregion
 
     //region Identity_v2
     public static final Identity identity_v2 = Identity.builder()
-                            .principalId(principalId)
-                            .type(identityType)
-                            .build();
+            .principalId(principalId)
+            .type(identityType)
+            .build();
     //endregion
 
     @Test

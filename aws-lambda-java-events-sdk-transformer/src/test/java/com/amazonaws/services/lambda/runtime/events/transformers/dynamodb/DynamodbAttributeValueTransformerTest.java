@@ -1,6 +1,6 @@
 package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.SdkBytes;

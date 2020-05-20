@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class DynamodbAttributeValueTransformer {
 
-    public static AttributeValue toAttributeValueV2(final com.amazonaws.services.dynamodbv2.model.AttributeValue value) {
+    public static AttributeValue toAttributeValueV2(final com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue value) {
         if (Objects.nonNull(value.getS())) {
             return AttributeValue.builder()
                     .s(value.getS())
@@ -71,7 +71,7 @@ public class DynamodbAttributeValueTransformer {
     }
 
     static Map<String, AttributeValue> toAttributeValueMapV2(
-            final Map<String, com.amazonaws.services.dynamodbv2.model.AttributeValue> attributeValueMap
+            final Map<String, com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue> attributeValueMap
     ) {
         return attributeValueMap
                 .entrySet()

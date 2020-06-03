@@ -13,9 +13,8 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
 
     private String id;
 
-    private DateTime time;
+    private ZonedDateTime time;
 
     private List<String> resources;
 
@@ -69,7 +68,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setAccount(account);
         return this;
     }
-    
+
     /**
      * @return the aws region
      */
@@ -92,7 +91,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setRegion(region);
         return this;
     }
-    
+
     /**
      * @return The details of the events (usually left blank)
      */
@@ -115,7 +114,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetail(detail);
         return this;
     }
-    
+
     /**
      * @return The details type - see cloud watch events for more info
      */
@@ -138,7 +137,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetailType(detailType);
         return this;
     }
-    
+
     /**
      * @return the soruce of the event
      */
@@ -161,18 +160,18 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setSource(source);
         return this;
     }
-    
+
     /**
      * @return the timestamp for when the event is scheduled
      */
-    public DateTime getTime() {
+    public ZonedDateTime getTime() {
         return this.time;
     }
 
     /**
      * @param time the timestamp for when the event is scheduled
      */
-    public void setTime(DateTime time) {
+    public void setTime(ZonedDateTime time) {
         this.time = time;
     }
 
@@ -180,11 +179,11 @@ public class ScheduledEvent implements Serializable, Cloneable {
      * @param time the timestamp for when the event is scheduled
      * @return ScheduledEvent
      */
-    public ScheduledEvent withTime(DateTime time) {
+    public ScheduledEvent withTime(ZonedDateTime time) {
         setTime(time);
         return this;
     }
-    
+
     /**
      * @return the id of the event
      */
@@ -207,7 +206,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setId(id);
         return this;
     }
-    
+
     /**
      * @return the resources used by event
      */
@@ -331,5 +330,5 @@ public class ScheduledEvent implements Serializable, Cloneable {
             throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
         }
     }
-    
+
 }

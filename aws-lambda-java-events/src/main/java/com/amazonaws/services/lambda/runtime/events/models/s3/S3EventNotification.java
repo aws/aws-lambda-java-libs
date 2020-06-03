@@ -12,10 +12,9 @@
  */
 package com.amazonaws.services.lambda.runtime.events.models.s3;
 
-import org.joda.time.DateTime;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -244,7 +243,7 @@ public class S3EventNotification {
         private final String awsRegion;
         private final String eventName;
         private final String eventSource;
-        private DateTime eventTime;
+        private ZonedDateTime eventTime;
         private final String eventVersion;
         private final RequestParametersEntity requestParameters;
         private final ResponseElementsEntity responseElements;
@@ -261,7 +260,7 @@ public class S3EventNotification {
 
             if (eventTime != null)
             {
-                this.eventTime = DateTime.parse(eventTime);
+                this.eventTime = ZonedDateTime.parse(eventTime);
             }
 
             this.eventVersion = eventVersion;
@@ -283,7 +282,7 @@ public class S3EventNotification {
             return eventSource;
         }
 
-        public DateTime getEventTime() {
+        public ZonedDateTime getEventTime() {
             return eventTime;
         }
 

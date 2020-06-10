@@ -14,6 +14,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Class to represent the events which are sent during a Secrets Manager rotation process.
@@ -23,6 +24,7 @@ import lombok.Data;
  * @author msailes <msailes@amazon.co.uk>
  */
 
+@NoArgsConstructor
 @Data
 public class SecretsManagerRotationEvent {
 

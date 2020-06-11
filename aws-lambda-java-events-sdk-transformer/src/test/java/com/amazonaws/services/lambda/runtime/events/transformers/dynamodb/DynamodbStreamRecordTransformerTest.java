@@ -101,4 +101,24 @@ class DynamodbStreamRecordTransformerTest {
         StreamRecord convertedStreamRecord = DynamodbStreamRecordTransformer.toStreamRecordV2(streamRecord_event);
         Assertions.assertEquals(streamRecord_v2, convertedStreamRecord);
     }
+
+    @Test
+    public void testToStreamRecordV2WhenOldImageIsNull() {
+        com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord streamRecord = streamRecord_event.clone();
+        streamRecord.setOldImage(null);
+
+        Assertions.assertDoesNotThrow(() -> {
+            DynamodbStreamRecordTransformer.toStreamRecordV2(streamRecord);
+        });
+    }
+
+    @Test
+    public void testToStreamRecordV2WhenNewImageIsNull() {
+        com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord streamRecord = streamRecord_event.clone();
+        streamRecord.setNewImage(null);
+
+        Assertions.assertDoesNotThrow(() -> {
+            DynamodbStreamRecordTransformer.toStreamRecordV2(streamRecord);
+        });
+    }
 }

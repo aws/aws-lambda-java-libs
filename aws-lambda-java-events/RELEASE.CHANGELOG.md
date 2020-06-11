@@ -1,3 +1,5 @@
+### Upcoming
+- Added support for SecretsManagerRotation Event
 ### May 20, 2020
 `3.1.0`:
 - Added support for Application Load Balancer Target Events ([#131](https://github.com/aws/aws-lambda-java-libs/pull/131))

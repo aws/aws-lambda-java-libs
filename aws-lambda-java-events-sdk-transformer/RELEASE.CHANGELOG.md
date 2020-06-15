@@ -1,3 +1,7 @@
+### June 15, 2020
+`2.0.1`:
+- Fixed NPE when mapping insert/delete events ([#143](https://github.com/aws/aws-lambda-java-libs/pull/143))
+
 ### May 20, 2020
 `2.0.0`:
 - Updated AWS SDK V2 transformers for `DynamodbEvent` to work with `aws-lambda-java-events` versions `3.0.0` and up

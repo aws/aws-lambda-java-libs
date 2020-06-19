@@ -18,7 +18,6 @@ Check out the per-module release notes:
 - [aws-lambda-java-core](aws-lambda-java-core/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-events](aws-lambda-java-events/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-events-sdk-transformer](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-log4j](aws-lambda-java-log4j/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
 
 # Where to get packages
@@ -44,11 +43,6 @@ ___
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-log4j</artifactId>
-  <version>1.0.1</version>
-</dependency>
-<dependency>
-  <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-log4j2</artifactId>
   <version>1.2.0</version>
 </dependency>
@@ -60,7 +54,6 @@ ___
 'com.amazonaws:aws-lambda-java-core:1.2.1'
 'com.amazonaws:aws-lambda-java-events:3.1.0'
 'com.amazonaws:aws-lambda-java-events-sdk-transformer:2.0.0'
-'com.amazonaws:aws-lambda-java-log4j:1.0.1'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 ```
 
@@ -70,7 +63,6 @@ ___
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
 [com.amazonaws/aws-lambda-java-events "3.1.0"]
 [com.amazonaws/aws-lambda-java-events-sdk-transformer "2.0.0"]
-[com.amazonaws/aws-lambda-java-log4j "1.0.1"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
 ```
 
@@ -80,7 +72,6 @@ ___
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
 "com.amazonaws" % "aws-lambda-java-events" % "3.1.0"
 "com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "2.0.0"
-"com.amazonaws" % "aws-lambda-java-log4j" % "1.0.1"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
 ```
 
@@ -103,9 +94,4 @@ See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for mo
 # Using aws-lambda-java-log4j2
 
 This package defines the Lambda adapter to use with log4j version 2. 
-See the [documentation](aws-lambda-java-log4j2/README.md) for information on how to use the adapter.
-
-# Using aws-lambda-java-log4j (Not recommended)
-
-This package defines the Lambda adapter to use with log4j version 1. 
-See the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use this adapter.
+See the [README](aws-lambda-java-log4j2/README.md) or the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use the adapter.

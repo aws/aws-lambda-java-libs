@@ -44,4 +44,17 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable, Clonea
     private String body;
     private boolean isBase64Encoded;
 
+    /**
+     * @return whether the body String is base64 encoded.
+     */
+    public Boolean getIsBase64Encoded() {
+        return this.isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     */
+    public void setIsBase64Encoded(Boolean isBase64Encoded) {
+        this.isBase64Encoded = isBase64Encoded;
+    }
 }

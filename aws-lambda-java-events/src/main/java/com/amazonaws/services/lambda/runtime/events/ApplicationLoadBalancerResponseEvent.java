@@ -26,4 +26,17 @@ public class ApplicationLoadBalancerResponseEvent implements Serializable, Clone
     private Map<String, List<String>> multiValueHeaders;
     private String body;
 
+    /**
+     * @return whether the body String is base64 encoded.
+     */
+    public Boolean getIsBase64Encoded() {
+        return this.isBase64Encoded;
+    }
+
+    /**
+     * @param isBase64Encoded Whether the body String is base64 encoded
+     */
+    public void setIsBase64Encoded(Boolean isBase64Encoded) {
+        this.isBase64Encoded = isBase64Encoded;
+    }
 }

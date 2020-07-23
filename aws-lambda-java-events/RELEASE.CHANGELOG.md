@@ -1,5 +1,8 @@
 ### Upcoming
-- Added support for SecretsManagerRotation Event ([#130](https://github.com/aws/aws-lambda-java-libs/pull/130))
+- Added support for Secrets Manager Rotation Event ([#130](https://github.com/aws/aws-lambda-java-libs/pull/130))
+- Added support for CloudFormation Custom Resource Event ([#138](https://github.com/aws/aws-lambda-java-libs/pull/138))
+- Added support for Lambda Destination Event ([#139](https://github.com/aws/aws-lambda-java-libs/pull/139))
+- Added support for Amazon Connect Event ([#140](https://github.com/aws/aws-lambda-java-libs/pull/140))
 ### May 20, 2020
 `3.1.0`:
 - Added support for Application Load Balancer Target Events ([#131](https://github.com/aws/aws-lambda-java-libs/pull/131))

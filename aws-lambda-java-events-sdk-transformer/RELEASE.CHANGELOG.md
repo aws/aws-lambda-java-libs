@@ -1,3 +1,7 @@
+### July 31, 2020
+`2.0.2`:
+- Bumped `aws-lambda-java-events` to version `3.1.1`
+
 ### June 15, 2020
 `2.0.1`:
 - Fixed NPE when mapping insert/delete events ([#143](https://github.com/aws/aws-lambda-java-libs/pull/143))

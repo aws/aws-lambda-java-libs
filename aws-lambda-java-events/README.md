@@ -1,4 +1,4 @@
-# AWS Lambda Java Events v3.0
+# AWS Lambda Java Events v3
 
 ### Event Models Supported
 * `APIGatewayProxyRequestEvent`
@@ -16,6 +16,7 @@
 * `ConfigEvent`
 * `DynamodbEvent`
 * `IoTButtonEvent`
+* `KafkaEvent`
 * `KinesisAnalyticsFirehoseInputPreprocessingEvent`
 * `KinesisAnalyticsInputPreprocessingResponse`
 * `KinesisAnalyticsOutputDeliveryEvent`
@@ -47,7 +48,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0</version>
     </dependency>
     ...
 </dependencies>
@@ -57,19 +58,19 @@
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.1.1'
+'com.amazonaws:aws-lambda-java-events:3.2.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.1.1"]
+[com.amazonaws/aws-lambda-java-events "3.2.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.1.1"
+"com.amazonaws" % "aws-lambda-java-events" % "3.2.0"
 ```

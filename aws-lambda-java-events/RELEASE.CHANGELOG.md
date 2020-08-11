@@ -1,3 +1,7 @@
+### August 11, 2020
+`3.2.0`:
+- Added support for Kafka Events ([#154](https://github.com/aws/aws-lambda-java-libs/pull/154))
+
 ### July 31, 2020
 `3.1.1`:
 - Fixed Base64 encoding for ALB and API Gateway HTTP events ([#150](https://github.com/aws/aws-lambda-java-libs/pull/131))

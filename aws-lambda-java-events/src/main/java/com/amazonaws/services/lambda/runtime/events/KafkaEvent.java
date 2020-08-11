@@ -12,44 +12,27 @@
  */
 package com.amazonaws.services.lambda.runtime.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
+@Builder(setterPrefix = "with")
 /** Represents a Kafka Event. **/
 public class KafkaEvent {
     private Map<String, List<KafkaEventRecord>> records;
-    public  String eventSource;
+    private  String eventSource;
     private String eventSourceArn;
-
-    public Map<String, List<KafkaEventRecord>> getRecords() {
-        return records;
-    }
-
-    public KafkaEvent(Map<TopicPartition, List<KafkaEventRecord>> eventRecords) {
-        if (eventRecords == null) {
-            throw new IllegalArgumentException("Records cannot be null");
-        }
-        Map<String, List<KafkaEventRecord>> records = new HashMap<>();
-        for(Map.Entry<KafkaEvent.TopicPartition, List<KafkaEvent.KafkaEventRecord>> entrySet: eventRecords.entrySet()) {
-            records.put(entrySet.getKey().toString(), entrySet.getValue());
-        }
-        this.records = records;
-    }
-
-    public String getEventSource () {
-        return eventSource;
-    }
-
+    
     @Data
     @NoArgsConstructor
-    @EqualsAndHashCode
+    @AllArgsConstructor
+    @Builder(setterPrefix = "with")
     public static class KafkaEventRecord {
         private String topic;
         private int partition;
@@ -62,6 +45,8 @@ public class KafkaEvent {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder(setterPrefix = "with")
     public static class TopicPartition {
         private  String topic;
         private  int partition;
@@ -73,4 +58,3 @@ public class KafkaEvent {
         }
     }
 }
-

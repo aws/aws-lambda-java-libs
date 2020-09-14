@@ -1,4 +1,5 @@
-### Upcoming
+### September 14, 2020
+`3.3.0`:
 - Added support for Secrets Manager Rotation Event ([#130](https://github.com/aws/aws-lambda-java-libs/pull/130))
 - Added support for CloudFormation Custom Resource Event ([#138](https://github.com/aws/aws-lambda-java-libs/pull/138))
 - Added support for Lambda Destination Event ([#139](https://github.com/aws/aws-lambda-java-libs/pull/139))

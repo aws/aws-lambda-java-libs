@@ -1,3 +1,9 @@
+### Upcoming
+- Added support for Secrets Manager Rotation Event ([#130](https://github.com/aws/aws-lambda-java-libs/pull/130))
+- Added support for CloudFormation Custom Resource Event ([#138](https://github.com/aws/aws-lambda-java-libs/pull/138))
+- Added support for Lambda Destination Event ([#139](https://github.com/aws/aws-lambda-java-libs/pull/139))
+- Added support for Amazon Connect Event ([#140](https://github.com/aws/aws-lambda-java-libs/pull/140))
+
 ### August 11, 2020
 `3.2.0`:
 - Added support for Kafka Events ([#154](https://github.com/aws/aws-lambda-java-libs/pull/154))

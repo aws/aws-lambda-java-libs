@@ -27,6 +27,7 @@
 * `LexEvent`
 * `S3Event`
 * `ScheduledEvent`
+* `SecretsManagerRotationEvent`
 * `SNSEvent`
 * `SQSEvent`
 

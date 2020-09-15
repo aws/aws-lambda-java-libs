@@ -9,11 +9,13 @@
 * `APIGatewayV2WebSocketResponse`
 * `ApplicationLoadBalancerRequestEvent`
 * `ApplicationLoadBalancerResponseEvent`
+* `CloudFormationCustomResourceEvent`
 * `CloudFrontEvent`
 * `CloudWatchLogsEvent`
 * `CodeCommitEvent`
 * `CognitoEvent`
 * `ConfigEvent`
+* `ConnectEvent`
 * `DynamodbEvent`
 * `IoTButtonEvent`
 * `KafkaEvent`
@@ -24,6 +26,7 @@
 * `KinesisAnalyticsStreamsInputPreprocessingEvent`
 * `KinesisEvent`
 * `KinesisFirehoseEvent`
+* `LambdaDestinationEvent`
 * `LexEvent`
 * `S3Event`
 * `ScheduledEvent`

@@ -1,0 +1,48 @@
+/*
+ * Copyright 2018-present Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+#define AWS_LAMBDA_RUNTIME_API __attribute__((visibility("default")))
+
+namespace aws {
+namespace lambda_runtime {
+
+/* clang-format off */
+AWS_LAMBDA_RUNTIME_API
+unsigned get_version_major()
+{
+    return @PROJECT_VERSION_MAJOR@; // NOLINT
+}
+
+AWS_LAMBDA_RUNTIME_API
+unsigned get_version_minor()
+{
+    return @PROJECT_VERSION_MINOR@; // NOLINT
+}
+
+AWS_LAMBDA_RUNTIME_API
+unsigned get_version_patch()
+{
+    return @PROJECT_VERSION_PATCH@; // NOLINT
+}
+/* clang-format on */
+
+AWS_LAMBDA_RUNTIME_API
+char const* get_version()
+{
+    return "@PROJECT_VERSION@";
+}
+
+} // namespace lambda_runtime
+} // namespace aws

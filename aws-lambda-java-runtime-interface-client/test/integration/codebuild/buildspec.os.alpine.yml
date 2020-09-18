@@ -1,0 +1,98 @@
+version: 0.2
+
+env:
+  variables:
+    OS_DISTRIBUTION: alpine
+    JAVA_BINARY_LOCATION: "/usr/bin/java"
+batch:
+  build-matrix:
+    static:
+      ignore-failure: false
+      env:
+        type: LINUX_CONTAINER
+        privileged-mode: true
+    dynamic:
+      env:
+        variables:
+          DISTRO_VERSION:
+            - "3.9"
+            - "3.10"
+            - "3.11"
+            - "3.12"
+          RUNTIME_VERSION:
+            - "corretto11"
+phases:
+  pre_build:
+    commands:
+      - (cd aws-lambda-java-serialization && mvn install)
+      - (cd aws-lambda-java-runtime-interface-client && mvn install)
+      - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install)
+      - export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
+      - echo "Extracting and including Runtime Interface Emulator"
+      - SCRATCH_DIR=".scratch"
+      - mkdir "${SCRATCH_DIR}"
+      - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/aws-lambda-rie.tar.gz --directory "${SCRATCH_DIR}"
+      - >
+        cp "aws-lambda-java-runtime-interface-client/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" \
+          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+      - >
+        echo "RUN apk add curl" >> \
+          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+      - >
+        echo "COPY ${SCRATCH_DIR}/aws-lambda-rie /usr/bin/aws-lambda-rie" >> \
+          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+      - echo "Building image ${IMAGE_TAG}"
+      - >
+        docker build . \
+          -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
+          -t "${IMAGE_TAG}" \
+          --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
+          --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
+  build:
+    commands:
+      - set -x
+      - echo "Running Image ${IMAGE_TAG}"
+      - docker network create "${OS_DISTRIBUTION}-network"
+      - >
+        docker run \
+          --detach \
+          -e "JAVA_BINARY_LOCATION=${JAVA_BINARY_LOCATION}" \
+          --name "${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c '/usr/bin/aws-lambda-rie ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App'
+      - sleep 2
+      - >
+        docker run \
+          --name "${OS_DISTRIBUTION}-tester" \
+          --env "TARGET=${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c 'curl -X POST "http://${TARGET}:8080/2015-03-31/functions/function/invocations" -d "{}" --max-time 10'
+      - actual="$(docker logs --tail 1 "${OS_DISTRIBUTION}-tester" | xargs)"
+      - expected='success'
+      - |
+        echo "Response: ${actual}"
+        if [[ "$actual" != "$expected" ]]; then
+          echo "fail! runtime: $RUNTIME - expected output $expected - got $actual"
+          echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
+          echo
+          docker logs "${OS_DISTRIBUTION}-app"
+          echo
+          echo "---------------------------------------------------"
+          echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
+          echo
+          docker logs "${OS_DISTRIBUTION}-tester"
+          echo
+          echo "---------------------------------------------------"
+          exit -1
+        fi
+    finally:
+      - echo "Cleaning up..."
+      - docker stop "${OS_DISTRIBUTION}-app" || true
+      - docker rm --force "${OS_DISTRIBUTION}-app" || true
+      - docker stop "${OS_DISTRIBUTION}-tester" || true
+      - docker rm --force "${OS_DISTRIBUTION}-tester" || true
+      - docker network rm "${OS_DISTRIBUTION}-network" || true

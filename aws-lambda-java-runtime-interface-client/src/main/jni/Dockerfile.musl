@@ -1,0 +1,54 @@
+FROM alpine:3
+RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub
+RUN echo "https://apk.corretto.aws/" >> /etc/apk/repositories
+RUN apk update
+RUN apk add \
+    amazon-corretto-8 \
+    cmake \
+    file \
+    g++ \
+    gcc \
+    make \
+    libexecinfo-dev \
+    perl
+
+ADD ./deps/curl-* /src/deps/curl
+WORKDIR /src/deps/curl
+RUN ./configure \
+        --prefix $(pwd)/../artifacts \
+        --disable-shared \
+        --without-ssl \
+        --without-zlib && \
+    make && \
+    make install
+
+ADD ./deps/aws-lambda-cpp-* /src/deps/aws-lambda-cpp
+RUN mkdir -p /src/deps/aws-lambda-cpp/build
+WORKDIR /src/deps/aws-lambda-cpp/build
+RUN cmake .. \
+        -DCMAKE_CXX_FLAGS="-fPIC -DBACKWARD_SYSTEM_UNKNOWN" \
+        -DCMAKE_CXX_STANDARD=11 \
+        -DCMAKE_INSTALL_PREFIX=$(pwd)/../../artifacts\
+        -DCMAKE_MODULE_PATH=$(pwd)/../../artifacts/lib/pkgconfig && \
+    make && \
+    make install
+
+ADD *.cpp *.h /src/
+WORKDIR /src
+ENV JAVA_HOME=/usr/lib/jvm/java-8-amazon-corretto
+RUN /usr/bin/c++ -c \
+        -std=gnu++11 \
+        -fPIC \
+        -I${JAVA_HOME}/include \
+        -I${JAVA_HOME}/include/linux \
+        -I ./deps/artifacts/include \
+        com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.cpp -o com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o && \
+    /usr/bin/c++ -shared \
+        -std=gnu++11 \
+        -o aws-lambda-runtime-interface-client.so com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o \
+        -L ./deps/artifacts/lib64/ \
+        -L ./deps/artifacts/lib/ \
+        -laws-lambda-runtime \
+        -lcurl \
+        -static-libstdc++ \
+        -static-libgcc

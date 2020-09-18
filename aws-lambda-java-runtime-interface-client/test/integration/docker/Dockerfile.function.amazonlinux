@@ -1,0 +1,11 @@
+ARG DISTRO_VERSION
+
+FROM amazonlinux:${DISTRO_VERSION}
+
+RUN yum install -y java-1.8.0-openjdk
+
+ADD aws-lambda-java-runtime-interface-client/test/integration/test-handler/target/HelloWorld-1.0.jar .
+
+ENTRYPOINT ["java", "-jar", "./HelloWorld-1.0.jar"]
+
+CMD ["helloworld.App"]

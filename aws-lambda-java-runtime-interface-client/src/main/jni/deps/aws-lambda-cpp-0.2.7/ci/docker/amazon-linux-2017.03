@@ -1,0 +1,12 @@
+FROM amazonlinux:2017.03
+
+RUN yum install gcc64-c++ git ninja-build curl-devel openssl-devel zlib-devel gtest-devel python36-pip zip -y
+RUN git clone https://github.com/aws/aws-sdk-cpp.git
+
+RUN curl -fLo cmake-install https://github.com/Kitware/CMake/releases/download/v3.13.0/cmake-3.13.0-Linux-x86_64.sh; \
+sh cmake-install --skip-license --prefix=/usr --exclude-subdirectory;
+
+RUN pip-3.6 install --upgrade pip
+
+RUN git clone https://github.com/aws/aws-sdk-cpp.git
+

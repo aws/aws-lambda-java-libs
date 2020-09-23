@@ -1,3 +1,7 @@
+### September 23, 2020
+`2.0.5`:
+- Bumped `aws-lambda-java-events` to version `3.3.1`
+
 ### September 14, 2020
 `2.0.4`:
 - Bumped `aws-lambda-java-events` to version `3.3.0`

@@ -1,3 +1,7 @@
+### September 23, 2020
+`3.3.1`:
+- Added `multiValueQueryStringParameters` to `ApplicationLoadBalancerRequestEvent` ([#163](https://github.com/aws/aws-lambda-java-libs/pull/163))
+
 ### September 14, 2020
 `3.3.0`:
 - Added support for Secrets Manager Rotation Event ([#130](https://github.com/aws/aws-lambda-java-libs/pull/130))

@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +43,8 @@ public class APIGatewayV2CustomAuthorizerEvent {
     @AllArgsConstructor
     public static class RequestContext {
 
+        private static DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MMM/yyyy:HH:mm:ss Z"); // "28/Sep/2020:15:14:43 +0000"
+
         private String accountId;
         private String apiId;
         private String domainName;
@@ -47,8 +53,16 @@ public class APIGatewayV2CustomAuthorizerEvent {
         private String requestId;
         private String routeKey;
         private String stage;
-        private String time; // "time": "12/Mar/2020:19:03:58 +0000",
-        private int timeEpoch;
+        private String time;
+        private long timeEpoch;
+
+        public Instant getTimeEpoch() {
+            return Instant.ofEpochMilli(timeEpoch);
+        }
+
+        public DateTime getTime() {
+            return fmt.parseDateTime(time);
+        }
     }
 
     @AllArgsConstructor

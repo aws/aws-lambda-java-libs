@@ -43,7 +43,7 @@ public class APIGatewayV2CustomAuthorizerEvent {
     @AllArgsConstructor
     public static class RequestContext {
 
-        private static DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MMM/yyyy:HH:mm:ss Z"); // "28/Sep/2020:15:14:43 +0000"
+        private static DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MMM/yyyy:HH:mm:ss Z");
 
         private String accountId;
         private String apiId;

@@ -61,6 +61,8 @@ public class APIGatewayV2HTTPEvent {
         @NoArgsConstructor
         public static class Authorizer {
             private JWT jwt;
+            private Map<String, Object> lambda;
+            private IAM iam;
 
             @AllArgsConstructor
             @Builder(setterPrefix = "with")
@@ -82,6 +84,30 @@ public class APIGatewayV2HTTPEvent {
             private String protocol;
             private String sourceIp;
             private String userAgent;
+        }
+
+        @AllArgsConstructor
+        @Builder(setterPrefix = "with")
+        @Data
+        @NoArgsConstructor
+        public static class IAM {
+            private String accessKey;
+            private String accountId;
+            private String callerId;
+            private CognitoIdentity cognitoIdentity;
+            private String principalOrgId;
+            private String userArn;
+            private String userId;
+        }
+
+        @AllArgsConstructor
+        @Builder(setterPrefix = "with")
+        @Data
+        @NoArgsConstructor
+        public static class CognitoIdentity {
+            private List<String> amr;
+            private String identityId;
+            private String identityPoolId;
         }
     }
 }

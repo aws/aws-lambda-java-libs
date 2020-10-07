@@ -1,3 +1,11 @@
+### October 07, 2020
+`3.4.0`:
+- Added Lambda and IAM authorizers to `APIGatewayV2HTTPEvent` request context ([#167](https://github.com/aws/aws-lambda-java-libs/pull/167))
+- Added support for API Gateway custom authorizer: ([#166](https://github.com/aws/aws-lambda-java-libs/pull/166))
+  - `APIGatewayCustomAuthorizerEvent`
+  - `APIGatewayV2CustomAuthorizerEvent`
+  - `SimpleIAMPolicyResponse`
+
 ### September 23, 2020
 `3.3.1`:
 - Added `multiValueQueryStringParameters` to `ApplicationLoadBalancerRequestEvent` ([#163](https://github.com/aws/aws-lambda-java-libs/pull/163))

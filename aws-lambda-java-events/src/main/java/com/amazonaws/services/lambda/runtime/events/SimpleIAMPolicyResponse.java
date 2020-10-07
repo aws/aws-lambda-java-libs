@@ -16,7 +16,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleIAMPolicy {
+public class SimpleIAMPolicyResponse {
 
     private boolean isAuthorized;
     private Map<String, String> context;

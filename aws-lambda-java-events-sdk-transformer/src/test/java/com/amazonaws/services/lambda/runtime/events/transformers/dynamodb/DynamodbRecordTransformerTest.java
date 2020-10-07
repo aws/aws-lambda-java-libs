@@ -50,4 +50,14 @@ public class DynamodbRecordTransformerTest {
         Assertions.assertEquals(record_v2, convertedRecord);
     }
 
+    @Test
+    public void testToRecordV2WhenUserIdentityIsNull() {
+        DynamodbEvent.DynamodbStreamRecord record = record_event.clone();
+        record.setUserIdentity(null);
+
+        Assertions.assertDoesNotThrow(() -> {
+            DynamodbRecordTransformer.toRecordV2(record);
+        });
+    }
+
 }

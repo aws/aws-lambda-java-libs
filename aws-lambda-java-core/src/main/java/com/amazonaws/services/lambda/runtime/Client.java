@@ -11,28 +11,28 @@ public interface Client {
     /**
     * Gets the application's installation id
     */
-    public String getInstallationId();
+    String getInstallationId();
 
     /**
      * Gets the application's title
      *  
      */
-    public String getAppTitle();
+    String getAppTitle();
 
     /**
      * Gets the application's version
      *  
      */
-    public String getAppVersionName();
+    String getAppVersionName();
 
     /**
      * Gets the application's version code
      *  
      */
-    public String getAppVersionCode();
+    String getAppVersionCode();
 
     /**
      * Gets the application's package name
      */
-    public String getAppPackageName();
+    String getAppPackageName();
 }

@@ -14,7 +14,7 @@ public interface ClientContext {
      * Gets the client information provided by the AWS Mobile SDK
      * 
      */
-    public Client getClient();
+    Client getClient();
 
     /**
      * Gets custom values set by the client application
@@ -22,12 +22,12 @@ public interface ClientContext {
      * This map is mutable (and not thread-safe if mutated)
      * </p>
      */
-    public Map<String, String> getCustom();
+    Map<String, String> getCustom();
  
     /**
      * Gets environment information provided by mobile SDK, immutable. 
      * 
      */
-    public Map<String, String> getEnvironment();
+    Map<String, String> getEnvironment();
 
 }

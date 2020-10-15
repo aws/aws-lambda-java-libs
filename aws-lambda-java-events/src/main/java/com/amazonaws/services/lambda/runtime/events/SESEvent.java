@@ -20,13 +20,13 @@ import java.util.Map;
 @NoArgsConstructor
 public class SESEvent {
 
-    private List<Record> Records;
+    private List<Record> records;
 
     @Data
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Record {
+    public static class Record {
         private String eventSource;
         private String eventVersion;
         private Ses ses;
@@ -36,7 +36,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Ses {
+    public static class Ses {
         private Mail mail;
         private Receipt receipt;
     }
@@ -45,7 +45,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Mail {
+    public static class Mail {
         private DateTime timestamp;
         private String source;
         private String messageId;
@@ -59,7 +59,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class CommonHeaders {
+    public static class CommonHeaders {
         private String returnPath;
         private String[] from;
         private String date;
@@ -72,7 +72,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Receipt {
+    public static class Receipt {
         private DateTime timestamp;
         private long processingTimeMillis;
         private String[] recipients;
@@ -88,7 +88,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Action {
+    public static class Action {
         private String type;
         private String functionArn;
         private String invocationType;
@@ -98,7 +98,7 @@ public class SESEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class Verdict {
+    public static class Verdict {
         private String status;
     }
 }

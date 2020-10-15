@@ -105,7 +105,7 @@ public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
-    private static class ClaimsOverrideDetails {
+    public static class ClaimsOverrideDetails {
         /**
          * A map of one or more key-value pairs of claims to add or override.
          * For group related claims, use groupOverrideDetails instead.

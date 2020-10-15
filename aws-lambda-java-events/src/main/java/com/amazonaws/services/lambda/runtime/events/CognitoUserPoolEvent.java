@@ -27,7 +27,6 @@ import java.util.Map;
  * @author jvdl <jvdl@amazon.com>
  */
 @AllArgsConstructor
-@Builder(setterPrefix = "with")
 @Data
 @NoArgsConstructor
 public abstract class CognitoUserPoolEvent {
@@ -63,7 +62,6 @@ public abstract class CognitoUserPoolEvent {
     private CallerContext callerContext;
 
     @AllArgsConstructor
-    @Builder(setterPrefix = "with")
     @Data
     @NoArgsConstructor
     public static abstract class Request {

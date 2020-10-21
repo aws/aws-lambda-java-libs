@@ -23,7 +23,7 @@ public class S3BatchResponse {
     private String invocationSchemaVersion;
     private String treatMissingKeysAs;
     private String invocationId;
-    private List<Result> result;
+    private List<Result> results;
 
     @Data
     @Builder(setterPrefix = "with")

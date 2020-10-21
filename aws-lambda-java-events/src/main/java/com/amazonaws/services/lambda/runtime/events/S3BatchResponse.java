@@ -7,6 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Event to represent the response which should be returned as part of a S3 Batch custom
+ * action.
+ *
+ * https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-invoke-lambda.html
+ */
+
 @Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor

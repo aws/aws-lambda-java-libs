@@ -21,7 +21,7 @@ import java.util.List;
 public class S3BatchResponse {
 
     private String invocationSchemaVersion;
-    private String treatMissingKeysAs;
+    private ResultCode treatMissingKeysAs;
     private String invocationId;
     private List<Result> results;
 
@@ -55,5 +55,11 @@ public class S3BatchResponse {
          * 	string. Result strings from failed tasks are ignored.
          */
         PermanentFailure
+    }
+
+    public static S3BatchResponseBuilder fromS3BatchEvent(S3BatchEvent s3BatchEvent) {
+        return S3BatchResponse.builder()
+                .withInvocationId(s3BatchEvent.getInvocationId())
+                .withInvocationSchemaVersion(s3BatchEvent.getInvocationSchemaVersion());
     }
 }

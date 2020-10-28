@@ -30,6 +30,8 @@
 * `KinesisFirehoseEvent`
 * `LambdaDestinationEvent`
 * `LexEvent`
+* `S3BatchEvent`
+* `S3BatchResponse`
 * `S3Event`
 * `ScheduledEvent`
 * `SecretsManagerRotationEvent`
@@ -55,7 +57,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.0</version>
     </dependency>
     ...
 </dependencies>
@@ -65,19 +67,19 @@
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.4.0'
+'com.amazonaws:aws-lambda-java-events:3.5.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.4.0"]
+[com.amazonaws/aws-lambda-java-events "3.5.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.4.0"
+"com.amazonaws" % "aws-lambda-java-events" % "3.5.0"
 ```

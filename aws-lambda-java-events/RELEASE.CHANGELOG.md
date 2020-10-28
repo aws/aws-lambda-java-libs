@@ -1,3 +1,9 @@
+### October 28, 2020
+`3.5.0`:
+- Added support for S3 Batch events: ([#179](https://github.com/aws/aws-lambda-java-libs/pull/179))
+  - `S3BatchEvent`
+  - `S3BatchResponse`
+  
 ### October 07, 2020
 `3.4.0`:
 - Added Lambda and IAM authorizers to `APIGatewayV2HTTPEvent` request context ([#167](https://github.com/aws/aws-lambda-java-libs/pull/167))

@@ -1,3 +1,7 @@
+### October 28, 2020
+`2.0.7`:
+- Bumped `aws-lambda-java-events` to version `3.5.0`
+
 ### October 07, 2020
 `2.0.6`:
 - Fixed NPE when UserIdentity is null ([#169](https://github.com/aws/aws-lambda-java-libs/pull/169))

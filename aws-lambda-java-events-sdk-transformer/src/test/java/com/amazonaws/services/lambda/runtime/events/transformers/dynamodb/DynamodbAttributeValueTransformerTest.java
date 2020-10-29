@@ -115,6 +115,54 @@ class DynamodbAttributeValueTransformerTest {
             )).build();
     //endregion
 
+    //region AttributeValue
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueN =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withN(valueN);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueNS =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withNS(valueNS);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueS =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withS(valueS);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueSS =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withSS(valueSS);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueB =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withB(valueB);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueBS =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withBS(valueBS);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueBOOL =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withBOOL(valueBOOL);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueNUL =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withNULL(valueNUL);
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueM =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withM(ImmutableMap.of(
+                    keyM1, attributeValueN,
+                    keyM2, attributeValueS
+            ));
+    public static final com.amazonaws.services.dynamodbv2.model.AttributeValue attributeValueL =
+            new com.amazonaws.services.dynamodbv2.model.AttributeValue().withL(Arrays.asList(
+                    attributeValueN,
+                    attributeValueNS,
+                    attributeValueS,
+                    attributeValueSS,
+                    attributeValueB,
+                    attributeValueBS,
+                    attributeValueBOOL,
+                    attributeValueNUL,
+                    attributeValueM,
+                    new com.amazonaws.services.dynamodbv2.model.AttributeValue().withL(Arrays.asList(
+                            attributeValueN,
+                            attributeValueNS,
+                            attributeValueS,
+                            attributeValueSS,
+                            attributeValueB,
+                            attributeValueBS,
+                            attributeValueBOOL,
+                            attributeValueNUL,
+                            attributeValueM
+                    ))
+            ));
+    //endregion
+
+    // region test toAttributeValueV2
     @Test
     public void testToAttributeValueV2_N() {
         software.amazon.awssdk.services.dynamodb.model.AttributeValue convertedAttributeValueN =
@@ -313,5 +361,207 @@ class DynamodbAttributeValueTransformerTest {
         Assertions.assertEquals(expectedAttributeValue_v2,
                 DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL(Collections.emptyList())));
     }
+    //endregion
+
+    // region test toAttributeValue
+    @Test
+    public void testToAttributeValue_N() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueN =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueN_event);
+        Assertions.assertEquals(attributeValueN, convertedAttributeValueN);
+    }
+
+    @Test
+    public void testToAttributeValue_NS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueNS =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueNS_event);
+        Assertions.assertEquals(attributeValueNS, convertedAttributeValueNS);
+    }
+
+    @Test
+    public void testToAttributeValue_S() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueS =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueS_event);
+        Assertions.assertEquals(attributeValueS, convertedAttributeValueS);
+    }
+
+    @Test
+    public void testToAttributeValue_SS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueSS =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueSS_event);
+        Assertions.assertEquals(attributeValueSS, convertedAttributeValueSS);
+    }
+
+    @Test
+    public void testToAttributeValue_B() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueB =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueB_event);
+        Assertions.assertEquals(attributeValueB, convertedAttributeValueB);
+    }
+
+    @Test
+    public void testToAttributeValue_BS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueBS =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueBS_event);
+        Assertions.assertEquals(attributeValueBS, convertedAttributeValueBS);
+    }
+
+    @Test
+    public void testToAttributeValue_BOOL() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueBOOL =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueBOOL_event);
+        Assertions.assertEquals(attributeValueBOOL, convertedAttributeValueBOOL);
+    }
+
+    @Test
+    public void testToAttributeValue_NULL() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueNUL =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueNUL_event);
+        Assertions.assertEquals(attributeValueNUL, convertedAttributeValueNUL);
+    }
+
+    @Test
+    public void testToAttributeValue_M() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueM =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueM_event);
+        Assertions.assertEquals(attributeValueM, convertedAttributeValueM);
+    }
+
+    @Test
+    public void testToAttributeValue_L() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue convertedAttributeValueL =
+                DynamodbAttributeValueTransformer.toAttributeValue(attributeValueL_event);
+        Assertions.assertEquals(attributeValueL, convertedAttributeValueL);
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue())
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_N() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withN(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_S() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withS(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_B() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withB(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_BOOL() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withBOOL(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_NULL() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withNULL(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueIllegalArgumentWhenNull_M() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withM(null))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueDoesNotThrowWhenEmpty_NS() {
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withNS())
+        );
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withNS(Collections.emptyList()))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueDoesNotThrowWhenEmpty_SS() {
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withSS())
+        );
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withSS(Collections.emptyList()))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueDoesNotThrowWhenEmpty_BS() {
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withBS())
+        );
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withBS(Collections.emptyList()))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueDoesNotThrowWhenEmpty_L() {
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withL())
+        );
+        Assertions.assertDoesNotThrow(() ->
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withL(Collections.emptyList()))
+        );
+    }
+
+    @Test
+    public void testToAttributeValueEmptyObjectWhenEmpty_NS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue expectedAttributeValue =
+                new com.amazonaws.services.dynamodbv2.model.AttributeValue().withNS();
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withNS()));
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withNS(Collections.emptyList())));
+    }
+
+    @Test
+    public void testToAttributeValueEmptyObjectWhenEmpty_SS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue expectedAttributeValue =
+                new com.amazonaws.services.dynamodbv2.model.AttributeValue().withSS();
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withSS()));
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withSS(Collections.emptyList())));
+    }
+
+    @Test
+    public void testToAttributeValueEmptyObjectWhenEmpty_BS() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue expectedAttributeValue =
+                new com.amazonaws.services.dynamodbv2.model.AttributeValue().withBS();
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withBS()));
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withBS(Collections.emptyList())));
+    }
+
+    @Test
+    public void testToAttributeValueEmptyObjectWhenEmpty_L() {
+        com.amazonaws.services.dynamodbv2.model.AttributeValue expectedAttributeValue =
+                new com.amazonaws.services.dynamodbv2.model.AttributeValue().withL();
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withL()));
+        Assertions.assertEquals(expectedAttributeValue,
+                DynamodbAttributeValueTransformer.toAttributeValue(new AttributeValue().withL(Collections.emptyList())));
+    }
+    //endregion
 
 }

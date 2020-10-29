@@ -81,4 +81,65 @@ public class DynamodbAttributeValueTransformer {
                         entry -> toAttributeValueV2(entry.getValue())
                 ));
     }
+
+    public static com.amazonaws.services.dynamodbv2.model.AttributeValue toAttributeValue(final com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue value) {
+        if (Objects.nonNull(value.getS())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withS(value.getS());
+
+        } else if (Objects.nonNull(value.getSS())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withSS(value.getSS());
+
+        } else if (Objects.nonNull(value.getN())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withN(value.getN());
+
+        } else if (Objects.nonNull(value.getNS())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withNS(value.getNS());
+
+        } else if (Objects.nonNull(value.getB())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withB(value.getB());
+
+        } else if (Objects.nonNull(value.getBS())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withBS(value.getBS());
+
+        } else if (Objects.nonNull(value.getBOOL())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withBOOL(value.getBOOL());
+
+        } else if (Objects.nonNull(value.getL())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withL(value.getL().stream()
+                            .map(DynamodbAttributeValueTransformer::toAttributeValue)
+                            .collect(Collectors.toList()));
+
+        } else if (Objects.nonNull(value.getM())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withM(toAttributeValueMap(value.getM()));
+
+        } else if (Objects.nonNull(value.getNULL())) {
+            return new com.amazonaws.services.dynamodbv2.model.AttributeValue()
+                    .withNULL(value.getNULL());
+
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unsupported attributeValue type: %s", value));
+        }
+    }
+
+    static Map<String, com.amazonaws.services.dynamodbv2.model.AttributeValue> toAttributeValueMap(
+            final Map<String, com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue> attributeValueMap
+    ) {
+        return attributeValueMap
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> toAttributeValue(entry.getValue())
+                ));
+    }
 }

@@ -54,10 +54,17 @@
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-dynamodb</artifactId>
+      <version>1.11.885</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
       <version>3.5.0</version>
       <scope>provided</scope>
     </dependency>
+
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>

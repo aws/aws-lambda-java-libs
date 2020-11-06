@@ -1,3 +1,8 @@
+### November 06, 2020
+`2.0.8`:
+- Bumped `aws-lambda-java-events` to version `3.6.0`
+- Bumped `junit-jupiter-engine` to version `5.7.0`
+
 ### October 28, 2020
 `2.0.7`:
 - Bumped `aws-lambda-java-events` to version `3.5.0`

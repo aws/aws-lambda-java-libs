@@ -1,3 +1,9 @@
+### November 06, 2020
+`3.6.0`:
+- Added support for Amazon `ActiveMQ` event: ([#185](https://github.com/aws/aws-lambda-java-libs/pull/185))
+- Bumped `junit-jupiter-engine` to version `5.7.0`
+- Bumped `lombok` to version `1.18.16`
+
 ### October 28, 2020
 `3.5.0`:
 - Added support for S3 Batch events: ([#179](https://github.com/aws/aws-lambda-java-libs/pull/179))

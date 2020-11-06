@@ -19,14 +19,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(setterPrefix = "with")
 /**
 * Represents an Active MQ event sent to Lambda
 * <a href="https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html">Onboarding Amazon MQ as event source to Lambda</a>
 */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(setterPrefix = "with")
 public class ActiveMQEvent {
     private String eventSource;
     private String eventSourceArn;
@@ -35,7 +35,6 @@ public class ActiveMQEvent {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @EqualsAndHashCode
     @Builder(setterPrefix = "with")
     public static class ActiveMQMessage {
         private String messageID;

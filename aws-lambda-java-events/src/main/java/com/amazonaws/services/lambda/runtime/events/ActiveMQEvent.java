@@ -23,14 +23,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
+/**
+* Represents an Active MQ event sent to Lambda
+* <a href="https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html">Onboarding Amazon MQ as event source to Lambda</a>
+*/
 public class ActiveMQEvent {
     private String eventSource;
     private String eventSourceArn;
     private List<ActiveMQMessage> messages;
 
-    /**
-     *  Represents an Active MQ event sent to Lambda.
-     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

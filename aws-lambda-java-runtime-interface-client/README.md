@@ -47,7 +47,7 @@ COPY --from=build /src/target/dependency/*.jar ./
 COPY --from=build /src/target/*.jar ./
 
 # configure the runtime startup as main
-ENTRYPOINT [ "java", "-cp", "./*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+ENTRYPOINT [ "/usr/bin/java", "-cp", "./*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 # pass the name of the function handler as an argument to the runtime
 CMD [ "example.App::sayHello" ]
 ```

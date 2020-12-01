@@ -1,0 +1,18 @@
+version: 0.1
+# This uses the docker image specified in ci/docker/amazon-linux-2017.03
+phases:
+  pre_build:
+    commands:
+      - alias cmake=cmake3
+      - pip install awscli
+      - ci/codebuild/build-cpp-sdk.sh
+  build:
+    commands:
+      - echo Build started on `date`
+      - ci/codebuild/build.sh -DENABLE_TESTS=ON -DTEST_RESOURCE_PREFIX=amzn201703
+      - ci/codebuild/run-tests.sh  aws-lambda-package-lambda-test-fun amzn201703
+      - ci/codebuild/run-tests.sh  aws-lambda-package-lambda-test-fun-no-glibc amzn201703
+  post_build:
+    commands:
+      - echo Build completed on `date`
+

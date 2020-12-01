@@ -13,7 +13,12 @@ hs_err_pid*
 
 # Maven build
 target/
+dependency-reduced-pom.xml
 
 # IDEA internal
 *.iml
 .idea
+.gradle
+.settings
+.classpath
+.project

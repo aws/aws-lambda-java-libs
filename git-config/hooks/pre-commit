@@ -1,0 +1,41 @@
+#!/bin/bash -e
+#
+# based on : https://hdpe.me/post/maven-checkstyle-pre-commit-hook/
+#
+# DESCRIPTION
+# Considering only the staged .java files, it walks the filesystem tree
+# to look for any modules (it considers a module if it has a pom.xml file).
+# For each module found it runs Checkstyle on it.
+
+function get_module() {
+  local path=$1;
+  while true; do
+    path=$(dirname $path);
+    if [ -f "$path/pom.xml" ]; then
+      echo "$path";
+      return;
+    elif [[ "./" =~ "$path" ]]; then
+      return;
+    fi
+  done
+}
+
+modules=();
+
+for file in $(git diff --name-only --cached \*.java); do
+  module=$(get_module "$file");
+  if [ "" != "$module" ] \
+      && [[ ! " ${modules[@]} " =~ " $module " ]]; then
+    modules+=("$module");
+  fi
+done;
+
+if [ ${#modules[@]} -eq 0 ]; then
+  exit;
+fi
+
+for dir in ${modules[@]}; do
+  cd ${dir};
+  mvn checkstyle:check -Dcheckstyle.config.location=google_checks.xml -Dcheckstyle.consoleOutput=true;
+  cd ..;
+done;

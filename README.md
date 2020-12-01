@@ -19,6 +19,8 @@ Check out the per-module release notes:
 - [aws-lambda-java-events](aws-lambda-java-events/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-events-sdk-transformer](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-runtime-interface-client](aws-lambda-java-runtime-interface-client/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-serialization](aws-lambda-java-serialization/RELEASE.CHANGELOG.md)
 
 # Where to get packages
 ___
@@ -34,17 +36,22 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>3.4.0</version>
+  <version>3.6.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-  <version>2.0.6</version>
+  <version>2.0.8</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-log4j2</artifactId>
   <version>1.2.0</version>
+</dependency>
+<dependency>
+  <groupId>com.amazonaws</groupId>
+  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -52,27 +59,30 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.4.0'
-'com.amazonaws:aws-lambda-java-events-sdk-transformer:2.0.6'
+'com.amazonaws:aws-lambda-java-events:3.6.0'
+'com.amazonaws:aws-lambda-java-events-sdk-transformer:2.0.8'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
+'com.amazonaws:aws-lambda-java-runtime-interface-client:1.0.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.4.0"]
-[com.amazonaws/aws-lambda-java-events-sdk-transformer "2.0.6"]
+[com.amazonaws/aws-lambda-java-events "3.6.0"]
+[com.amazonaws/aws-lambda-java-events-sdk-transformer "2.0.8"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
+[com.amazonaws/aws-lambda-java-runtime-interface-client "1.0.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.4.0"
-"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "2.0.6"
+"com.amazonaws" % "aws-lambda-java-events" % "3.6.0"
+"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "2.0.8"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
+"com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "1.0.0"
 ```
 
 # Using aws-lambda-java-core
@@ -95,3 +105,12 @@ See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for mo
 
 This package defines the Lambda adapter to use with log4j version 2. 
 See the [README](aws-lambda-java-log4j2/README.md) or the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use the adapter.
+
+# Using aws-lambda-java-runtime-interface-client
+
+This package defines the Lambda Java Runtime Interface Client package, a Lambda Runtime component that starts the runtime and interacts with the Runtime API - i.e., it calls the API for invocation events, starts the function code, calls the API to return the response.
+The purpose of this package is to allow developers to deploy their applications in Lambda under the form of Container Images. See the [README](aws-lambda-java-runtime-interface-client/README.md) for information on how to use the library.
+
+# Using aws-lambda-java-serialization
+
+This package defines the Lambda serialization logic using in the aws-lambda-java-runtime-client library. It has no current standalone usage.

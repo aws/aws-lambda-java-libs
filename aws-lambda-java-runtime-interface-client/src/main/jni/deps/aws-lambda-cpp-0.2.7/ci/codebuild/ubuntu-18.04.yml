@@ -1,0 +1,17 @@
+version: 0.1
+# This uses the docker image specified in ci/docker/ubuntu-linux-18.04
+phases:
+  pre_build:
+    commands:
+      - pip install awscli
+      - ci/codebuild/build-cpp-sdk.sh
+  build:
+    commands:
+      - echo Build started on `date`
+      - ci/codebuild/build.sh -DCMAKE_CXX_CLANG_TIDY=clang-tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_TESTS=ON -DTEST_RESOURCE_PREFIX=ubuntu1804
+      - ci/codebuild/format-check.sh
+      - ci/codebuild/run-tests.sh  aws-lambda-package-lambda-test-fun ubuntu1804
+  post_build:
+    commands:
+      - echo Build completed on `date`
+

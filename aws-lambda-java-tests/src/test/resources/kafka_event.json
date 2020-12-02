@@ -1,0 +1,16 @@
+{
+  "eventSource": "aws:kafka",
+  "eventSourceArn": "arn:aws:kafka:us-east-1:123456789012:cluster/vpc-3432434/4834-3547-3455-9872-7929",
+  "records": {
+    "mytopic-01": [
+      {
+        "topic": "mytopic",
+        "partition": 0,
+        "offset": 15,
+        "timestamp": 1596480920837,
+        "timestampType": "CREATE_TIME",
+        "value": "SGVsbG8gZnJvbSBLYWZrYSAhIQ=="
+      }
+    ]
+  }
+}

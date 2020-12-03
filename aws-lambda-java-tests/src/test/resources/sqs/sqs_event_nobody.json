@@ -3,7 +3,7 @@
     {
       "messageId": "d9144555-9a4f-4ec3-99a0-fc4e625a8db2",
       "receiptHandle": "7kam5bfzbDsjtcjElvhSbxeLJbeey3A==",
-      "body": "{\n  \"id\": 43242,\n  \"name\": \"FooBar XY\",\n  \"price\": 258\n}",
+      "body": "",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1601975709495",

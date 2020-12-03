@@ -13,41 +13,41 @@ import java.lang.annotation.*;
  * or {@link #events()} and {@link #responses()} for multiple ones.<br/>
  *
  * Example:<br/>
- * <pre>{@code
- * @ParameterizedTest
- * @HandlerParams(
- *         event = @Event(value = "apigw/events/apigw_event.json", type = APIGatewayProxyRequestEvent.class),
- *         response = @Response(value = "apigw/responses/apigw_response.json", type = APIGatewayProxyResponseEvent.class))
+ * <pre>
+ * &#64;ParameterizedTest
+ * &#64;HandlerParams(
+ *         event = &#64;Event(value = "apigw/events/apigw_event.json", type = APIGatewayProxyRequestEvent.class),
+ *         response = &#64;Response(value = "apigw/responses/apigw_response.json", type = APIGatewayProxyResponseEvent.class))
  * public void testSingleEventResponse(APIGatewayProxyRequestEvent event, APIGatewayProxyResponseEvent response) {
  * }
  *
- * @ParameterizedTest
- * @HandlerParams(
- *         events = @Events(folder = "apigw/events/", type = APIGatewayProxyRequestEvent.class),
- *         responses = @Responses(folder = "apigw/responses/", type = APIGatewayProxyResponseEvent.class))
+ * &#64;ParameterizedTest
+ * &#64;HandlerParams(
+ *         events = &#64;Events(folder = "apigw/events/", type = APIGatewayProxyRequestEvent.class),
+ *         responses = &#64;Responses(folder = "apigw/responses/", type = APIGatewayProxyResponseEvent.class))
  * public void testMultipleEventsResponsesInFolder(APIGatewayProxyRequestEvent event, APIGatewayProxyResponseEvent response) {
  * }
  *
- * @ParameterizedTest
- * @HandlerParams(
- *         events = @Events(
+ * &#64;ParameterizedTest
+ * &#64;HandlerParams(
+ *         events = &#64;Events(
  *                 events = {
- *                         @Event("apigw/events/apigw_event.json"),
- *                         @Event("apigw/events/apigw_event2.json"),
+ *                         &#64;Event("apigw/events/apigw_event.json"),
+ *                         &#64;Event("apigw/events/apigw_event2.json"),
  *                 },
  *                 type = APIGatewayProxyRequestEvent.class
  *         ),
- *         responses = @Responses(
+ *         responses = &#64;Responses(
  *                 responses = {
- *                         @Response("apigw/responses/apigw_response.json"),
- *                         @Response("apigw/responses/apigw_response2.json")
+ *                         &#64;Response("apigw/responses/apigw_response.json"),
+ *                         &#64;Response("apigw/responses/apigw_response2.json")
  *                 },
  *                 type = APIGatewayProxyResponseEvent.class
  *         )
  * )
  * public void testMultipleEventsResponses(APIGatewayProxyRequestEvent event, APIGatewayProxyResponseEvent response) {
  * }
- * }</pre>
+ * </pre>
  */
 @Documented
 @Target(ElementType.METHOD)

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EventTest {
 
     @ParameterizedTest
-    @Event(value = "sqs/sqs_event.json", type = SQSEvent.class)
+    @Event(value = "sqs/sqs_event_nobody.json", type = SQSEvent.class)
     public void testInjectEvent(SQSEvent event) {
         assertThat(event).isNotNull();
         assertThat(event.getRecords()).hasSize(1);

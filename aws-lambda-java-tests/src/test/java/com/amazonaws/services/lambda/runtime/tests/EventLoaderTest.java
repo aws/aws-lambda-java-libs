@@ -124,7 +124,7 @@ public class EventLoaderTest {
 
     @Test
     public void testLoadSQSEvent() {
-        SQSEvent event = EventLoader.loadSQSEvent("sqs/sqs_event.json");
+        SQSEvent event = EventLoader.loadSQSEvent("sqs/sqs_event_nobody.json");
         assertThat(event).isNotNull();
         assertThat(event.getRecords()).hasSize(1);
         assertThat(event.getRecords().get(0).getEventSourceArn()).isEqualTo("arn:aws:sqs:eu-central-1:123456789012:TestLambda");

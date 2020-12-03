@@ -10,14 +10,14 @@ import java.lang.annotation.*;
  * This annotation must be used in conjunction with {@link org.junit.jupiter.params.ParameterizedTest}.<br/>
  * It enables to inject an event (loaded from a json file) of the desired type into the current test.<br/>
  * Example:<br/>
- * <pre>{@code
- *     @ParameterizedTest
- *     @Event(value = "sqs_event.json", type = SQSEvent.class)
+ * <pre>
+ *     &#64;ParameterizedTest
+ *     &#64;Event(value = "sqs_event.json", type = SQSEvent.class)
  *     public void testInjectEvent(SQSEvent event) {
  *         assertThat(event).isNotNull();
  *         assertThat(event.getRecords()).hasSize(1);
  *     }
- * }</pre>
+ * </pre>
  */
 @Documented
 @Target(ElementType.METHOD)

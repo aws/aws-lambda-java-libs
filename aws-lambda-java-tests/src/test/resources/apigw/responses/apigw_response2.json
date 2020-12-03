@@ -1,5 +1,5 @@
 {
-  "body": "{\"message\": \"Lambda rocks\"}",
+  "body": "",
   "statusCode": 200,
   "headers": {
     "Cache-Control": "max-age=0",

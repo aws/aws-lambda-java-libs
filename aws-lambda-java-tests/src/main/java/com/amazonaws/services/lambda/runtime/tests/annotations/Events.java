@@ -14,23 +14,23 @@ import java.lang.annotation.*;
  * <ul>
  * <li>
  * Using the <code>folder</code> parameter is the more straightforward, and it will use all files in the folder<br/>
- * <pre>{@code
- *     @ParameterizedTest
- *     @Events(folder = "sqs", type = SQSEvent.class)
+ * <pre>
+ *     &#64;ParameterizedTest
+ *     &#64;Events(folder = "sqs", type = SQSEvent.class)
  *     public void testInjectEventsFromFolder(SQSEvent event) {
  *         assertThat(event).isNotNull();
  *         assertThat(event.getRecords()).hasSize(1);
  *     }
- * }</pre>
+ * </pre>
  * </li>
  * <li>
  * Or you can list all the {@link Event}s<br/>
- * <pre>{@code
- * @ParameterizedTest
- *     @Events(
+ * <pre>
+ * &#64;ParameterizedTest
+ *     &#64;Events(
  *             events = {
- *                     @Event("sqs/sqs_event.json"),
- *                     @Event("sqs/sqs_event2.json"),
+ *                     &#64;Event("sqs/sqs_event.json"),
+ *                     &#64;Event("sqs/sqs_event2.json"),
  *             },
  *             type = SQSEvent.class
  *     )
@@ -39,18 +39,18 @@ import java.lang.annotation.*;
  *         assertThat(event.getRecords()).hasSize(1);
  *     }
  *
- *     @ParameterizedTest
- *     @Events(
+ *     &#64;ParameterizedTest
+ *     &#64;Events(
  *             events = {
- *                     @Event(value = "sqs/sqs_event.json", type = SQSEvent.class),
- *                     @Event(value = "sqs/sqs_event2.json", type = SQSEvent.class),
+ *                     &#64;Event(value = "sqs/sqs_event.json", type = SQSEvent.class),
+ *                     &#64;Event(value = "sqs/sqs_event2.json", type = SQSEvent.class),
  *             }
  *     )
  *     public void testInjectEvents2(SQSEvent event) {
  *         assertThat(event).isNotNull();
  *         assertThat(event.getRecords()).hasSize(1);
  *     }
- * }</pre>
+ * </pre>
  * </li>
  * </ul>
  * </p>

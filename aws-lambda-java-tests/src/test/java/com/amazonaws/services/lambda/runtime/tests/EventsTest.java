@@ -14,8 +14,8 @@ public class EventsTest {
     @ParameterizedTest
     @Events(
             events = {
-                    @Event("sqs/sqs_event.json"),
-                    @Event("sqs/sqs_event2.json"),
+                    @Event("sqs/sqs_event_nobody.json"),
+                    @Event("sqs/sqs_event_product.json"),
             },
             type = SQSEvent.class
     )
@@ -27,8 +27,8 @@ public class EventsTest {
     @ParameterizedTest
     @Events(
             events = {
-                    @Event(value = "sqs/sqs_event.json", type = SQSEvent.class),
-                    @Event(value = "sqs/sqs_event2.json", type = SQSEvent.class),
+                    @Event(value = "sqs/sqs_event_nobody.json", type = SQSEvent.class),
+                    @Event(value = "sqs/sqs_event_product.json", type = SQSEvent.class),
             }
     )
     public void testInjectEvents2(SQSEvent event) {

@@ -16,13 +16,13 @@ public class HandlerParamsTest {
             response = @Response(value = "apigw/responses/apigw_response.json", type = APIGatewayProxyResponseEvent.class))
     public void testSimpleEventResponse(APIGatewayProxyRequestEvent event, APIGatewayProxyResponseEvent response) {
         assertThat(event).isNotNull();
-        assertThat(event.getBody()).contains("hello world");
+        assertThat(event.getBody()).contains("Lambda rocks");
         assertThat(event.getHeaders()).hasSize(18);
         assertThat(event.getHttpMethod()).isEqualTo("POST");
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getBody()).contains("hello world");
+        assertThat(response.getBody()).contains("Lambda rocks");
     }
 
     @ParameterizedTest
@@ -45,7 +45,7 @@ public class HandlerParamsTest {
             events = @Events(
                     events = {
                             @Event("apigw/events/apigw_event.json"),
-                            @Event("apigw/events/apigw_event2.json"),
+                            @Event("apigw/events/apigw_event_nobody.json"),
                     },
                     type = APIGatewayProxyRequestEvent.class
             ),

@@ -1,5 +1,5 @@
 {
-  "body": "{\"message\": \"Lambda rocks\"}",
+  "body": "",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "httpMethod": "POST",

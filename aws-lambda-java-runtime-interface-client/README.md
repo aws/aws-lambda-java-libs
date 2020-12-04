@@ -15,7 +15,7 @@ Choose a preferred base image. The Runtime Interface Client is tested on Amazon 
 
 * built for x86_64
 * contains Java >= 8
-* contains glibc >= 2.12 or musl
+* contains glibc >= 2.17 or musl
 
 ### Example
 

@@ -95,24 +95,37 @@ public class CustomerClassLoaderTest {
     @Test
     @DisabledOnOs(MAC) // test fails on systems with case-insensitive volumes
     public void customerClassLoaderFunction() throws IOException {
-        Path rootDir = fakeFileSystem(EXAMPLE_FUNCTION);
+        try {
+            Path rootDir = fakeFileSystem(EXAMPLE_FUNCTION);
 
-        URLClassLoader customerClassLoader = new CustomerClassLoader(
-                rootDir.resolve("user/path").toString(),
-                rootDir.resolve("opt/java").toString(),
-                ClassLoader.getSystemClassLoader());
+            URLClassLoader customerClassLoader = new CustomerClassLoader(
+                    rootDir.resolve("user/path").toString(),
+                    rootDir.resolve("opt/java").toString(),
+                    ClassLoader.getSystemClassLoader());
 
-        List<String> res = strip("file:" + rootDir.toString(), customerClassLoader.getURLs());
+            List<String> res = strip("file:" + rootDir.toString(), customerClassLoader.getURLs());
 
-        Assertions.assertEquals(Arrays.asList(
-                "/user/path/",
-                "/user/path/lib/4.jar",
-                "/user/path/lib/A.jar",
-                "/user/path/lib/a.jar",
-                "/user/path/lib/b.jar",
-                "/user/path/lib/z.jar",
-                "/user/path/lib/λ.jar"),
-                res);
+            Assertions.assertEquals(Arrays.asList(
+                    "/user/path/",
+                    "/user/path/lib/4.jar",
+                    "/user/path/lib/A.jar",
+                    "/user/path/lib/a.jar",
+                    "/user/path/lib/b.jar",
+                    "/user/path/lib/z.jar",
+                    "/user/path/lib/λ.jar"),
+                    res);
+        } catch(Throwable t) {
+            // this system property is the name of the charset used when encoding/decoding file paths
+            // exception is expected if it is not set to a UTF variant or not set at all
+            String systemEncoding = System.getProperty("sun.jnu.encoding");
+
+            if (systemEncoding != null && !systemEncoding.toLowerCase().contains("utf")){
+                Assertions.assertTrue(t.getMessage().contains("Malformed input or input contains unmappable characters"));
+            }
+            else {
+                throw t;
+            }
+        }
     }
 
     @Test

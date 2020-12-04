@@ -31,7 +31,8 @@ jobs:
       run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
     - name: Build log4j2 with Maven
       run: mvn -B package --file aws-lambda-java-log4j2/pom.xml
-    - name: Build serialization with Maven
-      run: mvn -B package --file aws-lambda-java-serialization/pom.xml
-    - name: Build runtime-interface-client with Maven
-      run: mvn -B package --file aws-lambda-java-runtime-interface-client/pom.xml
+
+    # Test Runtime Interface Client
+    - name: Run 'pr' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make pr

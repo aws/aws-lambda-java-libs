@@ -116,8 +116,10 @@ public class CustomerClassLoaderTest {
                     res);
         } catch(Throwable t) {
             // this system property is the name of the charset used when encoding/decoding file paths
-            // exception is expected if it is not set to a UTF variant
-            if (!System.getProperty("sun.jnu.encoding").toLowerCase().contains("utf")){
+            // exception is expected if it is not set to a UTF variant or not set at all
+            String systemEncoding = System.getProperty("sun.jnu.encoding");
+
+            if (systemEncoding != null && !systemEncoding.toLowerCase().contains("utf")){
                 Assertions.assertTrue(t.getMessage().contains("Malformed input or input contains unmappable characters"));
             }
             else {

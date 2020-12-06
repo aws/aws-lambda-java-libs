@@ -68,7 +68,7 @@ public class EventLoader {
         return loadEvent(filename, KinesisEvent.class);
     }
 
-    public static KinesisFirehoseEvent loadKinesisFirehoseEvent(String filename){
+    public static KinesisFirehoseEvent loadKinesisFirehoseEvent(String filename) {
         return loadEvent(filename, KinesisFirehoseEvent.class);
     }
 
@@ -119,6 +119,14 @@ public class EventLoader {
                 throw new EventLoadingException("Cannot load " + filename, e);
             }
         }
-        return serializer.fromJson(stream);
+        try {
+            return serializer.fromJson(stream);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
     }
 }

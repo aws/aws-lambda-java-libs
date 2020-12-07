@@ -14,6 +14,7 @@ setup-codebuild-agent:
 .PHONY: test-smoke
 test-smoke: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.12 corretto11
+	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11
 
 .PHONY: test-integ
 test-integ: setup-codebuild-agent

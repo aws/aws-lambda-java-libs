@@ -1,41 +1,27 @@
 # we use centos 7 to build against glibc 2.17
 FROM centos:7
 
+# Add Corretto repository
+RUN rpm --import https://yum.corretto.aws/corretto.key && \
+    curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
+
 # aws-lambda-cpp requires cmake3, it's available in EPEL
 RUN yum install -y epel-release
 RUN yum install -y \
-    cmake3 \
-    make \
-    gcc \
-    gcc-c++ \
-    glibc-devel \
-    gmp-devel \
-    libmpc-devel \
-    libtool \
-    mpfr-devel \
-    wget
+        cmake3 \
+        make \
+        gcc \
+        gcc-c++ \
+        libstdc++-static \
+        glibc-devel \
+        gmp-devel \
+        libmpc-devel \
+        libtool \
+        mpfr-devel \
+        wget \
+        java-1.8.0-amazon-corretto-devel
 
-# aws-lambda-cpp also needs a newer compiler than the default gcc 4.4
-ARG GCC_VERSION=4.8.5
-RUN wget -qO- https://mirrors.kernel.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.gz | tar xzf -
-WORKDIR gcc-$GCC_VERSION
-RUN ./configure \
-       --disable-multilib \
-       --enable-languages=c,c++ && \
-    make -j$(nproc) && \
-    make install
-RUN yum remove -y gcc gcc-c++
-RUN rm -rf /usr/bin/gcc && \
-    rm -rf /usr/bin/c++ && \
-    rm -rf /usr/bin/cc && \
-    ln -s /usr/local/bin/x86_64-unknown-linux-gnu-gcc-$GCC_VERSION /usr/bin/gcc && \
-    ln -s /usr/local/bin/x86_64-unknown-linux-gnu-c++ /usr/bin/c++ && \
-    ln -s /usr/local/bin/x86_64-unknown-linux-gnu-gcc /usr/bin/cc
-
-RUN rpm --import https://yum.corretto.aws/corretto.key
-RUN curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
-RUN yum install -y java-1.8.0-amazon-corretto-devel
-
+# Install curl dependency
 ADD ./deps/curl-* /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
@@ -46,6 +32,7 @@ RUN ./configure \
     make && \
     make install
 
+# Install aws-lambda-cpp dependency
 ADD ./deps/aws-lambda-cpp-* /src/deps/aws-lambda-cpp
 RUN sed -i.bak 's/VERSION 3.9/VERSION 3.6/' /src/deps/aws-lambda-cpp/CMakeLists.txt
 RUN mkdir -p /src/deps/aws-lambda-cpp/build
@@ -54,11 +41,12 @@ RUN cmake3 .. \
         -DENABLE_LTO=OFF \
         -DCMAKE_CXX_FLAGS="-fPIC -DBACKWARD_SYSTEM_UNKNOWN" \
         -DCMAKE_CXX_STANDARD=11 \
-        -DCMAKE_INSTALL_PREFIX=$(pwd)/../../artifacts\
+        -DCMAKE_INSTALL_PREFIX=$(pwd)/../../artifacts \
         -DCMAKE_MODULE_PATH=$(pwd)/../../artifacts/lib/pkgconfig && \
     make && \
     make install
 
+# Build native client
 ADD *.cpp *.h /src/
 WORKDIR /src
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto

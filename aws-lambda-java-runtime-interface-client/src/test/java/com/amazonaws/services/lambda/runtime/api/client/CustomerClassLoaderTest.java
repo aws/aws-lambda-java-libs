@@ -2,9 +2,7 @@
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 
@@ -20,18 +18,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.condition.OS.MAC;
 
 public class CustomerClassLoaderTest {
-    private static final String USER_WORKING_DIR = "user/path";
-    private static final String ORIGINAL_WORKING_DIR = System.getProperty("user.dir");
-
-    @BeforeEach
-    public void before() {
-        System.setProperty("user.dir", USER_WORKING_DIR);
-    }
-
-    @AfterEach
-    public void after() {
-        System.setProperty("user.dir", ORIGINAL_WORKING_DIR);
-    }
 
     final static String[] EXAMPLE_FUNCTION = new String[]{
             "var/runtime/lib/LambdaJavaRTEntry-1.0.jar",

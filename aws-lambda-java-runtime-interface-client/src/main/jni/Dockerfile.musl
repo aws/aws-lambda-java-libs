@@ -1,17 +1,21 @@
 FROM alpine:3
-RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub
-RUN echo "https://apk.corretto.aws/" >> /etc/apk/repositories
-RUN apk update
-RUN apk add \
-    amazon-corretto-8 \
-    cmake \
-    file \
-    g++ \
-    gcc \
-    make \
-    libexecinfo-dev \
-    perl
 
+# Add Corretto repository
+RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub && \
+    echo "https://apk.corretto.aws/" >> /etc/apk/repositories
+
+RUN apk update && \
+    apk add \
+        amazon-corretto-8 \
+        cmake \
+        file \
+        g++ \
+        gcc \
+        make \
+        libexecinfo-dev \
+        perl
+
+# Install curl dependency
 ADD ./deps/curl-* /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
@@ -22,6 +26,7 @@ RUN ./configure \
     make && \
     make install
 
+# Install aws-lambda-cpp dependency
 ADD ./deps/aws-lambda-cpp-* /src/deps/aws-lambda-cpp
 RUN mkdir -p /src/deps/aws-lambda-cpp/build
 WORKDIR /src/deps/aws-lambda-cpp/build
@@ -33,6 +38,7 @@ RUN cmake .. \
     make && \
     make install
 
+# Build native client
 ADD *.cpp *.h /src/
 WORKDIR /src
 ENV JAVA_HOME=/usr/lib/jvm/java-8-amazon-corretto

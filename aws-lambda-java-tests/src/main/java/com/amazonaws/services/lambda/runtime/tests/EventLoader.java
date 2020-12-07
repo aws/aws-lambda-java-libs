@@ -12,6 +12,11 @@ import com.amazonaws.services.lambda.runtime.events.*;
  * Load events from json files and serialize them in Events
  */
 public class EventLoader {
+
+    public static ActiveMQEvent loadActiveMQEvent(String filename) {
+        return loadEvent(filename, ActiveMQEvent.class);
+    }
+
     public static APIGatewayV2HTTPEvent loadApiGatewayHttpEvent(String filename) {
         return loadEvent(filename, APIGatewayV2HTTPEvent.class);
     }

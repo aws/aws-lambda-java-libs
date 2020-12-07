@@ -192,6 +192,16 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadActiveMQEvent() {
+        ActiveMQEvent event = EventLoader.loadActiveMQEvent("mq_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getMessages()).hasSize(2);
+
+        assertThat(event.getMessages().get(0).getMessageID()).isEqualTo("ID:b-9bcfa592-423a-4942-879d-eb284b418fc8-1.mq.us-west-2.amazonaws.com-37557-1234520418293-4:1:1:1:1");
+        assertThat(event.getMessages().get(1).getMessageID()).isEqualTo("ID:b-8bcfa572-428a-4642-879d-eb284b418fc8-1.mq.us-west-2.amazonaws.com-37557-1234520418293-4:1:1:1:1");
+    }
+
+    @Test
     public void testLoadCodeCommitEvent() {
         CodeCommitEvent event = EventLoader.loadCodeCommitEvent("codecommit_event.json");
         assertThat(event).isNotNull();

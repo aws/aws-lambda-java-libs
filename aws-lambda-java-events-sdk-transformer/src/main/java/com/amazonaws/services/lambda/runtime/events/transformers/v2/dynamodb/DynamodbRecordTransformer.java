@@ -1,4 +1,4 @@
-package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
+package com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb;
 
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
 import software.amazon.awssdk.services.dynamodb.model.Record;

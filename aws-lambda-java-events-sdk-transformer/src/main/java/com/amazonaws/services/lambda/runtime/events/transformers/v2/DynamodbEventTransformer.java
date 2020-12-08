@@ -1,7 +1,7 @@
-package com.amazonaws.services.lambda.runtime.events.transformers;
+package com.amazonaws.services.lambda.runtime.events.transformers.v2;
 
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
-import com.amazonaws.services.lambda.runtime.events.transformers.dynamodb.DynamodbRecordTransformer;
+import com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbRecordTransformer;
 import software.amazon.awssdk.services.dynamodb.model.Record;
 
 import java.util.List;

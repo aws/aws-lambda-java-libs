@@ -1,4 +1,4 @@
-### Upcoming
+### December 09, 2020
 `3.0.0`:
 - Added AWS SDK V1 transformers for `DynamodbEvent` in `aws-lambda-java-events` versions `3.0.0` and up
 - Moved existing SDK v2 transformers into `v2` package (from `com.amazonaws.services.lambda.runtime.events.transformers` to `com.amazonaws.services.lambda.runtime.events.transformers.v2`)

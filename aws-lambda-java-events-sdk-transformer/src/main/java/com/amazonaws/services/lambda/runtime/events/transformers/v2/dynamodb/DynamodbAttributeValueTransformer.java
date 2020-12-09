@@ -74,7 +74,7 @@ public class DynamodbAttributeValueTransformer {
         }
     }
 
-    static Map<String, AttributeValue> toAttributeValueMapV2(
+    public static Map<String, AttributeValue> toAttributeValueMapV2(
             final Map<String, com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue> attributeValueMap
     ) {
         return attributeValueMap

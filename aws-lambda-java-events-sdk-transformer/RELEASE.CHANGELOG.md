@@ -1,3 +1,7 @@
+### Upcoming
+`3.0.1`:
+- Change visibility scope of `Map<String, AttributeValue> toAttributeValueMapVx(Map<String, AttributeValue>)` to `public`
+
 ### December 09, 2020
 `3.0.0`:
 - Added AWS SDK V1 transformers for `DynamodbEvent` in `aws-lambda-java-events` versions `3.0.0` and up

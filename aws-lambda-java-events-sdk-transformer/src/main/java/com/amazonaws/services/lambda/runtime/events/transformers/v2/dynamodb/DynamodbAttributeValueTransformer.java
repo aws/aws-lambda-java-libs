@@ -1,4 +1,4 @@
-package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
+package com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -17,7 +17,7 @@ public class DynamodbAttributeValueTransformer {
 
         } else if (Objects.nonNull(value.getSS())) {
             return AttributeValue.builder()
-                    .ss(value.getSS())
+                    .ss(value.getSS().isEmpty() ? null : value.getSS())
                     .build();
 
         } else if (Objects.nonNull(value.getN())) {
@@ -27,7 +27,7 @@ public class DynamodbAttributeValueTransformer {
 
         } else if (Objects.nonNull(value.getNS())) {
             return AttributeValue.builder()
-                    .ns(value.getNS())
+                    .ns(value.getNS().isEmpty() ? null : value.getNS())
                     .build();
 
         } else if (Objects.nonNull(value.getB())) {
@@ -37,9 +37,11 @@ public class DynamodbAttributeValueTransformer {
 
         } else if (Objects.nonNull(value.getBS())) {
             return AttributeValue.builder()
-                    .bs(value.getBS().stream()
-                            .map(SdkBytes::fromByteBuffer)
-                            .collect(Collectors.toList()))
+                    .bs(value.getBS().isEmpty()
+                            ? null
+                            : value.getBS().stream()
+                                .map(SdkBytes::fromByteBuffer)
+                                .collect(Collectors.toList()))
                     .build();
 
         } else if (Objects.nonNull(value.getBOOL())) {
@@ -49,9 +51,11 @@ public class DynamodbAttributeValueTransformer {
 
         } else if (Objects.nonNull(value.getL())) {
             return AttributeValue.builder()
-                    .l(value.getL().stream()
-                            .map(DynamodbAttributeValueTransformer::toAttributeValueV2)
-                            .collect(Collectors.toList()))
+                    .l(value.getL().isEmpty()
+                            ? null
+                            : value.getL().stream()
+                                .map(DynamodbAttributeValueTransformer::toAttributeValueV2)
+                                .collect(Collectors.toList()))
                     .build();
 
         } else if (Objects.nonNull(value.getM())) {

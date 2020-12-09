@@ -36,6 +36,14 @@ phases:
       - >
         echo "COPY ${SCRATCH_DIR}/aws-lambda-rie /usr/bin/aws-lambda-rie" >> \
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+      - >
+        if [[ -z "${DOCKERHUB_USERNAME}" && -z "${DOCKERHUB_PASSWORD}" ]];
+        then
+            echo "DockerHub credentials not set as CodeBuild environment variables. Continuing without docker login."
+        else
+            echo "Performing DockerHub login . . ."
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+        fi
       - echo "Building image ${IMAGE_TAG}"
       - >
         docker build . \

@@ -1,12 +1,17 @@
-# This workflow will build all Java packages in this project with Maven (Java 8)
+# This workflow will be triggered if there will be changes to 
+# aws-lambda-java-runtime-interface-client package and it builds the package.
 
-name: Java CI with Maven
+name: Java CI aws-lambda-java-runtime-interface-client
 
 on:
   push:
     branches: [ master ]
+    paths:
+    - 'aws-lambda-java-runtime-interface-client/**'
   pull_request:
     branches: [ '*' ]
+    paths:
+    - 'aws-lambda-java-runtime-interface-client/**'
 
 jobs:
   build:
@@ -23,16 +28,10 @@ jobs:
     # Install base modules
     - name: Build core with Maven
       run: mvn -B install --file aws-lambda-java-core/pom.xml
-    - name: Build events with Maven
-      run: mvn -B install --file aws-lambda-java-events/pom.xml
-
-    # Package modules that depend on base modules
-    - name: Build events-sdk-transformer with Maven
-      run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
-    - name: Build log4j2 with Maven
-      run: mvn -B package --file aws-lambda-java-log4j2/pom.xml
-
+    - name: Build serialization with Maven
+      run: mvn -B install --file aws-lambda-java-serialization/pom.xml
     # Test Runtime Interface Client
     - name: Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
+    

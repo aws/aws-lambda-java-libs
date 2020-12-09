@@ -1,4 +1,4 @@
-package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
+package com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

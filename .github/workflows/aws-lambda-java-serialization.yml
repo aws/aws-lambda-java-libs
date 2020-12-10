@@ -28,9 +28,9 @@ jobs:
     # Install base module
     - name: Build events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
-    # Install target module
+    # Package target module
     - name: Build serialization with Maven
-      run: mvn -B install --file aws-lambda-java-serialization/pom.xml
+      run: mvn -B package --file aws-lambda-java-serialization/pom.xml
 
     # Test Runtime Interface Client
     - name: Run 'pr' target

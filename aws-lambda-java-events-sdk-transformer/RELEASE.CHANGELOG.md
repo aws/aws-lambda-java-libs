@@ -1,4 +1,4 @@
-### Upcoming
+### December 10, 2020
 `3.0.1`:
 - Change visibility scope of `Map<String, AttributeValue> toAttributeValueMapVx(Map<String, AttributeValue>)` to `public`
 

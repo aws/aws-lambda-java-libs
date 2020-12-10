@@ -1,4 +1,4 @@
-package com.amazonaws.services.lambda.runtime.events.transformers.dynamodb;
+package com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb;
 
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamViewType;
@@ -9,7 +9,26 @@ import software.amazon.awssdk.utils.ImmutableMap;
 
 import java.util.Date;
 
-import static com.amazonaws.services.lambda.runtime.events.transformers.dynamodb.DynamodbAttributeValueTransformerTest.*;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueBOOL_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueBOOL_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueBS_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueBS_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueB_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueB_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueL_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueL_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueM_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueM_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueNS_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueNS_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueNUL_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueNUL_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueN_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueN_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueSS_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueSS_v2;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueS_event;
+import static com.amazonaws.services.lambda.runtime.events.transformers.v2.dynamodb.DynamodbAttributeValueTransformerTest.attributeValueS_v2;
 
 class DynamodbStreamRecordTransformerTest {
 
@@ -39,7 +58,7 @@ class DynamodbStreamRecordTransformerTest {
     //region StreamRecord_event
     public static final com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord streamRecord_event =
             new com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord()
-                    .withKeys(ImmutableMap.<String, AttributeValue> builder()
+                    .withKeys(ImmutableMap.<String, AttributeValue>builder()
                             .put(keyNK, attributeValueN_event)
                             .put(keyNSK, attributeValueNS_event)
                             .put(keySK, attributeValueS_event)
@@ -69,7 +88,7 @@ class DynamodbStreamRecordTransformerTest {
     //region StreamRecord_v2
     public static final StreamRecord streamRecord_v2 = StreamRecord.builder()
             .approximateCreationDateTime(approximateCreationDateTime.toInstant())
-            .keys(ImmutableMap.<String, software.amazon.awssdk.services.dynamodb.model.AttributeValue> builder()
+            .keys(ImmutableMap.<String, software.amazon.awssdk.services.dynamodb.model.AttributeValue>builder()
                     .put(keyNK, attributeValueN_v2)
                     .put(keyNSK, attributeValueNS_v2)
                     .put(keySK, attributeValueS_v2)

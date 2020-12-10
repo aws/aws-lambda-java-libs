@@ -1,0 +1,27 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:eu-central-1:123456789012:TopicSendToMe:e3ddc7d5-2f86-40b8-a13d-3362f94fd8dd",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "dc918f50-80c6-56a2-ba33-d8a9bbf013ab",
+        "TopicArn": "arn:aws:sns:eu-central-1:123456789012:TopicSendToMe",
+        "Subject": "Test sns message",
+        "Message": "{\n  \"id\": 42,\n  \"name\": \"Bob\"\n}",
+        "Timestamp": "2020-10-08T16:06:14.656Z",
+        "SignatureVersion": "1",
+        "Signature": "UWnPpkqPAphyr+6PXzUF9++4zJcw==",
+        "SigningCertUrl": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
+        "UnsubscribeUrl": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe",
+        "MessageAttributes": {
+          "name": {
+            "Type": "String",
+            "Value": "Bob"
+          }
+        }
+      }
+    }
+  ]
+}

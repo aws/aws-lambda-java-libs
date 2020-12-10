@@ -1,0 +1,22 @@
+{
+  "Records": [
+    {
+      "messageId": "d9144555-9a4f-4ec3-99a0-fc4e625a8db2",
+      "receiptHandle": "7kam5bfzbDsjtcjElvhSbxeLJbeey3A==",
+      "body": "",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1601975709495",
+        "SenderId": "AROAIFU457DVZ5L2J53F2",
+        "ApproximateFirstReceiveTimestamp": "1601975709499"
+      },
+      "messageAttributes": {
+
+      },
+      "md5OfBody": "0f96e88a291edb4429f2f7b9fdc3df96",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:eu-central-1:123456789012:TestLambda",
+      "awsRegion": "eu-central-1"
+    }
+  ]
+}

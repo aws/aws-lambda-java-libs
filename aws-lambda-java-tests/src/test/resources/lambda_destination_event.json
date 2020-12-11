@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "timestamp": "2019-11-24T21:52:47.333Z",
+  "requestContext": {
+    "requestId": "8ea123e4-1db7-4aca-ad10-d9ca1234c1fd",
+    "functionArn": "arn:aws:lambda:sa-east-1:123456678912:function:event-destinations:$LATEST",
+    "condition": "RetriesExhausted",
+    "approximateInvokeCount": 3
+  },
+  "requestPayload": {
+    "Success": false
+  },
+  "responseContext": {
+    "statusCode": 200,
+    "executedVersion": "$LATEST",
+    "functionError": "Handled"
+  },
+  "responsePayload": {
+    "errorMessage": "Failure from event, Success = false, I am failing!",
+    "errorType": "Error",
+    "stackTrace": [ "exports.handler (/var/task/index.js:18:18)" ]
+  }
+}

@@ -21,6 +21,7 @@ Check out the per-module release notes:
 - [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-runtime-interface-client](aws-lambda-java-runtime-interface-client/RELEASE.CHANGELOG.md)
 - [aws-lambda-java-serialization](aws-lambda-java-serialization/RELEASE.CHANGELOG.md)
+- [aws-lambda-java-test](aws-lambda-java-tests/RELEASE.CHANGELOG.md)
 
 # Where to get packages
 ___
@@ -41,7 +42,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -53,6 +54,12 @@ ___
   <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
   <version>1.0.0</version>
 </dependency>
+<dependency>
+  <groupId>com.amazonaws</groupId>
+  <artifactId>aws-lambda-java-tests</artifactId>
+  <version>1.0.0</version>
+  <scope>test</scope>
+</dependency>
 ```
 
 [Gradle](https://gradle.org)
@@ -60,9 +67,10 @@ ___
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
 'com.amazonaws:aws-lambda-java-events:3.6.0'
-'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.0'
+'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.1'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 'com.amazonaws:aws-lambda-java-runtime-interface-client:1.0.0'
+'com.amazonaws:aws-lambda-java-tests:1.0.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
@@ -70,9 +78,10 @@ ___
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
 [com.amazonaws/aws-lambda-java-events "3.6.0"]
-[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.0"]
+[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.1"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
 [com.amazonaws/aws-lambda-java-runtime-interface-client "1.0.0"]
+[com.amazonaws/aws-lambda-java-tests "1.0.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
@@ -80,9 +89,10 @@ ___
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
 "com.amazonaws" % "aws-lambda-java-events" % "3.6.0"
-"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.0"
+"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.1"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
 "com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "1.0.0"
+"com.amazonaws" % "aws-lambda-java-tests" % "1.0.0"
 ```
 
 # Using aws-lambda-java-core
@@ -114,3 +124,7 @@ The purpose of this package is to allow developers to deploy their applications 
 # Using aws-lambda-java-serialization
 
 This package defines the Lambda serialization logic using in the aws-lambda-java-runtime-client library. It has no current standalone usage.
+
+# Using aws-lambda-java-tests
+
+This package provides utils to ease Lambda Java testing. Used with `aws-lambda-java-serialization` and `aws-lambda-java-events` to inject events in your JUnit tests.

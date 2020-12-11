@@ -2,17 +2,7 @@
 
 package com.amazonaws.services.lambda.runtime.serialization.events;
 
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CloudFormationCustomResourceEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CloudFrontEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CloudWatchLogsEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CodeCommitEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.ConnectEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.KinesisEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.SNSEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.SQSEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.ScheduledEventMixin;
-import com.amazonaws.services.lambda.runtime.serialization.events.mixins.SecretsManagerRotationEventMixin;
+import com.amazonaws.services.lambda.runtime.serialization.events.mixins.*;
 import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
@@ -59,6 +49,7 @@ public class LambdaEventSerializers {
             "com.amazonaws.services.lambda.runtime.events.CloudFrontEvent",
             "com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent",
             "com.amazonaws.services.lambda.runtime.events.CodeCommitEvent",
+            "com.amazonaws.services.lambda.runtime.events.CodePipelineEvent",
             "com.amazonaws.services.lambda.runtime.events.CognitoEvent",
             "com.amazonaws.services.lambda.runtime.events.ConfigEvent",
             "com.amazonaws.services.lambda.runtime.events.ConnectEvent",
@@ -106,6 +97,10 @@ public class LambdaEventSerializers {
                     CodeCommitEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodeCommitEvent$Record",
                     CodeCommitEventMixin.RecordMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodePipelineEvent",
+                    CodePipelineEventMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodePipelineEvent$Configuration",
+                    CodePipelineEventMixin.ConfigurationMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent",
                     ConnectEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Details",
@@ -154,6 +149,9 @@ public class LambdaEventSerializers {
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodeCommitEvent",
                     Arrays.asList(
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.CodeCommitEvent$Record"))),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodePipelineEvent",
+                    Arrays.asList(
+                            new NestedClass("com.amazonaws.services.lambda.runtime.events.CodePipelineEvent$Configuration"))),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CognitoEvent",
                     Arrays.asList(
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.CognitoEvent$DatasetRecord"))),

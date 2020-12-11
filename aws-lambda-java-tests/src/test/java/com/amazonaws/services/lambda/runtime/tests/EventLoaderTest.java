@@ -219,6 +219,18 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadCodePipelineEvent() {
+        CodePipelineEvent event = EventLoader.loadCodePipelineEvent("codepipeline_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getCodePipelineJob()).isNotNull();
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getFunctionName()).isEqualTo("my-function");
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getUserParameters()).isEqualTo("{\"KEY\": \"VALUE\"}");
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getAccessKeyId()).isEqualTo("AKIAIOSFODNN7EXAMPLE");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getS3Location().getBucketName()).isEqualTo("us-west-2-123456789012-my-pipeline");
+        assertThat(event.getCodePipelineJob().getData().getOutputArtifacts().get(0).getLocation().getS3Location().getObjectKey()).isEqualTo("my-pipeline/invokeOutp/D0YHsJn");
+    }
+
+    @Test
     public void testLoadCloudWatchLogsEvent() {
         CloudWatchLogsEvent cloudWatchLogsEvent = EventLoader.loadCloudWatchLogsEvent("cloudwatchlogs_event.json");
         assertThat(cloudWatchLogsEvent).isNotNull();

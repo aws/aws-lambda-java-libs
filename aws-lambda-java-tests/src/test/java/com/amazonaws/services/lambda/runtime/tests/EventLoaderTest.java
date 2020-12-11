@@ -300,4 +300,13 @@ public class EventLoaderTest {
                 .returns("arn:aws:secretsmanager:eu-central-1:123456789012:secret:/powertools/secretparam-xBPaJ5", from(SecretsManagerRotationEvent::getSecretId))
                 .returns("CreateSecret", from(SecretsManagerRotationEvent::getStep));
     }
+
+    @Test
+    public void testLoadSESEvent() {
+        SESEvent event = EventLoader.loadSESEvent("ses_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getRecords()).hasSize(1);
+        assertThat(event.getRecords().get(0).getSes().getMail().getDestination()[0]).isEqualTo("recipient@example.com");
+        assertThat(event.getRecords().get(0).getSes().getMail().getHeaders()).hasSize(29);
+    }
 }

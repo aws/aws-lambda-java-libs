@@ -51,8 +51,17 @@ public class SESEvent {
         private String messageId;
         private String[] destination;
         private boolean headersTruncated;
-        private Map<String, String> headers;
+        private List<Header> headers;
         private CommonHeaders commonHeaders;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    public static class Header {
+        private String name;
+        private String value;
     }
 
     @Data

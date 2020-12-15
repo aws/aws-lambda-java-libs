@@ -120,6 +120,18 @@ This command invokes the function running in the container image and returns a r
 
 *Alternately, you can also include RIE as a part of your base image. See the AWS documentation on how to [Build RIE into your base image](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html#images-test-alternative).*
 
+### Troubleshooting
+
+While running integration tests, you might encounter the Docker Hub rate limit error with the following body:
+```
+You have reached your pull rate limit. You may increase the limit by authenticating and upgrading: https://www.docker.com/increase-rate-limits
+```
+To fix the above issue, consider authenticating to a Docker Hub account by setting the Docker Hub credentials as below CodeBuild environment variables.
+```shell script
+DOCKERHUB_USERNAME=<dockerhub username>
+DOCKERHUB_PASSWORD=<dockerhub password>
+```
+Recommended way is to set the Docker Hub credentials in CodeBuild job by retrieving them from AWS Secrets Manager.
 
 ## Security
 

@@ -21,6 +21,16 @@ batch:
           RUNTIME_VERSION:
             - "corretto11"
 phases:
+  install:
+    commands:
+      - >
+        if [[ -z "${DOCKERHUB_USERNAME}" && -z "${DOCKERHUB_PASSWORD}" ]];
+        then
+            echo "DockerHub credentials not set as CodeBuild environment variables. Continuing without docker login."
+        else
+            echo "Performing DockerHub login . . ."
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+        fi
   pre_build:
     commands:
       - (cd aws-lambda-java-serialization && mvn install)

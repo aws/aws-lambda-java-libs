@@ -1,0 +1,22 @@
+{
+  "Records": [
+    {
+      "messageId": "d9144555-9a4f-4ec3-99a0-34ce359b4b54",
+      "receiptHandle": "13e7f7851d2eaa5c01f208ebadbf1e72==",
+      "body": "{\n  \"id\": 1234,\n  \"name\": \"Product1234\",\n  \"price\": 450\n}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1601975706495",
+        "SenderId": "AROAIFU437PVZ5L2J53F5",
+        "ApproximateFirstReceiveTimestamp": "1601975706499"
+      },
+      "messageAttributes": {
+
+      },
+      "md5OfBody": "13e7f7851d2eaa5c01f208ebadbf1e72",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:eu-central-1:123456789012:TestLambda",
+      "awsRegion": "eu-central-1"
+    }
+  ]
+}

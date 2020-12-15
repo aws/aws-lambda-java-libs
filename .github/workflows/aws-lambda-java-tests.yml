@@ -1,17 +1,17 @@
-# This workflow will be triggered if there will be changes to aws-lambda-java-events
+# This workflow will be triggered if there will be changes to aws-lambda-java-tests
 # package and it builds the package and the packages that depend on it.
 
-name: Java CI aws-lambda-java-events
+name: Java CI aws-lambda-java-tests
 
 on:
   push:
     branches: [ master ]
     paths:
-    - 'aws-lambda-java-events/**'
+    - 'aws-lambda-java-tests/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-events/**'
+    - 'aws-lambda-java-tests/**'
 
 jobs:
   build:
@@ -28,10 +28,10 @@ jobs:
     # Install base module
     - name: Install events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
+    - name: Install serialization with Maven
+      run: mvn -B install --file aws-lambda-java-serialization/pom.xml
 
-    # Package modules that depend on base module
-    - name: Package serialization with Maven
-      run: mvn -B package --file aws-lambda-java-serialization/pom.xml
-    - name: Package events-sdk-transformer with Maven
-      run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
-
+    # Package target module
+    - name: Package tests with Maven
+      run: mvn -B package --file aws-lambda-java-tests/pom.xml
+    

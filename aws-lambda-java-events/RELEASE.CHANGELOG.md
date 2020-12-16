@@ -1,3 +1,11 @@
+### December 16, 2020
+`3.7.0`:
+- Added support for StreamAnalytics and CustomCheckpointing ([#202](https://github.com/aws/aws-lambda-java-libs/pull/202))
+  - `DynamodbTimeWindowEvent`
+  - `KinesisTimeWindowEvent`
+  - `StreamsEventResponse`
+  - `TimeWindowEventResponse`
+
 ### November 06, 2020
 `3.6.0`:
 - Added support for Amazon `ActiveMQ` event: ([#185](https://github.com/aws/aws-lambda-java-libs/pull/185))

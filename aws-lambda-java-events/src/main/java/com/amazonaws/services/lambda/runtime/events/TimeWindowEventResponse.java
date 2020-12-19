@@ -22,6 +22,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Response type to return a new state for the time window and to report batch item failures. This should be used along with {@link KinesisTimeWindowEvent} or {@link DynamodbTimeWindowEvent}.
+ * https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-windows
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +33,14 @@ import java.util.Map;
 public class TimeWindowEventResponse implements Serializable {
     private static final long serialVersionUID = 2259096191791166028L;
 
+    /**
+     * New state after processing a batch of records.
+     */
     private Map<String, String> state;
+
+    /**
+     * A list of records which failed processing. Returning the first record which failed would retry all remaining records from the batch.
+     */
     private List<BatchItemFailure> batchItemFailures;
 
     @Data
@@ -39,6 +50,9 @@ public class TimeWindowEventResponse implements Serializable {
     public static class BatchItemFailure implements Serializable {
         private static final long serialVersionUID = 5224634072234167773L;
 
+        /**
+         * Sequence number of the record which failed processing.
+         */
         String itemIdentifier;
     }
 }

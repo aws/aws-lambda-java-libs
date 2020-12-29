@@ -11,10 +11,6 @@
   "fields":[{"name":"logger"}]
 },
 {
-  "name":"example.App",
-  "allPublicMethods":true
-},
-{
   "name":"java.lang.Void",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },

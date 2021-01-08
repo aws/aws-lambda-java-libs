@@ -10,53 +10,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static com.amazonaws.services.lambda.runtime.events.IamPolicyResponse.VERSION_2012_10_17;
+import static com.amazonaws.services.lambda.runtime.events.IamPolicyResponse.allowStatement;
+import static java.util.Collections.singletonList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 public class IamPolicyResponseTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    public static final String REGION = "eu-west-1";
-    public static final String AWS_ACCOUNT_ID = "123456789012";
-    public static final String REST_API_ID = "1234abc";
-    public static final String STAGE = "$deafult";
-    public static final String PRINCIPAL_ID = "me";
 
     @Test
     public void testAllowAllStatement() throws JsonProcessingException {
-        IamPolicyResponse iamPolicyResponse = new IamPolicyResponse(PRINCIPAL_ID, IamPolicyResponse.PolicyDocument.getAllowAllPolicy(REGION, AWS_ACCOUNT_ID, REST_API_ID, STAGE));
+        IamPolicyResponse iamPolicyResponse = IamPolicyResponse.builder()
+                .withPrincipalId("me")
+                .withPolicyDocument(IamPolicyResponse.PolicyDocument.builder()
+                        .withVersion(VERSION_2012_10_17)
+                        .withStatement(singletonList(allowStatement("arn:aws:execute-api:eu-west-1:123456789012:1234abc/$deafult/*/*")))
+                        .build())
+                .build();
 
         String json = OBJECT_MAPPER.writeValueAsString(iamPolicyResponse);
 
-        assertThatJson(json).isEqualTo(readResource("allow-all.json"));
-    }
-
-    @Test
-    public void testAllowOneStatement() throws JsonProcessingException {
-        IamPolicyResponse iamPolicyResponse = new IamPolicyResponse(PRINCIPAL_ID, IamPolicyResponse.PolicyDocument.getAllowOnePolicy(REGION, AWS_ACCOUNT_ID, REST_API_ID, STAGE, IamPolicyResponse.HttpMethod.GET, "/test"));
-
-        String json = OBJECT_MAPPER.writeValueAsString(iamPolicyResponse);
-
-        assertThatJson(json).isEqualTo(readResource("allow-one.json"));
-    }
-
-    @Test
-    public void testDenyAllStatement() throws JsonProcessingException {
-        IamPolicyResponse iamPolicyResponse = new IamPolicyResponse(PRINCIPAL_ID, IamPolicyResponse.PolicyDocument.getDenyAllPolicy(REGION, AWS_ACCOUNT_ID, REST_API_ID, STAGE));
-
-        String json = OBJECT_MAPPER.writeValueAsString(iamPolicyResponse);
-        System.out.println(json);
-
-        assertThatJson(json).isEqualTo(readResource("deny-all.json"));
-    }
-
-    @Test
-    public void testDenyOneStatement() throws JsonProcessingException {
-        IamPolicyResponse iamPolicyResponse = new IamPolicyResponse(PRINCIPAL_ID, IamPolicyResponse.PolicyDocument.getDenyOnePolicy(REGION, AWS_ACCOUNT_ID, REST_API_ID, STAGE, IamPolicyResponse.HttpMethod.GET, "/test"));
-
-        String json = OBJECT_MAPPER.writeValueAsString(iamPolicyResponse);
-        System.out.println(json);
-
-        assertThatJson(json).isEqualTo(readResource("deny-one.json"));
+        assertThatJson(json).isEqualTo(readResource("iamPolicyResponses/allow-all.json"));
     }
 
     private String readResource(String name) {

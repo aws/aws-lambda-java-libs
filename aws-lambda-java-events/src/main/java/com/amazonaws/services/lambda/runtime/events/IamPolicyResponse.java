@@ -38,6 +38,7 @@ public class IamPolicyResponse implements Serializable, Cloneable {
             serializableStatement.put("Effect", statement.getEffect());
             serializableStatement.put("Action", statement.getAction());
             serializableStatement.put("Resource", statement.getResource().toArray(new String[0]));
+            serializableStatement.put("Condition", statement.getCondition());
             serializableStatementArray[i] = serializableStatement;
         }
         serializablePolicy.put("Statement", serializableStatementArray);
@@ -79,5 +80,6 @@ public class IamPolicyResponse implements Serializable, Cloneable {
         private String action;
         private String effect;
         private List<String> resource;
+        private Map<String, Map<String, Object>> condition;
     }
 }

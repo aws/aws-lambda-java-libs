@@ -5,7 +5,8 @@
     "Statement": [{
       "Action": "execute-api:Invoke",
       "Resource": ["arn:aws:execute-api:eu-west-1:123456789012:1234abc/$deafult/*/*"],
-      "Effect": "Deny"
+      "Effect": "Deny",
+      "Condition": null
     }]
   },
   "context":null

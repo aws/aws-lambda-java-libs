@@ -3,15 +3,10 @@
   "policyDocument": {
     "Version": "2012-10-17",
     "Statement": [{
-      "Condition": {},
-      "Action": "execute-api:Invoke",
-      "Resource": [],
-      "Effect": "Allow"
-    }, {
-      "Condition": {},
       "Action": "execute-api:Invoke",
       "Resource": ["arn:aws:execute-api:eu-west-1:123456789012:1234abc/$deafult/*/*"],
       "Effect": "Deny"
     }]
-  }
+  },
+  "context":null
 }

@@ -37,8 +37,7 @@ public class IamPolicyResponse implements Serializable, Cloneable {
             Map<String, Object> serializableStatement = new HashMap<>();
             serializableStatement.put("Effect", statement.getEffect());
             serializableStatement.put("Action", statement.getAction());
-            serializableStatement.put("Resource", statement.getResource().toArray(new String[statement.getResource().size()]));
-//            serializableStatement.put(CONDITION, statement.getCondition());
+            serializableStatement.put("Resource", statement.getResource().toArray(new String[0]));
             serializableStatementArray[i] = serializableStatement;
         }
         serializablePolicy.put("Statement", serializableStatementArray);

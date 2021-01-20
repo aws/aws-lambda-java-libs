@@ -73,6 +73,24 @@ pom.xml
       <version>1.0.0</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ```
 src/main/java/example/App.java
@@ -92,7 +110,7 @@ To make it easy to locally test Lambda functions packaged as container images we
 
 *To install the emulator and test your Lambda function*
 
-1) From your project directory, run the following command to download the RIE from GitHub and install it on your local machine. 
+1) Run the following command to download the RIE from GitHub and install it on your local machine. 
 
 ```shell script
 mkdir -p ~/.aws-lambda-rie && \
@@ -105,7 +123,7 @@ mkdir -p ~/.aws-lambda-rie && \
 docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
     --entrypoint /aws-lambda/aws-lambda-rie \
     myfunction:latest \
-         java -cp ./* com.amazonaws.services.lambda.runtime.api.client.AWSLambda example.App::sayHello
+    /usr/bin/java -cp './*' com.amazonaws.services.lambda.runtime.api.client.AWSLambda example.App::sayHello
 ```
 
 This runs the image as a container and starts up an endpoint locally at `http://localhost:9000/2015-03-31/functions/function/invocations`. 

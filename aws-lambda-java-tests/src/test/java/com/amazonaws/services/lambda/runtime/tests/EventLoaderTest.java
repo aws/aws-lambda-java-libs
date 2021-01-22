@@ -78,6 +78,7 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getEventSourceArn()).isEqualTo("arn:aws:kafka:us-east-1:123456789012:cluster/vpc-3432434/4834-3547-3455-9872-7929");
+        assertThat(event.getBootstrapServers()).isEqualTo("b-2.demo-cluster-1.a1bcde.c1.kafka.us-east-1.amazonaws.com:9092,b-1.demo-cluster-1.a1bcde.c1.kafka.us-east-1.amazonaws.com:9092");
 
         KafkaEvent.KafkaEventRecord record = event.getRecords().get("mytopic-01").get(0);
         assertThat(record.getValue()).decodedAsBase64().asString().isEqualTo("Hello from Kafka !!");

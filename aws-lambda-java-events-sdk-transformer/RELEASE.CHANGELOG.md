@@ -1,3 +1,7 @@
+### December 16, 2020
+`3.0.2`:
+- Bumped `aws-lambda-java-events` to version `3.7.0`
+
 ### December 10, 2020
 `3.0.1`:
 - Change visibility scope of `Map<String, AttributeValue> toAttributeValueMapVx(Map<String, AttributeValue>)` to `public`

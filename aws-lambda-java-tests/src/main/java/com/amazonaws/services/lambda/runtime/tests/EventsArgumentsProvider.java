@@ -43,7 +43,7 @@ public class EventsArgumentsProvider implements ArgumentsProvider, AnnotationCon
             if (folderUrl == null) {
                 throw new IllegalArgumentException("Path " + events.folder() + " cannot be found");
             }
-            Stream<Path> files = Files.list(Paths.get(folderUrl.toURI()));
+            Stream<Path> files = Files.list(Paths.get(folderUrl.toURI())).sorted();
             return files
                     .filter(Files::isRegularFile)
                     .map(path -> Arguments.of(EventLoader.loadEvent(path.toString(), events.type())));

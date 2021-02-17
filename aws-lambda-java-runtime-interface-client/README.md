@@ -331,7 +331,7 @@ just build the image with Docker:
 docker build -t hello-lambda-native:latest .
 ```
 
-Then extract the Custom Runtime zip deployable bundle with this command:
+Then extract the Custom Runtime deployable zip bundle with this command:
 
 ```bash
 docker cp $(docker create hello-lambda-native:latest):/function/function.zip .

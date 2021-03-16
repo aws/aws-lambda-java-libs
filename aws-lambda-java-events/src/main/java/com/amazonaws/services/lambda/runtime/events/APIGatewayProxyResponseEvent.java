@@ -1,6 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +14,8 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
     private Integer statusCode;
 
     private Map<String, String> headers;
+
+    private Map<String, List<String>> multiValueHeaders;
     
     private String body;
 
@@ -66,6 +69,30 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
      */
     public APIGatewayProxyResponseEvent withHeaders(Map<String, String> headers) {
         this.setHeaders(headers);
+        return this;
+    }
+
+    /**
+     * @return the Http multi value headers to return in the response
+     */
+    public Map<String, List<String>> getMultiValueHeaders() {
+        return multiValueHeaders;
+    }
+
+    /**
+     * @param multiValueHeaders the Http multi value headers to return in the response
+     */
+    public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+        this.multiValueHeaders = multiValueHeaders;
+    }
+
+    /**
+     *
+     * @param multiValueHeaders the Http multi value headers to return in the response
+     * @return APIGatewayProxyResponseEvent
+     */
+    public APIGatewayProxyResponseEvent withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+        this.setMultiValueHeaders(multiValueHeaders);
         return this;
     }
 
@@ -130,6 +157,8 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
             sb.append("statusCode: ").append(getStatusCode()).append(",");
         if (getHeaders() != null)
             sb.append("headers: ").append(getHeaders().toString()).append(",");
+        if (getMultiValueHeaders() != null)
+            sb.append("multiValueHeaders: ").append(getMultiValueHeaders().toString()).append(",");
         if (getBody() != null)
             sb.append("body: ").append(getBody());
         sb.append("}");
@@ -154,6 +183,10 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
             return false;
         if (other.getHeaders() != null && other.getHeaders().equals(this.getHeaders()) == false)
             return false;
+        if (other.getMultiValueHeaders() == null ^ this.getMultiValueHeaders() == null)
+            return false;
+        if (other.getMultiValueHeaders() != null && other.getMultiValueHeaders().equals(this.getMultiValueHeaders()) == false)
+            return false;
         if (other.getBody() == null ^ this.getBody() == null)
             return false;
         if (other.getBody() != null && other.getBody().equals(this.getBody()) == false)
@@ -168,6 +201,7 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
 
         hashCode = prime * hashCode + ((getStatusCode() == null) ? 0 : getStatusCode().hashCode());
         hashCode = prime * hashCode + ((getHeaders() == null) ? 0 : getHeaders().hashCode());
+        hashCode = prime * hashCode + ((getMultiValueHeaders() == null) ? 0 : getMultiValueHeaders().hashCode());
         hashCode = prime * hashCode + ((getBody() == null) ? 0 : getBody().hashCode());
         return hashCode;
     }

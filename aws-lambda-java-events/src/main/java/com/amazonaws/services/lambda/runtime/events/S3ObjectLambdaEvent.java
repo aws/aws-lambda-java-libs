@@ -7,6 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * Event to allow transformations to occur before an S3 object is returned to the calling service.
+ *
+ * https://aws.amazon.com/blogs/aws/introducing-amazon-s3-object-lambda-use-your-code-to-process-data-as-it-is-being-retrieved-from-s3/
+ */
+
 @Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor

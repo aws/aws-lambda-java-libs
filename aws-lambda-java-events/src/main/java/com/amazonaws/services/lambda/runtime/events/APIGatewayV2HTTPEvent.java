@@ -54,6 +54,7 @@ public class APIGatewayV2HTTPEvent {
         private long timeEpoch;
         private Http http;
         private Authorizer authorizer;
+        private String requestId;
 
         @AllArgsConstructor
         @Builder(setterPrefix = "with")

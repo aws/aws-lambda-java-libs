@@ -25,6 +25,9 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @Data
 @NoArgsConstructor
+/**
+ * API Gateway v2 event: https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html
+ */
 public class APIGatewayV2HTTPEvent {
     private String version;
     private String routeKey;

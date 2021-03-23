@@ -125,6 +125,6 @@ public class HandlerParamsArgumentsProvider implements ArgumentsProvider, Annota
         if (folderUrl == null) {
             throw new IllegalArgumentException("Path " + folder + " cannot be found");
         }
-        return Files.list(Paths.get(folderUrl.toURI()));
+        return Files.list(Paths.get(folderUrl.toURI())).sorted();
     }
 }

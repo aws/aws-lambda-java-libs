@@ -58,7 +58,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0</version>
     </dependency>
     ...
 </dependencies>
@@ -68,19 +68,19 @@
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.7.0'
+'com.amazonaws:aws-lambda-java-events:3.8.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.7.0"]
+[com.amazonaws/aws-lambda-java-events "3.8.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.7.0"
+"com.amazonaws" % "aws-lambda-java-events" % "3.8.0"
 ```

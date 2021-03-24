@@ -37,12 +37,12 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events</artifactId>
-  <version>3.7.0</version>
+  <version>3.8.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -57,7 +57,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-tests</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -66,33 +66,33 @@ ___
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.7.0'
-'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.2'
+'com.amazonaws:aws-lambda-java-events:3.8.0'
+'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.3'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 'com.amazonaws:aws-lambda-java-runtime-interface-client:1.0.0'
-'com.amazonaws:aws-lambda-java-tests:1.0.0'
+'com.amazonaws:aws-lambda-java-tests:1.0.1'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.7.0"]
-[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.2"]
+[com.amazonaws/aws-lambda-java-events "3.8.0"]
+[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.3"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
 [com.amazonaws/aws-lambda-java-runtime-interface-client "1.0.0"]
-[com.amazonaws/aws-lambda-java-tests "1.0.0"]
+[com.amazonaws/aws-lambda-java-tests "1.0.1"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.7.0"
-"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.2"
+"com.amazonaws" % "aws-lambda-java-events" % "3.8.0"
+"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.3"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
 "com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "1.0.0"
-"com.amazonaws" % "aws-lambda-java-tests" % "1.0.0"
+"com.amazonaws" % "aws-lambda-java-tests" % "1.0.1"
 ```
 
 # Using aws-lambda-java-core

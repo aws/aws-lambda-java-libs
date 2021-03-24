@@ -1,3 +1,14 @@
+### March 24, 2021
+`3.8.0`:
+- Added support for S3 Object Lambda event ([#229](https://github.com/aws/aws-lambda-java-libs/pull/229))
+  - `S3ObjectLambdaEvent`
+- Added support for IAM Policy response ([#213](https://github.com/aws/aws-lambda-java-libs/pull/213))
+  - `IamPolicyResponse`
+- Added `bootstrapServers` to `KafkaEvent` ([#216](https://github.com/aws/aws-lambda-java-libs/pull/216))
+- Added `requestId` to `APIGatewayV2HTTPEvent` ([#230](https://github.com/aws/aws-lambda-java-libs/pull/230))
+- Added `multiValueHeaders` to `APIGatewayProxyResponseEvent` ([#228](https://github.com/aws/aws-lambda-java-libs/pull/228))
+- Bumped `jackson-databind` from `2.10.4` to `2.10.5.1` ([#231](https://github.com/aws/aws-lambda-java-libs/pull/231))
+
 ### December 16, 2020
 `3.7.0`:
 - Added support for StreamAnalytics and CustomCheckpointing ([#202](https://github.com/aws/aws-lambda-java-libs/pull/202))

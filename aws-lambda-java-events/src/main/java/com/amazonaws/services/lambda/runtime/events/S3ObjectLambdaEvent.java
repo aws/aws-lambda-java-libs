@@ -63,7 +63,7 @@ public class S3ObjectLambdaEvent {
     /**
      * A pre-signed URL that can be used to fetch the original object from Amazon S3.
      *
-     * The URL is signed using the original caller’s identity, and their permissions
+     * The URL is signed using the original caller's identity, and their permissions
      * will apply when the URL is used. If there are signed headers in the URL, the
      * Lambda function must include these in the call to Amazon S3, except for the Host.
      *

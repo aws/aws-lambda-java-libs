@@ -26,6 +26,9 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getBody()).isEqualTo("Hello from Lambda!");
+
+        assertThat(event.getHeaders().get("Header1")).isEqualTo("value1");
+        assertThat(event.getHeaders().get("header1")).isEqualTo("value1");
         assertThat(event.getHeaders()).hasSize(2);
     }
 

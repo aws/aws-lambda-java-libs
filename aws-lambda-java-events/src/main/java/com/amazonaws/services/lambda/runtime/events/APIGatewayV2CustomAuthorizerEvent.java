@@ -1,5 +1,6 @@
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class APIGatewayV2CustomAuthorizerEvent {
     private String rawPath;
     private String rawQueryString;
     private List<String> cookies;
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
     private Map<String, String> queryStringParameters;
     private RequestContext requestContext;
     private Map<String, String> pathParameters;

@@ -15,6 +15,10 @@
     "Header2": [
       "value1",
       "value2"
+    ],
+    "header1": [
+      "value1",
+      "value11"
     ]
   },
   "queryStringParameters": {

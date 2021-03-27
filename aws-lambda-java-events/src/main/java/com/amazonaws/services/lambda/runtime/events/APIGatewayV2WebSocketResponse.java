@@ -1,5 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -12,8 +14,8 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
 
   private boolean isBase64Encoded = false;
   private int statusCode;
-  private Map<String, String> headers;
-  private Map<String, String[]> multiValueHeaders;
+  private HttpHeaders<String> headers;
+  private HttpHeaders<String[]> multiValueHeaders;
   private String body;
 
   public boolean isIsBase64Encoded() {
@@ -37,7 +39,12 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   }
 
   public void setHeaders(Map<String, String> headers) {
-    this.headers = headers;
+    if (this.headers == null && headers != null && !headers.isEmpty()) {
+      this.headers = new HttpHeaders<>();
+    }
+    if (headers != null && !headers.isEmpty()) {
+      this.headers.putAll(headers);
+    }
   }
 
   public Map<String, String[]> getMultiValueHeaders() {
@@ -45,7 +52,12 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   }
 
   public void setMultiValueHeaders(Map<String, String[]> multiValueHeaders) {
-    this.multiValueHeaders = multiValueHeaders;
+    if (this.multiValueHeaders == null && multiValueHeaders != null && !multiValueHeaders.isEmpty()) {
+      this.multiValueHeaders = new HttpHeaders<>();
+    }
+    if (multiValueHeaders != null && !multiValueHeaders.isEmpty()) {
+      this.multiValueHeaders.putAll(multiValueHeaders);
+    }
   }
 
   public String getBody() {

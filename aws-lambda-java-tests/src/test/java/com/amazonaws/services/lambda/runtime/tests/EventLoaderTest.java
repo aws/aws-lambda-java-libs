@@ -29,6 +29,8 @@ public class EventLoaderTest {
 
         assertThat(event.getHeaders().get("Header1")).isEqualTo("value1");
         assertThat(event.getHeaders().get("header1")).isEqualTo("value1");
+        assertThat(event.getMultiValueHeaders().get("header1")).contains("value1", "value11");
+        assertThat(event.getMultiValueHeaders().get("Header1")).contains("value1", "value11");
         assertThat(event.getHeaders()).hasSize(2);
     }
 
@@ -38,6 +40,9 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getBody()).isEqualTo("Hello from Lambda!!");
+
+        assertThat(event.getHeaders().get("Header1")).isEqualTo("value1");
+        assertThat(event.getHeaders().get("header1")).isEqualTo("value1");
     }
 
     @Test
@@ -47,6 +52,9 @@ public class EventLoaderTest {
         assertThat(event).isNotNull();
         assertThat(event.getRequestContext().getHttpMethod()).isEqualTo("GET");
         assertThat(event.getHeaders()).hasSize(8);
+
+        assertThat(event.getHeaders().get("Accept")).isEqualTo("application/json");
+        assertThat(event.getHeaders().get("accept")).isEqualTo("application/json");
     }
 
     @Test
@@ -56,6 +64,9 @@ public class EventLoaderTest {
         assertThat(event).isNotNull();
         assertThat(event.getRequestContext().getHttp().getMethod()).isEqualTo("POST");
         assertThat(event.getRequestContext().getTimeEpoch()).isEqualTo(Instant.ofEpochMilli(1583348638390L));
+
+        assertThat(event.getHeaders().get("Header1")).isEqualTo("Value1");
+        assertThat(event.getHeaders().get("header1")).isEqualTo("Value1");
     }
 
     @Test
@@ -64,6 +75,9 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getBody()).isEqualTo("Hello from ELB");
+
+        assertThat(event.getHeaders().get("Accept")).isEqualTo("application/json");
+        assertThat(event.getHeaders().get("accept")).isEqualTo("application/json");
     }
 
     @Test

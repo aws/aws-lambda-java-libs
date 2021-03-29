@@ -43,6 +43,19 @@ public class APIGatewayV2HTTPEvent {
     private boolean isBase64Encoded;
     private RequestContext requestContext;
 
+    public void setHeaders(Map<String, String> headers) {
+        System.out.println("setHeaders");
+        if (headers == null || headers.isEmpty()) {
+            this.headers = null;
+            return;
+        }
+
+        if (this.headers == null) {
+            this.headers = new HttpHeaders<>();
+        }
+        this.headers.putAll(headers);
+    }
+
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     @Data

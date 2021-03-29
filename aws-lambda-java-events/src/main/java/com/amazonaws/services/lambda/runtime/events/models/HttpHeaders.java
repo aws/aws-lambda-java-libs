@@ -13,7 +13,7 @@ import java.util.TreeMap;
 public class HttpHeaders<T> implements Map<String, T> {
 
     // Headers are case insensitive (https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)
-    private Map<String, T> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private final Map<String, T> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     @Override
     public int size() {

@@ -39,12 +39,15 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   }
 
   public void setHeaders(Map<String, String> headers) {
-    if (this.headers == null && headers != null && !headers.isEmpty()) {
+    if (headers == null || headers.isEmpty()) {
+      this.headers = null;
+      return;
+    }
+
+    if (this.headers == null) {
       this.headers = new HttpHeaders<>();
     }
-    if (headers != null && !headers.isEmpty()) {
-      this.headers.putAll(headers);
-    }
+    this.headers.putAll(headers);
   }
 
   public Map<String, String[]> getMultiValueHeaders() {
@@ -52,12 +55,15 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   }
 
   public void setMultiValueHeaders(Map<String, String[]> multiValueHeaders) {
-    if (this.multiValueHeaders == null && multiValueHeaders != null && !multiValueHeaders.isEmpty()) {
+    if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
+      this.multiValueHeaders = null;
+      return;
+    }
+
+    if (this.multiValueHeaders == null) {
       this.multiValueHeaders = new HttpHeaders<>();
     }
-    if (multiValueHeaders != null && !multiValueHeaders.isEmpty()) {
-      this.multiValueHeaders.putAll(multiValueHeaders);
-    }
+    this.multiValueHeaders.putAll(multiValueHeaders);
   }
 
   public String getBody() {

@@ -44,7 +44,6 @@ public class APIGatewayV2HTTPEvent {
     private RequestContext requestContext;
 
     public void setHeaders(Map<String, String> headers) {
-        System.out.println("setHeaders");
         if (headers == null || headers.isEmpty()) {
             this.headers = null;
             return;

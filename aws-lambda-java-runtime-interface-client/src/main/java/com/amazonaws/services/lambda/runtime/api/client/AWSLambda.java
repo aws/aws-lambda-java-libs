@@ -203,7 +203,7 @@ public class AWSLambda {
         System.setErr(new PrintStream(new LambdaOutputStream(System.err), false, "UTF-8"));
         setupRuntimeLogger(lambdaLogger);
 
-        String runtimeApi = getEnvOrExit("AWS_LAMBDA_RUNTIME_API");
+        String runtimeApi = getEnvOrExit(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_API);
         LambdaRuntimeClient runtimeClient = new LambdaRuntimeClient(runtimeApi);
 
         EnvReader envReader = new EnvReader();

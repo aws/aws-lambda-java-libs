@@ -52,7 +52,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -69,7 +69,7 @@ ___
 'com.amazonaws:aws-lambda-java-events:3.10.0'
 'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.6'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
-'com.amazonaws:aws-lambda-java-runtime-interface-client:1.1.0'
+'com.amazonaws:aws-lambda-java-runtime-interface-client:2.0.0'
 'com.amazonaws:aws-lambda-java-tests:1.1.0'
 ```
 
@@ -80,7 +80,7 @@ ___
 [com.amazonaws/aws-lambda-java-events "3.10.0"]
 [com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.6"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
-[com.amazonaws/aws-lambda-java-runtime-interface-client "1.1.0"]
+[com.amazonaws/aws-lambda-java-runtime-interface-client "2.0.0"]
 [com.amazonaws/aws-lambda-java-tests "1.1.0"]
 ```
 
@@ -91,7 +91,7 @@ ___
 "com.amazonaws" % "aws-lambda-java-events" % "3.10.0"
 "com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.6"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
-"com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "1.1.0"
+"com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "2.0.0"
 "com.amazonaws" % "aws-lambda-java-tests" % "1.1.0"
 ```
 

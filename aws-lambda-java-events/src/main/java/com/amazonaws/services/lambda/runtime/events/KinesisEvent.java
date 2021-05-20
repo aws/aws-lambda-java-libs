@@ -316,7 +316,7 @@ public class KinesisEvent implements Serializable, Cloneable {
             if (getEventName() != null)
                 sb.append("eventName: ").append(getEventName()).append(",");
             if (getEventVersion() != null)
-                sb.append("eventSourceARN: ").append(getEventSourceARN()).append(",");
+                sb.append("eventVersion: ").append(getEventVersion()).append(",");
             if (getEventSourceARN() != null)
                 sb.append("eventSourceARN: ").append(getEventSourceARN()).append(",");
             if (getAwsRegion() != null)

@@ -1,0 +1,14 @@
+{
+  "principalId": "me",
+  "policyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Action": "execute-api:Invoke",
+      "Resource": ["arn:aws:execute-api:eu-west-1:123456789012:1234abc/$deafult/*/*"],
+      "Effect": "Deny",
+      "Condition": null
+    }]
+  },
+  "context":null,
+  "usageIdentifierKey": "123ABC"
+}

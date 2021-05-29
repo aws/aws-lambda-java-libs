@@ -2,8 +2,11 @@
 
 package com.amazonaws.services.lambda.runtime.api.client.util;
 
+import com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables;
+
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class EnvWriter implements AutoCloseable {
@@ -43,24 +46,30 @@ public class EnvWriter implements AutoCloseable {
         modifyEnv((env) -> {
             // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN are set by the runtime API daemon when
             // executing the runtime's bootstrap. Ensure these are not empty values.
-            removeIfEmpty(env, "AWS_ACCESS_KEY_ID");
-            removeIfEmpty(env, "AWS_SECRET_ACCESS_KEY");
-            removeIfEmpty(env, "AWS_SESSION_TOKEN");
+            removeIfEmpty(env, ReservedRuntimeEnvironmentVariables.AWS_ACCESS_KEY_ID);
+            removeIfEmpty(env, ReservedRuntimeEnvironmentVariables.AWS_SECRET_ACCESS_KEY);
+            removeIfEmpty(env, ReservedRuntimeEnvironmentVariables.AWS_SESSION_TOKEN);
 
             // The AWS Java SDK supports two alternate keys for the aws access and secret keys for compatibility.
             // These are not set by the runtime API daemon when executing a runtime's bootstrap so set them here.
-            addIfNotNull(env, "AWS_ACCESS_KEY", env.get("AWS_ACCESS_KEY_ID"));
-            addIfNotNull(env, "AWS_SECRET_KEY", env.get("AWS_SECRET_ACCESS_KEY"));
+            addIfNotNull(env, "AWS_ACCESS_KEY", env.get(ReservedRuntimeEnvironmentVariables.AWS_ACCESS_KEY_ID));
+            addIfNotNull(env, "AWS_SECRET_KEY", env.get(ReservedRuntimeEnvironmentVariables.AWS_SECRET_ACCESS_KEY));
         });
     }
 
     public void setupAwsExecutionEnv() {
+        executionEnvironmentForJavaVersion()
+                .ifPresent(val -> modifyEnv(env -> env.put(ReservedRuntimeEnvironmentVariables.AWS_EXECUTION_ENV, val)));
+    }
+
+    private Optional<String> executionEnvironmentForJavaVersion() {
         String version = System.getProperty("java.version");
         if (version.startsWith("1.8")) {
-            modifyEnv(env -> env.put("AWS_EXECUTION_ENV", "AWS_Lambda_java8"));
+            return Optional.of("AWS_Lambda_java8");
         } else if (version.startsWith("11")) {
-            modifyEnv(env -> env.put("AWS_EXECUTION_ENV", "AWS_Lambda_java11"));
+            return Optional.of("AWS_Lambda_java11");
         }
+        return Optional.empty();
     }
 
     private void addIfNotNull(Map<String, String> env, String key, String value) {

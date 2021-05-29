@@ -1,7 +1,5 @@
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -558,8 +556,8 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
   private String resource;
   private String path;
   private String httpMethod;
-  private HttpHeaders<String> headers;
-  private HttpHeaders<List<String>> multiValueHeaders;
+  private Map<String, String> headers;
+  private Map<String, List<String>> multiValueHeaders;
   private Map<String, String> queryStringParameters;
   private Map<String, List<String>> multiValueQueryStringParameters;
   private Map<String, String> pathParameters;
@@ -597,15 +595,7 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
   }
 
   public void setHeaders(Map<String, String> headers) {
-    if (headers == null || headers.isEmpty()) {
-      this.headers = null;
-      return;
-    }
-
-    if (this.headers == null) {
-      this.headers = new HttpHeaders<>();
-    }
-    this.headers.putAll(headers);
+    this.headers = headers;
   }
 
   public Map<String, List<String>> getMultiValueHeaders() {
@@ -613,15 +603,7 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
   }
 
   public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-    if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
-      this.multiValueHeaders = null;
-      return;
-    }
-
-    if (this.multiValueHeaders == null) {
-      this.multiValueHeaders = new HttpHeaders<>();
-    }
-    this.multiValueHeaders.putAll(multiValueHeaders);
+    this.multiValueHeaders = multiValueHeaders;
   }
 
   public Map<String, String> getQueryStringParameters() {

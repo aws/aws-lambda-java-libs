@@ -38,7 +38,7 @@ public class APIGatewayV2HTTPEvent {
     private Map<String, String> queryStringParameters;
     private Map<String, String> pathParameters;
     private Map<String, String> stageVariables;
-    private String Body;
+    private String body;
     private boolean isBase64Encoded;
     private RequestContext requestContext;
 

@@ -16,12 +16,12 @@ Add the following Apache Maven dependencies to your `pom.xml` file:
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.4</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.8.0</version>
+        <version>3.9.0</version>
     </dependency>
 </dependencies>
 ```

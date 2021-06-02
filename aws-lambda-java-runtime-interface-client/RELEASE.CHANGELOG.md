@@ -1,3 +1,8 @@
+### June 02, 2020
+`1.1.0`:
+- Added reserved environment variables constants ([#238](https://github.com/aws/aws-lambda-java-libs/pull/238))
+- Updated libcurl dependency to `7.77.0` ([#249](https://github.com/aws/aws-lambda-java-libs/pull/249))
+
 ### December 01, 2020
 `1.0.0`:
 - Initial release of AWS Lambda Java Runtime Interface Client

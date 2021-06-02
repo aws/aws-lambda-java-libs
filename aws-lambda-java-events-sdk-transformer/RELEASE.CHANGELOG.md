@@ -1,3 +1,7 @@
+### June 2, 2021
+`3.0.4`:
+- Bumped `aws-lambda-java-events` to version `3.9.0`
+
 ### March 24, 2021
 `3.0.3`:
 - Bumped `aws-lambda-java-events` to version `3.8.0`

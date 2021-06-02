@@ -53,6 +53,10 @@ public class EventLoader {
         return loadEvent(filename, CodeCommitEvent.class);
     }
 
+    public static CodePipelineEvent loadCodePipelineEvent(String filename) {
+        return loadEvent(filename, CodePipelineEvent.class);
+    }
+
     public static ConfigEvent loadConfigEvent(String filename) {
         return loadEvent(filename, ConfigEvent.class);
     }

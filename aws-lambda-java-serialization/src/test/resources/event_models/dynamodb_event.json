@@ -1,0 +1,166 @@
+{
+  "Records": [
+    {
+      "eventID": "1",
+      "dynamodb": {
+        "Keys": {
+          "Id": {
+            "N": "101"
+          }
+        },
+        "NewImage": {
+          "Message": {
+            "S": "New item!"
+          },
+          "Id": {
+            "N": "101"
+          }
+        },
+        "StreamViewType": "NEW_AND_OLD_IMAGES",
+        "SequenceNumber": "111",
+        "SizeBytes": 26
+      },
+      "awsRegion": "us-west-2",
+      "eventName": "INSERT",
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899",
+      "eventSource": "aws:dynamodb"
+    },
+    {
+      "eventID": "2",
+      "dynamodb": {
+        "OldImage": {
+          "Message": {
+            "S": "New item!"
+          },
+          "Id": {
+            "N": "101"
+          }
+        },
+        "SequenceNumber": "222",
+        "Keys": {
+          "Id": {
+            "N": "101"
+          }
+        },
+        "SizeBytes": 59,
+        "NewImage": {
+          "Message": {
+            "S": "This item has changed"
+          },
+          "Id": {
+            "N": "101"
+          }
+        },
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "awsRegion": "us-west-2",
+      "eventName": "MODIFY",
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899",
+      "eventSource": "aws:dynamodb"
+    },
+    {
+      "eventID": "3",
+      "dynamodb": {
+        "Keys": {
+          "Id": {
+            "N": "101"
+          }
+        },
+        "SizeBytes": 38,
+        "SequenceNumber": "333",
+        "OldImage": {
+          "Message": {
+            "S": "This item has changed"
+          },
+          "Id": {
+            "N": "101"
+          }
+        },
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "awsRegion": "us-west-2",
+      "eventName": "REMOVE",
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899",
+      "eventSource": "aws:dynamodb"
+    },
+    {
+      "eventID": "77742f55658ca1effb9ae758c65c8a51",
+      "eventName": "INSERT",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-west-2",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1.44130524E9,
+        "Keys": {
+          "Id": {
+            "N": "147"
+          }
+        },
+        "NewImage": {
+          "attr_M": {
+            "M": {
+              "attr_M1": {
+                "N": "1580756226"
+              },
+              "attr_M2": {
+                "S": "1580756226"
+              }
+            }
+          },
+          "attr_L": {
+            "L": [
+              {
+                "N": "1580756226"
+              },
+              {
+                "S": "1580756226"
+              }
+            ]
+          },
+          "attr_BOOL": {
+            "BOOL": true
+          },
+          "s3info": {
+            "S": "lambda-ddb-streams-int-test/a2b4c06b-2360-44ac-9bd7-2bab669246b8"
+          },
+          "attr_NULL": {
+            "NULL": true
+          },
+          "attr_NS": {
+            "NS": [
+              "1580756227",
+              "1580756226"
+            ]
+          },
+          "attr_SS": {
+            "SS": [
+              "1580756226",
+              "1580756227"
+            ]
+          },
+          "attr_BS": {
+            "BS": [
+              "MTU4MDc1NjIyNg==",
+              "MTU4MDc1NjIyNw=="
+            ]
+          },
+          "attr_S": {
+            "S": "1580756226"
+          },
+          "Id": {
+            "N": "147"
+          },
+          "attr_B": {
+            "B": "MTU4MDc1NjIyNg=="
+          },
+          "attr_N": {
+            "N": "1580756226"
+          }
+        },
+        "SequenceNumber": "2700000000000002229109",
+        "SizeBytes": 285,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:059493405231:table/lambda-ddb-streams-int-test/stream/2015-06-26T18:21:25.123"
+    }
+  ]
+}

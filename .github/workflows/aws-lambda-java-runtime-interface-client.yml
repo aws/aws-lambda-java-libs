@@ -1,0 +1,32 @@
+# This workflow will be triggered if there will be changes to 
+# aws-lambda-java-runtime-interface-client package and it builds the package.
+
+name: Java CI aws-lambda-java-runtime-interface-client
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'aws-lambda-java-runtime-interface-client/**'
+  pull_request:
+    branches: [ '*' ]
+    paths:
+    - 'aws-lambda-java-runtime-interface-client/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        
+    # Test Runtime Interface Client
+    - name: Run 'pr' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make pr
+    

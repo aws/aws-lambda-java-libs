@@ -1,0 +1,5 @@
+FROM alpine:latest
+
+RUN apk update; apk add g++ cmake git ninja curl-dev zlib-dev
+
+RUN git clone https://github.com/aws/aws-sdk-cpp.git

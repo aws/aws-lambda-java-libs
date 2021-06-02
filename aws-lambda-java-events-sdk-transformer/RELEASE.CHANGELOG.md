@@ -1,3 +1,30 @@
+### March 24, 2021
+`3.0.3`:
+- Bumped `aws-lambda-java-events` to version `3.8.0`
+
+### December 16, 2020
+`3.0.2`:
+- Bumped `aws-lambda-java-events` to version `3.7.0`
+
+### December 10, 2020
+`3.0.1`:
+- Change visibility scope of `Map<String, AttributeValue> toAttributeValueMapVx(Map<String, AttributeValue>)` to `public`
+
+### December 09, 2020
+`3.0.0`:
+- Added AWS SDK V1 transformers for `DynamodbEvent` in `aws-lambda-java-events` versions `3.0.0` and up
+- Moved existing SDK v2 transformers into `v2` package (from `com.amazonaws.services.lambda.runtime.events.transformers` to `com.amazonaws.services.lambda.runtime.events.transformers.v2`)
+- Bumped `software.amazon.awssdk:dynamodb` to version `2.15.40`
+
+### November 06, 2020
+`2.0.8`:
+- Bumped `aws-lambda-java-events` to version `3.6.0`
+- Bumped `junit-jupiter-engine` to version `5.7.0`
+
+### October 28, 2020
+`2.0.7`:
+- Bumped `aws-lambda-java-events` to version `3.5.0`
+
 ### October 07, 2020
 `2.0.6`:
 - Fixed NPE when UserIdentity is null ([#169](https://github.com/aws/aws-lambda-java-libs/pull/169))

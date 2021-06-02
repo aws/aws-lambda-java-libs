@@ -1,0 +1,15 @@
+{
+  "version": "0",
+  "id": "fae0433b-7a0e-e383-7849-7e10153eaa47",
+  "detail-type": "Scheduled Event",
+  "source": "aws.events",
+  "account": "123456789012",
+  "time": "2020-09-30T15:58:34Z",
+  "region": "eu-central-1",
+  "resources": [
+    "arn:aws:events:eu-central-1:123456789012:rule/demoschedule"
+  ],
+  "detail": {
+
+  }
+}

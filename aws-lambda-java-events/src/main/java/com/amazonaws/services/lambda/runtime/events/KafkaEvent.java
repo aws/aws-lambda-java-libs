@@ -26,8 +26,9 @@ import java.util.Map;
 /** Represents a Kafka Event. **/
 public class KafkaEvent {
     private Map<String, List<KafkaEventRecord>> records;
-    private  String eventSource;
+    private String eventSource;
     private String eventSourceArn;
+    private String bootstrapServers;
     
     @Data
     @NoArgsConstructor

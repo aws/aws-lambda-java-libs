@@ -1,3 +1,34 @@
+### March 24, 2021
+`3.8.0`:
+- Added support for S3 Object Lambda event ([#229](https://github.com/aws/aws-lambda-java-libs/pull/229))
+  - `S3ObjectLambdaEvent`
+- Added support for IAM Policy response ([#213](https://github.com/aws/aws-lambda-java-libs/pull/213))
+  - `IamPolicyResponse`
+- Added `bootstrapServers` to `KafkaEvent` ([#216](https://github.com/aws/aws-lambda-java-libs/pull/216))
+- Added `requestId` to `APIGatewayV2HTTPEvent` ([#230](https://github.com/aws/aws-lambda-java-libs/pull/230))
+- Added `multiValueHeaders` to `APIGatewayProxyResponseEvent` ([#228](https://github.com/aws/aws-lambda-java-libs/pull/228))
+- Bumped `jackson-databind` from `2.10.4` to `2.10.5.1` ([#231](https://github.com/aws/aws-lambda-java-libs/pull/231))
+
+### December 16, 2020
+`3.7.0`:
+- Added support for StreamAnalytics and CustomCheckpointing ([#202](https://github.com/aws/aws-lambda-java-libs/pull/202))
+  - `DynamodbTimeWindowEvent`
+  - `KinesisTimeWindowEvent`
+  - `StreamsEventResponse`
+  - `TimeWindowEventResponse`
+
+### November 06, 2020
+`3.6.0`:
+- Added support for Amazon `ActiveMQ` event: ([#185](https://github.com/aws/aws-lambda-java-libs/pull/185))
+- Bumped `junit-jupiter-engine` to version `5.7.0`
+- Bumped `lombok` to version `1.18.16`
+
+### October 28, 2020
+`3.5.0`:
+- Added support for S3 Batch events: ([#179](https://github.com/aws/aws-lambda-java-libs/pull/179))
+  - `S3BatchEvent`
+  - `S3BatchResponse`
+  
 ### October 07, 2020
 `3.4.0`:
 - Added Lambda and IAM authorizers to `APIGatewayV2HTTPEvent` request context ([#167](https://github.com/aws/aws-lambda-java-libs/pull/167))

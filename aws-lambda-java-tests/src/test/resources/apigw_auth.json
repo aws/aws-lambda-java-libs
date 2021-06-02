@@ -10,6 +10,7 @@
   "headers": {
     "X-AMZ-Date": "20170718T062915Z",
     "Accept": "*/*",
+    "accept": "application/json",
     "HeaderAuth1": "headerValue1",
     "CloudFront-Viewer-Country": "US",
     "CloudFront-Forwarded-Proto": "https",

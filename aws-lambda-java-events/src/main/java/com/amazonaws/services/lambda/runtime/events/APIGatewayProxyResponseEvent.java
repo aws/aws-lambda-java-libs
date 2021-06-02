@@ -1,5 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +15,9 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
     
     private Integer statusCode;
 
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
 
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<List<String>> multiValueHeaders;
     
     private String body;
 
@@ -60,7 +62,15 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
      * @param headers The Http headers return in the response
      */
     public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+        if (headers == null || headers.isEmpty()) {
+            this.headers = null;
+            return;
+        }
+
+        if (this.headers == null) {
+            this.headers = new HttpHeaders<>();
+        }
+        this.headers.putAll(headers);
     }
 
     /**
@@ -83,7 +93,15 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
      * @param multiValueHeaders the Http multi value headers to return in the response
      */
     public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-        this.multiValueHeaders = multiValueHeaders;
+        if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
+            this.multiValueHeaders = null;
+            return;
+        }
+
+        if (this.multiValueHeaders == null) {
+            this.multiValueHeaders = new HttpHeaders<>();
+        }
+        this.multiValueHeaders.putAll(multiValueHeaders);
     }
 
     /**

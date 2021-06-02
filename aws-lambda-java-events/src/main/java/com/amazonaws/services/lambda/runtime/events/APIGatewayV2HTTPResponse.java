@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,9 +28,44 @@ import java.util.Map;
 @NoArgsConstructor
 public class APIGatewayV2HTTPResponse {
     private int statusCode;
-    private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<String> headers;
+    private HttpHeaders<List<String>> multiValueHeaders;
     private List<String> cookies;
     private String body;
     private boolean isBase64Encoded;
+
+    public static APIGatewayV2HTTPResponseBuilder builder() {
+        return new APIGatewayV2HTTPResponseBuilder();
+    }
+
+    public static class APIGatewayV2HTTPResponseBuilder {
+        private HttpHeaders<String> headers;
+        private HttpHeaders<List<String>> multiValueHeaders;
+
+        public APIGatewayV2HTTPResponseBuilder withHeaders(Map<String, String> headers) {
+            if (headers == null || headers.isEmpty()) {
+                this.headers = null;
+                return this;
+            }
+
+            if (this.headers == null) {
+                this.headers = new HttpHeaders<>();
+            }
+            this.headers.putAll(headers);
+            return this;
+        }
+
+        public APIGatewayV2HTTPResponseBuilder withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+            if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
+                this.multiValueHeaders = null;
+                return this;
+            }
+
+            if (this.multiValueHeaders == null) {
+                this.multiValueHeaders = new HttpHeaders<>();
+            }
+            this.multiValueHeaders.putAll(multiValueHeaders);
+            return this;
+        }
+    }
 }

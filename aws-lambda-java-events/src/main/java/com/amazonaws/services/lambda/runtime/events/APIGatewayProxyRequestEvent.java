@@ -1,8 +1,9 @@
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
+
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class that represents an APIGatewayProxyRequestEvent
@@ -17,9 +18,9 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
     private String httpMethod;
 
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
 
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<List<String>> multiValueHeaders;
 
     private Map<String, String> queryStringParameters;
 
@@ -67,7 +68,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         /**
          * default constructor
          */
-        public ProxyRequestContext() {}
+        public ProxyRequestContext() {
+        }
 
         /**
          * @return account id that owns Lambda function
@@ -101,7 +103,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
-         * @return  API Gateway stage name
+         * @return API Gateway stage name
          */
         public String getStage() {
             return stage;
@@ -286,14 +288,14 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         /**
          * @return The name of the operation being performed
-         * */
+         */
         public String getOperationName() {
             return operationName;
         }
 
         /**
          * @param operationName The name of the operation being performed
-         * */
+         */
         public void setOperationName(String operationName) {
             this.operationName = operationName;
         }
@@ -307,7 +309,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
-         *
          * @see Object#toString()
          */
         @Override
@@ -412,7 +413,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getApiId() == null) ? 0 : getApiId().hashCode());
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
             hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
-            hashCode = prime * hashCode + ((getOperationName() == null) ? 0: getOperationName().hashCode());
+            hashCode = prime * hashCode + ((getOperationName() == null) ? 0 : getOperationName().hashCode());
             return hashCode;
         }
 
@@ -459,7 +460,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         /**
          * default constructor
          */
-        public RequestIdentity() {}
+        public RequestIdentity() {
+        }
 
         /**
          * @return The Cognito identity pool id.
@@ -764,7 +766,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
-         *
          * @see Object#toString()
          */
         @Override
@@ -901,7 +902,8 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     /**
      * default constructor
      */
-    public APIGatewayProxyRequestEvent() {}
+    public APIGatewayProxyRequestEvent() {
+    }
 
     /**
      * @return The resource path defined in API Gateway
@@ -983,7 +985,15 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param headers The headers sent with the request
      */
     public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+        if (headers == null || headers.isEmpty()) {
+            this.headers = null;
+            return;
+        }
+
+        if (this.headers == null) {
+            this.headers = new HttpHeaders<>();
+        }
+        this.headers.putAll(headers);
     }
 
     /**
@@ -1006,7 +1016,15 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param multiValueHeaders The multi value headers sent with the request
      */
     public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-        this.multiValueHeaders = multiValueHeaders;
+        if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
+            this.multiValueHeaders = null;
+            return;
+        }
+
+        if (this.multiValueHeaders == null) {
+            this.multiValueHeaders = new HttpHeaders<>();
+        }
+        this.multiValueHeaders.putAll(multiValueHeaders);
     }
 
     /**
@@ -1199,7 +1217,6 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * Returns a string representation of this object; useful for testing and debugging.
      *
      * @return A string representation of this object.
-     *
      * @see Object#toString()
      */
     @Override

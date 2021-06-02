@@ -185,7 +185,7 @@ public class AWSLambda {
 
     public static void main(String[] args) {
         // TODO validate arguments, show usage
-        startRuntime(args[0]);
+        startRuntime(args.length > 0 ? args[0] : getEnvOrExit("_HANDLER"));
     }
 
     private static void startRuntime(String handler) {

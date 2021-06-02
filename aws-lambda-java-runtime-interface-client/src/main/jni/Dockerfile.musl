@@ -20,7 +20,6 @@ RUN apk update && \
 # Install curl dependency
 COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
 RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps && mv /src/deps/curl-$CURL_VERSION /src/deps/curl
-RUN ls /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
         --prefix $(pwd)/../artifacts \

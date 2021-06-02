@@ -97,6 +97,10 @@ public class EventLoader {
         return loadEvent(filename, ScheduledEvent.class);
     }
 
+    public static SESEvent loadSESEvent(String filename) {
+        return loadEvent(filename, SESEvent.class);
+    }
+
     public static SNSEvent loadSNSEvent(String filename) {
         return loadEvent(filename, SNSEvent.class);
     }

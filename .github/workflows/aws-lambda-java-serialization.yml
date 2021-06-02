@@ -30,4 +30,4 @@ jobs:
       run: mvn -B install --file aws-lambda-java-events/pom.xml
     # Package target module
     - name: Package serialization with Maven
-      run: mvn -B install --file aws-lambda-java-serialization/pom.xml
+      run: mvn -B package --file aws-lambda-java-serialization/pom.xml

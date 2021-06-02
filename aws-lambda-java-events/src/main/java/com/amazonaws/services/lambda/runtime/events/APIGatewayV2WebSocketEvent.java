@@ -663,64 +663,65 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
   }
 
   @Override
-  public int hashCode() {
-    int hash = 7;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-    hash = 43 * hash + Objects.hashCode(this.requestContext);
-    hash = 43 * hash + Objects.hashCode(this.body);
-    hash = 43 * hash + (this.isBase64Encoded ? 1 : 0);
+    APIGatewayV2WebSocketEvent that = (APIGatewayV2WebSocketEvent) o;
 
-    return hash;
+    if (isBase64Encoded != that.isBase64Encoded) return false;
+    if (resource != null ? !resource.equals(that.resource) : that.resource != null) return false;
+    if (path != null ? !path.equals(that.path) : that.path != null) return false;
+    if (httpMethod != null ? !httpMethod.equals(that.httpMethod) : that.httpMethod != null) return false;
+    if (headers != null ? !headers.equals(that.headers) : that.headers != null) return false;
+    if (multiValueHeaders != null ? !multiValueHeaders.equals(that.multiValueHeaders) : that.multiValueHeaders != null)
+      return false;
+    if (queryStringParameters != null ? !queryStringParameters.equals(that.queryStringParameters) : that.queryStringParameters != null)
+      return false;
+    if (multiValueQueryStringParameters != null ? !multiValueQueryStringParameters.equals(that.multiValueQueryStringParameters) : that.multiValueQueryStringParameters != null)
+      return false;
+    if (pathParameters != null ? !pathParameters.equals(that.pathParameters) : that.pathParameters != null)
+      return false;
+    if (stageVariables != null ? !stageVariables.equals(that.stageVariables) : that.stageVariables != null)
+      return false;
+    if (requestContext != null ? !requestContext.equals(that.requestContext) : that.requestContext != null)
+      return false;
+    return body != null ? body.equals(that.body) : that.body == null;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-
-    if (obj == null) {
-      return false;
-    }
-
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    final APIGatewayV2WebSocketEvent other = (APIGatewayV2WebSocketEvent) obj;
-
-    if (this.isBase64Encoded != other.isBase64Encoded) {
-      return false;
-    }
-
-    if (!Objects.equals(this.body, other.body)) {
-      return false;
-    }
-
-    if (!Objects.equals(this.requestContext, other.requestContext)) {
-      return false;
-    }
-    return true;
+  public int hashCode() {
+    int result = resource != null ? resource.hashCode() : 0;
+    result = 31 * result + (path != null ? path.hashCode() : 0);
+    result = 31 * result + (httpMethod != null ? httpMethod.hashCode() : 0);
+    result = 31 * result + (headers != null ? headers.hashCode() : 0);
+    result = 31 * result + (multiValueHeaders != null ? multiValueHeaders.hashCode() : 0);
+    result = 31 * result + (queryStringParameters != null ? queryStringParameters.hashCode() : 0);
+    result = 31 * result + (multiValueQueryStringParameters != null ? multiValueQueryStringParameters.hashCode() : 0);
+    result = 31 * result + (pathParameters != null ? pathParameters.hashCode() : 0);
+    result = 31 * result + (stageVariables != null ? stageVariables.hashCode() : 0);
+    result = 31 * result + (requestContext != null ? requestContext.hashCode() : 0);
+    result = 31 * result + (body != null ? body.hashCode() : 0);
+    result = 31 * result + (isBase64Encoded ? 1 : 0);
+    return result;
   }
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{");
-
-    if (requestContext != null) {
-      sb.append("requestContext: ").append(requestContext).append(",");
-    }
-
-    if (body != null) {
-      sb.append("body: ").append(body).append(",");
-    }
-
-    sb.append("isBase64Encoded: ").append(isBase64Encoded).append(",");
-
-    sb.append("}");
-
+    final StringBuilder sb = new StringBuilder("APIGatewayV2WebSocketEvent{");
+    sb.append("resource='").append(resource).append('\'');
+    sb.append(", path='").append(path).append('\'');
+    sb.append(", httpMethod='").append(httpMethod).append('\'');
+    sb.append(", headers=").append(headers);
+    sb.append(", multiValueHeaders=").append(multiValueHeaders);
+    sb.append(", queryStringParameters=").append(queryStringParameters);
+    sb.append(", multiValueQueryStringParameters=").append(multiValueQueryStringParameters);
+    sb.append(", pathParameters=").append(pathParameters);
+    sb.append(", stageVariables=").append(stageVariables);
+    sb.append(", requestContext=").append(requestContext);
+    sb.append(", body='").append(body).append('\'');
+    sb.append(", isBase64Encoded=").append(isBase64Encoded);
+    sb.append('}');
     return sb.toString();
   }
-
 }

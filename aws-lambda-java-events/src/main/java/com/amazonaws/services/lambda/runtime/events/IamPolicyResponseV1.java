@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The IAM Policy Response required for API Gateway HTTP APIs
+ * The IAM Policy Response required for API Gateway REST APIs
  *
- * https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
+ * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
  *
  */
 
@@ -22,7 +22,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class IamPolicyResponse implements Serializable, Cloneable {
+public class IamPolicyResponseV1 implements Serializable, Cloneable {
 
     public static final String EXECUTE_API_INVOKE = "execute-api:Invoke";
     public static final String VERSION_2012_10_17 = "2012-10-17";
@@ -32,6 +32,7 @@ public class IamPolicyResponse implements Serializable, Cloneable {
     private String principalId;
     private PolicyDocument policyDocument;
     private Map<String, Object> context;
+    private String usageIdentifierKey;
 
     public Map<String, Object> getPolicyDocument() {
         Map<String, Object> serializablePolicy = new HashMap<>();

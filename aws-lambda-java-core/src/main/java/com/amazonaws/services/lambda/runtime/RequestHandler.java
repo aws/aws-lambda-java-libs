@@ -17,5 +17,5 @@ public interface RequestHandler<I, O> {
      * @param context The Lambda execution environment context object.
      * @return The Lambda Function output
      */
-    public O handleRequest(I input, Context context);
+    O handleRequest(I input, Context context);
 }

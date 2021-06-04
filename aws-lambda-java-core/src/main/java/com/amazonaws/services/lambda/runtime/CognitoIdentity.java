@@ -11,11 +11,11 @@ public interface CognitoIdentity {
      * Gets the Amazon Cognito identity ID
      * 
      */
-    public String getIdentityId();
+    String getIdentityId();
 
     /**
      * Gets the Amazon Cognito identity pool ID
      * 
      */
-    public String getIdentityPoolId();
+    String getIdentityPoolId();
 }

@@ -18,5 +18,5 @@ public interface RequestStreamHandler {
      * @param context The Lambda execution environment context object.
      * @throws IOException
      */
-    public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException;
+    void handleRequest(InputStream input, OutputStream output, Context context) throws IOException;
 }

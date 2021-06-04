@@ -12,5 +12,11 @@
   },
   {
     "name":"com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.ser.Serializers[]"
+  },
+  {
+    "name": "org.joda.time.DateTime",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
   }
 ]

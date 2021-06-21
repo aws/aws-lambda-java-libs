@@ -310,4 +310,9 @@ class DynamodbAttributeValueTransformerTest {
                 DynamodbAttributeValueTransformer.toAttributeValueV1(new AttributeValue().withL(Collections.emptyList())));
     }
 
+    @Test
+    public void testToAttributeValueMapV1_NullV1AttributeValueMapWhenNullEventAttributeValueMap() {
+        Assertions.assertNull(DynamodbAttributeValueTransformer.toAttributeValueMapV1(null));
+    }
+
 }

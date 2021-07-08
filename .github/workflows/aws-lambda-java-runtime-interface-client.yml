@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-runtime-interface-client
 
 on:
   push:
-    branches: [ master ]
+    branches: [ '*' ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
   pull_request:

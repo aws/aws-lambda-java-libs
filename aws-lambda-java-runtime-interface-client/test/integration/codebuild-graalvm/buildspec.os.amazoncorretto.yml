@@ -37,7 +37,7 @@ phases:
       # Install serialization (dependency of RIC)
       - (cd aws-lambda-java-serialization && mvn install -q)
       - (cd aws-lambda-java-runtime-interface-client && mvn install -q)
-      - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install -q)
+      - (cd aws-lambda-java-runtime-interface-client/test/integration/graalvm-test-handler && mvn install -P native-image)
       - export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
       - echo "Extracting and including Runtime Interface Emulator"
       - SCRATCH_DIR=".scratch"
@@ -69,7 +69,7 @@ phases:
           --network "${OS_DISTRIBUTION}-network" \
           --entrypoint="" \
           "${IMAGE_TAG}" \
-          sh -c '/usr/bin/aws-lambda-rie ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App'
+          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.App'
       - sleep 2
       - >
         docker run \

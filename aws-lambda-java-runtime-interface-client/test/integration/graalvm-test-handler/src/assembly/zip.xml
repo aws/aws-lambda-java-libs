@@ -1,0 +1,23 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>lambda-package</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file>
+            <source>${project.build.directory}${file.separator}product-binary</source>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <destName>product-binary</destName>
+            <fileMode>777</fileMode>
+        </file>
+        <file>
+            <source>src${file.separator}main${file.separator}config${file.separator}bootstrap</source>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <destName>bootstrap</destName>
+            <fileMode>777</fileMode>
+        </file>
+    </files>
+</assembly>

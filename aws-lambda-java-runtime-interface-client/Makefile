@@ -5,7 +5,7 @@ target:
 
 .PHONY: test
 test:
-	mvn test
+	mvn test -q
 
 .PHONY: setup-codebuild-agent
 setup-codebuild-agent:
@@ -34,7 +34,7 @@ pr: test test-smoke
 
 .PHONY: build
 build: 
-	mvn clean install
+	mvn clean install -q
 
 define HELP_MESSAGE
 

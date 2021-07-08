@@ -67,7 +67,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <imageName>product-binary</imageName>
+                            <imageName>hello-binary</imageName>
                             <mainClass>com.amazonaws.services.lambda.runtime.api.client.AWSLambda</mainClass>
                             <buildArgs combine.children="append">
                                 --verbose

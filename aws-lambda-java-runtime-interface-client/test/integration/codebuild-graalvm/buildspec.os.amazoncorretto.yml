@@ -17,7 +17,6 @@ batch:
           DISTRO_VERSION:
             - "amazoncorretto"
           RUNTIME_VERSION:
-            - "8"
             - "11"
 phases:
   install:
@@ -44,15 +43,15 @@ phases:
       - mkdir "${SCRATCH_DIR}"
       - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/aws-lambda-rie.tar.gz --directory "${SCRATCH_DIR}"
       - >
-        cp "aws-lambda-java-runtime-interface-client/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" \
-          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+        cp "aws-lambda-java-runtime-interface-client/test/integration/docker/Dockerfile.function.graalvm" \
+          "${SCRATCH_DIR}/Dockerfile.function.graalvm.tmp"
       - >
         echo "COPY ${SCRATCH_DIR}/aws-lambda-rie /usr/bin/aws-lambda-rie" >> \
-          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
+          "${SCRATCH_DIR}/Dockerfile.function.graalvm.tmp"
       - echo "Building image ${IMAGE_TAG}"
       - >
         docker build . \
-          -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
+          -f "${SCRATCH_DIR}/Dockerfile.function.graalvm.tmp" \
           -t "${IMAGE_TAG}" \
           --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
           --build-arg DISTRO_VERSION="${DISTRO_VERSION}"

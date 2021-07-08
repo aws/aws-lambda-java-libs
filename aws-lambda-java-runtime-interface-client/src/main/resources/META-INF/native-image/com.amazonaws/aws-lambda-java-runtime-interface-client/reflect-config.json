@@ -1,0 +1,34 @@
+[
+{
+  "name":"com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.deser.Deserializers[]"
+},
+{
+  "name":"com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.amazonaws.services.lambda.runtime.LambdaRuntime",
+  "fields":[{"name":"logger"}]
+},
+{
+  "name":"java.lang.Void",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"java.util.Collections$UnmodifiableMap",
+  "fields":[{"name":"m"}]
+},
+{
+  "name":"jdk.internal.module.IllegalAccessLogger",
+  "fields":[{"name":"logger"}]
+},
+{
+  "name":"sun.misc.Unsafe",
+  "fields":[{"name":"theUnsafe"}]
+},
+{
+  "name":"com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest",
+  "fields":[{"name":"id"}, {"name":"invokedFunctionArn"}, {"name":"deadlineTimeInMs"}, {"name":"xrayTraceId"}, {"name":"clientContext"}, {"name":"cognitoIdentity"}, {"name":"content"}],
+  "allPublicMethods":true
+}
+]

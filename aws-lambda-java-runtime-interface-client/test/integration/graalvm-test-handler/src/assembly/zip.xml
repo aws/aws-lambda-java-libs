@@ -8,9 +8,9 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file>
-            <source>${project.build.directory}${file.separator}product-binary</source>
+            <source>${project.build.directory}${file.separator}hello-binary</source>
             <outputDirectory>${file.separator}</outputDirectory>
-            <destName>product-binary</destName>
+            <destName>hello-binary</destName>
             <fileMode>777</fileMode>
         </file>
         <file>

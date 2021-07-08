@@ -28,5 +28,5 @@ jobs:
     # Test Runtime Interface Client
     - name: Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr
+      run: make test-graalvm
     

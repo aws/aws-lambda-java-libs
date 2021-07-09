@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Example Application to generate GraalVM reflect-config.json files from all the classes and subclasses in a package.
+ * Example Application to generate GraalVM _reflect-config.json files from all the classes and subclasses in a package.
  *
  */
 public class GraalVMConfigMaker {
@@ -40,7 +40,7 @@ public class GraalVMConfigMaker {
     {
         GraalVMConfigMaker app = new GraalVMConfigMaker();
         try {
-            app.run(EVENTS_PACKAGE, "aws-lambda-java-events/src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/reflect-config.json");
+            app.run(EVENTS_PACKAGE, "aws-lambda-java-events/src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/_reflect-config.json");
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

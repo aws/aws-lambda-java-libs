@@ -1,19 +1,18 @@
 package com.amazonaws.services.lambda.runtime.events.graalvm;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
+import com.amazonaws.services.lambda.runtime.graalvm.LambdaEventsFeature;
 import com.google.common.reflect.ClassPath;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * The aws-lambda-java-events library supports GraalVM by containing a _reflect-config.json file. This is located
- * src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/_reflect-config.json
+ * The aws-lambda-java-events library supports GraalVM by containing a reflect-config.json file. This is located
+ * src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/reflect-config.json
  *
  * This config is used my the GraalVM native-image tool in order to load the required classes and methods into the
  * native binary it creates.
@@ -25,15 +24,17 @@ import java.util.List;
  */
 public class GraalVMSupportTest {
 
-    private static final File CONFIG_LOCATION = FileUtils.getFile("src", "main", "resources", "META-INF", "native-image", "com.amazonaws", "aws-lambda-java-events", "_reflect-config.json");
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Test
+    public void testClassIsFound() throws IOException, ClassNotFoundException {
+        Class<S3Event> s3EventClass = S3Event.class;
+        List<Class<?>> classes = LambdaEventsFeature.getClasses(s3EventClass.getPackage().getName());
+        Assertions.assertTrue(classes.contains(s3EventClass));
+    }
 
     @Test
-    public void testThatAllEventClassesExistWithinGraalVMReflectConfig() throws IOException, ClassNotFoundException {
-        ClassPath classPath = ClassPath.from(this.getClass().getClassLoader());
-        List<String> nonTestClassesInPackage = GraalVMConfigMaker.getNonTestClassesInPackage(classPath, GraalVMConfigMaker.EVENTS_PACKAGE);
-        List<ReflectConfigEntry> actualReflectConfigEntries = Arrays.asList(objectMapper.readValue(CONFIG_LOCATION, ReflectConfigEntry[].class));
-
-        Assertions.assertEquals(nonTestClassesInPackage.size(), actualReflectConfigEntries.size(), "Please add the new event / response to the _reflect-config.json");
+    public void testInnerClassIsFound() throws IOException, ClassNotFoundException {
+        Class<S3EventNotification.S3EventNotificationRecord> s3EventClass = S3EventNotification.S3EventNotificationRecord.class;
+        List<Class<?>> classes = LambdaEventsFeature.getClasses(s3EventClass.getPackage().getName());
+        Assertions.assertTrue(classes.contains(s3EventClass));
     }
 }

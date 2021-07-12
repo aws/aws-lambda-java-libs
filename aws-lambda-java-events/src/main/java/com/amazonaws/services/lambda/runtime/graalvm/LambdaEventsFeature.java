@@ -1,7 +1,7 @@
 package com.amazonaws.services.lambda.runtime.graalvm;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.oracle.svm.core.annotate.AutomaticFeature;
+//import com.oracle.svm.core.annotate.AutomaticFeature;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 
@@ -15,10 +15,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-@AutomaticFeature
 public class LambdaEventsFeature implements Feature {
 
-    private static List<Class<?>> getClasses(String packageName)
+    public static List<Class<?>> getClasses(String packageName)
             throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         assert classLoader != null;

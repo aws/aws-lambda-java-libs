@@ -61,7 +61,7 @@ public class CognitoUserPoolVerifyAuthChallengeResponseEvent extends CognitoUser
          */
         private Map<String, String> clientMetadata;
         /**
-         * This parameter comes from the Create Auth Challenge trigger, and is compared against a user’s challengeAnswer to determine whether the user passed the challenge.
+         * This parameter comes from the Create Auth Challenge trigger, and is compared against a user's challengeAnswer to determine whether the user passed the challenge.
          */
         private Map<String, String> privateChallengeParameters;
         /**

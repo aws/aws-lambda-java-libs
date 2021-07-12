@@ -1,5 +1,7 @@
 FROM alpine:3
 
+ARG CURL_VERSION
+
 # Add Corretto repository
 RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub && \
     echo "https://apk.corretto.aws/" >> /etc/apk/repositories
@@ -16,7 +18,8 @@ RUN apk update && \
         perl
 
 # Install curl dependency
-ADD ./deps/curl-* /src/deps/curl
+COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
+RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps && mv /src/deps/curl-$CURL_VERSION /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
         --prefix $(pwd)/../artifacts \

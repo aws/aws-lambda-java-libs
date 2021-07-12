@@ -325,6 +325,7 @@ public class EventLoaderTest {
         .returns(34, from(RabbitMQEvent.BasicProperties::getPriority))
         .returns(60000, from(RabbitMQEvent.BasicProperties::getExpiration))
         .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
-        .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize));
+        .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
+        .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
     }
 }

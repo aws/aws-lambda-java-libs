@@ -47,7 +47,7 @@ public class RabbitMQEvent {
         private String replyTo;
         private int expiration;
         private String messageId;
-//        private DateTime timestamp;
+        private String timestamp;
         private String type;
         private String userId;
         private String appId;

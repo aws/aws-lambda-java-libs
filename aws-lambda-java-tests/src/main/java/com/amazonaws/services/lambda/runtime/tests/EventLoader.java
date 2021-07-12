@@ -105,6 +105,10 @@ public class EventLoader {
         return loadEvent(filename, SQSEvent.class);
     }
 
+    public static RabbitMQEvent loadRabbitMQEvent(String filename) {
+        return loadEvent(filename, RabbitMQEvent.class);
+    }
+
     public static <T> T loadEvent(String filename, Class<T> targetClass) {
 
         if (!filename.endsWith("json")) {

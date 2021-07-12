@@ -31,7 +31,7 @@ dev: test
 
 # Verifications to run before sending a pull request
 .PHONY: pr
-pr: test test-smoke
+pr: test test-smoke test-graalvm
 
 .PHONY: build
 build: 

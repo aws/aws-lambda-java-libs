@@ -5,17 +5,13 @@ name: Java CI aws-lambda-java-runtime-interface-client
 
 on:
   push:
-    branches: [ '*' ]
+    branches: [ master ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
   pull_request:
     branches: [ '*' ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
-  workflow_dispatch:
-    branches: [ '*' ]
-    paths:
-      - 'aws-lambda-java-runtime-interface-client/**'
 
 jobs:
   build:
@@ -32,4 +28,4 @@ jobs:
     # Test Runtime Interface Client
     - name: Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make test-graalvm
+      run: make pr

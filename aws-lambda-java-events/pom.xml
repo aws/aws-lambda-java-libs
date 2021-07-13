@@ -87,6 +87,12 @@
       <version>30.1.1-jre</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.github.classgraph</groupId>
+      <artifactId>classgraph</artifactId>
+      <version>4.8.110</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>

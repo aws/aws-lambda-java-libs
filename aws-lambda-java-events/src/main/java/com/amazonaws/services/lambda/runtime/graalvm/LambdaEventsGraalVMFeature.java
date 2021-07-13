@@ -1,6 +1,5 @@
 package com.amazonaws.services.lambda.runtime.graalvm;
 
-import com.amazonaws.services.lambda.runtime.events.S3Event;
 //import com.oracle.svm.core.annotate.AutomaticFeature;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
@@ -15,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public class LambdaEventsFeature implements Feature {
+public class LambdaEventsGraalVMFeature implements Feature {
+
+    public static final String EVENTS_PACKAGE_NAME = "com.amazonaws.services.lambda.runtime.events";
 
     public static List<Class<?>> getClasses(String packageName)
             throws ClassNotFoundException, IOException {
@@ -45,11 +46,12 @@ public class LambdaEventsFeature implements Feature {
             return classes;
         }
         for (File file : files) {
+            String fileName = file.getName();
             if (file.isDirectory()) {
-                assert !file.getName().contains(".");
-                classes.addAll(findClasses(file, packageName + "." + file.getName()));
-            } else if (file.getName().endsWith(".class")) {
-                classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+                assert !fileName.contains(".");
+                classes.addAll(findClasses(file, packageName + "." + fileName));
+            } else if (fileName.endsWith(".class")) {
+                classes.add(Class.forName(packageName + '.' + fileName.substring(0, fileName.length() - ".class".length())));
             }
         }
         return classes;
@@ -58,7 +60,7 @@ public class LambdaEventsFeature implements Feature {
     @Override
     public void beforeAnalysis(BeforeAnalysisAccess access) {
         try {
-            List<Class<?>> classes = getClasses(S3Event.class.getPackage().getName());
+            List<Class<?>> classes = getClasses(EVENTS_PACKAGE_NAME);
             for (Class<?> cl : classes) {
                 System.out.println("Registering class:"+cl.getName());
                 registerClass(cl);
@@ -67,7 +69,7 @@ public class LambdaEventsFeature implements Feature {
             }
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
-            System.err.println("Failed to automatically load classes from "+LambdaEventsFeature.class.getName());
+            System.err.println("Failed to automatically load classes from "+ LambdaEventsGraalVMFeature.class.getName());
             System.exit(1);
         }
     }

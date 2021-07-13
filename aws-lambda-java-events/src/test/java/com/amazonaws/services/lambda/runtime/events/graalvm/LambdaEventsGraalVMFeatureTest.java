@@ -17,13 +17,12 @@ import static com.amazonaws.services.lambda.runtime.graalvm.LambdaEventsGraalVMF
  * The aws-lambda-java-events library supports GraalVM by containing a reflect-config.json file. This is located
  * src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/reflect-config.json
  *
- * This config is used my the GraalVM native-image tool in order to load the required classes and methods into the
+ * This config is used by the GraalVM native-image tool in order to load the required classes and methods into the
  * native binary it creates.
  *
  * Any event or response class added to this library needs to be added to this config file.
  *
- * The standalone class GraalVMConfigMaker located in this package while will generate the file for you.
- *
+ * This test asserts that all the classes are included.
  */
 public class LambdaEventsGraalVMFeatureTest {
 

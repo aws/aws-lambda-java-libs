@@ -13,6 +13,18 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * The aws-lambda-java-events library supports GraalVM by containing a reflect-config.json file. This is located
+ * src/main/resources/META-INF/native-image/com.amazonaws/aws-lambda-java-events/reflect-config.json
+ *
+ * This config is used by the GraalVM native-image tool in order to load the required classes and methods into the
+ * native binary it creates.
+ *
+ * Any event or response class added to this library needs to be added to this config file.
+ *
+ * This implementation of Feature does that by iterating through the events package and registering
+ * them for runtime reflection.
+ */
 public class LambdaEventsGraalVMFeature implements Feature {
 
     public static final String EVENTS_PACKAGE_NAME = "com.amazonaws.services.lambda.runtime.events";
@@ -90,6 +102,6 @@ public class LambdaEventsGraalVMFeature implements Feature {
         for (Constructor<?> constructor : cl.getDeclaredConstructors()) {
             RuntimeReflection.register(constructor);
         }
-        System.out.println(String.format("\tAdding constructors for %s", cl.getName()));
+        System.out.printf("\tAdding constructors for %s%n", cl.getName());
     }
 }

@@ -4,6 +4,6 @@ FROM amazoncorretto:${RUNTIME_VERSION}
 
 ADD aws-lambda-java-runtime-interface-client/test/integration/graalvm-test-handler/target/hello-binary .
 
-ENTRYPOINT ["hello-binary", "helloworld.App"]
+ENTRYPOINT ["hello-binary", "helloworld.RequestHandlerApp"]
 
-CMD ["helloworld.App"]
+CMD ["helloworld.RequestHandlerApp"]

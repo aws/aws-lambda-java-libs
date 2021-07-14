@@ -30,5 +30,14 @@
   "name":"com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest",
   "fields":[{"name":"id"}, {"name":"invokedFunctionArn"}, {"name":"deadlineTimeInMs"}, {"name":"xrayTraceId"}, {"name":"clientContext"}, {"name":"cognitoIdentity"}, {"name":"content"}],
   "allPublicMethods":true
-}
+},
+  {
+    "name": "org.joda.time.DateTime",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredClasses" : true,
+    "allPublicClasses" : true
+  }
 ]

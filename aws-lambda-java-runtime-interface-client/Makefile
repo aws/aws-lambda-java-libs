@@ -18,7 +18,7 @@ test-smoke: setup-codebuild-agent
 
 .PHONY: test-graalvm
 test-graalvm:
-	docker build -t codebuild-agent - < test/integration/codebuild-local/Dockerfile.graalvm-agent
+	docker build --progress=plain -t codebuild-agent - < test/integration/codebuild-local/Dockerfile.graalvm-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild-graalvm/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11
 
 .PHONY: test-integ

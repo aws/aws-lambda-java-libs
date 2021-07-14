@@ -68,7 +68,7 @@ phases:
           --network "${OS_DISTRIBUTION}-network" \
           --entrypoint="" \
           "${IMAGE_TAG}" \
-          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.App'
+          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.RequestHandlerApp'
       - sleep 2
       - >
         docker run \
@@ -96,6 +96,47 @@ phases:
           echo "---------------------------------------------------"
           exit -1
         fi
+      - docker stop "${OS_DISTRIBUTION}-app" || true
+      - docker rm --force "${OS_DISTRIBUTION}-app" || true
+      - docker stop "${OS_DISTRIBUTION}-tester" || true
+      - docker rm --force "${OS_DISTRIBUTION}-tester" || true
+      - >
+        docker run \
+          --detach \
+          -e "JAVA_BINARY_LOCATION=${JAVA_BINARY_LOCATION}" \
+          --name "${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.RequestHandlerApp'
+      - sleep 2
+      - >
+        docker run \
+          --name "${OS_DISTRIBUTION}-tester" \
+          --env "TARGET=${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c 'curl -X POST "http://${TARGET}:8080/2015-03-31/functions/function/invocations" -d "{}" --max-time 10'
+      - actual="$(docker logs --tail 1 "${OS_DISTRIBUTION}-tester" | xargs)"
+      - expected='success'
+      - |
+        echo "Response: ${actual}"
+        if [[ "$actual" != "$expected" ]]; then
+          echo "fail! runtime: $RUNTIME - expected output $expected - got $actual"
+          echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
+          echo
+          docker logs "${OS_DISTRIBUTION}-app"
+          echo
+          echo "---------------------------------------------------"
+          echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
+          echo
+          docker logs "${OS_DISTRIBUTION}-tester"
+          echo
+          echo "---------------------------------------------------"
+          exit -1
+        fi
+
     finally:
       - echo "Cleaning up..."
       - docker stop "${OS_DISTRIBUTION}-app" || true

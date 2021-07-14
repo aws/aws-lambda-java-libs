@@ -34,6 +34,7 @@ phases:
       # Install events (dependency of serialization)
       - (cd aws-lambda-java-events && mvn install -q)
       # Install serialization (dependency of RIC)
+      - (cd aws-lambda-java-core && mvn install -q)
       - (cd aws-lambda-java-serialization && mvn install -q)
       - (cd aws-lambda-java-runtime-interface-client && mvn install -q)
       - (cd aws-lambda-java-runtime-interface-client/test/integration/graalvm-test-handler && mvn install -P native-image)
@@ -108,7 +109,7 @@ phases:
           --network "${OS_DISTRIBUTION}-network" \
           --entrypoint="" \
           "${IMAGE_TAG}" \
-          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.RequestHandlerApp'
+          sh -c '/usr/bin/aws-lambda-rie ./hello-binary helloworld.StreamHandlerApp'
       - sleep 2
       - >
         docker run \

@@ -1,7 +1,10 @@
-package com.amazonaws.services.lambda.runtime.graalvm;
+package com.amazonaws.services.lambda.runtime.serialization.graalvm;
 
-import com.amazonaws.services.lambda.runtime.LambdaRuntime;
-import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
+import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.ext.Java7Handlers;
+import com.fasterxml.jackson.databind.ext.Java7HandlersImpl;
+import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 
@@ -11,13 +14,15 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LambdaCoreGraalVMFeature implements Feature {
+public class LambdaSerializationGraalVMFeature implements Feature {
 
     private static final Set<Class> classesForReflectConfig = new HashSet<>();
 
     static {
-        classesForReflectConfig.add(LambdaRuntime.class);
-        classesForReflectConfig.add(LambdaRuntimeInternal.class);
+        classesForReflectConfig.add(Deserializers.class);
+        classesForReflectConfig.add(Serializers.class);
+        classesForReflectConfig.add(Java7SupportImpl.class);
+        classesForReflectConfig.add(Java7HandlersImpl.class);
     }
 
     @Override

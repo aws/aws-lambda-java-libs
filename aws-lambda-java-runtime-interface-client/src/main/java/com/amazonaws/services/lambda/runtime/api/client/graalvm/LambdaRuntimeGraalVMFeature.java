@@ -1,7 +1,6 @@
-package com.amazonaws.services.lambda.runtime.graalvm;
+package com.amazonaws.services.lambda.runtime.api.client.graalvm;
 
-import com.amazonaws.services.lambda.runtime.LambdaRuntime;
-import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 
@@ -11,13 +10,12 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LambdaCoreGraalVMFeature implements Feature {
+public class LambdaRuntimeGraalVMFeature implements Feature {
 
     private static final Set<Class> classesForReflectConfig = new HashSet<>();
 
     static {
-        classesForReflectConfig.add(LambdaRuntime.class);
-        classesForReflectConfig.add(LambdaRuntimeInternal.class);
+        classesForReflectConfig.add(InvocationRequest.class);
     }
 
     @Override

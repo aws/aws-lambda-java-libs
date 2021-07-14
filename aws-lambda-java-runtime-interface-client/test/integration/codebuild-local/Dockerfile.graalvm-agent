@@ -8,16 +8,16 @@ RUN yum -y update \
 RUN amazon-linux-extras enable docker
 
 ENV GRAAL_VERSION 21.1.0
-ARG GRAAL_FOLDERNAME graalvm-ce-java11-${GRAAL_VERSION}
-ARG GRAAL_FILENAME graalvm-ce-java11-linux-amd64-${GRAAL_VERSION}.tar.gz
+ENV GRAAL_FOLDERNAME graalvm-ce-java11-${GRAAL_VERSION}
+ENV GRAAL_FILENAME graalvm-ce-java11-linux-amd64-${GRAAL_VERSION}.tar.gz
 RUN curl -4 -L https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAAL_VERSION}/${GRAAL_FILENAME} | tar -xvz
 RUN mv $GRAAL_FOLDERNAME /usr/lib/graalvm
 RUN rm -rf $GRAAL_FOLDERNAME
 
 # Graal maven plugin requires Maven 3.3.x
 ENV MVN_VERSION 3.6.3
-ARG MVN_FOLDERNAME apache-maven-${MVN_VERSION}
-ARG MVN_FILENAME apache-maven-${MVN_VERSION}-bin.tar.gz
+ENV MVN_FOLDERNAME apache-maven-${MVN_VERSION}
+ENV MVN_FILENAME apache-maven-${MVN_VERSION}-bin.tar.gz
 RUN curl -4 -L https://mirrors.ukfast.co.uk/sites/ftp.apache.org/maven/maven-3/${MVN_VERSION}/binaries/${MVN_FILENAME} | tar -xvz
 RUN mv $MVN_FOLDERNAME /usr/lib/maven
 RUN rm -rf $MVN_FOLDERNAME

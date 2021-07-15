@@ -11,6 +11,15 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This class programmatically registers classes, methods and fields
+ * to be added to an application when used with GraalVM native-image.
+ *
+ * These specific classes are registered because GraalVM can't detect
+ * them during static analysis.
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/">GraalVM native-image</a>
+ */
 public class LambdaCoreGraalVMFeature implements Feature {
 
     private static final Set<Class> classesForReflectConfig = new HashSet<>();

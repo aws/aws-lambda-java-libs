@@ -5,7 +5,7 @@ target:
 
 .PHONY: test
 test:
-	mvn test
+	mvn test -q
 
 .PHONY: setup-codebuild-agent
 setup-codebuild-agent:
@@ -15,6 +15,11 @@ setup-codebuild-agent:
 test-smoke: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.12 corretto11
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11
+
+.PHONY: test-graalvm
+test-graalvm:
+	docker build --progress=plain -t codebuild-agent - < test/integration/codebuild-local/Dockerfile.graalvm-agent
+	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild-graalvm/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11
 
 .PHONY: test-integ
 test-integ: setup-codebuild-agent
@@ -30,7 +35,7 @@ pr: test test-smoke
 
 .PHONY: build
 build: 
-	mvn clean install
+	mvn clean install -q
 
 define HELP_MESSAGE
 

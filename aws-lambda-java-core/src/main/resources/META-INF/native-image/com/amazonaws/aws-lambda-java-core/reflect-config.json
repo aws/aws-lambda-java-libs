@@ -1,0 +1,13 @@
+[
+{
+  "name":"com.amazonaws.services.lambda.runtime.LambdaRuntime",
+  "methods":[{"name":"<init>","parameterTypes":[] }],
+  "fields":[{"name":"logger"}],
+  "allPublicMethods":true
+},
+{
+  "name":"com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal",
+  "methods":[{"name":"<init>","parameterTypes":[] }],
+  "allPublicMethods":true
+}
+]

@@ -1,0 +1,8 @@
+{
+  "resources":{
+  "includes":[
+    {"pattern":"\\Qaws-lambda-runtime-interface-client.glibc.so\\E"}, 
+    {"pattern":"\\Qaws-lambda-runtime-interface-client.musl.so\\E"}
+  ]},
+  "bundles":[]
+}

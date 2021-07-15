@@ -1,0 +1,18 @@
+[
+{
+  "name":"java.lang.Void",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"java.util.Collections$UnmodifiableMap",
+  "fields":[{"name":"m"}]
+},
+{
+  "name":"jdk.internal.module.IllegalAccessLogger",
+  "fields":[{"name":"logger"}]
+},
+{
+  "name":"sun.misc.Unsafe",
+  "fields":[{"name":"theUnsafe"}]
+}
+]

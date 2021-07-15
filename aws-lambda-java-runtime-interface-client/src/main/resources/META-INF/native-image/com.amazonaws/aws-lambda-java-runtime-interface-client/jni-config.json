@@ -1,0 +1,11 @@
+[
+{
+  "name":"com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeClientException",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","int"] }]
+},
+{
+  "name":"com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest",
+  "fields":[{"name":"id"}, {"name":"invokedFunctionArn"}, {"name":"deadlineTimeInMs"}, {"name":"xrayTraceId"}, {"name":"clientContext"}, {"name":"cognitoIdentity"}, {"name":"content"}],
+  "allPublicMethods":true
+}
+]

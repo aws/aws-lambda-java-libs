@@ -10,7 +10,24 @@
         "offset": 15,
         "timestamp": 1596480920837,
         "timestampType": "CREATE_TIME",
-        "value": "SGVsbG8gZnJvbSBLYWZrYSAhIQ=="
+        "value": "SGVsbG8gZnJvbSBLYWZrYSAhIQ==",
+        "headers": [
+          {
+            "headerKey": [
+              104,
+              101,
+              97,
+              100,
+              101,
+              114,
+              86,
+              97,
+              108,
+              117,
+              101
+            ]
+          }
+        ]
       }
     ]
   }

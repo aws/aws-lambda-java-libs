@@ -319,13 +319,20 @@ public class EventLoaderTest {
                 .returns(false, RabbitMQEvent.RabbitMessage::getRedelivered)
                 .returns("eyJ0aW1lb3V0IjowLCJkYXRhIjoiQ1pybWYwR3c4T3Y0YnFMUXhENEUifQ==", RabbitMQEvent.RabbitMessage::getData);
 
-        assertThat(firstMessage.getBasicProperties())
+        RabbitMQEvent.BasicProperties basicProperties = firstMessage.getBasicProperties();
+        assertThat(basicProperties)
                 .returns("text/plain", from(RabbitMQEvent.BasicProperties::getContentType))
                 .returns(1, from(RabbitMQEvent.BasicProperties::getDeliveryMode))
-        .returns(34, from(RabbitMQEvent.BasicProperties::getPriority))
-        .returns(60000, from(RabbitMQEvent.BasicProperties::getExpiration))
-        .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
-        .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
-        .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
+                .returns(34, from(RabbitMQEvent.BasicProperties::getPriority))
+                .returns(60000, from(RabbitMQEvent.BasicProperties::getExpiration))
+                .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
+                .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
+                .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
+
+        Map<String, Object> headers = basicProperties.getHeaders();
+        assertThat(headers).hasSize(3);
+        Map<String, List<Integer>> header1 = (Map<String, List<Integer>>) headers.get("header1");
+        assertThat(header1.get("bytes")).contains(118, 97, 108, 117, 101, 49);
+        assertThat((Integer) headers.get("numberInHeader")).isEqualTo(10);
     }
 }

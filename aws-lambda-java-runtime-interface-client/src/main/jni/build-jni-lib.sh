@@ -5,7 +5,7 @@ set -euo pipefail
 
 SRC_DIR=$(dirname "$0")
 DST_DIR=${1}
-CURL_VERSION=7.77.0
+CURL_VERSION=7.78.0
 
 # compile the native library
 docker build -f "${SRC_DIR}/Dockerfile.glibc" --build-arg CURL_VERSION=${CURL_VERSION} -t lambda-java-jni-lib-glibc "${SRC_DIR}"

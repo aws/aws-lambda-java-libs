@@ -82,6 +82,9 @@ public class EventLoaderTest {
 
         KafkaEvent.KafkaEventRecord record = event.getRecords().get("mytopic-01").get(0);
         assertThat(record.getValue()).decodedAsBase64().asString().isEqualTo("Hello from Kafka !!");
+         
+        String headerValue = new String(record.getHeaders().get(0).get("headerKey"));    
+        assertThat(headerValue).isEqualTo("headerValue");
     }
 
     @Test

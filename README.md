@@ -42,7 +42,7 @@ ___
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-  <version>3.0.5</version>
+  <version>3.0.6</version>
 </dependency>
 <dependency>
   <groupId>com.amazonaws</groupId>
@@ -67,7 +67,7 @@ ___
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
 'com.amazonaws:aws-lambda-java-events:3.10.0'
-'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.5'
+'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.0.6'
 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 'com.amazonaws:aws-lambda-java-runtime-interface-client:1.1.0'
 'com.amazonaws:aws-lambda-java-tests:1.1.0'
@@ -78,7 +78,7 @@ ___
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
 [com.amazonaws/aws-lambda-java-events "3.10.0"]
-[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.5"]
+[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.0.6"]
 [com.amazonaws/aws-lambda-java-log4j2 "1.2.0"]
 [com.amazonaws/aws-lambda-java-runtime-interface-client "1.1.0"]
 [com.amazonaws/aws-lambda-java-tests "1.1.0"]
@@ -89,7 +89,7 @@ ___
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
 "com.amazonaws" % "aws-lambda-java-events" % "3.10.0"
-"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.5"
+"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.0.6"
 "com.amazonaws" % "aws-lambda-java-log4j2" % "1.2.0"
 "com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "1.1.0"
 "com.amazonaws" % "aws-lambda-java-tests" % "1.1.0"

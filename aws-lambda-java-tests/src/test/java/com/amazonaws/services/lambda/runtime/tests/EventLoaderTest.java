@@ -82,6 +82,9 @@ public class EventLoaderTest {
 
         KafkaEvent.KafkaEventRecord record = event.getRecords().get("mytopic-01").get(0);
         assertThat(record.getValue()).decodedAsBase64().asString().isEqualTo("Hello from Kafka !!");
+         
+        String headerValue = new String(record.getHeaders().get(0).get("headerKey"));    
+        assertThat(headerValue).isEqualTo("headerValue");
     }
 
     @Test
@@ -300,5 +303,39 @@ public class EventLoaderTest {
                 .returns("123e4567-e89b-12d3-a456-426614174000", from(SecretsManagerRotationEvent::getClientRequestToken))
                 .returns("arn:aws:secretsmanager:eu-central-1:123456789012:secret:/powertools/secretparam-xBPaJ5", from(SecretsManagerRotationEvent::getSecretId))
                 .returns("CreateSecret", from(SecretsManagerRotationEvent::getStep));
+    }
+
+    @Test
+    public void testLoadRabbitMQEvent() {
+        RabbitMQEvent event = EventLoader.loadRabbitMQEvent("rabbitmq_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event)
+                .returns("aws:rmq", from(RabbitMQEvent::getEventSource))
+                .returns("arn:aws:mq:us-west-2:112556298976:broker:test:b-9bcfa592-423a-4942-879d-eb284b418fc8", from(RabbitMQEvent::getEventSourceArn));
+
+        Map<String, List<RabbitMQEvent.RabbitMessage>> messagesByQueue = event.getRmqMessagesByQueue();
+        assertThat(messagesByQueue).isNotEmpty();
+        List<RabbitMQEvent.RabbitMessage> messages = messagesByQueue.get("test::/");
+        assertThat(messages).hasSize(1);
+        RabbitMQEvent.RabbitMessage firstMessage = messages.get(0);
+        assertThat(firstMessage)
+                .returns(false, RabbitMQEvent.RabbitMessage::getRedelivered)
+                .returns("eyJ0aW1lb3V0IjowLCJkYXRhIjoiQ1pybWYwR3c4T3Y0YnFMUXhENEUifQ==", RabbitMQEvent.RabbitMessage::getData);
+
+        RabbitMQEvent.BasicProperties basicProperties = firstMessage.getBasicProperties();
+        assertThat(basicProperties)
+                .returns("text/plain", from(RabbitMQEvent.BasicProperties::getContentType))
+                .returns(1, from(RabbitMQEvent.BasicProperties::getDeliveryMode))
+                .returns(34, from(RabbitMQEvent.BasicProperties::getPriority))
+                .returns(60000, from(RabbitMQEvent.BasicProperties::getExpiration))
+                .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
+                .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
+                .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
+
+        Map<String, Object> headers = basicProperties.getHeaders();
+        assertThat(headers).hasSize(3);
+        Map<String, List<Integer>> header1 = (Map<String, List<Integer>>) headers.get("header1");
+        assertThat(header1.get("bytes")).contains(118, 97, 108, 117, 101, 49);
+        assertThat((Integer) headers.get("numberInHeader")).isEqualTo(10);
     }
 }

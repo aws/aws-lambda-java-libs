@@ -1,3 +1,9 @@
+### August 26, 2021
+`1.1.0`:
+- Added test for `RabbitMQEvent` ([#256](https://github.com/aws/aws-lambda-java-libs/pull/256))
+- Added test for `KafkaEventRecord` headers ([#260](https://github.com/aws/aws-lambda-java-libs/pull/260))
+- Bumped `aws-lambda-java-events` to version `3.10.0`
+
 ### March 24, 2021
 `1.0.2`:
 - Bumped `aws-lambda-java-events` to version `3.9.0`

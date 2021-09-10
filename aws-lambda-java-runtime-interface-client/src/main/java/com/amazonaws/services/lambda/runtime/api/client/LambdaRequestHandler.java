@@ -3,11 +3,12 @@
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.api.client.util.RawByteArrayOutputStream;
 
 import java.io.ByteArrayOutputStream;
 
 public interface LambdaRequestHandler {
-    ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception;
+    RawByteArrayOutputStream call(InvocationRequest request) throws Error, Exception;
 
     class UserFaultHandler implements LambdaRequestHandler {
         public final UserFault fault;
@@ -16,7 +17,7 @@ public interface LambdaRequestHandler {
             this.fault = fault;
         }
 
-        public ByteArrayOutputStream call(InvocationRequest request) {
+        public RawByteArrayOutputStream call(InvocationRequest request) {
             throw fault;
         }
     }

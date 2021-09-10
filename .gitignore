@@ -22,3 +22,7 @@ dependency-reduced-pom.xml
 .settings
 .classpath
 .project
+
+# OSX
+.DS_Store
+aws-lambda-java-runtime-interface-client/codebuild.*

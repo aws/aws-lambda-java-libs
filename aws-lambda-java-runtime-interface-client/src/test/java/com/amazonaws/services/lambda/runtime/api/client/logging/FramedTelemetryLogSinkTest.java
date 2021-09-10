@@ -8,6 +8,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
@@ -38,7 +39,7 @@ public class FramedTelemetryLogSinkTest {
         readChannel.read(buf);
 
         // reset the position to the start
-        buf.position(0);
+        ((Buffer)buf).position(0);
 
         // first 4 bytes indicate the type
         int type = buf.getInt();
@@ -73,7 +74,7 @@ public class FramedTelemetryLogSinkTest {
         readChannel.read(buf);
 
         // reset the position to the start
-        buf.position(0);
+        ((Buffer)buf).position(0);
 
         for(byte[] message : Arrays.asList(firstMessage, secondMessage)) {
             // first 4 bytes indicate the type

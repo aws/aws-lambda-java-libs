@@ -8,10 +8,7 @@ package com.amazonaws.services.lambda.runtime.api.client;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.logging.StdOutLogSink;
-import com.amazonaws.services.lambda.runtime.api.client.util.EnvReader;
-import com.amazonaws.services.lambda.runtime.api.client.util.EnvWriter;
-import com.amazonaws.services.lambda.runtime.api.client.util.LambdaOutputStream;
-import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
+import com.amazonaws.services.lambda.runtime.api.client.util.*;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
 import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
@@ -253,28 +250,27 @@ public class AWSLambda {
                     envWriter.modifyEnv(m -> m.remove("_X_AMZN_TRACE_ID"));
                 }
 
-                ByteArrayOutputStream payload;
+                RawByteArrayOutputStream payload;
                 try {
                     payload = methods.requestHandler.call(request);
-                    // TODO calling payload.toByteArray() creates a new copy of the underlying buffer
-                    runtimeClient.postInvocationResponse(request.getId(), payload.toByteArray());
+                    runtimeClient.postInvocationResponse(request.getId(), payload.getRawByteArray());
                 } catch (UserFault f) {
                     userFault = f;
                     UserFault.filterStackTrace(f);
-                    payload = new ByteArrayOutputStream(1024);
+                    payload = new RawByteArrayOutputStream(1024);
                     Failure failure = new Failure(f);
                     GsonFactory.getInstance().getSerializer(Failure.class).toJson(failure, payload);
                     shouldExit = f.fatal;
-                    runtimeClient.postInvocationError(request.getId(), payload.toByteArray(), failure.getErrorType());
+                    runtimeClient.postInvocationError(request.getId(), payload.getRawByteArray(), failure.getErrorType());
                 } catch (Throwable t) {
                     UserFault.filterStackTrace(t);
                     userFault = UserFault.makeUserFault(t);
-                    payload = new ByteArrayOutputStream(1024);
+                    payload = new RawByteArrayOutputStream(1024);
                     Failure failure = new Failure(t);
                     GsonFactory.getInstance().getSerializer(Failure.class).toJson(failure, payload);
                     // These two categories of errors are considered fatal.
                     shouldExit = Failure.isInvokeFailureFatal(t);
-                    runtimeClient.postInvocationError(request.getId(), payload.toByteArray(), failure.getErrorType(),
+                    runtimeClient.postInvocationError(request.getId(), payload.getRawByteArray(), failure.getErrorType(),
                             serializeAsXRayJson(t));
                 } finally {
                     if (userFault != null) {

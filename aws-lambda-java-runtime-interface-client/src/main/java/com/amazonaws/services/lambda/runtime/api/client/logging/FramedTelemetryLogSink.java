@@ -5,6 +5,7 @@ package com.amazonaws.services.lambda.runtime.api.client.logging;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -55,10 +56,10 @@ public class FramedTelemetryLogSink implements LogSink {
      * Updates the header ByteBuffer with the provided length. The header comprises the frame type and message length.
      */
     private void updateHeader(int length) {
-        this.headerBuf.clear();
+        ((Buffer)this.headerBuf).clear();
         this.headerBuf.putInt(FrameType.LOG.getValue());
         this.headerBuf.putInt(length);
-        this.headerBuf.flip();
+        ((Buffer)this.headerBuf).flip();
     }
 
     @Override

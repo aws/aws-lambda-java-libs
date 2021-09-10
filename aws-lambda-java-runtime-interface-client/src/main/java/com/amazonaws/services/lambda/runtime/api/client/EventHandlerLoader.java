@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaClientContext;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaCognitoIdentity;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
+import com.amazonaws.services.lambda.runtime.api.client.util.RawByteArrayOutputStream;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
@@ -846,7 +847,7 @@ public final class EventHandlerLoader {
 
     public static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
         return new LambdaRequestHandler() {
-            private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+            private final RawByteArrayOutputStream output = new RawByteArrayOutputStream(1024);
             private Functions.V2<String, String> log4jContextPutMethod = null;
 
             private void safeAddRequestIdToLog4j(String log4jContextClassName,
@@ -858,7 +859,7 @@ public final class EventHandlerLoader {
                 } catch (Exception e) {}
             }
 
-            public ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
+            public RawByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
                 output.reset();
 
                 LambdaCognitoIdentity cognitoIdentity = null;

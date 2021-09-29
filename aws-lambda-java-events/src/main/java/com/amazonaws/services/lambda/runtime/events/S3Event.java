@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents and AmazonS3 event.
+ * Represents an AmazonS3 event.
  *
  */
 public class S3Event extends S3EventNotification implements Serializable, Cloneable {

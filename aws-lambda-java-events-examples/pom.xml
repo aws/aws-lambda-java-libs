@@ -10,7 +10,7 @@
 
     <name>AWS Lambda Java Events Examples</name>
     <description>
-        Example AWS Lambda Java Function Examples
+        AWS Lambda Java Function Examples
     </description>
     <url>https://aws.amazon.com/lambda/</url>
     <licenses>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
-            <version>3.9.0</version>
+            <version>3.10.0</version>
         </dependency>
     </dependencies>
 </project>

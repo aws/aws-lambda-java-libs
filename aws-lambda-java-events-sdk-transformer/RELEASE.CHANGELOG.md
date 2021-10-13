@@ -1,3 +1,11 @@
+### September 02, 2021
+`3.0.6`:
+- Fixed NPE when UserIdentity, OldImage, or NewImage is null ([#264](https://github.com/aws/aws-lambda-java-libs/pull/264))
+
+### August 26, 2021
+`3.0.5`:
+- Bumped `aws-lambda-java-events` to version `3.10.0`
+
 ### June 2, 2021
 `3.0.4`:
 - Bumped `aws-lambda-java-events` to version `3.9.0`

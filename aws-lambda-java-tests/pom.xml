@@ -4,7 +4,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-tests</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Tests</name>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
-            <version>3.9.0</version>
+            <version>3.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

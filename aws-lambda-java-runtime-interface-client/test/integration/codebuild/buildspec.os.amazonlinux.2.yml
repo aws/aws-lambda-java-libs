@@ -9,13 +9,11 @@ batch:
     static:
       ignore-failure: false
       env:
-        type: LINUX_CONTAINER
         privileged-mode: true
     dynamic:
       env:
         variables:
           DISTRO_VERSION:
-            - "1"
             - "2"
           RUNTIME_VERSION:
             - "openjdk8"
@@ -42,12 +40,22 @@ phases:
       - echo "Extracting and including Runtime Interface Emulator"
       - SCRATCH_DIR=".scratch"
       - mkdir "${SCRATCH_DIR}"
-      - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/aws-lambda-rie.tar.gz --directory "${SCRATCH_DIR}"
+      - ARCHITECTURE=$(arch)
+      - >
+        if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+            RIE="aws-lambda-rie"
+        elif [[ "$ARCHITECTURE" == "aarch64" ]]; then
+            RIE="aws-lambda-rie-arm64"
+        else
+            echo "Architecture $ARCHITECTURE is not currently supported."
+            exit 1
+        fi
+      - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/${RIE}.tar.gz --directory "${SCRATCH_DIR}"
       - >
         cp "aws-lambda-java-runtime-interface-client/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" \
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - >
-        echo "COPY ${SCRATCH_DIR}/aws-lambda-rie /usr/bin/aws-lambda-rie" >> \
+        echo "COPY ${SCRATCH_DIR}/${RIE} /usr/bin/${RIE}" >> \
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - echo "Building image ${IMAGE_TAG}"
       - >
@@ -64,12 +72,11 @@ phases:
       - >
         docker run \
           --detach \
-          -e "JAVA_BINARY_LOCATION=${JAVA_BINARY_LOCATION}" \
           --name "${OS_DISTRIBUTION}-app" \
           --network "${OS_DISTRIBUTION}-network" \
           --entrypoint="" \
           "${IMAGE_TAG}" \
-          sh -c '/usr/bin/aws-lambda-rie ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App'
+          sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App"
       - sleep 2
       - >
         docker run \
@@ -85,19 +92,20 @@ phases:
         echo "Response: ${actual}"
         if [[ "$actual" != "$expected" ]]; then
           echo "fail! runtime: $RUNTIME - expected output $expected - got $actual"
-          echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
-          echo
-          docker logs "${OS_DISTRIBUTION}-app"
-          echo
-          echo "---------------------------------------------------"
-          echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
-          echo
-          docker logs "${OS_DISTRIBUTION}-tester"
-          echo
-          echo "---------------------------------------------------"
           exit -1
         fi
     finally:
+      - |
+        echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
+        echo
+        docker logs "${OS_DISTRIBUTION}-app" || true
+        echo
+        echo "---------------------------------------------------"
+        echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
+        echo
+        docker logs "${OS_DISTRIBUTION}-tester" || true
+        echo
+        echo "---------------------------------------------------"
       - echo "Cleaning up..."
       - docker stop "${OS_DISTRIBUTION}-app" || true
       - docker rm --force "${OS_DISTRIBUTION}-app" || true

@@ -31,6 +31,7 @@ RUN ./configure \
         --prefix $(pwd)/../artifacts \
         --disable-shared \
         --without-ssl \
+        --with-pic \
         --without-zlib && \
     make && \
     make install

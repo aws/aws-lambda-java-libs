@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    OS_DISTRIBUTION: debian
-    JAVA_BINARY_LOCATION: "/usr/lib/jvm/java-11-amazon-corretto/bin/java"
+    OS_DISTRIBUTION: amazonlinux
+    JAVA_BINARY_LOCATION: "/usr/bin/java"
 batch:
   build-matrix:
     static:
@@ -14,9 +14,9 @@ batch:
       env:
         variables:
           DISTRO_VERSION:
-            - "buster"
+            - "1"
           RUNTIME_VERSION:
-            - "corretto11"
+            - "openjdk8"
 phases:
   install:
     commands:
@@ -56,9 +56,6 @@ phases:
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - >
         echo "COPY ${SCRATCH_DIR}/${RIE} /usr/bin/${RIE}" >> \
-          "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
-      - >
-        echo "RUN apt-get update && apt-get install -y curl" >> \
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - echo "Building image ${IMAGE_TAG}"
       - >

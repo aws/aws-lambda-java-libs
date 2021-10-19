@@ -14,8 +14,10 @@ import java.nio.file.StandardCopyOption;
 class NativeClient {
     private static final String nativeLibPath = "/tmp/.aws-lambda-runtime-interface-client";
     private static final String[] libsToTry = {
-            "/aws-lambda-runtime-interface-client.glibc.so",
-            "/aws-lambda-runtime-interface-client.musl.so",
+            "/aws-lambda-runtime-interface-client.x86_64.glibc.so",
+            "/aws-lambda-runtime-interface-client.arm64.glibc.so",
+            "/aws-lambda-runtime-interface-client.x86_64.musl.so",
+            "/aws-lambda-runtime-interface-client.arm64.musl.so",
     };
     private static final Throwable[] exceptions = new Throwable[libsToTry.length];
     static {
@@ -25,9 +27,7 @@ class NativeClient {
                     Files.copy(lib, Paths.get(nativeLibPath), StandardCopyOption.REPLACE_EXISTING);
                     System.load(nativeLibPath);
                     loaded = true;
-                } catch (UnsatisfiedLinkError e) {
-                    exceptions[i] = e;
-                } catch (Exception e) {
+                } catch (UnsatisfiedLinkError | Exception e) {
                     exceptions[i] = e;
                 }
             }

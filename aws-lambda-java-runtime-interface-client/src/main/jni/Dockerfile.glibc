@@ -1,5 +1,7 @@
 # we use centos 7 to build against glibc 2.17
-FROM centos:7
+
+ARG IMAGE_SOURCE=centos:7
+FROM ${IMAGE_SOURCE}
 
 ARG CURL_VERSION
 

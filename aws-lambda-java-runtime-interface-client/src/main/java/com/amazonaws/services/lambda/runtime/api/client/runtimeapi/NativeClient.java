@@ -39,9 +39,9 @@ class NativeClient {
             }
             String userAgent = String.format(
                     "%s/%s-%s",
-                    System.getProperty("RUNTIME_CLIENT", "aws-lambda-java"),
+                    System.getProperty("AWS_LAMBDA_RUNTIME_CLIENT_NAME_OVERRIDE", "aws-lambda-java"),
                     System.getProperty("java.vendor.version"),
-                    System.getProperty("RUNTIME_CLIENT_VERSION", NativeClient.class.getPackage().getImplementationVersion()));
+                    System.getProperty("AWS_LAMBDA_RUNTIME_CLIENT_VERSION_OVERRIDE", NativeClient.class.getPackage().getImplementationVersion()));
             initializeClient(userAgent.getBytes());
     }
 

@@ -79,6 +79,14 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testConnectEvent() throws IOException {
+        String expected = readEvent("connect_event.json");
+        String actual = deserializeSerializeJsonToString(expected, ConnectEvent.class);
+
+        assertJsonEqual(expected, actual);
+    }
+
+    @Test
     public void testDynamodbEvent() throws IOException {
         String expected = readEvent("dynamodb_event.json");
         String actual = deserializeSerializeJsonToString(expected, DynamodbEvent.class);

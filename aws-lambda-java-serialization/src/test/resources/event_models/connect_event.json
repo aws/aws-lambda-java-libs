@@ -1,5 +1,4 @@
 {
-  "Name": "ContactFlowEvent",
   "Details": {
     "ContactData": {
       "Attributes": {},
@@ -25,5 +24,6 @@
     "Parameters": {
       "sentAttributeKey": "sentAttributeValue"
     }
-  }
+  },
+  "Name": "ContactFlowEvent"
 }

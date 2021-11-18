@@ -5,6 +5,7 @@ package com.amazonaws.services.lambda.runtime.serialization.events.mixins;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * Jackson annotations for ConnectEvent
@@ -65,7 +66,7 @@ public abstract class ConnectEventMixin {
         @JsonProperty("PreviousContactId") abstract void setPreviousContactId(String previousContactId);
 
         // needed because Jackson expects "queue" instead of "Queue"
-        @JsonProperty("Queue") abstract String getQueue();
+        @JsonProperty("Queue") abstract Queue getQueue();
         @JsonProperty("Queue") abstract void setQueue(String queue);
 
         // needed because Jackson expects "systemEndpoint" instead of "SystemEndpoint"
@@ -83,6 +84,17 @@ public abstract class ConnectEventMixin {
         // needed because Jackson expects "type" instead of "Type"
         @JsonProperty("Type") abstract String getType();
         @JsonProperty("Type") abstract void setType(String type);
+    }
+
+    public abstract class QueueMixin {
+
+        // needed because Jackson expects "arn" instead of "ARN"
+        @JsonProperty("ARN") abstract String getArn();
+        @JsonProperty("ARN") abstract void setArn(String arn);
+
+        // needed because Jackson expects "name" instead of "Name"
+        @JsonProperty("Name") abstract String getName();
+        @JsonProperty("Name") abstract void setName(String name);
     }
 
     public abstract class SystemEndpointMixin {

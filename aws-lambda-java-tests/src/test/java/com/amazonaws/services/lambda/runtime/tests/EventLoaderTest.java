@@ -253,18 +253,22 @@ public class EventLoaderTest {
         ConnectEvent.ContactData contactData = event.getDetails().getContactData();
         assertThat(contactData)
                 .returns("VOICE", from(ConnectEvent.ContactData::getChannel))
-                .returns("5ca32fbd-8f92-46af-92a5-6b0f970f0efe", from(ConnectEvent.ContactData::getContactId))
-                .returns("6ca32fbd-8f92-46af-92a5-6b0f970f0efe", from(ConnectEvent.ContactData::getInitialContactId))
-                .returns("API", from(ConnectEvent.ContactData::getInitiationMethod))
-                .returns("arn:aws:connect:eu-central-1:123456789012:instance/9308c2a1-9bc6-4cea-8290-6c0b4a6d38fa", from(ConnectEvent.ContactData::getInstanceArn))
-                .returns("4ca32fbd-8f92-46af-92a5-6b0f970f0efe", from(ConnectEvent.ContactData::getPreviousContactId));
+                .returns("4a573372-1f28-4e26-b97b-XXXXXXXXXXX", from(ConnectEvent.ContactData::getContactId))
+                .returns("4a573372-1f28-4e26-b97b-XXXXXXXXXXX", from(ConnectEvent.ContactData::getInitialContactId))
+                .returns("INBOUND | OUTBOUND | TRANSFER | CALLBACK", from(ConnectEvent.ContactData::getInitiationMethod))
+                .returns("arn:aws:connect:aws-region:1234567890:instance/c8c0e68d-2200-4265-82c0-XXXXXXXXXX", from(ConnectEvent.ContactData::getInstanceArn))
+                .returns("4a573372-1f28-4e26-b97b-XXXXXXXXXXX", from(ConnectEvent.ContactData::getPreviousContactId));
+
+        assertThat(contactData.getQueue())
+                .returns("arn:aws:connect:eu-west-2:111111111111:instance/cccccccc-bbbb-dddd-eeee-ffffffffffff/queue/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", from(ConnectEvent.Queue::getArn))
+                .returns("PasswordReset", from(ConnectEvent.Queue::getName));
 
         assertThat(contactData.getCustomerEndpoint())
-                .returns("+11234567890",from(ConnectEvent.CustomerEndpoint::getAddress))
+                .returns("+1234567890",from(ConnectEvent.CustomerEndpoint::getAddress))
                 .returns("TELEPHONE_NUMBER",from(ConnectEvent.CustomerEndpoint::getType));
 
         assertThat(contactData.getSystemEndpoint())
-                .returns("+21234567890",from(ConnectEvent.SystemEndpoint::getAddress))
+                .returns("+1234567890",from(ConnectEvent.SystemEndpoint::getAddress))
                 .returns("TELEPHONE_NUMBER",from(ConnectEvent.SystemEndpoint::getType));
     }
 

@@ -1,3 +1,8 @@
+### November 24, 2021
+`3.11.0`:
+- Added support for SQSaaES Partial Batch Feature ([#279](https://github.com/aws/aws-lambda-java-libs/pull/279))
+  - `SQSBatchResponse`
+
 ### August 26, 2021
 `3.10.0`:
 - Added headers in `KafkaEventRecord` ([#260](https://github.com/aws/aws-lambda-java-libs/pull/260))

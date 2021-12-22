@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
-            <version>3.8.0</version>
+            <version>3.11.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

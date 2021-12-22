@@ -12,11 +12,24 @@
 * `APIGatewayV2WebSocketResponse`
 * `ApplicationLoadBalancerRequestEvent`
 * `ApplicationLoadBalancerResponseEvent`
+* `AppSyncLambdaAuthorizerEvent`
+* `AppSyncLambdaAuthorizerResponse`
 * `CloudFormationCustomResourceEvent`
 * `CloudFrontEvent`
 * `CloudWatchLogsEvent`
 * `CodeCommitEvent`
 * `CognitoEvent`
+* `CognitoUserPoolCreateAuthChallengeEvent`
+* `CognitoUserPoolCustomMessageEvent`
+* `CognitoUserPoolDefineAuthChallengeEvent`
+* `CognitoUserPoolEvent`
+* `CognitoUserPoolMigrateUserEvent`
+* `CognitoUserPoolPostAuthenticationEvent`
+* `CognitoUserPoolPostConfirmationEvent`
+* `CognitoUserPoolPreAuthenticationEvent`
+* `CognitoUserPoolPreSignUpEvent`
+* `CognitoUserPoolPreTokenGenerationEvent`
+* `CognitoUserPoolVerifyAuthChallengeResponseEvent`
 * `ConfigEvent`
 * `ConnectEvent`
 * `DynamodbEvent`
@@ -31,6 +44,7 @@
 * `KinesisFirehoseEvent`
 * `LambdaDestinationEvent`
 * `LexEvent`
+* `RabbitMQEvent`
 * `S3BatchEvent`
 * `S3BatchResponse`
 * `S3Event`
@@ -38,6 +52,7 @@
 * `SecretsManagerRotationEvent`
 * `SimpleIAMPolicyResponse`
 * `SNSEvent`
+* `SQSBatchResponse`
 * `SQSEvent`
 
 *As of version `3.0.0`, users are no longer required to pull in SDK dependencies in order to use this library.*
@@ -58,7 +73,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.8.0</version>
+        <version>3.11.0</version>
     </dependency>
     ...
 </dependencies>
@@ -68,19 +83,19 @@
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.8.0'
+'com.amazonaws:aws-lambda-java-events:3.11.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.8.0"]
+[com.amazonaws/aws-lambda-java-events "3.11.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.8.0"
+"com.amazonaws" % "aws-lambda-java-events" % "3.11.0"
 ```

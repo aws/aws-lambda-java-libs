@@ -1,12 +1,10 @@
 FROM alpine:3
 
-# Add Corretto repository
-RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub && \
-    echo "https://apk.corretto.aws/" >> /etc/apk/repositories
+ARG CURL_VERSION
 
 RUN apk update && \
     apk add \
-        amazon-corretto-8 \
+        openjdk11 \
         cmake \
         file \
         g++ \
@@ -16,12 +14,14 @@ RUN apk update && \
         perl
 
 # Install curl dependency
-ADD ./deps/curl-* /src/deps/curl
+COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
+RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps && mv /src/deps/curl-$CURL_VERSION /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
         --prefix $(pwd)/../artifacts \
         --disable-shared \
         --without-ssl \
+        --with-pic \
         --without-zlib && \
     make && \
     make install
@@ -41,7 +41,8 @@ RUN cmake .. \
 # Build native client
 ADD *.cpp *.h /src/
 WORKDIR /src
-ENV JAVA_HOME=/usr/lib/jvm/java-8-amazon-corretto
+
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 RUN /usr/bin/c++ -c \
         -std=gnu++11 \
         -fPIC \

@@ -42,6 +42,7 @@ public class KafkaEvent {
         private String timestampType;
         private String key;
         private String value;
+        private List<Map<String, byte[]>> headers;
     }
 
     @Data

@@ -1,6 +1,8 @@
 # we use centos 7 to build against glibc 2.17
 FROM centos:7
 
+ARG CURL_VERSION
+
 # Add Corretto repository
 RUN rpm --import https://yum.corretto.aws/corretto.key && \
     curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
@@ -22,12 +24,14 @@ RUN yum install -y \
         java-1.8.0-amazon-corretto-devel
 
 # Install curl dependency
-ADD ./deps/curl-* /src/deps/curl
+COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
+RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps && mv /src/deps/curl-$CURL_VERSION /src/deps/curl
 WORKDIR /src/deps/curl
 RUN ./configure \
         --prefix $(pwd)/../artifacts \
         --disable-shared \
         --without-ssl \
+        --with-pic \
         --without-zlib && \
     make && \
     make install

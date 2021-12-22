@@ -16,7 +16,9 @@ public class DynamodbRecordTransformer {
                 .withEventSource(record.getEventSource())
                 .withEventVersion(record.getEventVersion())
                 .withUserIdentity(
-                        DynamodbIdentityTransformer.toIdentityV1(record.getUserIdentity())
+                        record.getUserIdentity() != null
+                                ? DynamodbIdentityTransformer.toIdentityV1(record.getUserIdentity())
+                                : null
                 );
     }
 }

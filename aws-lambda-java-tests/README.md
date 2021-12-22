@@ -39,7 +39,7 @@ To install this utility, add the following dependency to your project. Note that
 <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-tests</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
     <scope>test</scope>
 </dependency>
 ```

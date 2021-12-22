@@ -2,10 +2,8 @@ ARG DISTRO_VERSION
 
 FROM alpine:${DISTRO_VERSION}
 
-RUN wget -O /etc/apk/keys/amazoncorretto.rsa.pub  https://apk.corretto.aws/amazoncorretto.rsa.pub && \
-    echo "https://apk.corretto.aws/" >> /etc/apk/repositories && \
-    apk update && \
-    apk add amazon-corretto-11
+RUN apk update && \
+    apk add openjdk8
 
 ADD aws-lambda-java-runtime-interface-client/test/integration/test-handler/target/HelloWorld-1.0.jar .
 

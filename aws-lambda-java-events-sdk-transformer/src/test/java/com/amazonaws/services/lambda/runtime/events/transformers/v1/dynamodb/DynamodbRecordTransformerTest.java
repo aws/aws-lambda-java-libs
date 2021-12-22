@@ -3,6 +3,7 @@ package com.amazonaws.services.lambda.runtime.events.transformers.v1.dynamodb;
 import com.amazonaws.services.dynamodbv2.model.OperationType;
 import com.amazonaws.services.dynamodbv2.model.Record;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
+import com.amazonaws.services.lambda.runtime.events.transformers.v1.DynamodbEventTransformer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +48,16 @@ public class DynamodbRecordTransformerTest {
     public void testToRecordV1() {
         Record convertedRecord = DynamodbRecordTransformer.toRecordV1(record_event);
         Assertions.assertEquals(record_v1, convertedRecord);
+    }
+
+    @Test
+    public void testToRecordV1WhenUserIdentityIsNull() {
+        DynamodbEvent.DynamodbStreamRecord record = record_event.clone();
+        record.setUserIdentity(null);
+
+        Assertions.assertDoesNotThrow(() -> {
+            com.amazonaws.services.lambda.runtime.events.transformers.v1.dynamodb.DynamodbRecordTransformer.toRecordV1(record);
+        });
     }
 
 }

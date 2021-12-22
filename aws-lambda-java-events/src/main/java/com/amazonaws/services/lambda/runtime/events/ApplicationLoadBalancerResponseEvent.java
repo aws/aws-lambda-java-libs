@@ -42,8 +42,8 @@ public class ApplicationLoadBalancerResponseEvent implements Serializable {
     private String statusDescription;
     @JsonProperty("isBase64Encoded")
     private boolean isBase64Encoded;
-    private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<String> headers;
+    private HttpHeaders<List<String>> multiValueHeaders;
     private String body;
 
 }

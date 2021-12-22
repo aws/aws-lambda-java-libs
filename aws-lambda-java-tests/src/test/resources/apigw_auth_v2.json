@@ -8,8 +8,9 @@
   "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
   "cookies": [ "cookie1", "cookie2" ],
   "headers": {
-    "Header1": "value1",
-    "Header2": "value2"
+    "header1": "value1",
+    "Header2": "value2",
+    "Header1": "Value1"
   },
   "queryStringParameters": { "parameter1": "value1,value2", "parameter2": "value" },
   "requestContext": {

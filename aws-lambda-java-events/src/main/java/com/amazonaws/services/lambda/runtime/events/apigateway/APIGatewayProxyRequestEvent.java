@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.amazonaws.services.lambda.runtime.events.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,9 +41,9 @@ public class APIGatewayProxyRequestEvent implements Serializable {
 
     private String httpMethod;
 
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
 
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<List<String>> multiValueHeaders;
 
     private Map<String, String> queryStringParameters;
 

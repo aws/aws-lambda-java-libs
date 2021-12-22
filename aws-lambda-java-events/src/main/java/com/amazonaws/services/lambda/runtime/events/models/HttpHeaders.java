@@ -8,7 +8,8 @@ import java.util.TreeMap;
 /**
  * Class that represents Http Headers.
  * <br>
- * Not using a standard map, because we need insensitive case.
+ * Http Headers are case-insensitive.
+ * Thus, requesting a header "host" will yield the same result as "Host" or "HOST"
  */
 public class HttpHeaders<T> implements Map<String, T> {
 

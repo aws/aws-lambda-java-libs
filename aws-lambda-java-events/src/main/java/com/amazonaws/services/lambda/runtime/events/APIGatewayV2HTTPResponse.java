@@ -43,28 +43,12 @@ public class APIGatewayV2HTTPResponse {
         private HttpHeaders<List<String>> multiValueHeaders;
 
         public APIGatewayV2HTTPResponseBuilder withHeaders(Map<String, String> headers) {
-            if (headers == null || headers.isEmpty()) {
-                this.headers = null;
-                return this;
-            }
-
-            if (this.headers == null) {
-                this.headers = new HttpHeaders<>();
-            }
-            this.headers.putAll(headers);
+            this.headers = HttpHeadersUtil.mergeOrReplace(headers);
             return this;
         }
 
         public APIGatewayV2HTTPResponseBuilder withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-            if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
-                this.multiValueHeaders = null;
-                return this;
-            }
-
-            if (this.multiValueHeaders == null) {
-                this.multiValueHeaders = new HttpHeaders<>();
-            }
-            this.multiValueHeaders.putAll(multiValueHeaders);
+            this.multiValueHeaders = HttpHeadersUtil.mergeOrReplace(multiValueHeaders);
             return this;
         }
     }

@@ -1010,15 +1010,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param headers The headers sent with the request
      */
     public void setHeaders(Map<String, String> headers) {
-        if (headers == null || headers.isEmpty()) {
-            this.headers = null;
-            return;
-        }
-
-        if (this.headers == null) {
-            this.headers = new HttpHeaders<>();
-        }
-        this.headers.putAll(headers);
+        this.headers = HttpHeadersUtil.mergeOrReplace(headers);
     }
 
     /**
@@ -1041,15 +1033,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param multiValueHeaders The multi value headers sent with the request
      */
     public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-        if (multiValueHeaders == null || multiValueHeaders.isEmpty()) {
-            this.multiValueHeaders = null;
-            return;
-        }
-
-        if (this.multiValueHeaders == null) {
-            this.multiValueHeaders = new HttpHeaders<>();
-        }
-        this.multiValueHeaders.putAll(multiValueHeaders);
+        this.multiValueHeaders = HttpHeadersUtil.mergeOrReplace(multiValueHeaders);
     }
 
     /**

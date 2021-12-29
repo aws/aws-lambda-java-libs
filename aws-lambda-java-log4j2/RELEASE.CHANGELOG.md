@@ -1,3 +1,7 @@
+### December 29, 2021
+`1.5.1`:
+- Updated `log4j-core` and `log4j-api` dependencies to `2.17.1`
+
 ### December 18, 2021
 `1.5.0`:
 - Updated `log4j-core` and `log4j-api` dependencies to `2.17.0`

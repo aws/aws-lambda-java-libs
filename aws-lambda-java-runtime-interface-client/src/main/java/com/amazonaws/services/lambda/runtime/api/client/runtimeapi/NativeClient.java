@@ -13,15 +13,17 @@ import java.nio.file.StandardCopyOption;
  */
 class NativeClient {
     private static final String nativeLibPath = "/tmp/.aws-lambda-runtime-interface-client";
+    private static final String architecturePathSuffix = "/" + getArchIdentifier();
     private static final String[] libsToTry = {
-            "/aws-lambda-runtime-interface-client.glibc.so",
-            "/aws-lambda-runtime-interface-client.musl.so",
+            "aws-lambda-runtime-interface-client.glibc.so",
+            "aws-lambda-runtime-interface-client.musl.so",
     };
     private static final Throwable[] exceptions = new Throwable[libsToTry.length];
     static {
             boolean loaded = false;
             for (int i = 0; !loaded && i < libsToTry.length; ++i) {
-                try (InputStream lib = NativeClient.class.getResourceAsStream(libsToTry[i])) {
+                try (InputStream lib = NativeClient.class.getResourceAsStream(
+                        Paths.get(architecturePathSuffix, libsToTry[i]).toString())) {
                     Files.copy(lib, Paths.get(nativeLibPath), StandardCopyOption.REPLACE_EXISTING);
                     System.load(nativeLibPath);
                     loaded = true;
@@ -44,10 +46,25 @@ class NativeClient {
             initializeClient(userAgent.getBytes());
     }
 
+    /**
+     * @return a string describing the detected architecture the RIC is executing on
+     * @throws RuntimeException
+     */
+    static String getArchIdentifier() {
+        String arch = System.getProperty("os.arch");
+
+        if (arch.matches("^(x8664|amd64|ia32e|em64t|x64|x86_64|x8632|x86|i[3-6]86|ia32|x32)$")) {
+            return "x86";
+        } else if (arch.matches("^(armeabi.*|arm64.*|aarch64.*|arm)$")) {
+            return "arm";
+        }
+
+        throw new RuntimeException("architecture not supported: " + arch);
+    }
+
     static native void initializeClient(byte[] userAgent);
 
     static native InvocationRequest next();
 
     static native void postInvocationResponse(byte[] requestId, byte[] response);
-
 }

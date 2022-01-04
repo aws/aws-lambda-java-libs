@@ -49,6 +49,13 @@ public class S3EventNotification {
         public String getPrincipalId() {
             return principalId;
         }
+
+        @Override
+        public String toString() {
+            return "UserIdentityEntity{" +
+                    "principalId='" + principalId + '\'' +
+                    '}';
+        }
     }
 
     public static class S3BucketEntity {
@@ -73,6 +80,15 @@ public class S3EventNotification {
 
         public String getArn() {
             return arn;
+        }
+
+        @Override
+        public String toString() {
+            return "S3BucketEntity{" +
+                    "name='" + name + '\'' +
+                    ", ownerIdentity=" + ownerIdentity +
+                    ", arn='" + arn + '\'' +
+                    '}';
         }
     }
 
@@ -173,6 +189,17 @@ public class S3EventNotification {
         public String getSequencer() {
             return sequencer;
         }
+
+        @Override
+        public String toString() {
+            return "S3ObjectEntity{" +
+                    "key='" + key + '\'' +
+                    ", size=" + size +
+                    ", eTag='" + eTag + '\'' +
+                    ", versionId='" + versionId + '\'' +
+                    ", sequencer='" + sequencer + '\'' +
+                    '}';
+        }
     }
 
     public static class S3Entity {
@@ -204,6 +231,16 @@ public class S3EventNotification {
         public String getS3SchemaVersion() {
             return s3SchemaVersion;
         }
+
+        @Override
+        public String toString() {
+            return "S3Entity{" +
+                    "configurationId='" + configurationId + '\'' +
+                    ", bucket=" + bucket +
+                    ", object=" + object +
+                    ", s3SchemaVersion='" + s3SchemaVersion + '\'' +
+                    '}';
+        }
     }
 
     public static class RequestParametersEntity {
@@ -216,6 +253,13 @@ public class S3EventNotification {
 
         public String getSourceIPAddress() {
             return sourceIPAddress;
+        }
+
+        @Override
+        public String toString() {
+            return "RequestParametersEntity{" +
+                    "sourceIPAddress='" + sourceIPAddress + '\'' +
+                    '}';
         }
     }
 
@@ -236,6 +280,14 @@ public class S3EventNotification {
 
         public String getxAmzRequestId() {
             return xAmzRequestId;
+        }
+
+        @Override
+        public String toString() {
+            return "ResponseElementsEntity{" +
+                    "xAmzId2='" + xAmzId2 + '\'' +
+                    ", xAmzRequestId='" + xAmzRequestId + '\'' +
+                    '}';
         }
     }
 
@@ -305,6 +357,21 @@ public class S3EventNotification {
 
         public UserIdentityEntity getUserIdentity() {
             return userIdentity;
+        }
+
+        @Override
+        public String toString() {
+            return "S3EventNotificationRecord{" +
+                    "awsRegion='" + awsRegion + '\'' +
+                    ", eventName='" + eventName + '\'' +
+                    ", eventSource='" + eventSource + '\'' +
+                    ", eventTime=" + eventTime +
+                    ", eventVersion='" + eventVersion + '\'' +
+                    ", requestParameters=" + requestParameters +
+                    ", responseElements=" + responseElements +
+                    ", s3=" + s3 +
+                    ", userIdentity=" + userIdentity +
+                    '}';
         }
     }
 }

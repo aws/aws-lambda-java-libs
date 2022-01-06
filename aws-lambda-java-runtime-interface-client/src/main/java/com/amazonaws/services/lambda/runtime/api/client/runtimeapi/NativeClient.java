@@ -14,6 +14,8 @@ import java.nio.file.StandardCopyOption;
 class NativeClient {
     private static final String nativeLibPath = "/tmp/.aws-lambda-runtime-interface-client";
     private static final String architecturePathSuffix = "/" + getArchIdentifier();
+    private static final String supported_arm_architectures = "^(aarch64)$";
+    private static final String supported_x86_architectures = "^(amd64)$";
     private static final String[] libsToTry = {
             "aws-lambda-runtime-interface-client.glibc.so",
             "aws-lambda-runtime-interface-client.musl.so",
@@ -53,13 +55,13 @@ class NativeClient {
     static String getArchIdentifier() {
         String arch = System.getProperty("os.arch");
 
-        if (arch.matches("^(x8664|amd64|ia32e|em64t|x64|x86_64|x8632|x86|i[3-6]86|ia32|x32)$")) {
+        if (arch.matches(supported_x86_architectures)) {
             return "x86";
-        } else if (arch.matches("^(armeabi.*|arm64.*|aarch64.*|arm)$")) {
+        } else if (arch.matches(supported_arm_architectures)) {
             return "arm";
         }
 
-        throw new RuntimeException("architecture not supported: " + arch);
+        throw new UnknownPlatformException("architecture not supported: " + arch);
     }
 
     static native void initializeClient(byte[] userAgent);

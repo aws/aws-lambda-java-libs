@@ -1,4 +1,8 @@
-### June 02, 2020
+### Sept 29, 2021
+`2.0.0`
+- Added support for ARM64 architecture
+
+### June 02, 2021
 `1.1.0`:
 - Added reserved environment variables constants ([#238](https://github.com/aws/aws-lambda-java-libs/pull/238))
 - Updated libcurl dependency to `7.77.0` ([#249](https://github.com/aws/aws-lambda-java-libs/pull/249))

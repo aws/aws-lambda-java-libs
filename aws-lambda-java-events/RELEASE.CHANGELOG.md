@@ -1,3 +1,18 @@
+### November 24, 2021
+`3.11.0`:
+- Added support for SQSaaES Partial Batch Feature ([#279](https://github.com/aws/aws-lambda-java-libs/pull/279))
+  - `SQSBatchResponse`
+
+### August 26, 2021
+`3.10.0`:
+- Added headers in `KafkaEventRecord` ([#260](https://github.com/aws/aws-lambda-java-libs/pull/260))
+- Added support for AppSync Lambda Authorizer ([#263](https://github.com/aws/aws-lambda-java-libs/pull/263))
+  - `AppSyncLambdaAuthorizerEvent`
+  - `AppSyncLambdaAuthorizerResponse`
+- Added support for RabbitMQ Event ([#256](https://github.com/aws/aws-lambda-java-libs/pull/256))
+  - `RabbitMQEvent`
+- Added missing `version` field to `APIGatewayProxyRequestEvent` ([#258](https://github.com/aws/aws-lambda-java-libs/pull/258))
+
 ### June 2, 2021
 `3.9.0`:
 - Added support for Cognito User Pool events ([#175](https://github.com/aws/aws-lambda-java-libs/pull/175))

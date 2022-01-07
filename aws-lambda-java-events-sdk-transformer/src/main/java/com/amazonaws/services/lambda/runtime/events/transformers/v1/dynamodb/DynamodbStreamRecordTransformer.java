@@ -13,10 +13,14 @@ public class DynamodbStreamRecordTransformer {
                         DynamodbAttributeValueTransformer.toAttributeValueMapV1(streamRecord.getKeys())
                 )
                 .withNewImage(
-                        DynamodbAttributeValueTransformer.toAttributeValueMapV1(streamRecord.getNewImage())
+                        streamRecord.getNewImage() != null
+                                ? DynamodbAttributeValueTransformer.toAttributeValueMapV1(streamRecord.getNewImage())
+                                : null
                 )
                 .withOldImage(
-                        DynamodbAttributeValueTransformer.toAttributeValueMapV1(streamRecord.getOldImage())
+                        streamRecord.getOldImage() != null
+                                ? DynamodbAttributeValueTransformer.toAttributeValueMapV1(streamRecord.getOldImage())
+                                : null
                 )
                 .withSequenceNumber(streamRecord.getSequenceNumber())
                 .withSizeBytes(streamRecord.getSizeBytes())

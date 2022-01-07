@@ -10,17 +10,17 @@ Example for Maven pom.xml
   <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.2.0</version>
+    <version>1.5.1</version>
   </dependency>
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.13.2</version>
+    <version>2.17.1</version>
   </dependency>
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-api</artifactId>
-    <version>2.13.2</version>
+    <version>2.17.1</version>
   </dependency>
   ....
 </dependencies>
@@ -68,7 +68,7 @@ If you are using the [John Rengelman](https://github.com/johnrengelman/shadow) G
  
 dependencies{
   ...
-    implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.1.0'
+    implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.5.1'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
 }

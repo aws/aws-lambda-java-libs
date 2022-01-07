@@ -5,7 +5,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.2.0</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Log4j 2.x Libraries</name>
@@ -34,7 +34,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <log4j.version>2.13.2</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
     </properties>
 
     <distributionManagement>

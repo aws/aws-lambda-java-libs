@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -112,6 +113,7 @@ public class JacksonFactory implements PojoSerializerFactory {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Void.class, new VoidDeserializer());
         mapper.registerModule(module);
+        mapper.registerModule(new Jdk8Module());
 
         return mapper;
     }

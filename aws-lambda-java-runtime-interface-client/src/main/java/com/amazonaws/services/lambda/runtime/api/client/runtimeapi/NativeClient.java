@@ -50,15 +50,15 @@ class NativeClient {
 
     /**
      * @return a string describing the detected architecture the RIC is executing on
-     * @throws RuntimeException
+     * @throws UnknownPlatformException
      */
     static String getArchIdentifier() {
         String arch = System.getProperty("os.arch");
 
         if (arch.matches(supported_x86_architectures)) {
-            return "x86";
+            return "x86_64";
         } else if (arch.matches(supported_arm_architectures)) {
-            return "arm";
+            return "arm64";
         }
 
         throw new UnknownPlatformException("architecture not supported: " + arch);

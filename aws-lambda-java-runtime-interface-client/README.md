@@ -13,7 +13,7 @@ You can include this package in your preferred base image to make that base imag
 
 Choose a preferred base image. The Runtime Interface Client is tested on Amazon Linux, Alpine, Ubuntu, Debian, and CentOS. The requirements are that the image is:
 
-* built for x86_64 and ARM
+* built for x86_64 and ARM64
 * contains Java >= 8
 * contains glibc >= 2.17 or musl
 

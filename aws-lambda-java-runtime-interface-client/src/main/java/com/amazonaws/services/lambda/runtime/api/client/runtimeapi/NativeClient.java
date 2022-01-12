@@ -14,8 +14,8 @@ import java.nio.file.StandardCopyOption;
 class NativeClient {
     private static final String nativeLibPath = "/tmp/.aws-lambda-runtime-interface-client";
     private static final String architecturePathSuffix = "/" + getArchIdentifier();
-    private static final String supported_arm_architectures = "^(aarch64)$";
-    private static final String supported_x86_architectures = "^(amd64)$";
+    private static final String supported_arm_architectures = "^(aarch64.*|arm64.*)$";
+    private static final String supported_x86_architectures = "^(x8664|amd64|ia32e|em64t|x64|x86_64)$";
     private static final String[] libsToTry = {
             "aws-lambda-runtime-interface-client.glibc.so",
             "aws-lambda-runtime-interface-client.musl.so",

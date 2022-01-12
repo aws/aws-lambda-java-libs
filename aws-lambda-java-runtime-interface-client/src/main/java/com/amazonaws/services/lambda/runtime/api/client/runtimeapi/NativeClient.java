@@ -14,6 +14,7 @@ import java.nio.file.StandardCopyOption;
 class NativeClient {
     private static final String nativeLibPath = "/tmp/.aws-lambda-runtime-interface-client";
     private static final String architecturePathSuffix = "/" + getArchIdentifier();
+    // Implementation based on AWS CRT, but adopted to support 64-bit architectures only (ref. https://github.com/awslabs/aws-crt-java/blob/0e9c3db8b07258b57c2503cfc47c787ccef10670/src/main/java/software/amazon/awssdk/crt/CRT.java#L106-L134)
     private static final String supported_arm_architectures = "^(aarch64.*|arm64.*)$";
     private static final String supported_x86_architectures = "^(x8664|amd64|ia32e|em64t|x64|x86_64)$";
     private static final String[] libsToTry = {

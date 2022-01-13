@@ -16,10 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Object representation of an Amazon EventBridge event.
@@ -33,15 +31,17 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventBridgeEvent {
+public class EventBridgeEvent<T> {
 
     private String version;
     private String id;
+    // @TODO "detail-type"
     private String detailType;
     private String source;
     private String account;
-    private DateTime time;
+    // @TODO move to a proper type
+    private String time;
     private String region;
     private List<String> resources;
-    private Map<String, Object> detail;
+    private T detail;
 }

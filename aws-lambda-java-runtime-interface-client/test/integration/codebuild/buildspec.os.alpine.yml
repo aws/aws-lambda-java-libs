@@ -33,6 +33,8 @@ phases:
         fi
   pre_build:
     commands:
+      # To get some environment details for troubleshooting
+      - (mvn -v)
       # Install events (dependency of serialization)
       - (cd aws-lambda-java-events && mvn install)
       # Install serialization (dependency of RIC)

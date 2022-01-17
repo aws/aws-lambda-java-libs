@@ -1,4 +1,4 @@
-### January 11, 2022
+### January 17, 2022
 `2.1.0`
 - fix: Added support for ARM64 architecture
 

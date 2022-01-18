@@ -1,4 +1,4 @@
-FROM amazonlinux:2
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 
 RUN amazon-linux-extras enable docker && \
     yum clean metadata && \

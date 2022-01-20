@@ -176,7 +176,7 @@ else
     docker_command+=" -e \"INITIATOR=$USER\""
 fi
 
-docker_command+=" amazon/aws-codebuild-local:latest"
+docker_command+=" public.ecr.aws/codebuild/local-builds:latest"
 
 # Note we do not expose the AWS_SECRET_ACCESS_KEY or the AWS_SESSION_TOKEN
 exposed_command=$docker_command

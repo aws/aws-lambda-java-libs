@@ -33,6 +33,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.7.0</junit.version>
+        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -127,7 +128,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.6</version>
+                        <version>${jacoco.maven.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>default-prepare-agent</id>

@@ -2,6 +2,7 @@ package com.amazonaws.services.lambda.runtime.events.transformers.v1.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class DynamodbAttributeValueTransformer {
         } else if (Objects.nonNull(value.getL())) {
             return new AttributeValue()
                     .withL(value.getL().isEmpty()
-                            ? null
+                            ? Collections.emptyList()
                             : value.getL().stream()
                                 .map(DynamodbAttributeValueTransformer::toAttributeValueV1)
                                 .collect(Collectors.toList()));

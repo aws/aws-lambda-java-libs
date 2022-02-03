@@ -307,7 +307,7 @@ class DynamodbAttributeValueTransformerTest {
     @Test
     public void testToAttributeValueV2_EmptyV2ObjectWhenEmpty_L() {
         software.amazon.awssdk.services.dynamodb.model.AttributeValue expectedAttributeValue_v2 =
-                software.amazon.awssdk.services.dynamodb.model.AttributeValue.builder().build();
+                software.amazon.awssdk.services.dynamodb.model.AttributeValue.builder().l(Collections.emptyList()).build();
         Assertions.assertEquals(expectedAttributeValue_v2,
                 DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL()));
         Assertions.assertEquals(expectedAttributeValue_v2,

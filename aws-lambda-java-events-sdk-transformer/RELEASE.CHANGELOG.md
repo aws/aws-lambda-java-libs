@@ -1,3 +1,7 @@
+### February 03, 2022
+`3.1.0`:
+-  Make DynamodbAttributeValueTransformer v1 and v2 return empty list instead of null for empty list attribute ([#309](https://github.com/aws/aws-lambda-java-libs/pull/309))
+
 ### November 24, 2021
 `3.0.7`:
 - Bumped `aws-lambda-java-events` to version `3.11.0`

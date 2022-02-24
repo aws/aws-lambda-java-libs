@@ -72,6 +72,33 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String type;
     }
 
+        @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MediaStreams implements Serializable {
+        private Customer customer;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Customer implements Serializable {
+        private Audio audio;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Audio implements Serializable {
+        private String startFragmentNumber;
+        private String startTimestamp;
+        private String streamARN;
+        private String stopFragmentNumber;
+    }
+
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor

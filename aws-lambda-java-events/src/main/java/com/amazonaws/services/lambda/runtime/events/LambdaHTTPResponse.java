@@ -13,23 +13,6 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class LambdaHTTPResponse extends APIGatewayV2HTTPResponse {
 
-import java.util.List;
-import java.util.Map;
-
-@AllArgsConstructor
-@Builder(setterPrefix = "with")
-@Data
-@NoArgsConstructor
-public class LambdaHTTPResponse {
-    private int statusCode;
-    private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
-    private List<String> cookies;
-    private String body;
-    private boolean isBase64Encoded;
 }

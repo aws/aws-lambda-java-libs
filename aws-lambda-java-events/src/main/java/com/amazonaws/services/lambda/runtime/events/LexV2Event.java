@@ -207,7 +207,7 @@ public class LexV2Event implements Serializable, Cloneable {
         private String transcription;
         private TranscriptionConfidence transcriptionConfidence;
         private ResolvedContext resolvedContext;
-        private Map<String, Slot> ResolvedSlots;
+        private Map<String, Slot> resolvedSlots;
     }
 
     @Data

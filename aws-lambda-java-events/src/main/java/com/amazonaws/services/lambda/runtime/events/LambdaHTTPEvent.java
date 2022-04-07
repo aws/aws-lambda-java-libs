@@ -13,5 +13,8 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
+import lombok.ToString;
+
+@ToString(callSuper = true)
 public class LambdaHTTPEvent extends APIGatewayV2HTTPEvent {
 }

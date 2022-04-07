@@ -4,8 +4,8 @@ package com.amazonaws.services.lambda.runtime.serialization.events;
 
 import com.amazonaws.services.lambda.runtime.events.*;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,11 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LambdaEventSerializersTest {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static final ClassLoader SYSTEM_CLASS_LOADER = ClassLoader.getSystemClassLoader();
+    public static final ObjectMapper OBJECT_MAPPER = JacksonFactory.getInstance().getMapper();
 
     private static Stream<Arguments> serdeArguments() {
         return Stream.of(
+            Arguments.of("lambda_function_url_request.json", LambdaFunctionURLRequest.class),
             Arguments.of("api_gateway_proxy_request_event.json", APIGatewayProxyRequestEvent.class),
             Arguments.of("api_gateway_proxy_response_event.json", APIGatewayProxyResponseEvent.class),
             Arguments.of("cloud_front_event.json", CloudFrontEvent.class),
@@ -36,6 +37,7 @@ public class LambdaEventSerializersTest {
             Arguments.of("cognito_event.json", CognitoEvent.class),
             Arguments.of("config_event.json", ConfigEvent.class),
             Arguments.of("dynamodb_event.json", DynamodbEvent.class),
+            Arguments.of("lambda_function_url_response.json", LambdaFunctionURLResponse.class),
             Arguments.of("iot_button_event.json", IoTButtonEvent.class),
             Arguments.of("kinesis_analytics_firehose_input_preprocessing_event.json", KinesisAnalyticsFirehoseInputPreprocessingEvent.class),
             Arguments.of("kinesis_analytics_input_preprocessing_response_event.json", KinesisAnalyticsInputPreprocessingResponse.class),

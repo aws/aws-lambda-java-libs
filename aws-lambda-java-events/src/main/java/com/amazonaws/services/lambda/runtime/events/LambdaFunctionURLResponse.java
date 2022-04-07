@@ -15,6 +15,12 @@ package com.amazonaws.services.lambda.runtime.events;
 
 import lombok.ToString;
 
+/**
+ * Class to represent a Lambda function HTTP Response.
+ *
+ * @see <a href="https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html">Invoking Lambda function URLs</a>
+ */
 @ToString(callSuper = true)
-public class LambdaHTTPEvent extends APIGatewayV2HTTPEvent {
+public class LambdaFunctionURLResponse extends APIGatewayV2HTTPResponse {
+
 }

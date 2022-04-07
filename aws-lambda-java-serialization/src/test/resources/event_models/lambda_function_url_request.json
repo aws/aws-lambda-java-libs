@@ -1,6 +1,5 @@
 {
   "version": "2.0",
-  "routeKey": "$default",
   "rawPath": "/my/path",
   "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
   "cookies": [
@@ -37,8 +36,6 @@
       "userAgent": "agent"
     },
     "requestId": "id",
-    "routeKey": "$default",
-    "stage": "$default",
     "time": "12/Mar/2020:19:03:58 +0000",
     "timeEpoch": 1583348638390
   },

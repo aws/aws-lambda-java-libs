@@ -13,14 +13,27 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class to represent a Lambda function HTTP Response.
  *
  * @see <a href="https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html">Invoking Lambda function URLs</a>
  */
-@ToString(callSuper = true)
-public class LambdaFunctionURLResponse extends APIGatewayV2HTTPResponse {
-
+@AllArgsConstructor
+@Builder(setterPrefix = "with")
+@Data
+@NoArgsConstructor
+public class LambdaFunctionURLResponse {
+    private int statusCode;
+    private Map<String, String> headers;
+    private List<String> cookies;
+    private String body;
+    private boolean isBase64Encoded;
 }

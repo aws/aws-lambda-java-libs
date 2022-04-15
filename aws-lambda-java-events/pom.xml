@@ -3,7 +3,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.amazonaws</groupId>
+  <parent>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-pom</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
   <artifactId>aws-lambda-java-events</artifactId>
   <version>3.11.0</version>
   <packaging>jar</packaging>
@@ -31,12 +36,6 @@
     </developer>
   </developers>
 
-  <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <lombok.version>1.18.22</lombok.version>
-  </properties>
-
   <distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
@@ -54,13 +53,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.10.5.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -73,7 +70,6 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

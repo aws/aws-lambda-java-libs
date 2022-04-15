@@ -2,7 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.amazonaws</groupId>
+    <parent>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
     <artifactId>aws-lambda-java-tests</artifactId>
     <version>1.1.1</version>
     <packaging>jar</packaging>
@@ -29,10 +34,6 @@
     </developers>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.7.0</junit.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
     </properties>
 
@@ -50,17 +51,14 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

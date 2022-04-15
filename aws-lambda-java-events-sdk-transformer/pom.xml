@@ -3,7 +3,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.amazonaws</groupId>
+  <parent>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-pom</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
   <version>3.1.0</version>
   <packaging>jar</packaging>
@@ -33,13 +38,6 @@
     </developer>
   </developers>
 
-  <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <sdk.v1.version>1.11.914</sdk.v1.version>
-    <sdk.v2.version>2.15.40</sdk.v2.version>
-  </properties>
-
   <distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
@@ -51,13 +49,11 @@
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb</artifactId>
-      <version>${sdk.v2.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <version>${sdk.v1.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -70,7 +66,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

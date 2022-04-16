@@ -59,4 +59,3 @@ jobs:
       with:
         name: the-jar
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-2.1.0.jar
-

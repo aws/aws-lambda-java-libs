@@ -24,8 +24,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    
-    # Install base module
+
+      # Install Parent POM
+    - name: Install parent POM with Maven
+      run: mvn -B clean install
+
+      # Install base module
     - name: Install events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
     - name: Install serialization with Maven

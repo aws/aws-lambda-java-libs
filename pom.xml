@@ -38,7 +38,7 @@
         <junit.version>5.8.2</junit.version>
         <sdk.v1.version>1.11.951</sdk.v1.version>
         <sdk.v2.version>2.15.40</sdk.v2.version>
-        <jackson.version>2.13.2</jackson.version>
+        <jackson.version>2.13.2.20220328</jackson.version>
         <lombok.version>1.18.22</lombok.version>
     </properties>
 

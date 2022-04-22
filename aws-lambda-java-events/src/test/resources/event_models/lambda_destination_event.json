@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "timestamp": "2019-11-14T18:16:05.568Z",
+  "requestContext": {
+    "requestId": "e4b46cbf-b738-xmpl-8880-a18cdf61200e",
+    "functionArn": "arn:aws:lambda:us-east-2:123456789012:function:my-function:$LATEST",
+    "condition": "RetriesExhausted",
+    "approximateInvokeCount": 3
+  },
+  "requestPayload": {
+    "ORDER_IDS": [
+      "9e07af03-ce31-4ff3-xmpl-36dce652cb4f",
+      "637de236-e7b2-464e-xmpl-baf57f86bb53",
+      "a81ddca6-2c35-45c7-xmpl-c3a03a31ed15"
+    ]
+  },
+  "responseContext": {
+    "statusCode": 200,
+    "executedVersion": "$LATEST"
+  },
+  "responsePayload": {
+    "errorMessage": "Failure from event, Success = false, I am failing!",
+    "errorType": "Error",
+    "stackTrace": [
+      "exports.handler (/var/task/index.js:18:18)"
+    ]
+  }
+}

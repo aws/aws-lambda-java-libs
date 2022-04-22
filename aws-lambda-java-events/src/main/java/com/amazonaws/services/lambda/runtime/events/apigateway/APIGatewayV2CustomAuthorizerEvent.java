@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,70 +11,101 @@
  * and limitations under the License.
  */
 
-package com.amazonaws.services.lambda.runtime.events;
+package com.amazonaws.services.lambda.runtime.events.apigateway;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@Builder(setterPrefix = "with")
-@Data
-@NoArgsConstructor
 /**
- * API Gateway v2 event: https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html
+ * The V2 API Gateway customer authorizer event object as described - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
+ *
  */
-public class APIGatewayV2HTTPEvent {
+
+@Data
+@Builder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor
+public class APIGatewayV2CustomAuthorizerEvent {
+
     private String version;
+    private String type;
+    private String routeArn;
+    private List<String> identitySource;
     private String routeKey;
     private String rawPath;
     private String rawQueryString;
     private List<String> cookies;
     private Map<String, String> headers;
     private Map<String, String> queryStringParameters;
+    private RequestContext requestContext;
     private Map<String, String> pathParameters;
     private Map<String, String> stageVariables;
-    private String body;
-    private boolean isBase64Encoded;
-    private RequestContext requestContext;
 
-    @AllArgsConstructor
-    @Builder(setterPrefix = "with")
     @Data
+    @Builder(setterPrefix = "with")
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class RequestContext {
-        private String routeKey;
+
         private String accountId;
-        private String stage;
         private String apiId;
+        private Authentication authentication;
         private String domainName;
         private String domainPrefix;
+        private Http http;
+        private String requestId;
+        private String routeKey;
+        private String stage;
         private String time;
         private long timeEpoch;
-        private Http http;
-        private Authorizer authorizer;
-        private String requestId;
+
+        @JsonIgnore
+        public Instant getEpochTime() {
+            return Instant.ofEpochMilli(timeEpoch);
+        }
+
+        @JsonIgnore
+        public Instant getDateTime() {
+            return Instant.parse(time);
+        }
 
         @AllArgsConstructor
         @Builder(setterPrefix = "with")
         @Data
         @NoArgsConstructor
-        public static class Authorizer {
-            private JWT jwt;
-            private Map<String, Object> lambda;
-            private IAM iam;
+        public static class Authentication {
+
+            private APIGatewayV2HTTPEvent.RequestContext.Authentication.ClientCert clientCert;
 
             @AllArgsConstructor
             @Builder(setterPrefix = "with")
             @Data
             @NoArgsConstructor
-            public static class JWT {
-                private Map<String, String> claims;
-                private List<String> scopes;
+            public static class ClientCert {
+
+                private String clientCertPem;
+                private String issuerDN;
+                private String serialNumber;
+                private String subjectDN;
+                private APIGatewayV2HTTPEvent.RequestContext.Authentication.ClientCert.Validity validity;
+
+                @AllArgsConstructor
+                @Builder(setterPrefix = "with")
+                @Data
+                @NoArgsConstructor
+                public static class Validity {
+
+                    private String notAfter;
+                    private String notBefore;
+                }
             }
         }
 
@@ -83,35 +114,12 @@ public class APIGatewayV2HTTPEvent {
         @Data
         @NoArgsConstructor
         public static class Http {
+
             private String method;
             private String path;
             private String protocol;
             private String sourceIp;
             private String userAgent;
-        }
-
-        @AllArgsConstructor
-        @Builder(setterPrefix = "with")
-        @Data
-        @NoArgsConstructor
-        public static class IAM {
-            private String accessKey;
-            private String accountId;
-            private String callerId;
-            private CognitoIdentity cognitoIdentity;
-            private String principalOrgId;
-            private String userArn;
-            private String userId;
-        }
-
-        @AllArgsConstructor
-        @Builder(setterPrefix = "with")
-        @Data
-        @NoArgsConstructor
-        public static class CognitoIdentity {
-            private List<String> amr;
-            private String identityId;
-            private String identityPoolId;
         }
     }
 }

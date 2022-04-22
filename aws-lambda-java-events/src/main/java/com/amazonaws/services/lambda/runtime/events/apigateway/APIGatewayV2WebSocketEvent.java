@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-package com.amazonaws.services.lambda.runtime.events.api_gateway;
+package com.amazonaws.services.lambda.runtime.events.apigateway;
 
 import lombok.Data;
 import lombok.Builder;

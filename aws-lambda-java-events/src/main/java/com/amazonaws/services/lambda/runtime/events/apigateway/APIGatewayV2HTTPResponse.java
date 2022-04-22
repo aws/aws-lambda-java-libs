@@ -11,43 +11,28 @@
  * and limitations under the License.
  */
 
-package com.amazonaws.services.lambda.runtime.events.api_gateway;
+package com.amazonaws.services.lambda.runtime.events.apigateway;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 import java.util.Map;
 
-/**
- * Class that represents an APIGatewayProxyResponseEvent object
- */
-
-@Data
-@Builder(setterPrefix = "with")
-@NoArgsConstructor
 @AllArgsConstructor
-public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
-
-    private static final long serialVersionUID = 2263167344670024172L;
-    
-    private Integer statusCode;
-
+@Builder(setterPrefix = "with")
+@Data
+@NoArgsConstructor
+public class APIGatewayV2HTTPResponse {
+    private int statusCode;
     private Map<String, String> headers;
-    
+    private Map<String, List<String>> multiValueHeaders;
+    private List<String> cookies;
     private String body;
-
-    private Boolean isBase64Encoded;
-
-    @Override
-    public APIGatewayProxyResponseEvent clone() {
-        try {
-            return (APIGatewayProxyResponseEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
-
+    @JsonProperty("isBase64Encoded")
+    private boolean isBase64Encoded;
 }

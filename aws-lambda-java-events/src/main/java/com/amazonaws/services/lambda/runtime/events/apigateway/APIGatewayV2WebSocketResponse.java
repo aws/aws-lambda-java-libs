@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,25 +11,34 @@
  * and limitations under the License.
  */
 
-package com.amazonaws.services.lambda.runtime.events;
+package com.amazonaws.services.lambda.runtime.events.apigateway;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 import java.util.Map;
 
-@AllArgsConstructor
-@Builder(setterPrefix = "with")
+/**
+ * @author Tim Gustafson <tjg@amazon.com>
+ */
 @Data
+@Builder(setterPrefix = "with")
 @NoArgsConstructor
-public class APIGatewayV2HTTPResponse {
+@AllArgsConstructor
+public class APIGatewayV2WebSocketResponse implements Serializable {
+
+    private static final long serialVersionUID = -5155789062248356200L;
+
+    @JsonProperty("isBase64Encoded")
+    @Builder.Default private boolean isBase64Encoded = false;
     private int statusCode;
     private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
-    private List<String> cookies;
+    private Map<String, String[]> multiValueHeaders;
     private String body;
-    private boolean isBase64Encoded;
+
 }

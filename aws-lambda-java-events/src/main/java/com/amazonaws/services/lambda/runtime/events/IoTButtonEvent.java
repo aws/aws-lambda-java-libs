@@ -1,10 +1,33 @@
+/*
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 package com.amazonaws.services.lambda.runtime.events;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 /**
  * represents a click of an IoT Button
  */
+
+@Data
+@Builder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor
 public class IoTButtonEvent implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 8699582353606993478L;
@@ -14,136 +37,6 @@ public class IoTButtonEvent implements Serializable, Cloneable {
     private String clickType;
 
     private String batteryVoltage;
-
-    /**
-     * default constructor
-     */
-    public IoTButtonEvent() {}
-
-    /**
-     * @return serial number
-     */
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    /**
-     * @param serialNumber serial number
-     */
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    /**
-     * @param serialNumber serial number
-     * @return IotButtonEvent
-     */
-    public IoTButtonEvent withSerialNumber(String serialNumber) {
-        setSerialNumber(serialNumber);
-        return this;
-    }
-
-    /**
-     * @return click type
-     */
-    public String getClickType() {
-        return clickType;
-    }
-
-    /**
-     * @param clickType click type
-     */
-    public void setClickType(String clickType) {
-        this.clickType = clickType;
-    }
-
-    /**
-     * @param clickType click type
-     * @return IoTButtonEvent
-     */
-    public IoTButtonEvent withClickType(String clickType) {
-        setClickType(clickType);
-        return this;
-    }
-
-    /**
-     * @return battery voltage
-     */
-    public String getBatteryVoltage() {
-        return batteryVoltage;
-    }
-
-    /**
-     * @param batteryVoltage battery voltage
-     */
-    public void setBatteryVoltage(String batteryVoltage) {
-        this.batteryVoltage = batteryVoltage;
-    }
-
-    /**
-     * @param batteryVoltage battery voltage
-     * @return IoTButtonEvent
-     */
-    public IoTButtonEvent withBatteryVoltage(String batteryVoltage) {
-        setBatteryVoltage(batteryVoltage);
-        return this;
-    }
-
-    /**
-     * Returns a string representation of this object; useful for testing and debugging.
-     *
-     * @return A string representation of this object.
-     *
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        if (getSerialNumber() != null)
-            sb.append("serialNumber: ").append(getSerialNumber()).append(",");
-        if (getClickType() != null)
-            sb.append("clickType: ").append(getClickType()).append(",");
-        if (getBatteryVoltage() != null)
-            sb.append("batteryVoltage: ").append(getBatteryVoltage());
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-
-        if (obj instanceof IoTButtonEvent == false)
-            return false;
-        IoTButtonEvent other = (IoTButtonEvent) obj;
-        if (other.getSerialNumber() == null ^ this.getSerialNumber() == null)
-            return false;
-        if (other.getSerialNumber() != null && other.getSerialNumber().equals(this.getSerialNumber()) == false)
-            return false;
-        if (other.getClickType() == null ^ this.getClickType() == null)
-            return false;
-        if (other.getClickType() != null && other.getClickType().equals(this.getClickType()) == false)
-            return false;
-        if (other.getBatteryVoltage() == null ^ this.getBatteryVoltage() == null)
-            return false;
-        if (other.getBatteryVoltage() != null && other.getBatteryVoltage().equals(this.getBatteryVoltage()) == false)
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int hashCode = 1;
-        hashCode = prime * hashCode + ((getSerialNumber() == null) ? 0 : getSerialNumber().hashCode());
-        hashCode = prime * hashCode + ((getClickType() == null) ? 0 : getClickType().hashCode());
-        hashCode = prime * hashCode + ((getBatteryVoltage() == null) ? 0 : getBatteryVoltage().hashCode());
-        return hashCode;
-    }
 
     @Override
     public IoTButtonEvent clone() {

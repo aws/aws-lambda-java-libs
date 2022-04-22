@@ -13,7 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.api_gateway.*;
+import com.amazonaws.services.lambda.runtime.events.apigateway.*;
 import com.amazonaws.services.lambda.runtime.events.cognito.*;
 import com.amazonaws.services.lambda.runtime.events.dynamodb.DynamodbEvent;
 import com.amazonaws.services.lambda.runtime.events.dynamodb.DynamodbTimeWindowEvent;

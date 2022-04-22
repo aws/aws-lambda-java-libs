@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,9 +162,8 @@ public class S3Event implements Serializable, Cloneable {
         private String awsRegion;
         private String eventName;
         private String eventSource;
-        // looking into removing jsonFormat when this issue will be resolved (https://github.com/FasterXML/jackson-modules-java8/issues/76)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
-        private ZonedDateTime eventTime;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
+        private Instant eventTime;
         private String eventVersion;
         private RequestParametersEntity requestParameters;
         private ResponseElementsEntity responseElements;

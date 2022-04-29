@@ -21,16 +21,16 @@ do_one_yaml() {
     RUNTIME_VERSIONS=$(sed '1,/RUNTIME_VERSION/d;/PLATFORM/,$d' "$YML" | sed '/#.*$/d' |  tr -d '\-" ')
     PLATFORMS=$(sed '1,/PLATFORM/d;/phases/,$d' "$YML" |  tr -d '\-" ')
 
-    for DISTRO_VERSION in $DISTRO_VERSIONS ; do
-        for RUNTIME_VERSION in $RUNTIME_VERSIONS ; do
-          for PLATFORM in $PLATFORMS ; do
-            if (( DRYRUN == 1 )) ; then
-                echo DRYRUN test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
-            else
-                test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
-            fi
+    for DISTRO_VERSION in $DISTRO_VERSIONS; do
+      for RUNTIME_VERSION in $RUNTIME_VERSIONS; do
+        for PLATFORM in $PLATFORMS; do
+          if (( DRYRUN == 1 )); then
+            echo DRYRUN test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
+          else
+            test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
+          fi
         done
-        done
+      done
     done
 }
 

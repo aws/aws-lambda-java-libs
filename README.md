@@ -73,7 +73,7 @@ ___
 'com.amazonaws:aws-lambda-java-tests:1.1.1'
 ```
 
-[Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
+[Leiningen](http://leiningen.org)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]

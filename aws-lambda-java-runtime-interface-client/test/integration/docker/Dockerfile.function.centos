@@ -1,6 +1,6 @@
 ARG DISTRO_VERSION
 
-FROM centos:${DISTRO_VERSION}
+FROM public.ecr.aws/docker/library/centos:centos${DISTRO_VERSION}
 
 RUN rpm --import https://yum.corretto.aws/corretto.key  && \
     curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo  && \

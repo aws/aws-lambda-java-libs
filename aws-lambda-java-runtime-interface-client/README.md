@@ -24,7 +24,7 @@ The Runtime Interface Client library can be installed into the image separate fr
 Dockerfile
 ```dockerfile
 # we'll use Amazon Linux 2 + Corretto 11 as our base
-FROM amazoncorretto:11 as base
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:11 as base
 
 # configure the build environment
 FROM base as build

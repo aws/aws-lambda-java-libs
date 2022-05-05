@@ -4,6 +4,8 @@ env:
   variables:
     OS_DISTRIBUTION: alpine
     JAVA_BINARY_LOCATION: "/usr/bin/java"
+    DOCKER_CLI_EXPERIMENTAL: "enabled"
+    DOCKER_CLI_PLUGIN_DIR: "/root/.docker/cli-plugins"
 batch:
   build-matrix:
     static:
@@ -14,12 +16,14 @@ batch:
       env:
         variables:
           DISTRO_VERSION:
-            - "3.9"
-            - "3.10"
-            - "3.11"
-            - "3.12"
+            - "3.13"
+            - "3.14"
+            - "3.15"
           RUNTIME_VERSION:
             - "corretto11"
+          PLATFORM:
+            - "linux/amd64"
+            - "linux/arm64/v8"
 phases:
   install:
     commands:
@@ -31,6 +35,7 @@ phases:
             echo "Performing DockerHub login . . ."
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
         fi
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/configure_multi_arch_env.sh
   pre_build:
     commands:
       # Log some environment variables for troubleshooting
@@ -39,20 +44,19 @@ phases:
       - (cd aws-lambda-java-events && mvn install)
       # Install serialization (dependency of RIC)
       - (cd aws-lambda-java-serialization && mvn install)
-      - (cd aws-lambda-java-runtime-interface-client && mvn install -DmultiArch=false)
+      - (cd aws-lambda-java-runtime-interface-client && mvn install)
       - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install)
       - export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
       - echo "Extracting and including Runtime Interface Emulator"
       - SCRATCH_DIR=".scratch"
       - mkdir "${SCRATCH_DIR}"
-      - ARCHITECTURE=$(arch)
       - >
-        if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+        if [[ "$PLATFORM" == "linux/amd64" ]]; then
             RIE="aws-lambda-rie"
-        elif [[ "$ARCHITECTURE" == "aarch64" ]]; then
+        elif [[ "$PLATFORM" == "linux/arm64/v8" ]]; then
             RIE="aws-lambda-rie-arm64"
         else
-            echo "Architecture $ARCHITECTURE is not currently supported."
+            echo "Platform $PLATFORM is not currently supported."
             exit 1
         fi
       - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/${RIE}.tar.gz --directory "${SCRATCH_DIR}"
@@ -70,6 +74,7 @@ phases:
         docker build . \
           -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
           -t "${IMAGE_TAG}" \
+          --platform="${PLATFORM}" \
           --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
           --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
   build:

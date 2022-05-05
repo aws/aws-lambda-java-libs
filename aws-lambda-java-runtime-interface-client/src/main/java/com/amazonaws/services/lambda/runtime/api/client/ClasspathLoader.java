@@ -19,13 +19,13 @@ import java.util.jar.JarFile;
  */
 public class ClasspathLoader {
 
-    private static final Set<String> BLACKLIST = new HashSet<>();
+    private static final Set<String> BLOCKLIST = new HashSet<>();
     private static final ClassLoader SYSTEM_CLASS_LOADER = ClassLoader.getSystemClassLoader();
     private static final int CLASS_SUFFIX_LEN = ".class".length();
 
     static {
         // NativeClient loads a native library and crashes if loaded here so just exclude it
-        BLACKLIST.add("lambdainternal.runtimeapi.NativeClient");
+        BLOCKLIST.add("com.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient");
     }
 
     private static String pathToClassName(final String path) {
@@ -52,7 +52,7 @@ public class ClasspathLoader {
 
             String name = pathToClassName(entry.getName());
 
-            if(BLACKLIST.contains(name)) {
+            if(BLOCKLIST.contains(name)) {
                 continue;
             }
 

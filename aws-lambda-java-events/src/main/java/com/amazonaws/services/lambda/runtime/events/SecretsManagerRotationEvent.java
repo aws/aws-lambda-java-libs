@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -18,13 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Class to represent the events which are sent during a Secrets Manager rotation process.
- *
- * @see <a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html">Rotating secrets lambda function overview</a>
- *
- * @author msailes <msailes@amazon.co.uk>
- */
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 @Builder(setterPrefix = "with")
@@ -32,8 +26,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SecretsManagerRotationEvent {
 
+    @JsonProperty("Step")
     private String step;
-    private String secretId;
-    private String clientRequestToken;
 
+    @JsonProperty("SecretId")
+    private String secretId;
+
+    @JsonProperty("ClientRequestToken")
+    private String clientRequestToken;
 }

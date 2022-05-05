@@ -301,6 +301,14 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testEventBridgeEvent() throws IOException {
+        String expected = EventUtils.readEvent("eventbridge_event.json");
+        String actual = deserializeSerializeJsonToString(expected, EventBridgeEvent.class);
+
+        assertJsonEqual(expected, actual);
+    }
+
+    @Test
     public void testIamPolicyResponse() throws IOException {
         String expected = EventUtils.readEvent("iam_policy_response.json");
         String actual = deserializeSerializeJsonToString(expected, IamPolicyResponse.class);
@@ -516,7 +524,7 @@ public class LambdaEventSerializersTest {
         assertJsonEqual(expected, actual);
     }
 
-    private <T> String deserializeSerializeJsonToString(String expected, Class<T> modelClass) throws IOException {
+    private <T> String deserializeSerializeJsonToString(String expected, Class<T> modelClass) {
         T event = CUSTOM_POJO_SERIALIZER.fromJson(expected, modelClass);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

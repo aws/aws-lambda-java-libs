@@ -14,19 +14,49 @@ on:
     - 'aws-lambda-java-runtime-interface-client/**'
 
 jobs:
-  build:
 
+  smoke-test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-        
-    # Test Runtime Interface Client
-    - name: Run 'pr' target
+
+    - name: Runtime Interface Client smoke tests - Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
     
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
+
+    - name: Available buildx platforms
+      run: echo ${{ steps.buildx.outputs.platforms }}
+          
+    - name: Test Runtime Interface Client xplatform build - Run 'build' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make build
+      
+    - name: Save the built jar
+      uses: actions/upload-artifact@v3
+      with:
+        name: the-jar
+        path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-2.1.0.jar
+

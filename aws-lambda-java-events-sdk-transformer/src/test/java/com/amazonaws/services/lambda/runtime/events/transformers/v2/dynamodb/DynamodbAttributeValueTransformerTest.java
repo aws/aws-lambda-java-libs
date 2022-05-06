@@ -183,6 +183,7 @@ class DynamodbAttributeValueTransformerTest {
         software.amazon.awssdk.services.dynamodb.model.AttributeValue convertedAttributeValueL =
                 DynamodbAttributeValueTransformer.toAttributeValueV2(attributeValueL_event);
         Assertions.assertEquals(attributeValueL_v2, convertedAttributeValueL);
+        Assertions.assertEquals("UnmodifiableRandomAccessList", convertedAttributeValueL.l().getClass().getSimpleName(), "List is immutable");
     }
 
     @Test
@@ -266,12 +267,14 @@ class DynamodbAttributeValueTransformerTest {
 
     @Test
     public void testToAttributeValueV2_DoesNotThrowWhenEmpty_L() {
-        Assertions.assertDoesNotThrow(() ->
-                DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL())
-        );
-        Assertions.assertDoesNotThrow(() ->
-                DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL(Collections.emptyList()))
-        );
+        Assertions.assertDoesNotThrow(() -> {
+            software.amazon.awssdk.services.dynamodb.model.AttributeValue attributeValue = DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL());
+            Assertions.assertEquals("UnmodifiableRandomAccessList", attributeValue.l().getClass().getSimpleName(), "List is immutable");
+        });
+        Assertions.assertDoesNotThrow(() -> {
+            software.amazon.awssdk.services.dynamodb.model.AttributeValue attributeValue = DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL(Collections.emptyList()));
+            Assertions.assertEquals("UnmodifiableRandomAccessList", attributeValue.l().getClass().getSimpleName(), "List is immutable");
+        });
     }
 
     @Test
@@ -307,7 +310,7 @@ class DynamodbAttributeValueTransformerTest {
     @Test
     public void testToAttributeValueV2_EmptyV2ObjectWhenEmpty_L() {
         software.amazon.awssdk.services.dynamodb.model.AttributeValue expectedAttributeValue_v2 =
-                software.amazon.awssdk.services.dynamodb.model.AttributeValue.builder().build();
+                software.amazon.awssdk.services.dynamodb.model.AttributeValue.builder().l(Collections.emptyList()).build();
         Assertions.assertEquals(expectedAttributeValue_v2,
                 DynamodbAttributeValueTransformer.toAttributeValueV2(new AttributeValue().withL()));
         Assertions.assertEquals(expectedAttributeValue_v2,

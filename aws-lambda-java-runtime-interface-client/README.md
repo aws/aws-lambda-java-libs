@@ -24,7 +24,7 @@ The Runtime Interface Client library can be installed into the image separate fr
 Dockerfile
 ```dockerfile
 # we'll use Amazon Linux 2 + Corretto 11 as our base
-FROM amazoncorretto:11 as base
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:11 as base
 
 # configure the build environment
 FROM base as build
@@ -70,7 +70,7 @@ pom.xml
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-      <version>2.1.0</version>
+      <version>2.1.1</version>
     </dependency>
   </dependencies>
   <build>

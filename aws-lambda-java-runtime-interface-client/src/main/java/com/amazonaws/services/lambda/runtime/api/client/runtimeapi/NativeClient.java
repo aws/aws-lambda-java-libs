@@ -59,7 +59,7 @@ class NativeClient {
         if (arch.matches(supported_x86_architectures)) {
             return "x86_64";
         } else if (arch.matches(supported_arm_architectures)) {
-            return "arm64";
+            return "aarch64";
         }
 
         throw new UnknownPlatformException("architecture not supported: " + arch);

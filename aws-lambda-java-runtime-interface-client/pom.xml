@@ -4,7 +4,7 @@
 
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
   <packaging>jar</packaging>
 
   <name>AWS Lambda Java Runtime Interface Client</name>
@@ -30,12 +30,21 @@
     </developer>
   </developers>
 
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+    <!-- 
+        The test/integration/codebuild/buildspec.*.yml files will set -DmultiArch=false
+        as a workaround for executing within Github Actions. At time of writing (2022-04-08) the 
+        integration tests, `make pr,` do not play nice with mixed `docker build`, `docker run`, 
+        when docker buildx+qemu is configured on Linux. So we'll test the multi-platform artifact build 
+        separately from the Runtime Interface Client functionality until we figure something else out.
+    -->
+    <multiArch>true</multiArch>
   </properties>
 
   <dependencies>
@@ -96,6 +105,7 @@
               <target name="Build JNI libraries">
                 <exec executable="${project.basedir}/src/main/jni/build-jni-lib.sh" failonerror="true" logError="true">
                   <arg value="${project.build.directory}"/>
+                  <arg value="${multiArch}"/>
                 </exec>
               </target>
             </configuration>

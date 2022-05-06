@@ -6,6 +6,8 @@ set -euxo pipefail
 echo "Running Image ${IMAGE_TAG}"
 docker network create "${OS_DISTRIBUTION}-network"
 
+function_jar="./HelloWorld-1.0.jar"
+function_handler="helloworld.App"
 docker run \
   --detach \
   --name "${OS_DISTRIBUTION}-app" \
@@ -13,7 +15,7 @@ docker run \
   --entrypoint="" \
   --platform="${PLATFORM}" \
   "${IMAGE_TAG}" \
-  sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App"
+  sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ${function_jar} ${function_handler}"
 sleep 2
 
 # running on arm64 hosts with x86_64 being emulated takes significantly more time than any other combination

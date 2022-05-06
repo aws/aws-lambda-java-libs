@@ -80,20 +80,5 @@ phases:
     commands:
       - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_invocation_test.sh
     finally:
-      - |
-        echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
-        echo
-        docker logs "${OS_DISTRIBUTION}-app" || true
-        echo
-        echo "---------------------------------------------------"
-        echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
-        echo
-        docker logs "${OS_DISTRIBUTION}-tester" || true
-        echo
-        echo "---------------------------------------------------"
-      - echo "Cleaning up..."
-      - docker stop "${OS_DISTRIBUTION}-app" || true
-      - docker rm --force "${OS_DISTRIBUTION}-app" || true
-      - docker stop "${OS_DISTRIBUTION}-tester" || true
-      - docker rm --force "${OS_DISTRIBUTION}-tester" || true
-      - docker network rm "${OS_DISTRIBUTION}-network" || true
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/fetch_test_container_logs.sh
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/clean_up.sh

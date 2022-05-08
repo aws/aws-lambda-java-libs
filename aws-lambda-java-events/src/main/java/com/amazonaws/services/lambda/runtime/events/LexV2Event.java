@@ -123,7 +123,7 @@ public class LexV2Event implements Serializable, Cloneable {
         private double mixed;
         private double negative;
         private double neutral;
-        private double positiv;
+        private double positive;
     }
 
     @Data

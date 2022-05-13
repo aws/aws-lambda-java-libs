@@ -2,28 +2,22 @@
 
 package com.amazonaws.services.lambda.serialization;
 
-import com.amazonaws.services.lambda.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.serialization.CustomPojoSerializer;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.json.JsonWriteFeature;
-import com.fasterxml.jackson.core.StreamWriteFeature;
-import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
@@ -126,8 +120,8 @@ public class JacksonPojoSerializer implements CustomPojoSerializer {
         module.addDeserializer(Void.class, new VoidDeserializer());
         mapper.registerModule(module);
 
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        mapper.registerModule(javaTimeModule);
+        mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(new Jdk8Module());
 
         return mapper;
     }

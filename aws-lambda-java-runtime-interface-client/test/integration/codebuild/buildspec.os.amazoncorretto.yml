@@ -75,7 +75,49 @@ phases:
           --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
   build:
     commands:
-      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_invocation_test.sh
+      - set -x
+      - echo "Running Image ${IMAGE_TAG}"
+      - docker network create "${OS_DISTRIBUTION}-network"
+      - >
+        docker run \
+          --detach \
+          --name "${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App"
+      - sleep 2
+      - >
+        docker run \
+          --name "${OS_DISTRIBUTION}-tester" \
+          --env "TARGET=${OS_DISTRIBUTION}-app" \
+          --network "${OS_DISTRIBUTION}-network" \
+          --entrypoint="" \
+          "${IMAGE_TAG}" \
+          sh -c 'curl -X POST "http://${TARGET}:8080/2015-03-31/functions/function/invocations" -d "{}" --max-time 10'
+      - actual="$(docker logs --tail 1 "${OS_DISTRIBUTION}-tester" | xargs)"
+      - expected='success'
+      - |
+        echo "Response: ${actual}"
+        if [[ "$actual" != "$expected" ]]; then
+          echo "fail! runtime: $RUNTIME - expected output $expected - got $actual"
+          exit -1
+        fi
     finally:
-      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/fetch_test_container_logs.sh
-      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/clean_up.sh
+      - |
+        echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
+        echo
+        docker logs "${OS_DISTRIBUTION}-app" || true
+        echo
+        echo "---------------------------------------------------"
+        echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
+        echo
+        docker logs "${OS_DISTRIBUTION}-tester" || true
+        echo
+        echo "---------------------------------------------------"
+      - echo "Cleaning up..."
+      - docker stop "${OS_DISTRIBUTION}-app" || true
+      - docker rm --force "${OS_DISTRIBUTION}-app" || true
+      - docker stop "${OS_DISTRIBUTION}-tester" || true
+      - docker rm --force "${OS_DISTRIBUTION}-tester" || true
+      - docker network rm "${OS_DISTRIBUTION}-network" || true

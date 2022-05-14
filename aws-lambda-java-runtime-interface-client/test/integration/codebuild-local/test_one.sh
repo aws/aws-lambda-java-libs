@@ -18,15 +18,6 @@ function usage {
     >&2 echo "  env                    Additional environment variables file."
 }
 
-# codebuild/local-builds images are not multi-architectural
-function get_local_agent_image() {
-    if [[ "$(arch)" == "aarch64" ]]; then
-        echo "public.ecr.aws/codebuild/local-builds:aarch64"
-    else
-        echo "public.ecr.aws/codebuild/local-builds:latest"
-    fi
-}
-
 main() {
     if (( $# != 5 && $# != 6)); then
         >&2 echo "Invalid number of parameters."
@@ -57,7 +48,7 @@ main() {
         echo "RUNTIME_VERSION=$RUNTIME_VERSION"
         echo "PLATFORM=$PLATFORM"
     }  >> "$ENVFILE"
-
+    
     ARTIFACTS_DIR="$CODEBUILD_TEMP_DIR/artifacts"
     mkdir -p "$ARTIFACTS_DIR"
     # Run CodeBuild local agent.
@@ -66,8 +57,7 @@ main() {
         -a "$ARTIFACTS_DIR" \
         -e "$ENVFILE" \
         -b "$BUILDSPEC_YML" \
-        -s "$(dirname $PWD)" \
-        -l "$(get_local_agent_image)"
+        -s "$(dirname $PWD)"
 }
 
 main "$@"

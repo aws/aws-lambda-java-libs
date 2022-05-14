@@ -108,7 +108,7 @@ public class LambdaEventSerializersTest {
         assertJsonEqual(expected, actual);
     }
 
-        @Test
+    @Test
     public void testAPIGatewayV2WebSocketResponse() throws IOException {
         String expected = EventUtils.readEvent("api_gateway_v2_web_socket_response.json");
         String actual = deserializeSerializeJsonToString(expected, APIGatewayV2WebSocketResponse.class);
@@ -416,6 +416,14 @@ public class LambdaEventSerializersTest {
     public void testLexEvent() throws IOException {
         String expected = EventUtils.readEvent("lex_event.json");
         String actual = deserializeSerializeJsonToString(expected, LexEvent.class);
+
+        assertJsonEqual(expected, actual);
+    }
+
+    @Test
+    public void testLexV2Event() throws IOException {
+        String expected = EventUtils.readEvent("lex_v2_event.json");
+        String actual = deserializeSerializeJsonToString(expected, LexV2Event.class);
 
         assertJsonEqual(expected, actual);
     }

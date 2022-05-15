@@ -23,8 +23,9 @@ import java.util.Map;
 /**
  * Class to represent an Amazon Lex V2 event.
  *
- * @see <a href="https://docs.aws.amazon.com/lexv2/latest/dg/lambda.html#lambda-input-format">Using
- *     an AWS Lambda function</a>
+ * @see <a href=
+ *      "https://docs.aws.amazon.com/lexv2/latest/dg/lambda.html#lambda-input-format">Using
+ *      an AWS Lambda function</a>
  */
 @Data
 @Builder(setterPrefix = "with")
@@ -52,6 +53,7 @@ public class LexV2Event implements Serializable, Cloneable {
         private String id;
         private String name;
         private String aliasId;
+        private String aliasName;
         private String localeId;
         private String version;
     }
@@ -62,7 +64,7 @@ public class LexV2Event implements Serializable, Cloneable {
     @AllArgsConstructor
     public static class Interpretation implements Serializable, Cloneable {
         private Intent intent;
-        private double nluConfidence;
+        private Double nluConfidence;
         private SentimentResponse sentimentResponse;
     }
 
@@ -103,7 +105,7 @@ public class LexV2Event implements Serializable, Cloneable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NluConfidence implements Serializable, Cloneable {
-        private double score;
+        private Double score;
     }
 
     @Data
@@ -120,10 +122,10 @@ public class LexV2Event implements Serializable, Cloneable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SentimentScore implements Serializable, Cloneable {
-        private double mixed;
-        private double negative;
-        private double neutral;
-        private double positive;
+        private Double mixed;
+        private Double negative;
+        private Double neutral;
+        private Double positive;
     }
 
     @Data
@@ -154,6 +156,7 @@ public class LexV2Event implements Serializable, Cloneable {
         private RuntimeHints runtimeHints;
         private DialogAction dialogAction;
         private Intent intent;
+        private String originatingRequestId;
     }
 
     @Data
@@ -171,8 +174,8 @@ public class LexV2Event implements Serializable, Cloneable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TimeToLive implements Serializable, Cloneable {
-        private int timeToLiveInSeconds;
-        private int turnsToLive;
+        private Integer timeToLiveInSeconds;
+        private Integer turnsToLive;
     }
 
     @Data
@@ -205,17 +208,9 @@ public class LexV2Event implements Serializable, Cloneable {
     @AllArgsConstructor
     public static class Transcription implements Serializable, Cloneable {
         private String transcription;
-        private TranscriptionConfidence transcriptionConfidence;
+        private Double transcriptionConfidence;
         private ResolvedContext resolvedContext;
         private Map<String, Slot> resolvedSlots;
-    }
-
-    @Data
-    @Builder(setterPrefix = "with")
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TranscriptionConfidence implements Serializable, Cloneable {
-        private double score;
     }
 
     @Data

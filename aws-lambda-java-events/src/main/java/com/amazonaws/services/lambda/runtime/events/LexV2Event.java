@@ -77,7 +77,7 @@ public class LexV2Event implements Serializable, Cloneable {
         private String name;
         private Map<String, Slot> slots;
         private String state;
-        private Map<String, Object> kendraResponse;
+        private KendraResponse kendraResponse;
     }
 
     @Data
@@ -98,6 +98,71 @@ public class LexV2Event implements Serializable, Cloneable {
         private String interpretedValue;
         private String originalValue;
         private String[] resolvedValues;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponse implements Serializable, Cloneable {
+        private String queryId;
+        private KendraResponseResultItem[] resultItems;
+        private Object[] facetResults;
+        private Integer totalNumberOfResults;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponseResultItem implements Serializable, Cloneable {
+        private String id;
+        private String type;
+        private Object[] additionalAttributes;
+        private String documentId;
+        private KendraResponseDocumentInfo documentTitle;
+        private KendraResponseDocumentInfo documentExcerpt;
+        private String documentURI;
+        private KendraResponseDocumentAttribute[] documentAttributes;
+        private KendraResponseScoreAttributes scoreAttributes;
+        private String feedbackToken;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponseDocumentInfo implements Serializable, Cloneable {
+        private String text;
+        private KendraResponseDocumentHighlights[] highlights;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponseDocumentHighlights implements Serializable, Cloneable {
+        private Integer beginOffset;
+        private Integer endOffset;
+        private boolean topAnswer;
+        private String type;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponseDocumentAttribute implements Serializable, Cloneable {
+        private String key;
+        private Map<String, String> value;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KendraResponseScoreAttributes implements Serializable, Cloneable {
+        private String scoreConfidence;
     }
 
     @Data

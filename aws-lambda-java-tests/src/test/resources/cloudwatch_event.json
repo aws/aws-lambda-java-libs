@@ -4,7 +4,7 @@
   "detail-type": "Scheduled Event",
   "source": "aws.events",
   "account": "123456789012",
-  "time": "2020-09-30T15:58:34Z",
+  "time": "2020-09-30T15:58:34.000Z",
   "region": "eu-central-1",
   "resources": [
     "arn:aws:events:eu-central-1:123456789012:rule/demoschedule"

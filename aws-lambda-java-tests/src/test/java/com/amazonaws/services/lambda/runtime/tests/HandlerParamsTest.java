@@ -1,8 +1,8 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.tests.annotations.*;
 import org.junit.jupiter.params.ParameterizedTest;
 

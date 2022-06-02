@@ -1,12 +1,20 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayCustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2CustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.dynamodb.DynamodbEvent;
+import com.amazonaws.services.lambda.runtime.events.kinesis.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.kinesis.KinesisFirehoseEvent;
+import com.amazonaws.services.lambda.runtime.events.s3.S3Event;
 
 import java.io.*;
 
 import com.amazonaws.services.lambda.runtime.events.*;
+import com.amazonaws.services.lambda.serialization.JacksonPojoSerializer;
+import com.amazonaws.services.lambda.serialization.PojoSerializer;
 
 /**
  * Load events from json files and serialize them in Events
@@ -97,6 +105,10 @@ public class EventLoader {
         return loadEvent(filename, ScheduledEvent.class);
     }
 
+    public static SESEvent loadSESEvent(String filename) {
+        return loadEvent(filename, SESEvent.class);
+    }
+
     public static SNSEvent loadSNSEvent(String filename) {
         return loadEvent(filename, SNSEvent.class);
     }
@@ -115,7 +127,7 @@ public class EventLoader {
             throw new IllegalArgumentException("File " + filename + " must have json extension");
         }
 
-        PojoSerializer<T> serializer = LambdaEventSerializers.serializerFor(targetClass, ClassLoader.getSystemClassLoader());
+        JacksonPojoSerializer serializer = JacksonPojoSerializer.getInstance();
 
         InputStream stream = serializer.getClass().getResourceAsStream(filename);
         if (stream == null) {
@@ -123,13 +135,13 @@ public class EventLoader {
         }
         if (stream == null) {
             try {
-                stream = new FileInputStream(new File(filename));
+                stream = new FileInputStream(filename);
             } catch (FileNotFoundException e) {
                 throw new EventLoadingException("Cannot load " + filename, e);
             }
         }
         try {
-            return serializer.fromJson(stream);
+            return serializer.fromJson(stream, targetClass);
         } finally {
             try {
                 stream.close();

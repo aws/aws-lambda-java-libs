@@ -2,58 +2,94 @@
 Interface definitions for Java code running on the AWS Lambda platform.
 
 For issues and questions, you can start with our [FAQ](https://aws.amazon.com/lambda/faqs/)
- and the [AWS forums](https://forums.aws.amazon.com/forum.jspa?forumID=186)
+and the AWS questions and answer site [re:Post](https://repost.aws/tags/TA5uNafDy2TpGNjidWLMSxDw/aws-lambda)
 
-To get started writing AWS Lambda functions in Java, check out the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-gs.html).
+To get started writing AWS Lambda functions in Java, check out the official [developer guide](https://docs.aws.amazon.com/lambda/latest/dg/lambda-java.html).
 
-# Disclaimer of use
+For information on how to optimize your functions the re:Invent talk [Optimize your Java application on AWS Lambda](https://www.youtube.com/watch?v=sVJOJUD0fhQ) is available on YouTube.
 
-Each of the supplied packages should be used without modification. Removing
-dependencies, adding conflicting dependencies, or selectively including classes
-from the packages can result in unexpected behavior.
+## Core Java AWS Lambda interfaces - aws-lambda-java-core
 
-# Release Notes
+This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/latest/dg/java-context-object.html) object
+as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler-using-predefined-interfaces.html) that Lambda accepts.
 
-Check out the per-module release notes:
-- [aws-lambda-java-core](aws-lambda-java-core/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-events](aws-lambda-java-events/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-events-sdk-transformer](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-log4j2](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-runtime-interface-client](aws-lambda-java-runtime-interface-client/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-serialization](aws-lambda-java-serialization/RELEASE.CHANGELOG.md)
-- [aws-lambda-java-test](aws-lambda-java-tests/RELEASE.CHANGELOG.md)
+- [Release Notes](aws-lambda-java-core/RELEASE.CHANGELOG.md)
 
-# Where to get packages
-___
+Example request handler
 
-[Maven](https://maven.apache.org)
+```java
+public class Handler implements RequestHandler<Map<String,String>, String>{
+ @Override
+ public String handleRequest(Map<String,String> event, Context context) {
+ 
+ }
+}
+```
+
+Example request stream handler
+
+```java
+public class HandlerStream implements RequestStreamHandler {
+  @Override
+  public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
+    
+  }
+}
+```
 
 ```xml
 <dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.2.1</version>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-core</artifactId>
+ <version>1.2.1</version>
 </dependency>
+```
+
+## aws-lambda-java-events
+
+This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts.
+See the [documentation](aws-lambda-java-events/README.md) for a list of currently supported event sources.
+Using this library you can have Java objects which represent event sources.
+
+For example an SQS event:
+
+```java
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+
+public class SqsHandler implements RequestHandler<SQSEvent, String> {
+
+ @Override
+ public String handleRequest(SQSEvent event, Context context) {
+
+ }
+}
+```
+
+- [Release Notes](aws-lambda-java-events/RELEASE.CHANGELOG.md)
+
+```xml
 <dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-events</artifactId>
-  <version>3.11.0</version>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-events</artifactId>
+ <version>3.11.0</version>
 </dependency>
-<dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
-  <version>3.1.0</version>
-</dependency>
-<dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-log4j2</artifactId>
-  <version>1.5.1</version>
-</dependency>
-<dependency>
-  <groupId>com.amazonaws</groupId>
-  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-  <version>2.1.1</version>
-</dependency>
+```
+
+## Java AWS Lambda JUnit Support - aws-lambda-java-tests
+
+This package provides utils to ease Lambda Java testing. Used with `aws-lambda-java-serialization` and `aws-lambda-java-events` to inject events in your JUnit tests.
+
+- [Release Notes](aws-lambda-java-tests/RELEASE.CHANGELOG.md)
+
+```java
+@ParameterizedTest
+@Event(value = "sqs/sqs_event.json", type = SQSEvent.class)
+public void testInjectSQSEvent(SQSEvent event) {
+        ...
+}
+```
+
+```xml
 <dependency>
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-tests</artifactId>
@@ -62,69 +98,68 @@ ___
 </dependency>
 ```
 
-[Gradle](https://gradle.org)
-
-```groovy
-'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.11.0'
-'com.amazonaws:aws-lambda-java-events-sdk-transformer:3.1.0'
-'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
-'com.amazonaws:aws-lambda-java-runtime-interface-client:2.1.1'
-'com.amazonaws:aws-lambda-java-tests:1.1.1'
-```
-
-[Leiningen](http://leiningen.org)
-
-```clojure
-[com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.11.0"]
-[com.amazonaws/aws-lambda-java-events-sdk-transformer "3.1.0"]
-[com.amazonaws/aws-lambda-java-log4j2 "1.5.1"]
-[com.amazonaws/aws-lambda-java-runtime-interface-client "2.1.1"]
-[com.amazonaws/aws-lambda-java-tests "1.1.1"]
-```
-
-[sbt](http://www.scala-sbt.org)
-
-```scala
-"com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.11.0"
-"com.amazonaws" % "aws-lambda-java-events-sdk-transformer" % "3.1.0"
-"com.amazonaws" % "aws-lambda-java-log4j2" % "1.5.1"
-"com.amazonaws" % "aws-lambda-java-runtime-interface-client" % "2.1.1"
-"com.amazonaws" % "aws-lambda-java-tests" % "1.1.1"
-```
-
-# Using aws-lambda-java-core
-
-This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/latest/dg/java-context-object.html) object
- as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler-using-predefined-interfaces.html) that Lambda accepts.
-
-# Using aws-lambda-java-events
-
-This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts. 
-See the [documentation](aws-lambda-java-events/README.md) for more information.
-
-# Using aws-lambda-java-events-sdk-transformer
+## aws-lambda-java-events-sdk-transformer
 
 This package provides helper classes/methods to use alongside `aws-lambda-java-events` in order to transform
- Lambda input event model objects into SDK-compatible output model objects.  
+Lambda input event model objects into SDK-compatible output model objects.  
 See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for more information.
 
-# Using aws-lambda-java-log4j2
+- [Release Notes](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
 
-This package defines the Lambda adapter to use with log4j version 2. 
+```xml
+<dependency>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
+ <version>3.1.0</version>
+</dependency>
+```
+
+## Java AWS Lambda Log4J2 support - aws-lambda-java-log4j2
+
+This package defines the Lambda adapter to use with Log4J version 2.
 See the [README](aws-lambda-java-log4j2/README.md) or the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use the adapter.
 
-# Using aws-lambda-java-runtime-interface-client
+- [Release Notes](aws-lambda-java-log4j2/RELEASE.CHANGELOG.md)
+
+```xml
+<dependency>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-log4j2</artifactId>
+ <version>1.5.1</version>
+</dependency>
+```
+
+## Java implementation of the Runtime Interface Client API - aws-lambda-java-runtime-interface-client
 
 This package defines the Lambda Java Runtime Interface Client package, a Lambda Runtime component that starts the runtime and interacts with the Runtime API - i.e., it calls the API for invocation events, starts the function code, calls the API to return the response.
 The purpose of this package is to allow developers to deploy their applications in Lambda under the form of Container Images. See the [README](aws-lambda-java-runtime-interface-client/README.md) for information on how to use the library.
 
-# Using aws-lambda-java-serialization
+- [Release Notes](aws-lambda-java-runtime-interface-client/RELEASE.CHANGELOG.md)
 
-This package defines the Lambda serialization logic using in the aws-lambda-java-runtime-client library. It has no current standalone usage.
+```xml
+<dependency>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+ <version>2.1.1</version>
+</dependency>
+```
 
-# Using aws-lambda-java-tests
+## Java AWS Lambda provided serialization support - aws-lambda-java-serialization
 
-This package provides utils to ease Lambda Java testing. Used with `aws-lambda-java-serialization` and `aws-lambda-java-events` to inject events in your JUnit tests.
+This package defines the Lambda serialization logic using in the `aws-lambda-java-runtime-client` library. It has no current standalone usage.
+
+- [Release Notes](aws-lambda-java-serialization/RELEASE.CHANGELOG.md)
+
+```xml
+<dependency>
+ <groupId>com.amazonaws</groupId>
+ <artifactId>aws-lambda-java-serialization</artifactId>
+ <version>1.0.0</version>
+</dependency>
+```
+
+## Disclaimer of use
+
+Each of the supplied packages should be used without modification. Removing
+dependencies, adding conflicting dependencies, or selectively including classes
+from the packages can result in unexpected behavior.

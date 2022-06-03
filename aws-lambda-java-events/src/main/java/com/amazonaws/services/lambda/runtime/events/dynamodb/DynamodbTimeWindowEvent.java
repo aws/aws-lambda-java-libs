@@ -22,7 +22,6 @@ import lombok.AllArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class DynamodbTimeWindowEvent extends DynamodbEvent implements Serializable, Cloneable {
+public class DynamodbTimeWindowEvent extends DynamodbEvent {
 
     private static final long serialVersionUID = -5449871161108629510L;
 

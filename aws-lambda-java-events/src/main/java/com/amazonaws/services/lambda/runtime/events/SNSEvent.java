@@ -34,7 +34,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class SNSEvent implements Serializable, Cloneable {
+public class SNSEvent implements Serializable {
 
     private static final long serialVersionUID = -727529735144605167L;
 
@@ -50,7 +50,7 @@ public class SNSEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MessageAttribute implements Serializable, Cloneable {
+    public static class MessageAttribute implements Serializable {
 
         private static final long serialVersionUID = -5656179310535967619L;
 
@@ -59,15 +59,6 @@ public class SNSEvent implements Serializable, Cloneable {
 
         @JsonProperty("Value")
         private String value;
-
-        @Override
-        public MessageAttribute clone() {
-            try {
-                return (MessageAttribute) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
 
     }
 
@@ -79,7 +70,7 @@ public class SNSEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SNS implements Serializable, Cloneable {
+    public static class SNS implements Serializable {
 
         private static final long serialVersionUID = -7038894618736475592L;
 
@@ -117,14 +108,6 @@ public class SNSEvent implements Serializable, Cloneable {
         @JsonProperty("TopicArn")
         private String topicArn;
 
-        @Override
-        public SNS clone() {
-            try {
-                return (SNS) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
 
     /**
@@ -136,7 +119,7 @@ public class SNSEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SNSRecord implements Serializable, Cloneable {
+    public static class SNSRecord implements Serializable {
 
         private static final long serialVersionUID = -209065548155161859L;
 
@@ -152,23 +135,5 @@ public class SNSEvent implements Serializable, Cloneable {
         @JsonProperty("EventSubscriptionArn")
         private String eventSubscriptionArn;
 
-        @Override
-        public SNSRecord clone() {
-            try {
-                return (SNSRecord) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public SNSEvent clone() {
-        try {
-            return (SNSEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloudFormationCustomResourceEvent implements Serializable, Cloneable  {
+public class CloudFormationCustomResourceEvent implements Serializable  {
 
     @JsonProperty("RequestType")
     private String requestType;

@@ -22,7 +22,6 @@ import lombok.AllArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class KinesisTimeWindowEvent extends KinesisEvent implements Serializable, Cloneable {
+public class KinesisTimeWindowEvent extends KinesisEvent {
 
     private static final long serialVersionUID = 8926430039233062266L;
 

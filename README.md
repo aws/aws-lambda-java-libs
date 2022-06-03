@@ -1,12 +1,12 @@
 # AWS Lambda Java Support Libraries
-Interface definitions for Java code running on the AWS Lambda platform.
+Key libraries for running Java on the AWS Lambda platform.
 
 For issues and questions, you can start with our [FAQ](https://aws.amazon.com/lambda/faqs/)
 and the AWS questions and answer site [re:Post](https://repost.aws/tags/TA5uNafDy2TpGNjidWLMSxDw/aws-lambda)
 
 To get started writing AWS Lambda functions in Java, check out the official [developer guide](https://docs.aws.amazon.com/lambda/latest/dg/lambda-java.html).
 
-For information on how to optimize your functions the re:Invent talk [Optimize your Java application on AWS Lambda](https://www.youtube.com/watch?v=sVJOJUD0fhQ) is available on YouTube.
+For information on how to optimize your functions watch the re:Invent talk [Optimize your Java application on AWS Lambda](https://www.youtube.com/watch?v=sVJOJUD0fhQ).
 
 ## Core Java AWS Lambda interfaces - aws-lambda-java-core
 
@@ -18,9 +18,9 @@ as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler
 Example request handler
 
 ```java
-public class Handler implements RequestHandler<Map<String,String>, String>{
+public class Handler implements RequestHandler<Map<String, String>, String>{
  @Override
- public String handleRequest(Map<String,String> event, Context context) {
+ public String handleRequest(Map<String, String> event, Context context) {
  
  }
 }
@@ -45,7 +45,7 @@ public class HandlerStream implements RequestStreamHandler {
 </dependency>
 ```
 
-## aws-lambda-java-events
+## Java object representations of AWS Lambda event sources - aws-lambda-java-events
 
 This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that AWS Lambda natively accepts.
 See the [documentation](aws-lambda-java-events/README.md) for a list of currently supported event sources.
@@ -77,7 +77,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 
 ## Java AWS Lambda JUnit Support - aws-lambda-java-tests
 
-This package provides utils to ease Lambda Java testing. Used with `aws-lambda-java-serialization` and `aws-lambda-java-events` to inject events in your JUnit tests.
+This package provides utils to ease Lambda Java testing. It uses the same AWS Lambda serialisation logic and `aws-lambda-java-events` to inject events in your JUnit tests.
 
 - [Release Notes](aws-lambda-java-tests/RELEASE.CHANGELOG.md)
 

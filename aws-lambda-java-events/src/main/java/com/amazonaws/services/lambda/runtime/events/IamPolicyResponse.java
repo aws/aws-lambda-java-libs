@@ -90,7 +90,7 @@ public class IamPolicyResponse implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PolicyDocument implements Serializable, Cloneable {
+    public static class PolicyDocument implements Serializable {
 
         @JsonProperty("Version")
         private String version;
@@ -102,7 +102,7 @@ public class IamPolicyResponse implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Statement implements Serializable, Cloneable {
+    public static class Statement implements Serializable {
 
         @JsonProperty("Action")
         private List<String> action;

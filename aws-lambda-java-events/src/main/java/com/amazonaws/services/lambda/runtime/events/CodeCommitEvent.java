@@ -34,7 +34,7 @@ import java.util.List;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CodeCommitEvent implements Serializable, Cloneable {
+public class CodeCommitEvent implements Serializable {
 
     private static final long serialVersionUID = 2404735479795009282L;
 
@@ -49,7 +49,7 @@ public class CodeCommitEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Reference implements Serializable, Cloneable {
+    public static class Reference implements Serializable {
 
         private static final long serialVersionUID = 9166524005926768827L;
 
@@ -58,15 +58,6 @@ public class CodeCommitEvent implements Serializable, Cloneable {
         private String ref;
 
         private Boolean created;
-
-        @Override
-        public Reference clone() {
-            try {
-                return (Reference) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
 
     /**
@@ -77,20 +68,11 @@ public class CodeCommitEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CodeCommit implements Serializable, Cloneable {
+    public static class CodeCommit implements Serializable {
 
         private static final long serialVersionUID = 2594306162311794147L;
 
         private List<Reference> references;
-
-        @Override
-        public CodeCommit clone() {
-            try {
-                return (CodeCommit) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
 
     /**
@@ -101,7 +83,7 @@ public class CodeCommitEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Record implements Serializable, Cloneable {
+    public static class Record implements Serializable {
 
         private static final long serialVersionUID = 1116409777237432728L;
 
@@ -137,23 +119,5 @@ public class CodeCommitEvent implements Serializable, Cloneable {
 
         private Integer eventTotalParts;
 
-        @Override
-        public Record clone() {
-            try {
-                return (Record) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public CodeCommitEvent clone() {
-        try {
-            return (CodeCommitEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

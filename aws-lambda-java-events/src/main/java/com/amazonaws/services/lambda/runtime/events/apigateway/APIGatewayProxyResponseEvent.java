@@ -29,7 +29,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
+public class APIGatewayProxyResponseEvent implements Serializable {
 
     private static final long serialVersionUID = 2263167344670024172L;
     
@@ -40,14 +40,4 @@ public class APIGatewayProxyResponseEvent implements Serializable, Cloneable {
     private String body;
 
     private Boolean isBase64Encoded;
-
-    @Override
-    public APIGatewayProxyResponseEvent clone() {
-        try {
-            return (APIGatewayProxyResponseEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
-
 }

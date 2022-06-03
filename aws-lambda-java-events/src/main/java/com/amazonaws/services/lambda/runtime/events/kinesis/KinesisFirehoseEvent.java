@@ -31,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class KinesisFirehoseEvent implements Serializable, Cloneable {
+public class KinesisFirehoseEvent implements Serializable {
 
     private static final long serialVersionUID = -2890373471008001695L;
 
@@ -47,7 +47,7 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Record implements Serializable, Cloneable {
+    public static class Record implements Serializable {
 
         private static final long serialVersionUID = -7231161900431910379L;
 
@@ -77,23 +77,5 @@ public class KinesisFirehoseEvent implements Serializable, Cloneable {
 
         private Map<String, String> kinesisRecordMetadata;
 
-        @Override
-        public Record clone() {
-            try {
-                return (Record) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public KinesisFirehoseEvent clone() {
-        try {
-            return (KinesisFirehoseEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

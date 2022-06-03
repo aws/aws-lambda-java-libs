@@ -28,7 +28,7 @@ import java.io.Serializable;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfigEvent implements Serializable, Cloneable {
+public class ConfigEvent implements Serializable {
 
     private static final long serialVersionUID = -3484211708255634243L;
 
@@ -91,14 +91,5 @@ public class ConfigEvent implements Serializable, Cloneable {
      *
      */
     private boolean eventLeftScope;
-
-    @Override
-    public ConfigEvent clone() {
-        try {
-            return (ConfigEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
 
 }

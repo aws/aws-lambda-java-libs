@@ -30,7 +30,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
+public class APIGatewayProxyRequestEvent implements Serializable {
 
     private static final long serialVersionUID = 4189228800688527467L;
 
@@ -66,7 +66,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProxyRequestContext implements Serializable, Cloneable {
+    public static class ProxyRequestContext implements Serializable {
 
         private static final long serialVersionUID = 8783459961042799774L;
 
@@ -89,23 +89,13 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         private String path;
 
         private Map<String, Object> authorizer;
-
-        @Override
-        public ProxyRequestContext clone() {
-            try {
-                return (ProxyRequestContext) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
     }
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestIdentity implements Serializable, Cloneable {
+    public static class RequestIdentity implements Serializable {
 
         private static final long serialVersionUID = -5283829736983640346L;
 
@@ -132,23 +122,5 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         private String user;
 
         private String accessKey;
-
-        @Override
-        public RequestIdentity clone() {
-            try {
-                return (RequestIdentity) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-    }
-
-    @Override
-    public APIGatewayProxyRequestEvent clone() {
-        try {
-            return (APIGatewayProxyRequestEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

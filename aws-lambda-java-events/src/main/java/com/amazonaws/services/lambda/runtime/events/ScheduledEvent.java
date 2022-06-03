@@ -34,7 +34,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduledEvent implements Serializable, Cloneable {
+public class ScheduledEvent implements Serializable {
 
     private static final long serialVersionUID = -5810383198587331146L;
 
@@ -61,14 +61,5 @@ public class ScheduledEvent implements Serializable, Cloneable {
     private Instant time;
 
     private List<String> resources;
-
-    @Override
-    public ScheduledEvent clone() {
-        try {
-            return (ScheduledEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
     
 }

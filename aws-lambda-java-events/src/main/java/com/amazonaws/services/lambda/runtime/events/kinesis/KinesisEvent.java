@@ -31,7 +31,7 @@ import java.util.List;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class KinesisEvent implements Serializable, Cloneable {
+public class KinesisEvent implements Serializable {
 
     private static final long serialVersionUID = 8145257839787754632L;
 
@@ -46,7 +46,7 @@ public class KinesisEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Record implements Serializable, Cloneable {
+    public static class Record implements Serializable {
 
         private static final long serialVersionUID = 7856672931457425976L;
 
@@ -147,15 +147,6 @@ public class KinesisEvent implements Serializable, Cloneable {
                 throw new IllegalArgumentException("Cannot create enum from " + value + " value!");
             }
         }
-
-        @Override
-        public Record clone() {
-            try {
-                return (Record) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone() " + "even though we're Cloneable!", e);
-            }
-        }
     }
     
     /**
@@ -167,7 +158,7 @@ public class KinesisEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class KinesisEventRecord implements Serializable, Cloneable {
+    public static class KinesisEventRecord implements Serializable {
 
         private static final long serialVersionUID = -3855723544907905206L;
 
@@ -186,24 +177,5 @@ public class KinesisEvent implements Serializable, Cloneable {
         private String eventSourceARN;
 
         private String awsRegion;
-
-        @Override
-        public KinesisEventRecord clone() {
-            try {
-                return (KinesisEventRecord) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
-
-    @Override
-    public KinesisEvent clone() {
-        try {
-            return (KinesisEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
-
 }

@@ -35,7 +35,7 @@ import java.util.List;
 @Data
 @Builder(setterPrefix = "with")
 @AllArgsConstructor
-public class S3Event implements Serializable, Cloneable {
+public class S3Event implements Serializable {
 
     private static final long serialVersionUID = -8094860465750962044L;
 
@@ -170,15 +170,6 @@ public class S3Event implements Serializable, Cloneable {
         private S3Entity s3;
         private UserIdentityEntity userIdentity;
 
-    }
-
-    @Override
-    public S3Event clone() {
-        try {
-            return (S3Event) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 
 }

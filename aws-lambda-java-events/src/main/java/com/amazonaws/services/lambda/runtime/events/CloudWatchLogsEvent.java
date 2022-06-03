@@ -29,7 +29,7 @@ import java.io.Serializable;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloudWatchLogsEvent implements Serializable, Cloneable {
+public class CloudWatchLogsEvent implements Serializable {
 
     private static final long serialVersionUID = -1617470828168156271L;
 
@@ -43,29 +43,11 @@ public class CloudWatchLogsEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AWSLogs implements Serializable, Cloneable {
+    public static class AWSLogs implements Serializable {
 
         private static final long serialVersionUID = -7793438350437169987L;
 
         private String data;
 
-        @Override
-        public AWSLogs clone() {
-            try {
-                return (AWSLogs) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public CloudWatchLogsEvent clone() {
-        try {
-            return (CloudWatchLogsEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

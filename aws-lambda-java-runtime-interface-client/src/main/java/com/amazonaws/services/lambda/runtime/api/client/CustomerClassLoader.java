@@ -46,6 +46,11 @@ class CustomerClassLoader extends URLClassLoader {
                 nameList.add(path);
             }
         }
+
+        if (nameList.isEmpty()) {
+            return;
+        }
+
         names = nameList.toArray(new String[nameList.size()]);
         Arrays.sort(names, CustomerClassLoader.LEXICAL_SORT_ORDER);
 

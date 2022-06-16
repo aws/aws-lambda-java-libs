@@ -36,15 +36,14 @@ class CustomerClassLoader extends URLClassLoader {
         if (!dir.isDirectory()) {
             return;
         }
-        String[] names = dir.list();
+        String[] names = dir.list((directory, name) -> name.endsWith(".jar"));
         if (names == null) {
             return;
         }
         Arrays.sort(names, CustomerClassLoader.LEXICAL_SORT_ORDER);
-        for(String path : names) {
-            if(path.endsWith(".jar")) {
-                result.add(newURL(dir, path));
-            }
+
+        for (String path : names) {
+            result.add(newURL(dir, path));
         }
     }
 

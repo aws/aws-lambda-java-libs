@@ -49,7 +49,7 @@ class CustomerClassLoader extends URLClassLoader {
         if (!dir.isDirectory()) {
             return;
         }
-        String[] names = dir.list(JAR_FILE_NAME_FILTER);
+        String[] names = dir.list(CustomerClassLoader.JAR_FILE_NAME_FILTER);
         if (names == null) {
             return;
         }

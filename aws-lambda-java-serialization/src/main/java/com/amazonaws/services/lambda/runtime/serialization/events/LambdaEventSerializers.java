@@ -8,7 +8,9 @@ import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CloudWa
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.CodeCommitEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.ConnectEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin;
+import com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbTimeWindowEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.KinesisEventMixin;
+import com.amazonaws.services.lambda.runtime.serialization.events.mixins.KinesisTimeWindowEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.SNSEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.SQSEventMixin;
 import com.amazonaws.services.lambda.runtime.serialization.events.mixins.ScheduledEventMixin;
@@ -63,8 +65,10 @@ public class LambdaEventSerializers {
             "com.amazonaws.services.lambda.runtime.events.ConfigEvent",
             "com.amazonaws.services.lambda.runtime.events.ConnectEvent",
             "com.amazonaws.services.lambda.runtime.events.DynamodbEvent",
+            "com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
             "com.amazonaws.services.lambda.runtime.events.IoTButtonEvent",
             "com.amazonaws.services.lambda.runtime.events.KinesisEvent",
+            "com.amazonaws.services.lambda.runtime.events.KinesisTimeWindowEvent",
             "com.amazonaws.services.lambda.runtime.events.KinesisFirehoseEvent",
             "com.amazonaws.services.lambda.runtime.events.LambdaDestinationEvent",
             "com.amazonaws.services.lambda.runtime.events.LexEvent",
@@ -128,10 +132,14 @@ public class LambdaEventSerializers {
                     DynamodbEventMixin.AttributeValueMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue",
                     DynamodbEventMixin.AttributeValueMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
+                DynamodbTimeWindowEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.KinesisEvent",
                     KinesisEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.KinesisEvent$Record",
                     KinesisEventMixin.RecordMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.KinesisTimeWindowEvent",
+                KinesisTimeWindowEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ScheduledEvent",
                     ScheduledEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SecretsManagerRotationEvent",
@@ -172,6 +180,15 @@ public class LambdaEventSerializers {
                                     "com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord",
                                     "com.amazonaws.services.dynamodbv2.model.StreamRecord"),
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.DynamodbEvent$DynamodbStreamRecord"))),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
+                Arrays.asList(
+                    new AlternateNestedClass(
+                        "com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue",
+                        "com.amazonaws.services.dynamodbv2.model.AttributeValue"),
+                    new AlternateNestedClass(
+                        "com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord",
+                        "com.amazonaws.services.dynamodbv2.model.StreamRecord"),
+                    new NestedClass("com.amazonaws.services.lambda.runtime.events.DynamodbEvent$DynamodbStreamRecord"))),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.KinesisEvent",
                     Arrays.asList(
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.KinesisEvent$Record"))),

@@ -1,6 +1,6 @@
 ARG DISTRO_VERSION
 
-FROM ubuntu:${DISTRO_VERSION} as build-image
+FROM public.ecr.aws/ubuntu/ubuntu:${DISTRO_VERSION} as build-image
 
 RUN apt-get update && \
     apt-get install -y apt-transport-https ca-certificates && \
@@ -10,7 +10,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y java-11-amazon-corretto-jdk
 
-FROM ubuntu:${DISTRO_VERSION}
+FROM public.ecr.aws/ubuntu/ubuntu:${DISTRO_VERSION}
 
 COPY --from=build-image /usr/lib/jvm /usr/lib/jvm
 

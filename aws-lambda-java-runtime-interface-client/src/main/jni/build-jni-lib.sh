@@ -6,7 +6,7 @@ set -euo pipefail
 SRC_DIR=$(dirname "$0")
 DST_DIR=${1}
 MULTI_ARCH=${2}
-CURL_VERSION=7.77.0
+CURL_VERSION=7.83.0
 
 # Not using associative arrays to maintain bash 3 compatibility with building on MacOS
 # MacOS ships with bash 3 and associative arrays require bash 4+

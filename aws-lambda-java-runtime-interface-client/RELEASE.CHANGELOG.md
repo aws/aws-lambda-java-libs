@@ -1,3 +1,7 @@
+### April 11, 2022
+`2.1.1`
+- fix: Re-build of the x86_64/aarch64 artifacts
+
 ### January 20, 2022
 `2.1.0`
 - fix: Added support for ARM64 architecture

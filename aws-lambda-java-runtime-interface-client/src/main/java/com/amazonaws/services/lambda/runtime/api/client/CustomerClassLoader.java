@@ -3,6 +3,7 @@
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +19,18 @@ class CustomerClassLoader extends URLClassLoader {
      * does not depend on the underlying filesystem.
      */
     private final static Comparator<String> LEXICAL_SORT_ORDER = Comparator.comparing(String::toString);
+    private final static FilenameFilter JAR_FILE_NAME_FILTER = new FilenameFilter() {
+
+        @Override
+        public boolean accept(File dir, String name) {
+            int offset = name.length() - 4;
+            if (offset <= 0) { /* must be at least A.jar */
+                return false;
+            } else {
+                return name.startsWith(".jar", offset);
+            }
+        }
+    };
 
     CustomerClassLoader(String taskRoot, String optRoot, ClassLoader parent) throws IOException {
         super(getUrls(taskRoot, optRoot), parent);
@@ -36,15 +49,14 @@ class CustomerClassLoader extends URLClassLoader {
         if (!dir.isDirectory()) {
             return;
         }
-        String[] names = dir.list();
+        String[] names = dir.list(CustomerClassLoader.JAR_FILE_NAME_FILTER);
         if (names == null) {
             return;
         }
         Arrays.sort(names, CustomerClassLoader.LEXICAL_SORT_ORDER);
-        for(String path : names) {
-            if(path.endsWith(".jar")) {
-                result.add(newURL(dir, path));
-            }
+
+        for (String path : names) {
+            result.add(newURL(dir, path));
         }
     }
 

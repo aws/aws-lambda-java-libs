@@ -18,16 +18,19 @@ do_one_yaml() {
 
     OS_DISTRIBUTION=$(grep -oE 'OS_DISTRIBUTION:\s*(\S+)' "$YML" | cut -d' ' -f2)
     DISTRO_VERSIONS=$(sed '1,/DISTRO_VERSION/d;/RUNTIME_VERSION/,$d' "$YML" | tr -d '\-" ')
-    RUNTIME_VERSIONS=$(sed '1,/RUNTIME_VERSION/d;/phases/,$d' "$YML" | sed '/#.*$/d' |  tr -d '\-" ')
+    RUNTIME_VERSIONS=$(sed '1,/RUNTIME_VERSION/d;/PLATFORM/,$d' "$YML" | sed '/#.*$/d' |  tr -d '\-" ')
+    PLATFORMS=$(sed '1,/PLATFORM/d;/phases/,$d' "$YML" |  tr -d '\-" ')
 
-    for DISTRO_VERSION in $DISTRO_VERSIONS ; do
-        for RUNTIME_VERSION in $RUNTIME_VERSIONS ; do
-            if (( DRYRUN == 1 )) ; then
-                echo DRYRUN test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION"
-            else
-                test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION"
-            fi
+    for DISTRO_VERSION in $DISTRO_VERSIONS; do
+      for RUNTIME_VERSION in $RUNTIME_VERSIONS; do
+        for PLATFORM in $PLATFORMS; do
+          if (( DRYRUN == 1 )); then
+            echo DRYRUN test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
+          else
+            test_one_combination "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
+          fi
         done
+      done
     done
 }
 
@@ -36,13 +39,15 @@ test_one_combination() {
     local -r OS_DISTRIBUTION="$2"
     local -r DISTRO_VERSION="$3"
     local -r RUNTIME_VERSION="$4"
-  
+    local -r PLATFORM="$5"
+    local -r PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr "/" ".")
+
     echo Testing:
     echo "  BUILDSPEC" "$YML"
-    echo "  with" "$OS_DISTRIBUTION"-"$DISTRO_VERSION" "$RUNTIME_VERSION"
+    echo "  with" "$OS_DISTRIBUTION"-"$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM"
 
-    "$(dirname "$0")"/test_one.sh "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" \
-        > >(sed "s/^/$OS_DISTRIBUTION$DISTRO_VERSION-$RUNTIME_VERSION: /") 2> >(sed "s/^/$OS_DISTRIBUTION-$DISTRO_VERSION:$RUNTIME_VERSION: /" >&2)
+    "$(dirname "$0")"/test_one.sh "$YML" "$OS_DISTRIBUTION" "$DISTRO_VERSION" "$RUNTIME_VERSION" "$PLATFORM" \
+        > >(sed "s/^/$OS_DISTRIBUTION$DISTRO_VERSION-$RUNTIME_VERSION-$PLATFORM_SANITIZED: /") 2> >(sed "s/^/$OS_DISTRIBUTION-$DISTRO_VERSION:$RUNTIME_VERSION:$PLATFORM_SANITIZED: /" >&2)
 }
 
 main() {

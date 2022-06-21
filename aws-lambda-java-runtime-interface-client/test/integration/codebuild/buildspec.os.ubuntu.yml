@@ -4,6 +4,8 @@ env:
   variables:
     OS_DISTRIBUTION: ubuntu
     JAVA_BINARY_LOCATION: "/usr/lib/jvm/java-11-amazon-corretto/bin/java"
+    DOCKER_CLI_EXPERIMENTAL: "enabled"
+    DOCKER_CLI_PLUGIN_DIR: "/root/.docker/cli-plugins"
 batch:
   build-matrix:
     static:
@@ -14,11 +16,15 @@ batch:
       env:
         variables:
           DISTRO_VERSION:
-            - "16.04"
             - "18.04"
             - "20.04"
+            - "21.10"
+            - "22.04"
           RUNTIME_VERSION:
             - "corretto11"
+          PLATFORM:
+            - "linux/amd64"
+            - "linux/arm64/v8"
 phases:
   install:
     commands:
@@ -30,6 +36,7 @@ phases:
             echo "Performing DockerHub login . . ."
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
         fi
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/configure_multi_arch_env.sh
   pre_build:
     commands:
       # Log some environment variables for troubleshooting
@@ -44,14 +51,13 @@ phases:
       - echo "Extracting and including Runtime Interface Emulator"
       - SCRATCH_DIR=".scratch"
       - mkdir "${SCRATCH_DIR}"
-      - ARCHITECTURE=$(arch)
       - >
-        if [[ "$ARCHITECTURE" == "x86_64" ]]; then
+        if [[ "$PLATFORM" == "linux/amd64" ]]; then
             RIE="aws-lambda-rie"
-        elif [[ "$ARCHITECTURE" == "aarch64" ]]; then
+        elif [[ "$PLATFORM" == "linux/arm64/v8" ]]; then
             RIE="aws-lambda-rie-arm64"
         else
-            echo "Architecture $ARCHITECTURE is not currently supported."
+            echo "Platform $PLATFORM is not currently supported."
             exit 1
         fi
       - tar -xvf aws-lambda-java-runtime-interface-client/test/integration/resources/${RIE}.tar.gz --directory "${SCRATCH_DIR}"
@@ -69,53 +75,12 @@ phases:
         docker build . \
           -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
           -t "${IMAGE_TAG}" \
+          --platform="${PLATFORM}" \
           --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
           --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
   build:
     commands:
-      - set -x
-      - echo "Running Image ${IMAGE_TAG}"
-      - docker network create "${OS_DISTRIBUTION}-network"
-      - >
-        docker run \
-          --detach \
-          --name "${OS_DISTRIBUTION}-app" \
-          --network "${OS_DISTRIBUTION}-network" \
-          --entrypoint="" \
-          "${IMAGE_TAG}" \
-          sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ./HelloWorld-1.0.jar helloworld.App"
-      - sleep 2
-      - >
-        docker run \
-          --name "${OS_DISTRIBUTION}-tester" \
-          --env "TARGET=${OS_DISTRIBUTION}-app" \
-          --network "${OS_DISTRIBUTION}-network" \
-          --entrypoint="" \
-          "${IMAGE_TAG}" \
-          sh -c 'curl -X POST "http://${TARGET}:8080/2015-03-31/functions/function/invocations" -d "{}" --max-time 10'
-      - actual="$(docker logs --tail 1 "${OS_DISTRIBUTION}-tester" | xargs)"
-      - expected='success'
-      - |
-        echo "Response: ${actual}"
-        if [[ "$actual" != "$expected" ]]; then
-          echo "fail! runtime: $RUNTIME - expected output $expected - got $actual"
-          exit -1
-        fi
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_invocation_test.sh
     finally:
-      - |
-        echo "---------Container Logs: ${OS_DISTRIBUTION}-app----------"
-        echo
-        docker logs "${OS_DISTRIBUTION}-app" || true
-        echo
-        echo "---------------------------------------------------"
-        echo "--------Container Logs: ${OS_DISTRIBUTION}-tester--------"
-        echo
-        docker logs "${OS_DISTRIBUTION}-tester" || true
-        echo
-        echo "---------------------------------------------------"
-      - echo "Cleaning up..."
-      - docker stop "${OS_DISTRIBUTION}-app" || true
-      - docker rm --force "${OS_DISTRIBUTION}-app" || true
-      - docker stop "${OS_DISTRIBUTION}-tester" || true
-      - docker rm --force "${OS_DISTRIBUTION}-tester" || true
-      - docker network rm "${OS_DISTRIBUTION}-network" || true
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/fetch_test_container_logs.sh
+      - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/clean_up.sh

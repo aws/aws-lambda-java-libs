@@ -442,6 +442,14 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testLexV2Response() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("lex_v2_response.json");
+        String actual = deserializeSerializeJsonToString(expected, LexV2Response.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
     public void testRabbitMQ() throws IOException, JSONException {
         String expected = EventUtils.readEvent("rabbit_mq.json");
         String actual = deserializeSerializeJsonToString(expected, RabbitMQEvent.class);

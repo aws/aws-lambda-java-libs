@@ -1,0 +1,62 @@
+{
+    "sessionState": {
+        "sessionAttributes": {},
+        "dialogAction": {
+            "type": "Close"
+        },
+        "intent": {
+            "slots": {
+                "RoomType": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "deluxe",
+                        "resolvedValues": [
+                            "deluxe"
+                        ],
+                        "interpretedValue": "deluxe"
+                    }
+                },
+                "CheckInDate": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "fifth of may",
+                        "resolvedValues": [
+                            "2022-05-05"
+                        ],
+                        "interpretedValue": "2022-05-05"
+                    }
+                },
+                "Nights": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "fourteen",
+                        "resolvedValues": [
+                            "14"
+                        ],
+                        "interpretedValue": "14"
+                    }
+                },
+                "Location": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "seattle",
+                        "resolvedValues": [
+                            "seattle"
+                        ],
+                        "interpretedValue": "seattle"
+                    }
+                }
+            },
+            "confirmationState": "None",
+            "name": "BookHotel",
+            "state": "Fulfilled"
+        }
+    },
+    "messages": [
+        {
+            "contentType": "PlainText",
+            "content": "Thank you."
+        }
+    ],
+    "requestAttributes": {}
+}

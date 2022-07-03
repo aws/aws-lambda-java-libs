@@ -1,0 +1,972 @@
+{
+    "requestAttributes": {
+        "x-amz-lex:kendra-search-response-document-link-2": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html",
+        "x-amz-lex:kendra-search-response-document-link-1": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html",
+        "x-amz-lex:kendra-search-response-document-5": "...Instances\n\n                           \n                              \n                                 \n                                 Amazon EBS data services...",
+        "x-amz-lex:kendra-search-response-document-4": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+        "x-amz-lex:kendra-search-response-document-link-5": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html",
+        "x-amz-lex:kendra-search-response-document-link-4": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html",
+        "x-amz-lex:kendra-search-response-document-link-3": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html",
+        "x-amz-lex:kendra-search-response-document-3": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+        "x-amz-lex:kendra-search-response-document-2": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can...",
+        "x-amz-lex:kendra-search-response-document-1": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can..."
+    },
+    "sessionId": "123456789123456",
+    "inputTranscript": "What is EBS?",
+    "interpretations": [
+        {
+            "intent": {
+                "slots": {},
+                "confirmationState": "None",
+                "kendraResponse": {
+                    "queryId": "abcdefgh-1234-1234-1234-ijklmnopqrst",
+                    "resultItems": [
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-b8b894b8-7da1-4abb-9f7a-6e6013baf61f",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html",
+                            "documentTitle": {
+                                "text": "Storage - Amazon Elastic Compute Cloud",
+                                "highlights": []
+                            },
+                            "documentExcerpt": {
+                                "text": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 147,
+                                        "endOffset": 150,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-10"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-fb0b72bc-f91d-4b7a-b158-55b00eda3ff7",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html",
+                            "documentTitle": {
+                                "text": "Storage - Amazon Elastic Compute Cloud",
+                                "highlights": []
+                            },
+                            "documentExcerpt": {
+                                "text": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 147,
+                                        "endOffset": 150,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-9"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-8f67430d-ab6e-44d7-a0ad-8ae6e76bedfe",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html",
+                            "documentTitle": {
+                                "text": "Amazon Elastic Block Store (Amazon EBS) - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 35,
+                                        "endOffset": 38,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 73,
+                                        "endOffset": 76,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-8"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-2c376c85-d46a-4b3f-8baf-fb276512698f",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html",
+                            "documentTitle": {
+                                "text": "Amazon Elastic Block Store (Amazon EBS) - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 35,
+                                        "endOffset": 38,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 73,
+                                        "endOffset": 76,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-2"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-ef9fb2c2-23ae-43e4-82d0-a8b7693c90f7",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html",
+                            "documentTitle": {
+                                "text": "Amazon EBS data services - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 7,
+                                        "endOffset": 10,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...Instances\n\n                           \n                              \n                                 \n                                 Amazon EBS data services...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 147,
+                                        "endOffset": 150,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-3"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-9db425c8-d9ae-4b57-b726-1b52664f1dc5",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html",
+                            "documentTitle": {
+                                "text": "Amazon EBS data services - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 7,
+                                        "endOffset": 10,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...Instances\n\n                           \n                              \n                                 \n                                 Amazon EBS data services...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 147,
+                                        "endOffset": 150,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-4"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-82f71cdb-0ca4-4828-b183-3054797fecd8",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html",
+                            "documentTitle": {
+                                "text": "Logging Amazon EC2 and Amazon EBS API calls with\n         AWS CloudTrail - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 30,
+                                        "endOffset": 33,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...Guide for Linux Instances\n\n                           Amazon EC2 and Amazon EBS information in CloudTrailUnderstanding Amazon EC2 and Amazon EBS log file\n                                 entriesAuditing users that connect via EC2 Instance Connect...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 79,
+                                        "endOffset": 82,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    },
+                                    {
+                                        "beginOffset": 144,
+                                        "endOffset": 147,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-5"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-12f33f89-751e-49be-a5ed-d356fcdbcb69",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html",
+                            "documentTitle": {
+                                "text": "Logging Amazon EC2 and Amazon EBS API calls with\n         AWS CloudTrail - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 30,
+                                        "endOffset": 33,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...Guide for Windows Instances\n\n                           Amazon EC2 and Amazon EBS information in CloudTrailUnderstanding Amazon EC2 and Amazon EBS log file\n                                 entriesAuditing users that connect via EC2 Instance Connect...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 81,
+                                        "endOffset": 84,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    },
+                                    {
+                                        "beginOffset": 146,
+                                        "endOffset": 149,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-6"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-a19f3b7e-56d8-4a65-b03a-799a38ef11e7",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html",
+                            "documentTitle": {
+                                "text": "EbsBlockDevice - Amazon Elastic Compute Cloud",
+                                "highlights": []
+                            },
+                            "documentExcerpt": {
+                                "text": "...For more\n                                             information, see Preserving Amazon EBS volumes on instance termination in the\n                                             Amazon Elastic Compute Cloud User Guide...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 92,
+                                        "endOffset": 95,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-7"
+                        },
+                        {
+                            "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-193710fb-5552-4f8e-8215-7c9cb14ac1ff",
+                            "type": "DOCUMENT",
+                            "additionalAttributes": [],
+                            "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html",
+                            "documentTitle": {
+                                "text": "Amazon CloudWatch Events for Amazon EBS - Amazon Elastic Compute Cloud",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 36,
+                                        "endOffset": 39,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentExcerpt": {
+                                "text": "...Contents\n\n                                    \tEBS volume events\n\tEBS snapshot events\n\tEBS volume modification events\n\tEBS fast snapshot restore events\n\tUsing AWS Lambda to handle CloudWatch events...",
+                                "highlights": [
+                                    {
+                                        "beginOffset": 50,
+                                        "endOffset": 53,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    },
+                                    {
+                                        "beginOffset": 69,
+                                        "endOffset": 72,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    },
+                                    {
+                                        "beginOffset": 90,
+                                        "endOffset": 93,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    },
+                                    {
+                                        "beginOffset": 122,
+                                        "endOffset": 125,
+                                        "topAnswer": false,
+                                        "type": "STANDARD"
+                                    }
+                                ]
+                            },
+                            "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html",
+                            "documentAttributes": [
+                                {
+                                    "key": "_source_uri",
+                                    "value": {
+                                        "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html"
+                                    }
+                                }
+                            ],
+                            "scoreAttributes": {
+                                "scoreConfidence": "HIGH"
+                            },
+                            "feedbackToken": "Example-Feedback-Token-1"
+                        }
+                    ],
+                    "facetResults": [],
+                    "totalNumberOfResults": 369
+                },
+                "name": "KendraSearchIntent",
+                "state": "ReadyForFulfillment"
+            },
+            "sentimentResponse": {
+                "sentimentScore": {
+                    "mixed": 0.0001402172929374501,
+                    "neutral": 0.8999575972557068,
+                    "negative": 0.09440270811319351,
+                    "positive": 0.005499483551830053
+                },
+                "sentiment": "NEUTRAL"
+            }
+        },
+        {
+            "intent": {
+                "slots": {},
+                "confirmationState": "None",
+                "name": "FallbackIntent",
+                "state": "ReadyForFulfillment"
+            },
+            "sentimentResponse": {
+                "sentimentScore": {
+                    "mixed": 0.0001402172929374501,
+                    "neutral": 0.8999575972557068,
+                    "negative": 0.09440270811319351,
+                    "positive": 0.005499483551830053
+                },
+                "sentiment": "NEUTRAL"
+            }
+        },
+        {
+            "intent": {
+                "slots": {},
+                "confirmationState": "None",
+                "name": "BookHotel",
+                "state": "ReadyForFulfillment"
+            },
+            "sentimentResponse": {
+                "sentimentScore": {
+                    "mixed": 0.0001402172929374501,
+                    "neutral": 0.8999575972557068,
+                    "negative": 0.09440270811319351,
+                    "positive": 0.005499483551830053
+                },
+                "sentiment": "NEUTRAL"
+            },
+            "nluConfidence": 0.61
+        },
+        {
+            "intent": {
+                "slots": {},
+                "confirmationState": "None",
+                "name": "BookCar",
+                "state": "ReadyForFulfillment"
+            },
+            "sentimentResponse": {
+                "sentimentScore": {
+                    "mixed": 0.0001402172929374501,
+                    "neutral": 0.8999575972557068,
+                    "negative": 0.09440270811319351,
+                    "positive": 0.005499483551830053
+                },
+                "sentiment": "NEUTRAL"
+            },
+            "nluConfidence": 0.45
+        }
+    ],
+    "responseContentType": "text/plain; charset=utf-8",
+    "invocationSource": "FulfillmentCodeHook",
+    "messageVersion": "1.0",
+    "sessionState": {
+        "activeContexts": [],
+        "intent": {
+            "slots": {},
+            "confirmationState": "None",
+            "kendraResponse": {
+                "queryId": "abcdefgh-1234-1234-1234-ijklmnopqrst",
+                "resultItems": [
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-b8b894b8-7da1-4abb-9f7a-6e6013baf61f",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html",
+                        "documentTitle": {
+                            "text": "Storage - Amazon Elastic Compute Cloud",
+                            "highlights": []
+                        },
+                        "documentExcerpt": {
+                            "text": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 147,
+                                    "endOffset": 150,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/Storage.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-10"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-fb0b72bc-f91d-4b7a-b158-55b00eda3ff7",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html",
+                        "documentTitle": {
+                            "text": "Storage - Amazon Elastic Compute Cloud",
+                            "highlights": []
+                        },
+                        "documentExcerpt": {
+                            "text": "...multiple volumes can be attached to an instance.\n                                    You can\n                                    also detach an EBS volume from one instance and attach it to another instance. You\n                                    can...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 147,
+                                    "endOffset": 150,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/Storage.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-9"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-8f67430d-ab6e-44d7-a0ad-8ae6e76bedfe",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html",
+                        "documentTitle": {
+                            "text": "Amazon Elastic Block Store (Amazon EBS) - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 35,
+                                    "endOffset": 38,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 73,
+                                    "endOffset": 76,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/AmazonEBS.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-8"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-2c376c85-d46a-4b3f-8baf-fb276512698f",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html",
+                        "documentTitle": {
+                            "text": "Amazon Elastic Block Store (Amazon EBS) - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 35,
+                                    "endOffset": 38,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...For more information about Amazon\n                                    EBS pricing, see the \n                                    Projecting Costs section of the Amazon Elastic Block Store page...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 73,
+                                    "endOffset": 76,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/AmazonEBS.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-2"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-ef9fb2c2-23ae-43e4-82d0-a8b7693c90f7",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html",
+                        "documentTitle": {
+                            "text": "Amazon EBS data services - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 7,
+                                    "endOffset": 10,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...Instances\n\n                           \n                              \n                                 \n                                 Amazon EBS data services...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 147,
+                                    "endOffset": 150,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-data-services.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-3"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-9db425c8-d9ae-4b57-b726-1b52664f1dc5",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html",
+                        "documentTitle": {
+                            "text": "Amazon EBS data services - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 7,
+                                    "endOffset": 10,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...Instances\n\n                           \n                              \n                                 \n                                 Amazon EBS data services...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 147,
+                                    "endOffset": 150,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/ebs-data-services.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-4"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-82f71cdb-0ca4-4828-b183-3054797fecd8",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html",
+                        "documentTitle": {
+                            "text": "Logging Amazon EC2 and Amazon EBS API calls with\n         AWS CloudTrail - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 30,
+                                    "endOffset": 33,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...Guide for Linux Instances\n\n                           Amazon EC2 and Amazon EBS information in CloudTrailUnderstanding Amazon EC2 and Amazon EBS log file\n                                 entriesAuditing users that connect via EC2 Instance Connect...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 79,
+                                    "endOffset": 82,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                },
+                                {
+                                    "beginOffset": 144,
+                                    "endOffset": 147,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/monitor-with-cloudtrail.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-5"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-12f33f89-751e-49be-a5ed-d356fcdbcb69",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html",
+                        "documentTitle": {
+                            "text": "Logging Amazon EC2 and Amazon EBS API calls with\n         AWS CloudTrail - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 30,
+                                    "endOffset": 33,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...Guide for Windows Instances\n\n                           Amazon EC2 and Amazon EBS information in CloudTrailUnderstanding Amazon EC2 and Amazon EBS log file\n                                 entriesAuditing users that connect via EC2 Instance Connect...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 81,
+                                    "endOffset": 84,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                },
+                                {
+                                    "beginOffset": 146,
+                                    "endOffset": 149,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/WindowsGuide/monitor-with-cloudtrail.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-6"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-a19f3b7e-56d8-4a65-b03a-799a38ef11e7",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html",
+                        "documentTitle": {
+                            "text": "EbsBlockDevice - Amazon Elastic Compute Cloud",
+                            "highlights": []
+                        },
+                        "documentExcerpt": {
+                            "text": "...For more\n                                             information, see Preserving Amazon EBS volumes on instance termination in the\n                                             Amazon Elastic Compute Cloud User Guide...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 92,
+                                    "endOffset": 95,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/APIReference/API_EbsBlockDevice.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-7"
+                    },
+                    {
+                        "id": "abcdefgh-1234-1234-1234-ijklmnopqrst-193710fb-5552-4f8e-8215-7c9cb14ac1ff",
+                        "type": "DOCUMENT",
+                        "additionalAttributes": [],
+                        "documentId": "s3://amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html",
+                        "documentTitle": {
+                            "text": "Amazon CloudWatch Events for Amazon EBS - Amazon Elastic Compute Cloud",
+                            "highlights": [
+                                {
+                                    "beginOffset": 36,
+                                    "endOffset": 39,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentExcerpt": {
+                            "text": "...Contents\n\n                                    \tEBS volume events\n\tEBS snapshot events\n\tEBS volume modification events\n\tEBS fast snapshot restore events\n\tUsing AWS Lambda to handle CloudWatch events...",
+                            "highlights": [
+                                {
+                                    "beginOffset": 50,
+                                    "endOffset": 53,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                },
+                                {
+                                    "beginOffset": 69,
+                                    "endOffset": 72,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                },
+                                {
+                                    "beginOffset": 90,
+                                    "endOffset": 93,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                },
+                                {
+                                    "beginOffset": 122,
+                                    "endOffset": 125,
+                                    "topAnswer": false,
+                                    "type": "STANDARD"
+                                }
+                            ]
+                        },
+                        "documentURI": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html",
+                        "documentAttributes": [
+                            {
+                                "key": "_source_uri",
+                                "value": {
+                                    "stringValue": "https://s3.us-east-1.amazonaws.com/amazon-kendra-sample-docs-us-east-1/documents/AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html"
+                                }
+                            }
+                        ],
+                        "scoreAttributes": {
+                            "scoreConfidence": "HIGH"
+                        },
+                        "feedbackToken": "Example-Feedback-Token-1"
+                    }
+                ],
+                "facetResults": [],
+                "totalNumberOfResults": 369
+            },
+            "name": "KendraSearchIntent",
+            "state": "ReadyForFulfillment"
+        },
+        "originatingRequestId": "00000000-1111-2222-3333-444444444444"
+    },
+    "transcriptions": [
+        {
+            "transcription": "What is EBS?",
+            "resolvedSlots": {},
+            "transcriptionConfidence": 1,
+            "resolvedContext": {
+                "intent": "FallbackIntent"
+            }
+        }
+    ],
+    "inputMode": "Text",
+    "bot": {
+        "aliasName": "TestBotAlias",
+        "aliasId": "TSTALIASID",
+        "name": "BookTrip",
+        "version": "DRAFT",
+        "localeId": "en_US",
+        "id": "ABCDE01235"
+    }
+}

@@ -29,7 +29,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class LexEvent implements Serializable, Cloneable {
+public class LexEvent implements Serializable {
 
     private static final long serialVersionUID = 8660021082133163891L;
 
@@ -55,7 +55,7 @@ public class LexEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Bot implements Serializable, Cloneable {
+    public static class Bot implements Serializable {
 
         private static final long serialVersionUID = -5764739951985883358L;
 
@@ -64,15 +64,6 @@ public class LexEvent implements Serializable, Cloneable {
         private String alias;
 
         private String version;
-
-        @Override
-        public Bot clone() {
-            try {
-                return (Bot) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
 
     }
 
@@ -84,7 +75,7 @@ public class LexEvent implements Serializable, Cloneable {
     @NoArgsConstructor
     @AllArgsConstructor
 
-    public static class CurrentIntent implements Serializable, Cloneable {
+    public static class CurrentIntent implements Serializable {
 
         private static final long serialVersionUID = 7405357938118538229L;
 
@@ -94,24 +85,6 @@ public class LexEvent implements Serializable, Cloneable {
 
         private String confirmationStatus;
 
-        @Override
-        public CurrentIntent clone() {
-            try {
-                return (CurrentIntent) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public LexEvent clone() {
-        try {
-            return (LexEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 
 }

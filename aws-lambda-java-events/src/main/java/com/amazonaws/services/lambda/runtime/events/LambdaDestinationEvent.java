@@ -36,7 +36,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class LambdaDestinationEvent implements Serializable, Cloneable {
+public class LambdaDestinationEvent implements Serializable {
 
     private String version;
 
@@ -55,7 +55,7 @@ public class LambdaDestinationEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestContext implements Serializable, Cloneable {
+    public static class RequestContext implements Serializable {
 
         private String requestId;
 

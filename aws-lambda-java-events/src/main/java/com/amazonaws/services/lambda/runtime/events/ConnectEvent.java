@@ -35,7 +35,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConnectEvent implements Serializable, Cloneable {
+public class ConnectEvent implements Serializable {
 
     @JsonProperty("Details")
     private Details details;
@@ -47,7 +47,7 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Details implements Serializable, Cloneable {
+    public static class Details implements Serializable {
 
         @JsonProperty("ContactData")
         private ContactData contactData;
@@ -60,7 +60,7 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ContactData implements Serializable, Cloneable {
+    public static class ContactData implements Serializable {
 
         @JsonProperty("Attributes")
         private Map<String, String> attributes;
@@ -97,7 +97,7 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CustomerEndpoint implements Serializable, Cloneable {
+    public static class CustomerEndpoint implements Serializable {
 
         @JsonProperty("Address")
         private String address;
@@ -110,7 +110,7 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SystemEndpoint implements Serializable, Cloneable {
+    public static class SystemEndpoint implements Serializable {
 
         @JsonProperty("Address")
         private String address;

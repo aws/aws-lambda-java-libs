@@ -31,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CognitoEvent implements Serializable, Cloneable {
+public class CognitoEvent implements Serializable {
 
     private static final long serialVersionUID = -3471890133562627751L;
 
@@ -58,7 +58,7 @@ public class CognitoEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DatasetRecord implements Serializable, Cloneable {
+    public static class DatasetRecord implements Serializable {
 
         private static final long serialVersionUID = -8853471047466644850L;
 
@@ -80,24 +80,5 @@ public class CognitoEvent implements Serializable, Cloneable {
          * </p>
          */
         private String op;
-
-        @Override
-        public DatasetRecord clone() {
-            try {
-                return (DatasetRecord) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
-
-    @Override
-    public CognitoEvent clone() {
-        try {
-            return (CognitoEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
-
 }

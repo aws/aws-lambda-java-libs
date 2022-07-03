@@ -32,7 +32,7 @@ import java.util.List;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class DynamodbEvent implements Serializable, Cloneable {
+public class DynamodbEvent implements Serializable {
 
     private static final long serialVersionUID = -2354616079899981231L;
 
@@ -46,7 +46,7 @@ public class DynamodbEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DynamodbStreamRecord implements Serializable, Cloneable {
+    public static class DynamodbStreamRecord implements Serializable {
 
         private static final long serialVersionUID = 3638381544604354963L;
 
@@ -247,7 +247,7 @@ public class DynamodbEvent implements Serializable, Cloneable {
         @NoArgsConstructor
         @ToString
         @EqualsAndHashCode
-        public static class AttributeValue implements Serializable, Cloneable {
+        public static class AttributeValue implements Serializable {
 
             /**
              * <p>
@@ -1212,15 +1212,6 @@ public class DynamodbEvent implements Serializable, Cloneable {
                 return this.bOOL;
             }
 
-            @Override
-            public AttributeValue clone() {
-                try {
-                    return (AttributeValue) super.clone();
-                } catch (CloneNotSupportedException e) {
-                    throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone() even though we're Cloneable!", e);
-                }
-            }
-
         }
 
         /**
@@ -1236,7 +1227,7 @@ public class DynamodbEvent implements Serializable, Cloneable {
         @Builder(setterPrefix = "with")
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class Identity implements Serializable, Cloneable {
+        public static class Identity implements Serializable {
 
             /**
              * <p>
@@ -1252,15 +1243,6 @@ public class DynamodbEvent implements Serializable, Cloneable {
              * </p>
              */
             private String type;
-
-            @Override
-            public Identity clone() {
-                try {
-                    return (Identity) super.clone();
-                } catch (CloneNotSupportedException e) {
-                    throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone() " + "even though we're Cloneable!", e);
-                }
-            }
 
         }
 
@@ -1318,7 +1300,7 @@ public class DynamodbEvent implements Serializable, Cloneable {
         @Builder(setterPrefix = "with")
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class StreamRecord implements Serializable, Cloneable {
+        public static class StreamRecord implements Serializable {
 
             /**
              * <p>
@@ -1453,15 +1435,6 @@ public class DynamodbEvent implements Serializable, Cloneable {
                 return this;
             }
 
-            @Override
-            public StreamRecord clone() {
-                try {
-                    return (StreamRecord) super.clone();
-                } catch (CloneNotSupportedException e) {
-                    throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone() " + "even though we're Cloneable!", e);
-                }
-            }
-
         }
 
         public enum StreamViewType {
@@ -1510,23 +1483,6 @@ public class DynamodbEvent implements Serializable, Cloneable {
             }
         }
 
-        @Override
-        public DynamodbStreamRecord clone() {
-            try {
-                return (DynamodbStreamRecord) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone() " + "even though we're Cloneable!", e);
-            }
-        }
-    }
-
-    @Override
-    public DynamodbEvent clone() {
-        try {
-            return (DynamodbEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
     
 }

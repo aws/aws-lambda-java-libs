@@ -32,7 +32,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloudFrontEvent implements Serializable, Cloneable {
+public class CloudFrontEvent implements Serializable {
 
     private static final long serialVersionUID = -7169297388214516660L;
 
@@ -47,7 +47,7 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Header implements Serializable, Cloneable {
+    public static class Header implements Serializable {
 
         private static final long serialVersionUID = 7041042740552686996L;
 
@@ -55,15 +55,6 @@ public class CloudFrontEvent implements Serializable, Cloneable {
 
         private String value;
 
-        @Override
-        public Header clone() {
-            try {
-                return (Header) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-        
     }
 
     /**
@@ -74,20 +65,11 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Config implements Serializable, Cloneable {
+    public static class Config implements Serializable {
 
         private static final long serialVersionUID = -286083903805870299L;
 
         private String distributionId;
-
-        @Override
-        public Config clone() {
-            try {
-                return (Config) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
 
     }
 
@@ -99,7 +81,7 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Request implements Serializable, Cloneable {
+    public static class Request implements Serializable {
 
         private static final long serialVersionUID = 3245036101075464149L;
 
@@ -113,14 +95,6 @@ public class CloudFrontEvent implements Serializable, Cloneable {
 
         private Map<String, List<Header>> headers;
 
-        @Override
-        public Request clone() {
-            try {
-                return (Request) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
     }
 
     /**
@@ -131,7 +105,7 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Response implements Serializable, Cloneable {
+    public static class Response implements Serializable {
 
         private static final long serialVersionUID = -3711565862079053710L;
 
@@ -143,15 +117,6 @@ public class CloudFrontEvent implements Serializable, Cloneable {
 
         private Map<String, List<Header>> headers;
 
-        @Override
-        public Response clone() {
-            try {
-                return (Response) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
     }
 
     /**
@@ -162,7 +127,7 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CF implements Serializable, Cloneable {
+    public static class CF implements Serializable {
 
         private static final long serialVersionUID = -5940167419180448832L;
 
@@ -171,15 +136,6 @@ public class CloudFrontEvent implements Serializable, Cloneable {
         private Request request;
 
         private Response response;
-
-        @Override
-        public CF clone() {
-            try {
-                return (CF) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
 
     }
 
@@ -191,29 +147,11 @@ public class CloudFrontEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Record implements Serializable, Cloneable {
+    public static class Record implements Serializable {
 
         private static final long serialVersionUID = -6114551370798889850L;
 
         private CF cf;
 
-        @Override
-        public Record clone() {
-            try {
-                return (Record) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-            }
-        }
-
-    }
-
-    @Override
-    public CloudFrontEvent clone() {
-        try {
-            return (CloudFrontEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
     }
 }

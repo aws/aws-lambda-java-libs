@@ -28,7 +28,7 @@ import java.io.Serializable;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class IoTButtonEvent implements Serializable, Cloneable {
+public class IoTButtonEvent implements Serializable {
 
     private static final long serialVersionUID = 8699582353606993478L;
 
@@ -37,14 +37,5 @@ public class IoTButtonEvent implements Serializable, Cloneable {
     private String clickType;
 
     private String batteryVoltage;
-
-    @Override
-    public IoTButtonEvent clone() {
-        try {
-            return (IoTButtonEvent) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
-        }
-    }
 
 }

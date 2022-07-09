@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -33,7 +33,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class LexV2Response implements Serializable, Cloneable {
+public class LexV2Response implements Serializable {
     private SessionState sessionState;
     private Message[] messages;
     private Map<String, String> requestAttributes;
@@ -42,7 +42,7 @@ public class LexV2Response implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Message implements Serializable, Cloneable {
+    public static class Message implements Serializable {
         private String contentType;
         private String content;
         private ImageResponseCard imageResponseCard;
@@ -52,7 +52,7 @@ public class LexV2Response implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ImageResponseCard implements Serializable, Cloneable {
+    public static class ImageResponseCard implements Serializable {
         private String title;
         private String subtitle;
         private String imageUrl;
@@ -63,7 +63,7 @@ public class LexV2Response implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Button implements Serializable, Cloneable {
+    public static class Button implements Serializable {
         private String text;
         private String value;
     }

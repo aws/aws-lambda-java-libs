@@ -19,9 +19,7 @@
     "privateChallengeParameters": {
       "secret": "11122233"
     },
-    "challengeAnswer": {
-      "string": "123xxxx"
-    },
+    "challengeAnswer": "123xxxx",
     "clientMetadata": {
       "exampleMetadataKey": "example metadata value"
     },

@@ -72,23 +72,35 @@ public class APIGatewayProxyRequestEvent implements Serializable {
 
         private String accountId;
 
-        private String stage;
+        private String apiId;
 
-        private String resourceId;
+        private Map<String, Object> authorizer;
 
-        private String requestId;
+        private String domainName;
 
-        private RequestIdentity identity;
+        private String domainPrefix;
 
-        private String resourcePath;
+        private String extendedRequestId;
 
         private String httpMethod;
 
-        private String apiId;
+        private RequestIdentity identity;
 
         private String path;
 
-        private Map<String, Object> authorizer;
+        private String protocol;
+
+        private String requestId;
+
+        private String requestTime;
+
+        private Long requestTimeEpoch;
+
+        private String resourceId;
+
+        private String resourcePath;
+
+        private String stage;
     }
 
     @Data

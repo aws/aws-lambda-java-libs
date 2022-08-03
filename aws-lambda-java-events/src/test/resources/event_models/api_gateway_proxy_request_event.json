@@ -23,11 +23,12 @@
     "proxy": "hello"
   },
   "requestContext": {
-    "path": "/{proxy+}",
     "accountId": "123456789012",
-    "resourceId": "nl9h80",
-    "stage": "test-invoke-stage",
-    "requestId": "test-invoke-request",
+    "apiId": "id",
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "extendedRequestId": "request-id",
+    "httpMethod": "GET",
     "identity": {
       "cognitoIdentityPoolId": "",
       "accountId": "123456789012",
@@ -42,9 +43,14 @@
       "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_131)",
       "user": "AIDAJTIRKKKER4HCKVJZG"
     },
-    "resourcePath": "/{proxy+}",
-    "httpMethod": "POST",
-    "apiId": "r275xc9bmd"
+    "path": "/my/path",
+    "protocol": "HTTP/1.1",
+    "requestId": "id=",
+    "requestTime": "04/Mar/2020:19:15:17 +0000",
+    "requestTimeEpoch": 1583349317135,
+    "resourceId": "123456",
+    "resourcePath": "/my/path",
+    "stage": "$default"
   },
   "resource": "/{proxy+}",
   "httpMethod": "GET",

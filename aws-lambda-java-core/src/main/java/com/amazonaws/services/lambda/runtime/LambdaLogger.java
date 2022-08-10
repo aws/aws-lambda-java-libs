@@ -25,12 +25,12 @@ public interface LambdaLogger {
     * 
     * @param message A string containing the event to log.
     */
-    public void log(String message);
+    void log(String message);
 
     /**
      * Logs a byte array to AWS CloudWatch Logs
      * @param message byte array containing logs
      */
-    public void log(byte[] message);
+    void log(byte[] message);
 }
 

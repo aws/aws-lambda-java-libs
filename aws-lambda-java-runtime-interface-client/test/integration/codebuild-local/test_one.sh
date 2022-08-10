@@ -13,12 +13,22 @@ function usage {
     >&2 echo "  os_distribution        Used to specify the OS distribution to build."
     >&2 echo "  distro_version         Used to specify the distro version of <os_distribution>."
     >&2 echo "  runtime_version        Used to specify the runtime version to test on the selected <distro_version>."
+    >&2 echo "  platform               Used to specify the architecture platform to test on the selected <distro_version>."
     >&2 echo "Optional:"
     >&2 echo "  env                    Additional environment variables file."
 }
 
+# codebuild/local-builds images are not multi-architectural
+function get_local_agent_image() {
+    if [[ "$(arch)" == "aarch64" ]]; then
+        echo "public.ecr.aws/codebuild/local-builds:aarch64"
+    else
+        echo "public.ecr.aws/codebuild/local-builds:latest"
+    fi
+}
+
 main() {
-    if (( $# != 3 && $# != 4)); then
+    if (( $# != 5 && $# != 6)); then
         >&2 echo "Invalid number of parameters."
         usage
         exit 1
@@ -28,9 +38,11 @@ main() {
     OS_DISTRIBUTION="$2"
     DISTRO_VERSION="$3"
     RUNTIME_VERSION="$4"
-    EXTRA_ENV="${5-}"
+    PLATFORM="$5"
+    PLATFORM_SANITIZED=$(echo "$PLATFORM" | tr "/" ".")
+    EXTRA_ENV="${6-}"
 
-    CODEBUILD_TEMP_DIR=$(mktemp -d codebuild."$OS_DISTRIBUTION"-"$DISTRO_VERSION"-"$RUNTIME_VERSION".XXXXXXXXXX)
+    CODEBUILD_TEMP_DIR=$(mktemp -d codebuild."$OS_DISTRIBUTION"-"$DISTRO_VERSION"-"$RUNTIME_VERSION"-"$PLATFORM_SANITIZED".XXXXXXXXXX)
     trap 'rm -rf $CODEBUILD_TEMP_DIR' EXIT
 
     # Create an env file for codebuild_build.
@@ -43,8 +55,9 @@ main() {
         echo "OS_DISTRIBUTION=$OS_DISTRIBUTION"
         echo "DISTRO_VERSION=$DISTRO_VERSION"
         echo "RUNTIME_VERSION=$RUNTIME_VERSION"
+        echo "PLATFORM=$PLATFORM"
     }  >> "$ENVFILE"
-    
+
     ARTIFACTS_DIR="$CODEBUILD_TEMP_DIR/artifacts"
     mkdir -p "$ARTIFACTS_DIR"
     # Run CodeBuild local agent.
@@ -53,7 +66,8 @@ main() {
         -a "$ARTIFACTS_DIR" \
         -e "$ENVFILE" \
         -b "$BUILDSPEC_YML" \
-        -s "$(dirname $PWD)"
+        -s "$(dirname $PWD)" \
+        -l "$(get_local_agent_image)"
 }
 
 main "$@"

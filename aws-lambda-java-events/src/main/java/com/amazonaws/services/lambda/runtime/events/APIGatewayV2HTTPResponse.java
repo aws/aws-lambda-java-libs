@@ -43,12 +43,12 @@ public class APIGatewayV2HTTPResponse {
         private HttpHeaders<List<String>> multiValueHeaders;
 
         public APIGatewayV2HTTPResponseBuilder withHeaders(Map<String, String> headers) {
-            this.headers = HttpHeadersUtil.mergeOrReplace(headers);
+            this.headers = HttpHeaders.mergeOrReplace(headers);
             return this;
         }
 
         public APIGatewayV2HTTPResponseBuilder withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-            this.multiValueHeaders = HttpHeadersUtil.mergeOrReplace(multiValueHeaders);
+            this.multiValueHeaders = HttpHeaders.mergeOrReplace(multiValueHeaders);
             return this;
         }
     }

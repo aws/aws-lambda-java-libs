@@ -12,14 +12,14 @@ public class HttpHeadersUtilTest {
 
     @Test
     public void testWhenFromObjNullThenNullReturned() {
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(null);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(null);
         assertNull(result);
     }
 
     @Test
     public void testWhenFromObjEmptyThenEmptyHttpHeadersReturned() {
         Map<String, String> from = new HashMap<>();
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -29,7 +29,7 @@ public class HttpHeadersUtilTest {
     @Test
     public void testWhenFromObjIsHashmapThenNewHttpHeadersReturned() {
         HashMap<String, String> from = createHashMap("key", "value");
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -43,7 +43,7 @@ public class HttpHeadersUtilTest {
                 "key2", "value2",
                 "key3", "value3"
         );
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -57,7 +57,7 @@ public class HttpHeadersUtilTest {
                 "key2", "value2",
                 "key3", "value3"
         );
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -72,7 +72,7 @@ public class HttpHeadersUtilTest {
                 "kEy", "value3",
                 Collections.reverseOrder()
         );
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -88,7 +88,7 @@ public class HttpHeadersUtilTest {
                 "KEY", "value2",
                 "kEy", "value3"
         );
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
         assertThat(result).isInstanceOf(HttpHeaders.class);
@@ -103,7 +103,7 @@ public class HttpHeadersUtilTest {
         Map<String, String> from = new HttpHeaders<>();
         from.put("key", "value");
 
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
         assertSame(from, result);
     }
 
@@ -111,7 +111,7 @@ public class HttpHeadersUtilTest {
     public void testWhenFromObjAlreadyEmptyHttpHeadersThenSameInstanceReturned() {
         Map<String, String> from = new HttpHeaders<>();
 
-        Map<String, String> result = HttpHeadersUtil.mergeOrReplace(from);
+        Map<String, String> result = HttpHeaders.mergeOrReplace(from);
         assertSame(from, result);
     }
 

@@ -3,6 +3,7 @@ package com.amazonaws.services.lambda.runtime.events;
 import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   private boolean isBase64Encoded = false;
   private int statusCode;
   private HttpHeaders<String> headers;
-  private HttpHeaders<String[]> multiValueHeaders;
+  private HttpHeaders<List<String>> multiValueHeaders;
   private String body;
 
   public boolean isIsBase64Encoded() {
@@ -39,15 +40,15 @@ public class APIGatewayV2WebSocketResponse implements Serializable, Cloneable {
   }
 
   public void setHeaders(Map<String, String> headers) {
-    this.headers = HttpHeadersUtil.mergeOrReplace(headers);
+    this.headers = HttpHeaders.mergeOrReplace(headers);
   }
 
-  public Map<String, String[]> getMultiValueHeaders() {
+  public Map<String, List<String>> getMultiValueHeaders() {
     return multiValueHeaders;
   }
 
-  public void setMultiValueHeaders(Map<String, String[]> multiValueHeaders) {
-    this.multiValueHeaders = HttpHeadersUtil.mergeOrReplace(multiValueHeaders);
+  public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+    this.multiValueHeaders = HttpHeaders.mergeOrReplace(multiValueHeaders);
   }
 
   public String getBody() {

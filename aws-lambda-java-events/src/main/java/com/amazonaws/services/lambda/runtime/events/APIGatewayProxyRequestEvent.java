@@ -3,7 +3,8 @@ package com.amazonaws.services.lambda.runtime.events;
 import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class that represents an APIGatewayProxyRequestEvent
@@ -1010,7 +1011,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param headers The headers sent with the request
      */
     public void setHeaders(Map<String, String> headers) {
-        this.headers = HttpHeadersUtil.mergeOrReplace(headers);
+        this.headers = HttpHeaders.mergeOrReplace(headers);
     }
 
     /**
@@ -1033,7 +1034,7 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
      * @param multiValueHeaders The multi value headers sent with the request
      */
     public void setMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
-        this.multiValueHeaders = HttpHeadersUtil.mergeOrReplace(multiValueHeaders);
+        this.multiValueHeaders = HttpHeaders.mergeOrReplace(multiValueHeaders);
     }
 
     /**

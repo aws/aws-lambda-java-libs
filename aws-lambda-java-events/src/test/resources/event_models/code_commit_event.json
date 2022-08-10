@@ -1,0 +1,27 @@
+{
+  "Records": [
+    {
+      "eventId": "163179e8-a983-4e22-8423-38473a2589fd",
+      "eventVersion": "1.0",
+      "eventTime": "2017-07-17T19:38:56.745Z",
+      "eventTriggerName": "notifyme",
+      "eventPartNumber": 1,
+      "codecommit": {
+        "references": [
+          {
+            "commit": "7a95e78397313b32dc3c1beda4f5c2676c0c1bea",
+            "ref": "refs/heads/master",
+            "created": true
+          }
+        ]
+      },
+      "eventName": "ReferenceChanges",
+      "eventTriggerConfigId": "e6f61a39-7e60-47b0-b206-0dfbd2ca0e6e",
+      "eventSourceARN": "arn:aws:codecommit:us-west-2:303480592763:garbage",
+      "userIdentityARN": "arn:aws:sts::303480592763:assumed-role/Admin/adsuresh-Isengard",
+      "eventSource": "aws:codecommit",
+      "awsRegion": "us-west-2",
+      "eventTotalParts": 1
+    }
+  ]
+}

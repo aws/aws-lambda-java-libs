@@ -1,6 +1,10 @@
 package com.amazonaws.services.lambda.runtime.tests;
 
-import com.amazonaws.services.lambda.runtime.events.*;
+import com.amazonaws.services.lambda.runtime.events.ApplicationLoadBalancerRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayCustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2CustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2HTTPEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

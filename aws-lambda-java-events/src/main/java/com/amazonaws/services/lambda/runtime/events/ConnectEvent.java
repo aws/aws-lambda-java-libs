@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -10,12 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
 package com.amazonaws.services.lambda.runtime.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -32,34 +35,61 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConnectEvent implements Serializable, Cloneable {
+public class ConnectEvent implements Serializable {
 
+    @JsonProperty("Details")
     private Details details;
+
+    @JsonProperty("Name")
     private String name;
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Details implements Serializable, Cloneable {
+    public static class Details implements Serializable {
+
+        @JsonProperty("ContactData")
         private ContactData contactData;
-        private Map<String, Object> parameters;
+
+        @JsonProperty("Parameters")
+        private Map<String,Object> parameters;
     }
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ContactData implements Serializable, Cloneable {
+    public static class ContactData implements Serializable {
+
+        @JsonProperty("Attributes")
         private Map<String, String> attributes;
+
+        @JsonProperty("Channel")
         private String channel;
+
+        @JsonProperty("ContactId")
         private String contactId;
+
+        @JsonProperty("CustomerEndpoint")
         private CustomerEndpoint customerEndpoint;
+
+        @JsonProperty("InitialContactId")
         private String initialContactId;
+
+        @JsonProperty("InitiationMethod")
         private String initiationMethod;
+
+        @JsonProperty("InstanceARN")
         private String instanceArn;
+
+        @JsonProperty("PreviousContactId")
         private String previousContactId;
+
+        @JsonProperty("Queue")
         private String queue;
+
+        @JsonProperty("SystemEndpoint")
         private SystemEndpoint systemEndpoint;
     }
 
@@ -67,8 +97,12 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CustomerEndpoint implements Serializable, Cloneable {
+    public static class CustomerEndpoint implements Serializable {
+
+        @JsonProperty("Address")
         private String address;
+
+        @JsonProperty("Type")
         private String type;
     }
 
@@ -76,8 +110,12 @@ public class ConnectEvent implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SystemEndpoint implements Serializable, Cloneable {
+    public static class SystemEndpoint implements Serializable {
+
+        @JsonProperty("Address")
         private String address;
+
+        @JsonProperty("Type")
         private String type;
     }
 }

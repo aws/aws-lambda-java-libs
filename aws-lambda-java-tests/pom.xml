@@ -4,7 +4,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-tests</artifactId>
-    <version>1.1.1</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Tests</name>
@@ -40,12 +40,12 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-serialization</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
-            <version>3.11.0</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

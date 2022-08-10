@@ -1,0 +1,65 @@
+{
+  "path": "/test/hello",
+  "headers": {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, lzma, sdch, br",
+    "Accept-Language": "en-US,en;q=0.8",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "US",
+    "Host": "wt6mne2s9k.execute-api.us-west-2.amazonaws.com",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36 OPR/39.0.2256.48",
+    "Via": "1.1 fb7cca60f0ecd82ce07790c9c5eef16c.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "nBsWBOrSHMgnaROZJK1wGCZ9PcRcSpq_oSXZNQwQ10OTZL4cimZo3g==",
+    "X-Forwarded-For": "192.168.100.1, 192.168.1.1",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "pathParameters": {
+    "proxy": "hello"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "id",
+    "domainName": "id.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "id",
+    "extendedRequestId": "request-id",
+    "httpMethod": "GET",
+    "identity": {
+      "cognitoIdentityPoolId": "",
+      "accountId": "123456789012",
+      "cognitoIdentityId": "",
+      "caller": "AIDAJTIRKKKER4HCKVJZG",
+      "apiKey": "test-invoke-api-key",
+      "sourceIp": "test-invoke-source-ip",
+      "accessKey": "ASIAI6ANUE2RZBMJDQ5A",
+      "cognitoAuthenticationType": "",
+      "cognitoAuthenticationProvider": "",
+      "userArn": "arn:aws:iam::123456789012:user/kdeding",
+      "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_131)",
+      "user": "AIDAJTIRKKKER4HCKVJZG"
+    },
+    "path": "/my/path",
+    "protocol": "HTTP/1.1",
+    "requestId": "id=",
+    "requestTime": "04/Mar/2020:19:15:17 +0000",
+    "requestTimeEpoch": 1583349317135,
+    "resourceId": "123456",
+    "resourcePath": "/my/path",
+    "stage": "$default"
+  },
+  "resource": "/{proxy+}",
+  "httpMethod": "GET",
+  "isBase64Encoded": false,
+  "body": "{ \"callerName\": \"John\" }",
+  "queryStringParameters": {
+    "name": "me"
+  },
+  "stageVariables": {
+    "stageVarName": "stageVarValue"
+  }
+}

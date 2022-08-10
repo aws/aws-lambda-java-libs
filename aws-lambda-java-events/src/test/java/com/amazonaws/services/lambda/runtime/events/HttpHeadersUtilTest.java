@@ -1,12 +1,10 @@
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpHeadersUtilTest {
 
@@ -22,8 +20,8 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).isEmpty();
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(Collections.emptyMap(), result);
     }
 
     @Test
@@ -32,8 +30,8 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).containsAllEntriesOf(from);
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(from, result);
     }
 
     @Test
@@ -46,8 +44,8 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).containsAllEntriesOf(from);
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(from, result);
     }
 
     @Test
@@ -60,8 +58,8 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).containsAllEntriesOf(from);
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(from, result);
     }
 
     @Test
@@ -75,10 +73,10 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).hasSize(1);
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(1, result.size());
         Map.Entry<String, String> lastEntry = from.lastEntry();
-        assertThat(result).containsEntry(lastEntry.getKey(), lastEntry.getValue());
+        assertEquals(result.getOrDefault(lastEntry.getKey(), null), lastEntry.getValue());
     }
 
     @Test
@@ -91,11 +89,12 @@ public class HttpHeadersUtilTest {
         Map<String, String> result = HttpHeaders.mergeOrReplace(from);
 
         assertNotNull(result);
-        assertThat(result).isInstanceOf(HttpHeaders.class);
-        assertThat(result).hasSize(1);
+        assertInstanceOf(HttpHeaders.class, result);
+        assertEquals(1, result.size());
 
-        List<Map.Entry<String, String>> entries = new ArrayList<>(from.entrySet());;
-        assertThat(result).containsAnyOf(entries.get(0), entries.get(1), entries.get(2));
+        Map.Entry<String, String> entry = from.entrySet().iterator().next();
+        assertTrue(from.entrySet().stream()
+                .anyMatch(e -> entry.getKey().equals(e.getKey()) && entry.getValue().equals(e.getValue())));
     }
 
     @Test

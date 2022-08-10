@@ -1,12 +1,10 @@
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.models.HttpHeaders;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpHeadersTest {
 
@@ -19,8 +17,8 @@ public class HttpHeadersTest {
     public void testValueCanBeAddedToHttpHeaders() {
         HttpHeaders<String> obj = new HttpHeaders<>();
         obj.put("key", "value");
-        assertThat(obj).hasSize(1);
-        assertThat(obj).containsEntry("key", "value");
+        assertEquals(1, obj.size());
+        assertEquals(obj.getOrDefault("key", null), "value");
     }
 
     @Test
@@ -30,10 +28,10 @@ public class HttpHeadersTest {
         obj.put("key2", "value2");
         obj.put("key3", "value3");
 
-        assertThat(obj).hasSize(3);
-        assertThat(obj).containsEntry("key", "value");
-        assertThat(obj).containsEntry("key2", "value2");
-        assertThat(obj).containsEntry("key3", "value3");
+        assertEquals(3, obj.size());
+        assertEquals(obj.getOrDefault("key", null), "value");
+        assertEquals(obj.getOrDefault("key2", null), "value2");
+        assertEquals(obj.getOrDefault("key3", null), "value3");
     }
 
     @Test
@@ -43,8 +41,8 @@ public class HttpHeadersTest {
         obj.put("KEY", "value2");
         obj.put("kEy", "value3");
 
-        assertThat(obj).hasSize(1);
-        assertThat(obj).containsEntry("key", "value3");
+        assertEquals(1, obj.size());
+        assertEquals(obj.getOrDefault("key", null), "value3");
     }
 
     @Test
@@ -52,9 +50,10 @@ public class HttpHeadersTest {
         HttpHeaders<String> obj = new HttpHeaders<>();
         obj.put("key", "value");
 
-        assertThat(obj).hasSize(1);
+
+        assertEquals(1, obj.size());
         obj.remove("key");
-        assertThat(obj).isEmpty();
+        assertEquals(Collections.emptyMap(), obj);
     }
 
     @Test
@@ -86,12 +85,12 @@ public class HttpHeadersTest {
 
         obj.putAll(otherMap);
 
-        assertThat(obj).hasSize(5);
-        assertThat(obj).containsEntry("key", "value");
-        assertThat(obj).containsEntry("key2", "value2");
-        assertThat(obj).containsEntry("otherKey1", "otherVal1");
-        assertThat(obj).containsEntry("otherKey2", "otherVal2");
-        assertThat(obj).containsEntry("otherKey3", "otherVal3");
+        assertEquals(5, obj.size());
+        assertEquals(obj.getOrDefault("key", null), "value");
+        assertEquals(obj.getOrDefault("key2", null), "value2");
+        assertEquals(obj.getOrDefault("otherKey1", null), "otherVal1");
+        assertEquals(obj.getOrDefault("otherKey2", null), "otherVal2");
+        assertEquals(obj.getOrDefault("otherKey3", null), "otherVal3");
     }
 
     @Test
@@ -100,11 +99,11 @@ public class HttpHeadersTest {
         obj.put("key", "value");
         obj.put("key2", "value2");
 
-        assertThat(obj).hasSize(2);
+        assertEquals(2, obj.size());
 
         obj.clear();
 
-        assertThat(obj).hasSize(0);
+        assertEquals(0, obj.size());
     }
 
     @Test
@@ -116,8 +115,8 @@ public class HttpHeadersTest {
         Set<String> keySet = obj.keySet();
 
         assertNotNull(keySet);
-        assertThat(keySet).hasSize(2);
-        assertThat(keySet).contains("key", "key2");
+        assertEquals(2, keySet.size());
+        assertTrue(keySet.stream().allMatch(k -> k.equals("key") || k.equals("key2")));
     }
 
     @Test
@@ -129,8 +128,8 @@ public class HttpHeadersTest {
         Collection<String> values = obj.values();
 
         assertNotNull(values);
-        assertThat(values).hasSize(2);
-        assertThat(values).contains("value", "value2");
+        assertEquals(2, values.size());
+        assertTrue(values.stream().allMatch(v -> v.equals("value") || v.equals("value2")));
     }
 
     @Test
@@ -142,8 +141,11 @@ public class HttpHeadersTest {
         Set<Map.Entry<String, String>> entrySet = obj.entrySet();
 
         assertNotNull(entrySet);
-        assertThat(entrySet).hasSize(2);
-        assertThat(entrySet).contains(new AbstractMap.SimpleEntry<>("key", "value"));
-        assertThat(entrySet).contains(new AbstractMap.SimpleEntry<>("key2", "value2"));
+        assertEquals(2, entrySet.size());
+
+
+        assertTrue(entrySet.stream()
+                .allMatch(kvp -> (kvp.getKey().equals("key") && kvp.getValue().equals("value"))
+                                || (kvp.getKey().equals("key2") && kvp.getValue().equals("value2"))));
     }
 }

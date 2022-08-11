@@ -181,6 +181,14 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testCodePipelineEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("code_pipeline_event.json");
+        String actual = deserializeSerializeJsonToString(expected, CodePipelineEvent.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
     public void testCognitoEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("cognito_event.json");
         String actual = deserializeSerializeJsonToString(expected, CognitoEvent.class);

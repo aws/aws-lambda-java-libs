@@ -227,6 +227,31 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadCodePipelineEvent() {
+        CodePipelineEvent event = EventLoader.loadCodePipelineEvent("codepipeline_event.json");
+
+        assertThat(event).isNotNull();
+        assertThat(event.getCodePipelineJob().getId()).isEqualTo("11111111-abcd-1111-abcd-111111abcdef");
+        assertThat(event.getCodePipelineJob().getAccountId()).isEqualTo("111111111111");
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getFunctionName()).isEqualTo("MyLambdaFunctionForAWSCodePipeline");
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getUserParameters()).isEqualTo("some-input-such-as-a-URL");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts()).hasSize(1);
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getType()).isEqualTo("S3");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getS3Location().getBucketName()).isEqualTo("the name of the bucket configured as the pipeline artifact store in Amazon S3, for example codepipeline-us-east-2-1234567890");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getS3Location().getObjectKey()).isEqualTo("the name of the application, for example CodePipelineDemoApplication.zip");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getRevision()).isNull();
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getName()).isEqualTo("ArtifactName");
+        assertThat(event.getCodePipelineJob().getData().getOutputArtifacts()).hasSize(0);
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getSecretAccessKey()).isEqualTo("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getSessionToken()).isEqualTo("MIICiTCCAfICCQD6m7oRw0uXOjANBgkqhkiG9wEXAMPLE=");
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getAccessKeyId()).isEqualTo("AKIAIOSFODNN7EXAMPLE");
+        assertThat(event.getCodePipelineJob().getData().getContinuationToken()).isEqualTo("A continuation token if continuing job");
+        assertThat(event.getCodePipelineJob().getData().getEncryptionKey().getId()).isEqualTo("arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab");
+        assertThat(event.getCodePipelineJob().getData().getEncryptionKey().getType()).isEqualTo("KMS");
+
+    }
+
+    @Test
     public void testLoadCloudWatchLogsEvent() {
         CloudWatchLogsEvent cloudWatchLogsEvent = EventLoader.loadCloudWatchLogsEvent("cloudwatchlogs_event.json");
         assertThat(cloudWatchLogsEvent).isNotNull();

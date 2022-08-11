@@ -95,9 +95,18 @@ public class CodePipelineEvent implements Serializable {
         private static final long serialVersionUID = 6406621244704594358L;
 
         private String name;
-        @JsonInclude(value=JsonInclude.Include.NON_NULL)
         private String revision;
         private Location location;
+
+        @JsonInclude
+        public String getRevision() {
+            return revision;
+        }
+
+        @JsonInclude
+        public void setRevision(String revision) {
+            this.revision = revision;
+        }
     }
 
     @lombok.Data

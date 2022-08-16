@@ -31,9 +31,9 @@ static jfieldID invokedFunctionArnField;
 static jfieldID deadlineTimeInMsField;
 static jfieldID idField;
 static jfieldID contentField;
-static jfieldID clientContextField = nullptr;
-static jfieldID cognitoIdentityField = nullptr;
-static jfieldID xrayTraceIdField = nullptr;
+static jfieldID clientContextField;
+static jfieldID cognitoIdentityField;
+static jfieldID xrayTraceIdField;
 
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -52,6 +52,9 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     invokedFunctionArnField = env->GetFieldID(invocationRequestClass , "invokedFunctionArn", "Ljava/lang/String;");
     deadlineTimeInMsField = env->GetFieldID(invocationRequestClass , "deadlineTimeInMs", "J");
     contentField = env->GetFieldID(invocationRequestClass , "content", "[B");
+    xrayTraceIdField = env->GetFieldID(invocationRequestClass , "xrayTraceId", "Ljava/lang/String;");
+    clientContextField = env->GetFieldID(invocationRequestClass , "clientContext", "Ljava/lang/String;");
+    cognitoIdentityField = env->GetFieldID(invocationRequestClass , "cognitoIdentity", "Ljava/lang/String;");
 
     return JNI_VERSION;
 }
@@ -106,23 +109,14 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
   CHECK_EXCEPTION(env, env->SetLongField(invocationRequest, deadlineTimeInMsField, std::chrono::duration_cast<std::chrono::milliseconds>(response.deadline.time_since_epoch()).count()));
 
   if(response.xray_trace_id != ""){
-    if(xrayTraceIdField == nullptr){
-       xrayTraceIdField = env->GetFieldID(invocationRequestClass , "xrayTraceId", "Ljava/lang/String;");
-    }
     CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, xrayTraceIdField, env->NewStringUTF(response.xray_trace_id.c_str())));
   }
 
   if(response.client_context != ""){
-    if(clientContextField == nullptr){
-       clientContextField = env->GetFieldID(invocationRequestClass , "clientContext", "Ljava/lang/String;");
-    }
     CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, clientContextField, env->NewStringUTF(response.client_context.c_str())));
   }
 
   if(response.cognito_identity != ""){
-     if(cognitoIdentityField == nullptr){
-        cognitoIdentityField = env->GetFieldID(invocationRequestClass , "cognitoIdentity", "Ljava/lang/String;");
-     }
      CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, cognitoIdentityField, env->NewStringUTF(response.cognito_identity.c_str())));
   }
 

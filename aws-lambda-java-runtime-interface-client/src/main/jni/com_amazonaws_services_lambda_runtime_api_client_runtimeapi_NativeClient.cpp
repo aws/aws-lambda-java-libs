@@ -117,7 +117,7 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
   }
 
   if(response.cognito_identity != ""){
-     CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, cognitoIdentityField, env->NewStringUTF(response.cognito_identity.c_str())));
+    CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, cognitoIdentityField, env->NewStringUTF(response.cognito_identity.c_str())));
   }
 
   bytes = reinterpret_cast<const jbyte*>(response.payload.c_str());

@@ -69,4 +69,5 @@ RUN /usr/bin/c++ -c \
         -laws-lambda-runtime \
         -lcurl \
         -static-libstdc++ \
-        -lrt
+        -lrt \
+        -O2

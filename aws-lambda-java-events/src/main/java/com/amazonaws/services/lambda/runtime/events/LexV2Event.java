@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -78,6 +80,16 @@ public class LexV2Event implements Serializable {
         private Map<String, Slot> slots;
         private String state;
         private KendraResponse kendraResponse;
+
+        @JsonInclude(value = JsonInclude.Include.NON_NULL, content = JsonInclude.Include.ALWAYS)
+        public Map<String, Slot> getSlots() {
+            return this.slots;
+        }
+
+        @JsonInclude(value = JsonInclude.Include.NON_NULL, content = JsonInclude.Include.ALWAYS)
+        public void setSlots(Map<String, Slot> slots) {
+            this.slots = slots;
+        }
     }
 
     @Data
@@ -276,6 +288,16 @@ public class LexV2Event implements Serializable {
         private Double transcriptionConfidence;
         private ResolvedContext resolvedContext;
         private Map<String, Slot> resolvedSlots;
+
+        @JsonInclude(value = JsonInclude.Include.NON_NULL, content = JsonInclude.Include.ALWAYS)
+        public Map<String, Slot> getResolvedSlots() {
+            return this.resolvedSlots;
+        }
+
+        @JsonInclude(value = JsonInclude.Include.NON_NULL, content = JsonInclude.Include.ALWAYS)
+        public void setResolvedSlots(Map<String, Slot> resolvedSlots) {
+            this.resolvedSlots = resolvedSlots;
+        }
     }
 
     @Data

@@ -134,5 +134,32 @@ public class APIGatewayProxyRequestEvent implements Serializable {
         private String user;
 
         private String accessKey;
+
+        private String principalOrgId;
+
+        private ClientCert clientCert;
+    }
+
+    @AllArgsConstructor
+    @Builder(setterPrefix = "with")
+    @Data
+    @NoArgsConstructor
+    public static class ClientCert {
+
+        private String clientCertPem;
+        private String issuerDN;
+        private String serialNumber;
+        private String subjectDN;
+        private Validity validity;
+    }
+
+    @AllArgsConstructor
+    @Builder(setterPrefix = "with")
+    @Data
+    @NoArgsConstructor
+    public static class Validity {
+
+        private String notAfter;
+        private String notBefore;
     }
 }

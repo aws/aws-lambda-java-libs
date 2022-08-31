@@ -63,6 +63,10 @@ public class DynamodbAttributeValueTransformer {
     public static Map<String, AttributeValue> toAttributeValueMapV1(
             final Map<String, com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue> attributeValueMap
     ) {
+        if (attributeValueMap == null) {
+            return null;
+        }
+
         return attributeValueMap
                 .entrySet()
                 .stream()

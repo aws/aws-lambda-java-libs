@@ -166,8 +166,7 @@ public class LambdaRuntimeClient {
     }
 
     private String invocationResponseEndpoint(String requestId) {
-        return String.
-                format("http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/%s/response", requestId);
+        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/"+ requestId +"/response";
     }
 
     private URL createUrl(String endpoint) {

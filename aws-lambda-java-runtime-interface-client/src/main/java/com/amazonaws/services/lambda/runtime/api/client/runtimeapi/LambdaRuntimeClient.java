@@ -33,12 +33,12 @@ public class LambdaRuntimeClient {
     private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024; // 1MiB
 
     public static final String LOG_TAG = "LAMBDA_RUNTIME";
-    public static final String REQUEST_ID_HEADER = "lambda-runtime-aws-request-id";
-    public static final String TRACE_ID_HEADER = "lambda-runtime-trace-id";
-    public static final String CLIENT_CONTEXT_HEADER = "lambda-runtime-client-context";
-    public static final String COGNITO_IDENTITY_HEADER = "lambda-runtime-cognito-identity";
-    public static final String DEADLINE_MS_HEADER = "lambda-runtime-deadline-ms";
-    public static final String FUNCTION_ARN_HEADER = "lambda-runtime-invoked-function-arn";
+    public static final String REQUEST_ID_HEADER = "Lambda-Runtime-Aws-Request-Id";
+    public static final String TRACE_ID_HEADER = "Lambda-Runtime-Trace-Id";
+    public static final String CLIENT_CONTEXT_HEADER = "Lambda-Runtime-Client-Context";
+    public static final String COGNITO_IDENTITY_HEADER = "Lambda-Runtime-Cognito-Identity";
+    public static final String DEADLINE_MS_HEADER = "Lambda-Runtime-Deadline-Ms";
+    public static final String FUNCTION_ARN_HEADER = "Lambda-Runtime-Invoked-Function-Arn";
 
     public LambdaRuntimeClient(String hostnamePort) {
         Objects.requireNonNull(hostnamePort, "hostnamePort cannot be null");

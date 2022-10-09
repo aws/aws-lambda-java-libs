@@ -60,7 +60,7 @@ public class LambdaRuntimeClient {
                 conn.getHeaderField(REQUEST_ID_HEADER),
                 conn.getHeaderField(TRACE_ID_HEADER),
                 conn.getHeaderField(FUNCTION_ARN_HEADER),
-                Optional.ofNullable(conn.getHeaderField(DEADLINE_MS_HEADER)).map(Long::valueOf).orElse(null),
+                Optional.ofNullable(conn.getHeaderField(DEADLINE_MS_HEADER)).map(Long::valueOf).orElse(-1L),
                 conn.getHeaderField(CLIENT_CONTEXT_HEADER),
                 conn.getHeaderField(COGNITO_IDENTITY_HEADER),
                 readBody(conn)

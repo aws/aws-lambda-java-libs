@@ -164,7 +164,7 @@ public class LambdaRuntimeClient {
     }
 
     private String nextInvocationEndpoint() {
-        return "http://" + hostname + ":" + port + "/runtime/invocation/next";
+        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/next";
     }
 
     private String invocationResponseEndpoint(String requestId) {

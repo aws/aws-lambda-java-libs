@@ -53,6 +53,8 @@ public class LambdaRuntimeClient {
         URL url = createUrl(nextInvocationEndpoint);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", DEFAULT_CONTENT_TYPE);
+
         conn.setDoInput(true);
         conn.setInstanceFollowRedirects(true);
 

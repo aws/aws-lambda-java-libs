@@ -40,6 +40,11 @@ public class LambdaRuntimeClient {
     public static final String DEADLINE_MS_HEADER = "Lambda-Runtime-Deadline-Ms";
     public static final String FUNCTION_ARN_HEADER = "Lambda-Runtime-Invoked-Function-Arn";
 
+    private static final String RUNTIME_BASE_ENDPOINT = "/2018-06-01/runtime";
+    private static final String BASE_INVOCATION_ENDPOINT = RUNTIME_BASE_ENDPOINT + "/invocation";
+    private static final String NEXT_INVOCATION_ENDPOINT = BASE_INVOCATION_ENDPOINT + "/next";
+    private static final String INIT_ERROR_ENDPOINT = RUNTIME_BASE_ENDPOINT + "/init/error";
+
     public LambdaRuntimeClient(String hostnamePort) {
         Objects.requireNonNull(hostnamePort, "hostnamePort cannot be null");
         String[] parts = hostnamePort.split(":");
@@ -152,7 +157,7 @@ public class LambdaRuntimeClient {
     }
 
     private String invocationEndpoint() {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/";
+        return baseSchemeHostPort() + "/2018-06-01/runtime/invocation/";
     }
 
     private String invocationErrorEndpoint(String requestId) {
@@ -160,15 +165,19 @@ public class LambdaRuntimeClient {
     }
 
     private String initErrorEndpoint() {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/init/error";
+        return baseSchemeHostPort() + INIT_ERROR_ENDPOINT;
     }
 
     private String nextInvocationEndpoint() {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/next";
+        return baseSchemeHostPort() + NEXT_INVOCATION_ENDPOINT;
     }
 
     private String invocationResponseEndpoint(String requestId) {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/"+ requestId +"/response";
+        return baseSchemeHostPort() + BASE_INVOCATION_ENDPOINT + requestId + "/response";
+    }
+
+    private String baseSchemeHostPort() {
+        return "http://" + hostname + ":" + port;
     }
 
     private URL createUrl(String endpoint) {

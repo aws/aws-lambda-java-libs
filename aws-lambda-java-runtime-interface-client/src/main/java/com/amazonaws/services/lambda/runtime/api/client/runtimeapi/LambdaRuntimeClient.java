@@ -174,7 +174,7 @@ public class LambdaRuntimeClient {
     }
 
     private String invocationResponseEndpoint(String requestId) {
-        return baseSchemeHostPort() + BASE_INVOCATION_ENDPOINT + requestId + "/response";
+        return baseSchemeHostPort() + BASE_INVOCATION_ENDPOINT + "/" + requestId + "/response";
     }
 
     private String baseSchemeHostPort() {

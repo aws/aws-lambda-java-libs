@@ -63,7 +63,8 @@ public class LambdaRuntimeClient {
         conn.setDoInput(true);
         conn.setInstanceFollowRedirects(true);
 
-        return new InvocationRequest(
+
+        InvocationRequest result = new InvocationRequest(
                 conn.getHeaderField(REQUEST_ID_HEADER),
                 conn.getHeaderField(TRACE_ID_HEADER),
                 conn.getHeaderField(FUNCTION_ARN_HEADER),
@@ -72,6 +73,9 @@ public class LambdaRuntimeClient {
                 conn.getHeaderField(COGNITO_IDENTITY_HEADER),
                 readBody(conn)
         );
+
+        conn.disconnect();
+        return result;
     }
 
     public void postInvocationResponse(String requestId, byte[] response) throws IOException {
@@ -89,8 +93,7 @@ public class LambdaRuntimeClient {
             throw new LambdaRuntimeClientException(responseEndpoint, responseCode);
         }
 
-        // don't need to read the response, close stream to ensure connection re-use
-        closeQuietly(conn.getInputStream());
+        conn.disconnect();
     }
 
     public void postInvocationError(String requestId, byte[] errorResponse, String errorType) throws IOException {
@@ -126,12 +129,10 @@ public class LambdaRuntimeClient {
         }
 
         int responseCode = conn.getResponseCode();
+        conn.disconnect();
         if (responseCode != HTTP_ACCEPTED) {
             throw new LambdaRuntimeClientException(endpoint, responseCode);
         }
-
-        // don't need to read the response, close stream to ensure connection re-use
-        closeQuietly(conn.getInputStream());
     }
 
     private byte[] readBody(HttpURLConnection connection) throws IOException {
@@ -185,14 +186,6 @@ public class LambdaRuntimeClient {
             return new URL(endpoint);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void closeQuietly(InputStream inputStream) {
-        if (inputStream == null) return;
-        try {
-            inputStream.close();
-        } catch (IOException e) {
         }
     }
 }

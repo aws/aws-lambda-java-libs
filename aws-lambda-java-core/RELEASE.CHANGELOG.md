@@ -1,4 +1,4 @@
-### August 30, 2022
+### November 09, 2022
 `1.2.2`:
 - Added new `CustomPojoSerializer` interface
 - Removed unnecessary usage of public on interface methods (aws#172) 

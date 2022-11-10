@@ -20,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an Active MQ event sent to Lambda
@@ -54,6 +55,7 @@ public class ActiveMQEvent {
         private String data;
         private long brokerInTime;
         private long brokerOutTime;
+        private Map<String, String> properties;
     }
 
     @Data

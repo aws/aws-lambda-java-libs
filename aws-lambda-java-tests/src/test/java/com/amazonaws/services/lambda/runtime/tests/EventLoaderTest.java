@@ -210,6 +210,15 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadActiveMQEventWithProperties() {
+        ActiveMQEvent event = EventLoader.loadActiveMQEvent("mq_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getMessages()).hasSize(2);
+        assertThat(event.getMessages().get(0).getProperties().get("testKey")).isEqualTo("testValue");
+        assertThat(event.getMessages().get(1).getProperties().get("testKey")).isEqualTo("testValue");
+    }
+
+    @Test
     public void testLoadCodeCommitEvent() {
         CodeCommitEvent event = EventLoader.loadCodeCommitEvent("codecommit_event.json");
         assertThat(event).isNotNull();

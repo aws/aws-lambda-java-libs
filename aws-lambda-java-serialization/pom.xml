@@ -32,6 +32,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <aws.core.version>1.2.2</aws.core.version>
         <jackson.version>2.13.4.2</jackson.version>
         <jackson.jsr10.version>2.13.4</jackson.jsr10.version>
         <gson.version>2.10</gson.version>
@@ -39,6 +40,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>${aws.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

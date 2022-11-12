@@ -22,7 +22,7 @@ import com.amazonaws.services.lambda.runtime.events.s3.S3BatchEvent;
 import com.amazonaws.services.lambda.runtime.events.s3.S3BatchResponse;
 import com.amazonaws.services.lambda.runtime.events.s3.S3Event;
 import com.amazonaws.services.lambda.runtime.events.s3.S3ObjectLambdaEvent;
-import com.amazonaws.services.lambda.serialization.CustomPojoSerializer;
+import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

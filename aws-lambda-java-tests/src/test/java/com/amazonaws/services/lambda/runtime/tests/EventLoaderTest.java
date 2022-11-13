@@ -1,10 +1,14 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.Record;
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord;
-import org.joda.time.DateTime;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayCustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2CustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.dynamodb.DynamodbEvent;
+import com.amazonaws.services.lambda.runtime.events.kinesis.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.kinesis.KinesisFirehoseEvent;
+import com.amazonaws.services.lambda.runtime.events.s3.S3Event;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -52,7 +56,7 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getRequestContext().getHttp().getMethod()).isEqualTo("POST");
-        assertThat(event.getRequestContext().getTimeEpoch()).isEqualTo(Instant.ofEpochMilli(1583348638390L));
+        assertThat(event.getRequestContext().getTimeEpoch()).isEqualTo(1583348638390L);
     }
 
     @Test
@@ -92,7 +96,7 @@ public class EventLoaderTest {
         LambdaDestinationEvent event = EventLoader.loadLambdaDestinationEvent("lambda_destination_event.json");
 
         assertThat(event).isNotNull();
-        assertThat(event.getTimestamp()).isEqualTo(DateTime.parse("2019-11-24T21:52:47.333Z"));
+        assertThat(event.getTimestamp()).isEqualTo(Instant.parse("2019-11-24T21:52:47.333Z"));
         assertThat(event.getRequestContext().getFunctionArn()).isEqualTo("arn:aws:lambda:sa-east-1:123456678912:function:event-destinations:$LATEST");
         assertThat(event.getRequestPayload().get("Success")).isEqualTo(false);
     }
@@ -145,13 +149,13 @@ public class EventLoaderTest {
         assertThat(record.getEventVersion()).isEqualTo("1.0");
         assertThat(record.getEventSubscriptionArn()).isEqualTo("arn:aws:sns:eu-central-1:123456789012:TopicSendToMe:e3ddc7d5-2f86-40b8-a13d-3362f94fd8dd");
 
-        SNSEvent.SNS sns = record.getSNS();
+        SNSEvent.SNS sns = record.getSns();
         assertThat(sns)
                 .returns("Test sns message", from(SNSEvent.SNS::getSubject))
                 .returns("{\n  \"id\": 42,\n  \"name\": \"Bob\"\n}", from(SNSEvent.SNS::getMessage))
                 .returns("arn:aws:sns:eu-central-1:123456789012:TopicSendToMe", from(SNSEvent.SNS::getTopicArn))
                 .returns("dc918f50-80c6-56a2-ba33-d8a9bbf013ab", from(SNSEvent.SNS::getMessageId))
-                .returns(DateTime.parse("2020-10-08T16:06:14.656Z"), from(SNSEvent.SNS::getTimestamp))
+                .returns(Instant.parse("2020-10-08T16:06:14.656Z"), from(SNSEvent.SNS::getTimestamp))
                 .returns("https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe", SNSEvent.SNS::getUnsubscribeUrl);
         assertThat(sns.getMessageAttributes()).containsKey("name");
         assertThat(sns.getMessageAttributes().get("name").getValue()).isEqualTo("Bob");
@@ -167,19 +171,19 @@ public class EventLoaderTest {
         DynamodbEvent.DynamodbStreamRecord record = event.getRecords().get(0);
         assertThat(record)
                 .returns("arn:aws:dynamodb:eu-central-1:123456789012:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899", from(DynamodbEvent.DynamodbStreamRecord::getEventSourceARN))
-                .returns("INSERT", from(Record::getEventName));
+                .returns("INSERT", from(DynamodbEvent.DynamodbStreamRecord::getEventName));
 
-        StreamRecord streamRecord = record.getDynamodb();
+        DynamodbEvent.DynamodbStreamRecord.StreamRecord streamRecord = record.getDynamodb();
         assertThat(streamRecord)
-                .returns("4421584500000000017450439091", StreamRecord::getSequenceNumber)
-                .returns(26L, StreamRecord::getSizeBytes)
-                .returns("NEW_AND_OLD_IMAGES", StreamRecord::getStreamViewType)
-                .returns(Date.from(ofEpochSecond(1428537600)), StreamRecord::getApproximateCreationDateTime);
+                .returns("4421584500000000017450439091", DynamodbEvent.DynamodbStreamRecord.StreamRecord::getSequenceNumber)
+                .returns(26L, DynamodbEvent.DynamodbStreamRecord.StreamRecord::getSizeBytes)
+                .returns(DynamodbEvent.DynamodbStreamRecord.StreamViewType.NEW_AND_OLD_IMAGES, DynamodbEvent.DynamodbStreamRecord.StreamRecord::getStreamViewType)
+                .returns(Instant.ofEpochSecond(1428537600), DynamodbEvent.DynamodbStreamRecord.StreamRecord::getApproximateCreationDateTime);
 
-        assertThat(streamRecord.getKeys()).contains(entry("Id", new AttributeValue().withN("101")));
+        assertThat(streamRecord.getKeys()).contains(entry("Id", new DynamodbEvent.DynamodbStreamRecord.AttributeValue().withN("101")));
         assertThat(streamRecord.getNewImage()).containsAnyOf(
-                entry("Message", new AttributeValue("New item!")),
-                entry("Id", new AttributeValue().withN("101"))
+                entry("Message", new DynamodbEvent.DynamodbStreamRecord.AttributeValue("New item!")),
+                entry("Id", new DynamodbEvent.DynamodbStreamRecord.AttributeValue().withN("101"))
         );
     }
 
@@ -191,7 +195,7 @@ public class EventLoaderTest {
 
         KinesisEvent.Record record = event.getRecords().get(0).getKinesis();
         assertThat(record.getEncryptionType()).isEqualTo("NONE");
-        assertThat(record.getApproximateArrivalTimestamp()).isEqualTo(Date.from(ofEpochSecond(1428537600)));
+        assertThat(record.getApproximateArrivalTimestamp()).isEqualTo(Instant.ofEpochSecond(1428537600));
         assertThat(new String(record.getData().array())).isEqualTo("Hello, this is a test 123.");
     }
 
@@ -206,6 +210,15 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadActiveMQEventWithProperties() {
+        ActiveMQEvent event = EventLoader.loadActiveMQEvent("mq_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getMessages()).hasSize(2);
+        assertThat(event.getMessages().get(0).getProperties().get("testKey")).isEqualTo("testValue");
+        assertThat(event.getMessages().get(1).getProperties().get("testKey")).isEqualTo("testValue");
+    }
+
+    @Test
     public void testLoadCodeCommitEvent() {
         CodeCommitEvent event = EventLoader.loadCodeCommitEvent("codecommit_event.json");
         assertThat(event).isNotNull();
@@ -214,12 +227,37 @@ public class EventLoaderTest {
         CodeCommitEvent.Record record = event.getRecords().get(0);
         assertThat(record.getEventSourceArn()).isEqualTo("arn:aws:codecommit:eu-central-1:123456789012:my-repo");
         assertThat(record.getUserIdentityArn()).isEqualTo("arn:aws:iam::123456789012:root");
-        assertThat(record.getEventTime()).isEqualTo(DateTime.parse("2016-01-01T23:59:59.000+0000"));
+        assertThat(record.getEventTime()).isEqualTo(Instant.parse("2016-01-01T23:59:59Z"));
 
         assertThat(record.getCodeCommit().getReferences()).hasSize(1);
         CodeCommitEvent.Reference reference = record.getCodeCommit().getReferences().get(0);
         assertThat(reference.getCommit()).isEqualTo("5c4ef1049f1d27deadbeeff313e0730018be182b");
         assertThat(reference.getRef()).isEqualTo("refs/heads/master");
+    }
+
+    @Test
+    public void testLoadCodePipelineEvent() {
+        CodePipelineEvent event = EventLoader.loadCodePipelineEvent("codepipeline_event.json");
+
+        assertThat(event).isNotNull();
+        assertThat(event.getCodePipelineJob().getId()).isEqualTo("11111111-abcd-1111-abcd-111111abcdef");
+        assertThat(event.getCodePipelineJob().getAccountId()).isEqualTo("111111111111");
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getFunctionName()).isEqualTo("MyLambdaFunctionForAWSCodePipeline");
+        assertThat(event.getCodePipelineJob().getData().getActionConfiguration().getConfiguration().getUserParameters()).isEqualTo("some-input-such-as-a-URL");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts()).hasSize(1);
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getType()).isEqualTo("S3");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getS3Location().getBucketName()).isEqualTo("the name of the bucket configured as the pipeline artifact store in Amazon S3, for example codepipeline-us-east-2-1234567890");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getLocation().getS3Location().getObjectKey()).isEqualTo("the name of the application, for example CodePipelineDemoApplication.zip");
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getRevision()).isNull();
+        assertThat(event.getCodePipelineJob().getData().getInputArtifacts().get(0).getName()).isEqualTo("ArtifactName");
+        assertThat(event.getCodePipelineJob().getData().getOutputArtifacts()).hasSize(0);
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getSecretAccessKey()).isEqualTo("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getSessionToken()).isEqualTo("MIICiTCCAfICCQD6m7oRw0uXOjANBgkqhkiG9wEXAMPLE=");
+        assertThat(event.getCodePipelineJob().getData().getArtifactCredentials().getAccessKeyId()).isEqualTo("AKIAIOSFODNN7EXAMPLE");
+        assertThat(event.getCodePipelineJob().getData().getContinuationToken()).isEqualTo("A continuation token if continuing job");
+        assertThat(event.getCodePipelineJob().getData().getEncryptionKey().getId()).isEqualTo("arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab");
+        assertThat(event.getCodePipelineJob().getData().getEncryptionKey().getType()).isEqualTo("KMS");
+
     }
 
     @Test
@@ -242,7 +280,7 @@ public class EventLoaderTest {
         ScheduledEvent event = EventLoader.loadScheduledEvent("cloudwatch_event.json");
         assertThat(event).isNotNull();
         assertThat(event.getDetailType()).isEqualTo("Scheduled Event");
-        assertThat(event.getTime()).isEqualTo(DateTime.parse("2020-09-30T15:58:34Z"));
+        assertThat(event.getTime()).isEqualTo(Instant.parse("2020-09-30T15:58:34Z"));
     }
 
     @Test
@@ -319,7 +357,7 @@ public class EventLoaderTest {
         assertThat(messages).hasSize(1);
         RabbitMQEvent.RabbitMessage firstMessage = messages.get(0);
         assertThat(firstMessage)
-                .returns(false, RabbitMQEvent.RabbitMessage::getRedelivered)
+                .returns(false, RabbitMQEvent.RabbitMessage::isRedelivered)
                 .returns("eyJ0aW1lb3V0IjowLCJkYXRhIjoiQ1pybWYwR3c4T3Y0YnFMUXhENEUifQ==", RabbitMQEvent.RabbitMessage::getData);
 
         RabbitMQEvent.BasicProperties basicProperties = firstMessage.getBasicProperties();
@@ -327,7 +365,7 @@ public class EventLoaderTest {
                 .returns("text/plain", from(RabbitMQEvent.BasicProperties::getContentType))
                 .returns(1, from(RabbitMQEvent.BasicProperties::getDeliveryMode))
                 .returns(34, from(RabbitMQEvent.BasicProperties::getPriority))
-                .returns(60000, from(RabbitMQEvent.BasicProperties::getExpiration))
+                .returns("60000", from(RabbitMQEvent.BasicProperties::getExpiration))
                 .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
                 .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
                 .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
@@ -337,5 +375,14 @@ public class EventLoaderTest {
         Map<String, List<Integer>> header1 = (Map<String, List<Integer>>) headers.get("header1");
         assertThat(header1.get("bytes")).contains(118, 97, 108, 117, 101, 49);
         assertThat((Integer) headers.get("numberInHeader")).isEqualTo(10);
+    }
+
+    @Test
+    public void testLoadSESEvent() {
+        SESEvent event = EventLoader.loadSESEvent("ses_event.json");
+        assertThat(event).isNotNull();
+        assertThat(event.getRecords()).hasSize(1);
+        assertThat(event.getRecords().get(0).getSes().getMail().getDestination()[0]).isEqualTo("recipient@example.com");
+        assertThat(event.getRecords().get(0).getSes().getMail().getHeaders()).hasSize(29);
     }
 }

@@ -1,0 +1,142 @@
+{
+    "sessionId": "123456789123456",
+    "inputTranscript": "deluxe",
+    "interpretations": [
+        {
+            "intent": {
+                "slots": {
+                    "RoomType": {
+                        "shape": "Scalar",
+                        "value": {
+                            "originalValue": "deluxe",
+                            "resolvedValues": [
+                                "deluxe"
+                            ],
+                            "interpretedValue": "deluxe"
+                        }
+                    },
+                    "CheckInDate": {
+                        "shape": "Scalar",
+                        "value": {
+                            "originalValue": "fifth of may",
+                            "resolvedValues": [
+                                "2022-05-05"
+                            ],
+                            "interpretedValue": "2022-05-05"
+                        }
+                    },
+                    "Nights": {
+                        "shape": "Scalar",
+                        "value": {
+                            "originalValue": "fourteen",
+                            "resolvedValues": [
+                                "14"
+                            ],
+                            "interpretedValue": "14"
+                        }
+                    },
+                    "Location": {
+                        "shape": "Scalar",
+                        "value": {
+                            "originalValue": "seattle",
+                            "resolvedValues": [
+                                "seattle"
+                            ],
+                            "interpretedValue": "seattle"
+                        }
+                    }
+                },
+                "confirmationState": "None",
+                "name": "BookHotel",
+                "state": "InProgress"
+            },
+            "nluConfidence": 1
+        },
+        {
+            "intent": {
+                "slots": {},
+                "confirmationState": "None",
+                "name": "FallbackIntent",
+                "state": "InProgress"
+            }
+        },
+        {
+            "intent": {
+                "slots": {
+                    "ReturnDate": null,
+                    "PickUpDate": null,
+                    "DriverAge": null,
+                    "CarType": null,
+                    "PickUpCity": null
+                },
+                "confirmationState": "None",
+                "name": "BookCar",
+                "state": "InProgress"
+            },
+            "nluConfidence": 0.52
+        }
+    ],
+    "responseContentType": "text/plain; charset=utf-8",
+    "invocationSource": "DialogCodeHook",
+    "messageVersion": "1.0",
+    "sessionState": {
+        "originatingRequestId": "00000000-1111-2222-3333-444444444444",
+        "activeContexts": [],
+        "intent": {
+            "slots": {
+                "RoomType": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "deluxe",
+                        "resolvedValues": [
+                            "deluxe"
+                        ],
+                        "interpretedValue": "deluxe"
+                    }
+                },
+                "CheckInDate": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "fifth of may",
+                        "resolvedValues": [
+                            "2022-05-05"
+                        ],
+                        "interpretedValue": "2022-05-05"
+                    }
+                },
+                "Nights": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "fourteen",
+                        "resolvedValues": [
+                            "14"
+                        ],
+                        "interpretedValue": "14"
+                    }
+                },
+                "Location": {
+                    "shape": "Scalar",
+                    "value": {
+                        "originalValue": "seattle",
+                        "resolvedValues": [
+                            "seattle"
+                        ],
+                        "interpretedValue": "seattle"
+                    }
+                }
+            },
+            "confirmationState": "None",
+            "name": "BookHotel",
+            "state": "InProgress"
+        }
+    },
+    "inputMode": "Text",
+    "bot": {
+        "aliasName": "TestBotAlias",
+        "aliasId": "TSTALIASID",
+        "name": "BookTrip",
+        "version": "DRAFT",
+        "localeId": "en_US",
+        "id": "ABCDE01235"
+    }
+}

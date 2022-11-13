@@ -1,5 +1,5 @@
 # we use centos 7 to build against glibc 2.17
-FROM centos:7
+FROM public.ecr.aws/docker/library/centos:7
 
 ARG CURL_VERSION
 

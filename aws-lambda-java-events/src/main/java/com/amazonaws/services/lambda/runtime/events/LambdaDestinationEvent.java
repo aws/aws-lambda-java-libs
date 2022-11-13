@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -10,15 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
 package com.amazonaws.services.lambda.runtime.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -33,23 +36,33 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class LambdaDestinationEvent implements Serializable, Cloneable {
+public class LambdaDestinationEvent implements Serializable {
 
     private String version;
-    private DateTime timestamp;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
+    private Instant timestamp;
+
     private RequestContext requestContext;
+
     private Map<String, Object> requestPayload;
+
     private Object responseContext;
+
     private Object responsePayload;
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestContext implements Serializable, Cloneable {
+    public static class RequestContext implements Serializable {
+
         private String requestId;
+
         private String functionArn;
+
         private String condition;
+
         private int approximateInvokeCount;
     }
 }

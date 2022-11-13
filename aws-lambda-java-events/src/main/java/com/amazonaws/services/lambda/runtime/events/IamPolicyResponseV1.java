@@ -1,3 +1,16 @@
+/*
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 package com.amazonaws.services.lambda.runtime.events;
 
 import lombok.AllArgsConstructor;
@@ -5,7 +18,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +39,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class IamPolicyResponseV1 implements Serializable, Cloneable {
+public class IamPolicyResponseV1 implements Serializable {
 
     public static final String EXECUTE_API_INVOKE = "execute-api:Invoke";
     public static final String VERSION_2012_10_17 = "2012-10-17";
@@ -34,7 +51,8 @@ public class IamPolicyResponseV1 implements Serializable, Cloneable {
     private Map<String, Object> context;
     private String usageIdentifierKey;
 
-    public Map<String, Object> getPolicyDocument() {
+    @JsonIgnore
+    public Map<String, Object> getPolicyDocumentData() {
         Map<String, Object> serializablePolicy = new HashMap<>();
         serializablePolicy.put("Version", policyDocument.getVersion());
 
@@ -57,7 +75,7 @@ public class IamPolicyResponseV1 implements Serializable, Cloneable {
         return Statement.builder()
                 .withEffect(ALLOW)
                 .withResource(Collections.singletonList(resource))
-                .withAction(EXECUTE_API_INVOKE)
+                .withAction(Arrays.asList(EXECUTE_API_INVOKE))
                 .build();
     }
 
@@ -65,7 +83,7 @@ public class IamPolicyResponseV1 implements Serializable, Cloneable {
         return Statement.builder()
                 .withEffect(DENY)
                 .withResource(Collections.singletonList(resource))
-                .withAction(EXECUTE_API_INVOKE)
+                .withAction(Arrays.asList(EXECUTE_API_INVOKE))
                 .build();
     }
 
@@ -73,9 +91,11 @@ public class IamPolicyResponseV1 implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PolicyDocument implements Serializable, Cloneable {
+    public static class PolicyDocument implements Serializable {
 
+        @JsonProperty("Version")
         private String version;
+        @JsonProperty("Statement")
         private List<Statement> statement;
     }
 
@@ -83,11 +103,15 @@ public class IamPolicyResponseV1 implements Serializable, Cloneable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Statement implements Serializable, Cloneable {
+    public static class Statement implements Serializable {
 
-        private String action;
+        @JsonProperty("Action")
+        private List<String> action;
+        @JsonProperty("Effect")
         private String effect;
+        @JsonProperty("Resource")
         private List<String> resource;
+        @JsonProperty("Condition")
         private Map<String, Map<String, Object>> condition;
     }
 }

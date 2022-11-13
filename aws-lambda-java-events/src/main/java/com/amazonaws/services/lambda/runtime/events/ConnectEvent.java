@@ -58,6 +58,7 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String initialContactId;
         private String initiationMethod;
         private String instanceArn;
+        private MediaStreams mediaStreams;
         private String previousContactId;
         private String queue;
         private SystemEndpoint systemEndpoint;

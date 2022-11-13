@@ -17,7 +17,8 @@
           "Audio": {
             "StartFragmentNumber": "91343852333181432392682062622220590765191907586",
             "StartTimestamp": "1565781909613",
-            "StreamARN": "arn:aws:kinesisvideo:eu-central-1:123456789012:stream/connect-contact-a3d73b84-ce0e-479a-a9dc-5637c9d30ac9/1565272947806"
+            "StreamARN": "arn:aws:kinesisvideo:eu-central-1:123456789012:stream/connect-contact-a3d73b84-ce0e-479a-a9dc-5637c9d30ac9/1565272947806",
+            "StopFragmentNumber": "91343852333181432392682062622220590765191907587"
           }
         }
       },

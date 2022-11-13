@@ -72,7 +72,7 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String type;
     }
 
-        @Data
+    @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor

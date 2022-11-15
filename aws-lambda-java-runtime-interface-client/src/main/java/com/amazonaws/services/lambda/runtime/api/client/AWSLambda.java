@@ -24,10 +24,12 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntime
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
@@ -169,16 +171,31 @@ public class AWSLambda {
 
     protected static URLClassLoader customerClassLoader;
 
+    /**
+     * convert an integer into a FileDescriptor object using reflection to access private members.
+     */
+    private static FileDescriptor intToFd(int fd) throws RuntimeException {
+        try {
+            Class<FileDescriptor> clazz = FileDescriptor.class;
+            Constructor<FileDescriptor> c = clazz.getDeclaredConstructor(new Class<?>[] { Integer.TYPE });
+            c.setAccessible(true);
+            return c.newInstance(new Integer(fd));
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static LogSink createLogSink() {
-        final String fd = System.getenv("_LAMBDA_TELEMETRY_LOG_FD");
-        if(fd == null) {
+        final String fdStr = System.getenv("_LAMBDA_TELEMETRY_LOG_FD");
+        if(fdStr == null) {
             return new StdOutLogSink();
         }
 
         try {
-            File pipeFdFile = Paths.get("/proc", "self", "fd", fd).toFile();
-            return new FramedTelemetryLogSink(pipeFdFile);
-        } catch (IOException e) {
+            int fdInt = Integer.parseInt(fdStr);
+            FileDescriptor fd = intToFd(fdInt);
+            return new FramedTelemetryLogSink(fd);
+        } catch (Exception e) {
             return new StdOutLogSink();
         }
     }

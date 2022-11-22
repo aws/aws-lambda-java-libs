@@ -154,7 +154,7 @@ This package defines the Lambda serialization logic using in the `aws-lambda-jav
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-serialization</artifactId>
- <version>1.0.0</version>
+ <version>1.0.1</version>
 </dependency>
 ```
 

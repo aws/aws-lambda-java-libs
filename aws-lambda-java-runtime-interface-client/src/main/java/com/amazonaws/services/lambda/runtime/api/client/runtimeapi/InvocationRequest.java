@@ -41,12 +41,23 @@ public class InvocationRequest {
      */
     private String cognitoIdentity;
 
-    /**
-     * An input stream of the invocation's request body.
-     */
-    private InputStream stream;
-
     private byte[] content;
+
+    public InvocationRequest(String id,
+                             String xrayTraceId,
+                             String invokedFunctionArn,
+                             long deadlineTimeInMs,
+                             String clientContext,
+                             String cognitoIdentity,
+                             byte[] content) {
+        this.id = id;
+        this.xrayTraceId = xrayTraceId;
+        this.invokedFunctionArn = invokedFunctionArn;
+        this.deadlineTimeInMs = deadlineTimeInMs;
+        this.clientContext = clientContext;
+        this.cognitoIdentity = cognitoIdentity;
+        this.content = content;
+    }
 
     public String getId() {
         return id;

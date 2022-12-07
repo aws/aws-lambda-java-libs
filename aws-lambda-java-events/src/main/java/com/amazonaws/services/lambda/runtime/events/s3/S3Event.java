@@ -54,7 +54,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UserIdentityEntity {
+    public static class UserIdentityEntity implements Serializable {
 
         private String principalId;
 
@@ -64,7 +64,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class S3BucketEntity {
+    public static class S3BucketEntity implements Serializable{
 
         private String name;
         private UserIdentityEntity ownerIdentity;
@@ -76,7 +76,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class S3ObjectEntity {
+    public static class S3ObjectEntity implements Serializable{
 
         private String key;
         private Long size;
@@ -120,7 +120,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class S3Entity {
+    public static class S3Entity implements Serializable{
 
         private String configurationId;
         private S3BucketEntity bucket;
@@ -133,7 +133,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestParametersEntity {
+    public static class RequestParametersEntity implements Serializable{
 
         private String sourceIPAddress;
 
@@ -143,7 +143,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ResponseElementsEntity {
+    public static class ResponseElementsEntity implements Serializable{
 
         @JsonProperty("x-amz-id-2")
         private String xAmzId2;
@@ -157,7 +157,7 @@ public class S3Event implements Serializable {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class S3EventNotificationRecord {
+    public static class S3EventNotificationRecord implements Serializable{
 
         private String awsRegion;
         private String eventName;

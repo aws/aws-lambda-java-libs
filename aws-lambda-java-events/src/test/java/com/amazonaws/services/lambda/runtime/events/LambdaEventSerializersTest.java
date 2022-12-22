@@ -342,6 +342,13 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testIoTCustomAuthorizerEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("iot_custom_authorizer_event.json");
+        String actual = deserializeSerializeJsonToString(expected, IoTCustomAuthorizerEvent.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+    
     public void testKafkaEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("kafka_event.json");
         String actual = deserializeSerializeJsonToString(expected, KafkaEvent.class);

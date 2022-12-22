@@ -34,6 +34,7 @@
 * `ConnectEvent`
 * `DynamodbEvent`
 * `IoTButtonEvent`
+* `IoTCustomAuthorizerEvent`
 * `KafkaEvent`
 * `KinesisAnalyticsFirehoseInputPreprocessingEvent`
 * `KinesisAnalyticsInputPreprocessingResponse`

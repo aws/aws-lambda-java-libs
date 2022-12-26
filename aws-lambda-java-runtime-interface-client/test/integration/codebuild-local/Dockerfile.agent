@@ -3,12 +3,18 @@ FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 ARG ARCHITECTURE="amd64"
 
 ENV DOCKER_CLI_PLUGIN_DIR="/root/.docker/cli-plugins"
+ENV PATH="$PATH:/tmp/apache-maven-3.8.6/bin"
 
 RUN amazon-linux-extras enable docker && \
     yum clean metadata && \
-    yum install -y docker tar maven unzip file wget
+    yum install -y docker tar gzip unzip file wget
+
 RUN mkdir -p "${DOCKER_CLI_PLUGIN_DIR}"
 RUN wget \
     "$(curl https://api.github.com/repos/docker/buildx/releases/latest | grep browser_download_url | grep "linux-${ARCHITECTURE}" | cut -d '"' -f 4)" \
      -O "${DOCKER_CLI_PLUGIN_DIR}"/docker-buildx
 RUN chmod +x "${DOCKER_CLI_PLUGIN_DIR}"/docker-buildx
+
+WORKDIR /tmp
+RUN curl -O https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
+    tar xf apache-maven-3.8.6-bin.tar.gz

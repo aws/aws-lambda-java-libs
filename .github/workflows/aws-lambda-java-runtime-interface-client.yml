@@ -60,5 +60,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: the-jar
-        path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-2.1.0.jar
+        path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 

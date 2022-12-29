@@ -109,6 +109,12 @@ public class ConnectEvent implements Serializable {
         private String type;
     }
 
+    /**
+     * Class to represent a MediaStreams object for Kinesis Media Streaming.
+     *
+     * @see <a href="https://docs.aws.amazon.com/connect/latest/adminguide/media-streaming-attributes.html">Media Streaming Attributes</a>
+     *
+     */
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor

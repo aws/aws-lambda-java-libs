@@ -2,7 +2,7 @@
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
-import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,8 +31,8 @@ public class FramedTelemetryLogSink implements LogSink {
     private final FileOutputStream logOutputStream;
     private final ByteBuffer headerBuf;
 
-    public FramedTelemetryLogSink(File file) throws IOException {
-        this.logOutputStream = new FileOutputStream(file);
+    public FramedTelemetryLogSink(FileDescriptor fd) throws IOException {
+        this.logOutputStream = new FileOutputStream(fd);
         this.headerBuf = ByteBuffer.allocate(HEADER_LENGTH).order(ByteOrder.BIG_ENDIAN);
     }
 

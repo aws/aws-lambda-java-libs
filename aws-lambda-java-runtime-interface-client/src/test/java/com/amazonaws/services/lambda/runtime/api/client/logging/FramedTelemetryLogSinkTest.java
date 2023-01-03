@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
@@ -29,7 +31,9 @@ public class FramedTelemetryLogSinkTest {
     public void logSingleFrame() throws IOException {
         byte[] message = "hello world\nsomething on a new line!\n".getBytes();
         File tmpFile = tmpFolder.resolve("pipe").toFile();
-        try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(tmpFile)) {
+        FileOutputStream fos = new FileOutputStream(tmpFile);
+        FileDescriptor fd = fos.getFD();
+        try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
             logSink.log(message);
         }
 
@@ -63,7 +67,9 @@ public class FramedTelemetryLogSinkTest {
         byte[] firstMessage = "hello world\nsomething on a new line!".getBytes();
         byte[] secondMessage = "hello again\nhere's another message\n".getBytes();
         File tmpFile = tmpFolder.resolve("pipe").toFile();
-        try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(tmpFile)) {
+        FileOutputStream fos = new FileOutputStream(tmpFile);
+        FileDescriptor fd = fos.getFD();
+        try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
             logSink.log(firstMessage);
             logSink.log(secondMessage);
         }
@@ -107,7 +113,9 @@ public class FramedTelemetryLogSinkTest {
         try {
             byte[] message = "hello world\nsomething on a new line!\n".getBytes();
             File tmpFile = tmpFolder.resolve("pipe").toFile();
-            try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(tmpFile)) {
+            FileOutputStream fos = new FileOutputStream(tmpFile);
+            FileDescriptor fd = fos.getFD();
+            try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
                 Thread.currentThread().interrupt();
 
                 logSink.log(message);

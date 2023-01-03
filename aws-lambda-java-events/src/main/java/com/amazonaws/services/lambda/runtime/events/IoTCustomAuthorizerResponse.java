@@ -11,6 +11,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a response expected from a lambda function performing an 
+ * IoT Custom Authorizing event
+ * 
+ * @see <a href="https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html#custom-auth-lambda">
+ * 	Creating and managing custom authorizers</a>
+ * 
+ */
 @Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor

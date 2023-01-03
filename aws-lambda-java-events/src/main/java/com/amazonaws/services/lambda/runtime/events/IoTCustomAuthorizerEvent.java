@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 /**
  * Represents a request to authorize an IoT core request
  *
+ * @see <a href="https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html#custom-auth-lambda">
+ * 	Creating and managing custom authorizers</a>
  */
 @Data
 @Builder(setterPrefix = "with")

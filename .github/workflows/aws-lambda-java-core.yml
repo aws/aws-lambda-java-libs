@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-core
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'aws-lambda-java-core/**'
   pull_request:

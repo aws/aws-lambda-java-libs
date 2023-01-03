@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-events-sdk-transformer
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'aws-lambda-java-events-sdk-transformer/**'
   pull_request:

@@ -5,7 +5,7 @@ name: Java CI samples
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - 'samples/kinesis-firehose-event-handler/**'
   pull_request:

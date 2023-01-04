@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'aws-lambda-java-tests/**'
   pull_request:

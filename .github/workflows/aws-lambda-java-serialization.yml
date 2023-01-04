@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-serialization
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'aws-lambda-java-serialization/**'
   pull_request:

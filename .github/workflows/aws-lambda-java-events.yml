@@ -5,7 +5,7 @@ name: Java CI aws-lambda-java-events
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'aws-lambda-java-events/**'
   pull_request:

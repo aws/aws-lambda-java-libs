@@ -3,7 +3,7 @@ FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 ARG ARCHITECTURE="amd64"
 
 ENV DOCKER_CLI_PLUGIN_DIR="/root/.docker/cli-plugins"
-ENV PATH="$PATH:/tmp/apache-maven-3.8.6/bin"
+ENV PATH="$PATH:/tmp/apache-maven-3.8.7/bin"
 
 RUN amazon-linux-extras enable docker && \
     yum clean metadata && \
@@ -16,5 +16,5 @@ RUN wget \
 RUN chmod +x "${DOCKER_CLI_PLUGIN_DIR}"/docker-buildx
 
 WORKDIR /tmp
-RUN curl -O https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
-    tar xf apache-maven-3.8.6-bin.tar.gz
+RUN curl -O https://archive.apache.org/dist/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz && \
+    tar xf apache-maven-3.8.7-bin.tar.gz

@@ -36,7 +36,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+    <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
     <!-- 
         The test/integration/codebuild/buildspec.*.yml files will set -DmultiArch=false
         as a workaround for executing within Github Actions. At time of writing (2022-04-08) the 
@@ -115,7 +115,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
           <source>${maven.compiler.source}</source>
@@ -125,6 +125,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
         <configuration>
           <archive>
             <manifest>
@@ -183,6 +184,17 @@
   <profiles>
     <profile>
       <id>dev</id>
+      <activation>
+        <file>
+          <exists>ric-dev-environment/dev-maven-repo.mk</exists>
+        </file>
+      </activation>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>dev-snapshot-repo</id>
+          <url>${env.MAVEN_REPO_URL}</url>
+        </snapshotRepository>
+      </distributionManagement>
       <build>
         <plugins>
           <plugin>

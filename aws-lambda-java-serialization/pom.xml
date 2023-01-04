@@ -36,7 +36,8 @@
         <jackson.version>2.13.4.2</jackson.version>
         <jackson.jsr10.version>2.13.4</jackson.jsr10.version>
         <gson.version>2.10</gson.version>
-        <junit.version>5.8.2</junit.version>
+        <junit.version>5.9.1</junit.version>
+        <owasp.version>7.3.2</owasp.version>
     </properties>
 
     <dependencies>
@@ -100,7 +101,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>5.3.2</version>
+                        <version>${owasp.version}</version>
                         <executions>
                             <execution>
                                 <phase>validate</phase>

@@ -10,13 +10,12 @@ RUN apk update && \
         g++ \
         gcc \
         make \
-        libexecinfo-dev \
         perl
 
 # Install curl dependency
 COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
-RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps && mv /src/deps/curl-$CURL_VERSION /src/deps/curl
-WORKDIR /src/deps/curl
+RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps
+WORKDIR /src/deps/curl-$CURL_VERSION
 RUN ./configure \
         --prefix $(pwd)/../artifacts \
         --disable-shared \
@@ -53,9 +52,9 @@ RUN /usr/bin/c++ -c \
     /usr/bin/c++ -shared \
         -std=gnu++11 \
         -o aws-lambda-runtime-interface-client.so com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o \
-        -L ./deps/artifacts/lib64/ \
         -L ./deps/artifacts/lib/ \
         -laws-lambda-runtime \
         -lcurl \
         -static-libstdc++ \
-        -static-libgcc
+        -static-libgcc \
+        -O2

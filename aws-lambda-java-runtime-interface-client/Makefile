@@ -5,8 +5,8 @@ ARCHITECTURE_ALIAS := $($(shell echo "$(ARCHITECTURE)_ALIAS"))
 ARCHITECTURE_ALIAS := $(or $(ARCHITECTURE_ALIAS),amd64) # on any other archs defaulting to amd64
 
 # This optional module exports MAVEN_REPO_URL, MAVEN_REPO_USERNAME and MAVEN_REPO_PASSWORD environment variables
-# making it possible to publish resulting artifacts to a development maven repository
--include ric-dev-environment/dev-maven-repo.mk
+# making it possible to publish resulting artifacts to a codeartifact maven repository
+-include ric-dev-environment/codeartifact-repo.mk
 
 .PHONY: target
 target:
@@ -48,7 +48,7 @@ build:
 
 .PHONY: publish
 publish:
-	mvn deploy --settings ric-dev-environment/settings.xml
+	./ric-dev-environment/publish_snapshot.sh
 
 define HELP_MESSAGE
 

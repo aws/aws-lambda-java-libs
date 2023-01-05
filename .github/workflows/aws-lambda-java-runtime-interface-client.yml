@@ -62,3 +62,35 @@ jobs:
         name: the-jar
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Issue AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: GitHubActionsPublishPackage
+          role-duration-seconds: 900
+
+      - name: Prepare codeartifact properties
+        working-directory: ./aws-lambda-java-runtime-interface-client/ric-dev-environment
+        run: |
+          cat <<EOF > codeartifact-properties.mk
+          CODE_ARTIFACT_REPO_ACCOUNT=${{ secrets.AWS_ACCOUNT }}
+          CODE_ARTIFACT_REPO_REGION=${{ env.AWS_REGION }}
+          CODE_ARTIFACT_REPO_NAME=${{ secrets.CODE_ARTIFACT_REPO_NAME }}
+          CODE_ARTIFACT_DOMAIN=${{ secrets.AWS_CODEARTIFACT_DOMAIN }}
+          EOF
+
+      - name: Publish
+        working-directory: ./aws-lambda-java-runtime-interface-client
+        env:
+          ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
+        run: make publish

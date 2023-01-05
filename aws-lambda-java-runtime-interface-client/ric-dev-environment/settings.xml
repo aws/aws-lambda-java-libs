@@ -1,15 +1,10 @@
 <settings>
     <profiles>
         <profile>
-            <id>dev</id>
-            <activation>
-                <file>
-                    <exists>dev-maven-repo.mk</exists>
-                </file>
-            </activation>
+            <id>dev-ci</id>
             <repositories>
                 <repository>
-                    <id>dev-snapshot-repo</id>
+                    <id>ci-repo</id>
                     <url>${env.MAVEN_REPO_URL}</url>
                 </repository>
             </repositories>
@@ -17,7 +12,7 @@
     </profiles>
     <servers>
         <server>
-            <id>dev-snapshot-repo</id>
+            <id>ci-repo</id>
             <username>${env.MAVEN_REPO_USERNAME}</username>
             <password>${env.MAVEN_REPO_PASSWORD}</password>
         </server>

@@ -1,2 +1,2 @@
 compile-flags.txt
-ric-dev-environment/dev-maven-repo.mk
+ric-dev-environment/codeartifact-properties.mk

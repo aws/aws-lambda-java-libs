@@ -30,13 +30,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.URLClassLoader;
-import java.nio.file.Paths;
 import java.security.Security;
 import java.util.Properties;
-
-import static com.amazonaws.services.lambda.runtime.api.client.UserFault.makeUserFault;
 
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
@@ -50,9 +46,6 @@ import static com.amazonaws.services.lambda.runtime.api.client.UserFault.makeUse
  * Once initialized, {@link AWSLambda#startRuntime} will halt only if an irrecoverable error occurs.
  */
 public class AWSLambda {
-
-    private static final Runnable doNothing = () -> {
-    };
 
     private static final String TRUST_STORE_PROPERTY = "javax.net.ssl.trustStore";
 
@@ -103,20 +96,17 @@ public class AWSLambda {
         }
     }
 
-    private static UserMethods findUserMethods(final String handlerString, ClassLoader customerClassLoader) {
+    private static LambdaRequestHandler findRequestHandler(final String handlerString, ClassLoader customerClassLoader) {
         final HandlerInfo handlerInfo;
         try {
             handlerInfo = HandlerInfo.fromString(handlerString, customerClassLoader);
         } catch (HandlerInfo.InvalidHandlerException e) {
             UserFault userFault = UserFault.makeUserFault("Invalid handler: `" + handlerString + "'");
-            return new UserMethods(
-                    doNothing,
-                    new UserFaultHandler(userFault)
-            );
+            return new UserFaultHandler(userFault);
         } catch (ClassNotFoundException e) {
-            return new UserMethods(doNothing, LambdaRequestHandler.classNotFound(e, HandlerInfo.className(handlerString)));
+            return LambdaRequestHandler.classNotFound(e, HandlerInfo.className(handlerString));
         } catch (NoClassDefFoundError e) {
-            return new UserMethods(doNothing, LambdaRequestHandler.initErrorHandler(e, HandlerInfo.className(handlerString)));
+            return LambdaRequestHandler.initErrorHandler(e, HandlerInfo.className(handlerString));
         } catch (Throwable t) {
             throw UserFault.makeInitErrorUserFault(t, HandlerInfo.className(handlerString));
         }
@@ -130,24 +120,7 @@ public class AWSLambda {
                 throw userFault;
             }
         }
-
-        Runnable initHandler = doNothing;
-        try {
-            initHandler = wrapInitCall(handlerInfo.clazz.getMethod("init"));
-        } catch (NoSuchMethodException | NoClassDefFoundError e) {
-        }
-
-        return new UserMethods(initHandler, requestHandler);
-    }
-
-    private static Runnable wrapInitCall(final Method method) {
-        return () -> {
-            try {
-                method.invoke(null);
-            } catch (Throwable t) {
-                throw UserFault.makeUserFault(t);
-            }
-        };
+        return requestHandler;
     }
 
     public static void setupRuntimeLogger(LambdaLogger lambdaLogger)
@@ -238,9 +211,9 @@ public class AWSLambda {
         Thread.currentThread().setContextClassLoader(customerClassLoader);
 
         // Load the user's handler
-        UserMethods methods;
+        LambdaRequestHandler requestHandler;
         try {
-            methods = findUserMethods(handler, customerClassLoader);
+            requestHandler = findRequestHandler(handler, customerClassLoader);
         } catch (UserFault userFault) {
             lambdaLogger.log(userFault.reportableError());
             ByteArrayOutputStream payload = new ByteArrayOutputStream(1024);
@@ -249,14 +222,6 @@ public class AWSLambda {
             runtimeClient.postInitError(payload.toByteArray(), failure.getErrorType());
             System.exit(1);
             return;
-        }
-
-        // Call the user's init handler(a function called 'init'), if provided in the same module as the request handler.
-        // This is an undocumented feature, and still exists to keep backward compatibility. Continue if this call fails.
-        try {
-            methods.initHandler.run();
-        } catch (UserFault f) {
-            lambdaLogger.log(f.reportableError());
         }
 
         try (EnvWriter envWriter = new EnvWriter(envReader)) {
@@ -272,7 +237,7 @@ public class AWSLambda {
 
                 ByteArrayOutputStream payload;
                 try {
-                    payload = methods.requestHandler.call(request);
+                    payload = requestHandler.call(request);
                     // TODO calling payload.toByteArray() creates a new copy of the underlying buffer
                     runtimeClient.postInvocationResponse(request.getId(), payload.toByteArray());
                 } catch (UserFault f) {

@@ -1,0 +1,74 @@
+# This workflow will be triggered on merge to the main branch if
+# aws-lambda-java-runtime-interface-client package was changed
+#
+# It will publish artifacts to CodeArtifact repository, specified by properties defined in GitHub repo secrets:
+# CODE_ARTIFACT_REPO_ACCOUNT, AWS_REGION, CODE_ARTIFACT_REPO_NAME, CODE_ARTIFACT_DOMAIN
+# and will assume role specified by AWS_ROLE
+#
+# Prerequisite setup:
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+
+name: Publish artifact for aws-lambda-java-runtime-interface-client
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'aws-lambda-java-runtime-interface-client/**'
+
+jobs:
+
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v3
+      with:
+        java-version: 8
+        distribution: corretto
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        install: true
+
+    - name: Available buildx platforms
+      run: echo ${{ steps.buildx.outputs.platforms }}
+          
+    - name: Test Runtime Interface Client xplatform build - Run 'build' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make build
+
+    - name: Issue AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: GitHubActionsPublishPackage
+        role-duration-seconds: 900
+
+    - name: Prepare codeartifact properties
+      working-directory: ./aws-lambda-java-runtime-interface-client/ric-dev-environment
+      run: |
+        cat <<EOF > codeartifact-properties.mk
+        CODE_ARTIFACT_REPO_ACCOUNT=${{ secrets.AWS_ACCOUNT }}
+        CODE_ARTIFACT_REPO_REGION=${{ env.AWS_REGION }}
+        CODE_ARTIFACT_REPO_NAME=${{ secrets.CODE_ARTIFACT_REPO_NAME }}
+        CODE_ARTIFACT_DOMAIN=${{ secrets.AWS_CODEARTIFACT_DOMAIN }}
+        EOF
+
+    - name: Publish
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      env:
+        ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
+      run: make publish

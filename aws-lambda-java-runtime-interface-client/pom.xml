@@ -184,17 +184,6 @@
   <profiles>
     <profile>
       <id>dev</id>
-      <activation>
-        <file>
-          <exists>ric-dev-environment/dev-maven-repo.mk</exists>
-        </file>
-      </activation>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>dev-snapshot-repo</id>
-          <url>${env.MAVEN_REPO_URL}</url>
-        </snapshotRepository>
-      </distributionManagement>
       <build>
         <plugins>
           <plugin>
@@ -276,6 +265,15 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>ci-repo</id>
+      <distributionManagement>
+        <repository>
+          <id>ci-repo</id>
+          <url>${env.MAVEN_REPO_URL}</url>
+        </repository>
+      </distributionManagement>
     </profile>
   </profiles>
 </project>

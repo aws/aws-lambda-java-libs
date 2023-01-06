@@ -1,13 +1,9 @@
 # This workflow will be triggered if there will be changes to 
 # aws-lambda-java-runtime-interface-client package and it builds the package.
 
-name: Java CI aws-lambda-java-runtime-interface-client
+name: PR to runtime-interface-client
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-    - 'aws-lambda-java-runtime-interface-client/**'
   pull_request:
     branches: [ '*' ]
     paths:
@@ -59,6 +55,5 @@ jobs:
     - name: Save the built jar
       uses: actions/upload-artifact@v3
       with:
-        name: the-jar
+        name: aws-lambda-java-runtime-interface-client
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
-

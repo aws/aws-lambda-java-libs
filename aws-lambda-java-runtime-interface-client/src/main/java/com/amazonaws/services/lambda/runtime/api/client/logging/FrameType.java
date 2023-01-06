@@ -4,7 +4,7 @@ package com.amazonaws.services.lambda.runtime.api.client.logging;
 
 public enum FrameType {
 
-    LOG(0xa55a0001);
+    LOG(0xa55a0003);
 
     private final int val;
 

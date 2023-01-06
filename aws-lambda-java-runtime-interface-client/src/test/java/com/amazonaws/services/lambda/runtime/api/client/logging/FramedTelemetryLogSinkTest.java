@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -24,6 +25,11 @@ public class FramedTelemetryLogSinkTest {
     private static final int DEFAULT_BUFFER_SIZE = 256;
     private static final byte ZERO_BYTE = (byte) 0;
 
+    private long timestamp() {
+        Instant instant = Instant.now();
+        return instant.getEpochSecond() * 1_000_000 + instant.getNano() / 1000;
+    }
+
     @TempDir
     public Path tmpFolder;
 
@@ -33,9 +39,11 @@ public class FramedTelemetryLogSinkTest {
         File tmpFile = tmpFolder.resolve("pipe").toFile();
         FileOutputStream fos = new FileOutputStream(tmpFile);
         FileDescriptor fd = fos.getFD();
+        long before = timestamp();
         try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
             logSink.log(message);
         }
+        long after = timestamp();
 
         ByteBuffer buf = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         ReadableByteChannel readChannel = new FileInputStream(tmpFile).getChannel();
@@ -51,6 +59,11 @@ public class FramedTelemetryLogSinkTest {
         // next 4 bytes indicate the length of the message
         int len = buf.getInt();
         assertEquals(message.length, len);
+
+        // next 8 bytes should indicate the timestamp
+        long timestamp = buf.getLong();
+        assertTrue(before <= timestamp);
+        assertTrue(timestamp <= after);
 
         // use `len` to allocate a byte array to read the logged message into
         byte[] actual = new byte[len];
@@ -69,10 +82,12 @@ public class FramedTelemetryLogSinkTest {
         File tmpFile = tmpFolder.resolve("pipe").toFile();
         FileOutputStream fos = new FileOutputStream(tmpFile);
         FileDescriptor fd = fos.getFD();
+        long before = timestamp();
         try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
             logSink.log(firstMessage);
             logSink.log(secondMessage);
         }
+        long after = timestamp();
 
         ByteBuffer buf = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
         ReadableByteChannel readChannel = new FileInputStream(tmpFile).getChannel();
@@ -89,6 +104,11 @@ public class FramedTelemetryLogSinkTest {
             // next 4 bytes indicate the length of the message
             int len = buf.getInt();
             assertEquals(message.length, len);
+
+            // next 8 bytes should indicate the timestamp
+            long timestamp = buf.getLong();
+            assertTrue(before <= timestamp);
+            assertTrue(timestamp <= after);
 
             // use `len` to allocate a byte array to read the logged message into
             byte[] actual = new byte[len];
@@ -125,7 +145,7 @@ public class FramedTelemetryLogSinkTest {
             FileInputStream logInputStream = new FileInputStream(tmpFile);
             int readBytes = logInputStream.read(buffer);
 
-            int headerSizeBytes = 8; // message type (4 bytes) + len (4 bytes)
+            int headerSizeBytes = 16; // message type (4 bytes) + len (4 bytes) + timestamp (8 bytes)
             int expectedBytes = headerSizeBytes + message.length;
 
             assertEquals(expectedBytes, readBytes);

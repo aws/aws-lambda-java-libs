@@ -36,10 +36,7 @@ public class EventsArgumentsProvider implements ArgumentsProvider, AnnotationCon
                         return Arguments.of(EventLoader.loadEvent(event.value(), clazz));
                     });
         } else {
-            URL folderUrl = getClass().getResource(events.folder());
-            if (folderUrl == null) {
-                folderUrl = getClass().getClassLoader().getResource(events.folder());
-            }
+            URL folderUrl = Thread.currentThread().getContextClassLoader().getResource(events.folder());
             if (folderUrl == null) {
                 throw new IllegalArgumentException("Path " + events.folder() + " cannot be found");
             }

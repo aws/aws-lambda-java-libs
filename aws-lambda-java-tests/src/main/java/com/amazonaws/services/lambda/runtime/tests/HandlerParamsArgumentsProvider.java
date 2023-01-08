@@ -118,10 +118,7 @@ public class HandlerParamsArgumentsProvider implements ArgumentsProvider, Annota
     }
 
     private Stream<Path> listFiles(String folder) throws IOException, URISyntaxException {
-        URL folderUrl = getClass().getResource(folder);
-        if (folderUrl == null) {
-            folderUrl = getClass().getClassLoader().getResource(folder);
-        }
+        URL folderUrl = Thread.currentThread().getContextClassLoader().getResource(folder);
         if (folderUrl == null) {
             throw new IllegalArgumentException("Path " + folder + " cannot be found");
         }

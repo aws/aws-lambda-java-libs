@@ -117,10 +117,7 @@ public class EventLoader {
 
         PojoSerializer<T> serializer = LambdaEventSerializers.serializerFor(targetClass, ClassLoader.getSystemClassLoader());
 
-        InputStream stream = serializer.getClass().getResourceAsStream(filename);
-        if (stream == null) {
-            stream = serializer.getClass().getClassLoader().getResourceAsStream(filename);
-        }
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
         if (stream == null) {
             try {
                 stream = new FileInputStream(new File(filename));

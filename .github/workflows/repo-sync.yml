@@ -2,16 +2,21 @@ name: Repo Sync
 
 on:
   schedule:
-    - cron: "*/15 * * * *" # every 15 minutes
+    - cron: "0 8 * * 1-5" # At 08:00 on every day-of-week from Monday through Friday
+  workflow_dispatch:
 
 jobs:
   repo-sync:
     name: Repo Sync
     runs-on: ubuntu-latest
+    env:
+      IS_CONFIGURED: ${{ secrets.SOURCE_REPO != '' }}
     steps:
       - uses: actions/checkout@v3
+        if: ${{ env.IS_CONFIGURED == 'true' }}
       - uses: repo-sync/github-sync@v2
         name: Sync repo to branch
+        if: ${{ env.IS_CONFIGURED == 'true' }}
         with:
           source_repo: ${{ secrets.SOURCE_REPO }}
           source_branch: main
@@ -19,6 +24,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: repo-sync/pull-request@v2
         name: Create pull request
+        if: ${{ env.IS_CONFIGURED == 'true' }}
         with:
           source_branch: ${{ secrets.INTERMEDIATE_BRANCH }}
           destination_branch: main

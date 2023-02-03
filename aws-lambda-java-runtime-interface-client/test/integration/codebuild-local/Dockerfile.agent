@@ -1,20 +1,14 @@
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 
-ARG ARCHITECTURE="amd64"
-
-ENV DOCKER_CLI_PLUGIN_DIR="/root/.docker/cli-plugins"
-ENV PATH="$PATH:/tmp/apache-maven-3.8.7/bin"
-
+# Install docker and buildx extension
 RUN amazon-linux-extras enable docker && \
     yum clean metadata && \
-    yum install -y docker tar gzip unzip file wget
+    yum install -y docker tar gzip unzip file
 
-RUN mkdir -p "${DOCKER_CLI_PLUGIN_DIR}"
-RUN wget \
-    "$(curl https://api.github.com/repos/docker/buildx/releases/latest | grep browser_download_url | grep "linux-${ARCHITECTURE}" | cut -d '"' -f 4)" \
-     -O "${DOCKER_CLI_PLUGIN_DIR}"/docker-buildx
-RUN chmod +x "${DOCKER_CLI_PLUGIN_DIR}"/docker-buildx
+COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
-WORKDIR /tmp
-RUN curl -O https://archive.apache.org/dist/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz && \
-    tar xf apache-maven-3.8.7-bin.tar.gz
+# Install maven from apache.org, as version in the yum repository doesn't support latest maven plugins
+ENV PATH="$PATH:/apache-maven/bin"
+RUN mkdir /apache-maven && \
+    curl https://archive.apache.org/dist/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz | \
+    tar -xz -C /apache-maven --strip-components 1

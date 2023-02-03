@@ -1,3 +1,11 @@
+### February 3, 2022
+`2.2.0`
+- Added timestamps to TLV
+- Removed legacy `init` method support
+- libcurl updated to version 7.86
+- Support sockets as transport for framed telemetry
+- Updated aws-lambda-java-core to 1.2.2
+
 ### April 11, 2022
 `2.1.1`
 - fix: Re-build of the x86_64/aarch64 artifacts

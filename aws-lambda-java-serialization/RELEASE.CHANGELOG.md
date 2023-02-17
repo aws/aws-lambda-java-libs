@@ -1,3 +1,8 @@
+### February 17, 2023
+`1.1.0`:
+- Update `jackson-databind` dependency from 2.13.4.1 to 2.14.2
+- Register `JavaTimeModule` and `Jdk8Module` modules to `jackson-databind`
+
 ### February 09, 2023
 `1.0.2`:
 - Updated `gson` dependency from 2.8.9 to 2.10.1

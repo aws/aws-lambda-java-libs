@@ -4,7 +4,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-serialization</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Serialization</name>
@@ -43,6 +43,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
@@ -229,6 +234,10 @@
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>${relocation.prefix}.com.google.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.joda.time</pattern>
+                                    <shadedPattern>${relocation.prefix}.org.joda.time</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.json</pattern>

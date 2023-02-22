@@ -1,3 +1,7 @@
+### February 22, 2023
+`1.1.1`:
+- Register `JodaModule` to JacksonFactory
+
 ### February 17, 2023
 `1.1.0`:
 - Update `jackson-databind` dependency from 2.13.4.1 to 2.14.2

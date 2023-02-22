@@ -6,25 +6,23 @@ import com.amazonaws.services.lambda.runtime.serialization.util.SerializeUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import java.io.IOException;
 
 /**
  * Class that is used to load customer DateTime class
  */
-public class DateTimeModule extends SimpleModule {
+public class DateTimeModule extends JodaModule {
 
     /**
      * creates a DateTimeModule using customer class loader to pull org.joda.time.DateTime
      */
     public DateTimeModule(ClassLoader classLoader) {
-        super(PackageVersion.VERSION);
         Class dateTimeClass = SerializeUtil.loadCustomerClass("org.joda.time.DateTime", classLoader);
         this.addSerializer(dateTimeClass, getSerializer(dateTimeClass, classLoader));
         this.addDeserializer(dateTimeClass, getDeserializer(dateTimeClass));

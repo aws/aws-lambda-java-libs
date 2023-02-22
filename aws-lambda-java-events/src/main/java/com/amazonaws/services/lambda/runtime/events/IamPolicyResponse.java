@@ -94,6 +94,7 @@ public class IamPolicyResponse implements Serializable {
 
         @JsonProperty("Version")
         private String version;
+
         @JsonProperty("Statement")
         private List<Statement> statement;
     }
@@ -106,10 +107,13 @@ public class IamPolicyResponse implements Serializable {
 
         @JsonProperty("Action")
         private List<String> action;
+
         @JsonProperty("Effect")
         private String effect;
+
         @JsonProperty("Resource")
         private List<String> resource;
+
         @JsonProperty("Condition")
         private Map<String, Map<String, Object>> condition;
     }

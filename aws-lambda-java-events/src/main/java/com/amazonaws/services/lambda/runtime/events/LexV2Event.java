@@ -34,6 +34,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LexV2Event implements Serializable {
+
     private String messageVersion;
     private String invocationSource;
     private String inputMode;
@@ -52,6 +53,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Bot implements Serializable {
+
         private String id;
         private String name;
         private String aliasId;
@@ -65,6 +67,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Interpretation implements Serializable {
+
         private Intent intent;
         private Double nluConfidence;
         private SentimentResponse sentimentResponse;
@@ -75,6 +78,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Intent implements Serializable {
+
         private String confirmationState;
         private String name;
         private Map<String, Slot> slots;
@@ -97,6 +101,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Slot implements Serializable {
+
         private String shape;
         private SlotValue value;
         private Slot[] values;
@@ -107,6 +112,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SlotValue implements Serializable {
+
         private String interpretedValue;
         private String originalValue;
         private String[] resolvedValues;
@@ -117,6 +123,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponse implements Serializable {
+
         private String queryId;
         private KendraResponseResultItem[] resultItems;
         private Object[] facetResults;
@@ -128,6 +135,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponseResultItem implements Serializable {
+
         private String id;
         private String type;
         private Object[] additionalAttributes;
@@ -145,6 +153,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponseDocumentInfo implements Serializable {
+
         private String text;
         private KendraResponseDocumentHighlights[] highlights;
     }
@@ -154,6 +163,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponseDocumentHighlights implements Serializable {
+
         private Integer beginOffset;
         private Integer endOffset;
         private boolean topAnswer;
@@ -165,6 +175,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponseDocumentAttribute implements Serializable {
+
         private String key;
         private Map<String, String> value;
     }
@@ -174,6 +185,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class KendraResponseScoreAttributes implements Serializable {
+
         private String scoreConfidence;
     }
 
@@ -182,6 +194,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NluConfidence implements Serializable {
+
         private Double score;
     }
 
@@ -190,6 +203,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SentimentResponse implements Serializable {
+
         private String sentiment;
         private SentimentScore sentimentScore;
     }
@@ -199,6 +213,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SentimentScore implements Serializable {
+
         private Double mixed;
         private Double negative;
         private Double neutral;
@@ -210,6 +225,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProposedNextState implements Serializable {
+
         private DialogAction dialogAction;
         private Intent intent;
     }
@@ -219,6 +235,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DialogAction implements Serializable {
+
         private String slotToElicit;
         private String type;
     }
@@ -228,6 +245,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SessionState implements Serializable {
+
         private ActiveContext[] activeContexts;
         private Map<String, String> sessionAttributes;
         private RuntimeHints runtimeHints;
@@ -241,6 +259,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ActiveContext implements Serializable {
+
         private String name;
         private Map<String, String> contextAttributes;
         private TimeToLive timeToLive;
@@ -251,6 +270,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TimeToLive implements Serializable {
+
         private Integer timeToLiveInSeconds;
         private Integer turnsToLive;
     }
@@ -260,6 +280,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RuntimeHints implements Serializable {
+
         private Map<String, Map<String, Hint>> slotHints;
     }
 
@@ -268,6 +289,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Hint implements Serializable {
+
         private RuntimeHintValue[] runtimeHintValues;
     }
 
@@ -276,6 +298,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RuntimeHintValue implements Serializable {
+
         private String phrase;
     }
 
@@ -284,6 +307,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Transcription implements Serializable {
+
         private String transcription;
         private Double transcriptionConfidence;
         private ResolvedContext resolvedContext;
@@ -305,6 +329,7 @@ public class LexV2Event implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ResolvedContext implements Serializable {
+
         private String intent;
     }
 }

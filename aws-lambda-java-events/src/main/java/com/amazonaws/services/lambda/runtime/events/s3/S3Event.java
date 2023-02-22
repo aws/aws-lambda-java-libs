@@ -57,7 +57,6 @@ public class S3Event implements Serializable {
     public static class UserIdentityEntity {
 
         private String principalId;
-
     }
 
     @Data
@@ -69,7 +68,6 @@ public class S3Event implements Serializable {
         private String name;
         private UserIdentityEntity ownerIdentity;
         private String arn;
-
     }
 
     @Data
@@ -80,8 +78,10 @@ public class S3Event implements Serializable {
 
         private String key;
         private Long size;
+
         @JsonProperty("eTag")
         private String eTag;
+
         private String versionId;
         private String sequencer;
 
@@ -126,7 +126,6 @@ public class S3Event implements Serializable {
         private S3BucketEntity bucket;
         private S3ObjectEntity object;
         private String s3SchemaVersion;
-
     }
 
     @Data
@@ -136,7 +135,6 @@ public class S3Event implements Serializable {
     public static class RequestParametersEntity {
 
         private String sourceIPAddress;
-
     }
 
     @Data
@@ -150,7 +148,6 @@ public class S3Event implements Serializable {
 
         @JsonProperty("x-amz-request-id")
         private String xAmzRequestId;
-
     }
 
     @Data
@@ -169,7 +166,5 @@ public class S3Event implements Serializable {
         private ResponseElementsEntity responseElements;
         private S3Entity s3;
         private UserIdentityEntity userIdentity;
-
     }
-
 }

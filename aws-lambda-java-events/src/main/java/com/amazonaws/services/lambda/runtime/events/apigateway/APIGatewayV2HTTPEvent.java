@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +31,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class APIGatewayV2HTTPEvent {
+
     private String version;
     private String routeKey;
     private String rawPath;
@@ -43,7 +42,6 @@ public class APIGatewayV2HTTPEvent {
     private Map<String, String> pathParameters;
     private Map<String, String> stageVariables;
     private String body;
-    @JsonProperty("isBase64Encoded")
     private boolean isBase64Encoded;
     private RequestContext requestContext;
 
@@ -52,6 +50,7 @@ public class APIGatewayV2HTTPEvent {
     @Data
     @NoArgsConstructor
     public static class RequestContext {
+
         private String routeKey;
         private String accountId;
         private String stage;
@@ -102,6 +101,7 @@ public class APIGatewayV2HTTPEvent {
         @Data
         @NoArgsConstructor
         public static class Authorizer {
+
             private JWT jwt;
             private Map<String, Object> lambda;
             private IAM iam;
@@ -111,6 +111,7 @@ public class APIGatewayV2HTTPEvent {
             @Data
             @NoArgsConstructor
             public static class JWT {
+
                 private Map<String, String> claims;
                 private List<String> scopes;
             }
@@ -121,6 +122,7 @@ public class APIGatewayV2HTTPEvent {
         @Data
         @NoArgsConstructor
         public static class Http {
+
             private String method;
             private String path;
             private String protocol;
@@ -133,6 +135,7 @@ public class APIGatewayV2HTTPEvent {
         @Data
         @NoArgsConstructor
         public static class IAM {
+
             private String accessKey;
             private String accountId;
             private String callerId;
@@ -147,6 +150,7 @@ public class APIGatewayV2HTTPEvent {
         @Data
         @NoArgsConstructor
         public static class CognitoIdentity {
+
             private List<String> amr;
             private String identityId;
             private String identityPoolId;

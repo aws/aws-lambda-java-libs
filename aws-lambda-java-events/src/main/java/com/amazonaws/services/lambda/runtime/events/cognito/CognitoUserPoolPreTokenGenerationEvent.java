@@ -32,6 +32,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent {
+
     /**
      * The request from the Amazon Cognito service.
      */
@@ -61,6 +62,7 @@ public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the pre token generation trigger.
          */
@@ -84,14 +86,17 @@ public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class GroupConfiguration {
+
         /**
          * A list of the group names that are associated with the user that the identity token is issued for.
          */
         private String[] groupsToOverride;
+
         /**
          * A list of the current IAM roles associated with these groups.
          */
         private String[] iamRolesToOverride;
+
         /**
          * Indicates the preferred IAM role.
          */
@@ -103,6 +108,7 @@ public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class Response {
+
         private ClaimsOverrideDetails claimsOverrideDetails;
     }
 
@@ -111,15 +117,18 @@ public class CognitoUserPoolPreTokenGenerationEvent extends CognitoUserPoolEvent
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class ClaimsOverrideDetails {
+
         /**
          * A map of one or more key-value pairs of claims to add or override.
          * For group related claims, use groupOverrideDetails instead.
          */
         private Map<String, String> claimsToAddOrOverride;
+
         /**
          * A list that contains claims to be suppressed from the identity token.
          */
         private String[] claimsToSuppress;
+
         /**
          * The output object containing the current group configuration.
          */

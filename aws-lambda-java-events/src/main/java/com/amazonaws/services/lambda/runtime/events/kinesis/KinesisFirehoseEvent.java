@@ -36,11 +36,8 @@ public class KinesisFirehoseEvent implements Serializable {
     private static final long serialVersionUID = -2890373471008001695L;
 
     private String invocationId;
-
     private String deliveryStreamArn;
-
     private String region;
-
     private List<Record> records;
 
     @Data
@@ -70,12 +67,8 @@ public class KinesisFirehoseEvent implements Serializable {
         private ByteBuffer data;
 
         private String recordId;
-
         private Long approximateArrivalEpoch;
-
         private Long approximateArrivalTimestamp;
-
         private Map<String, String> kinesisRecordMetadata;
-
     }
 }

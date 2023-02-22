@@ -45,5 +45,4 @@ public class AppSyncLambdaAuthorizerEvent {
         private String operationName;
         private Map<String, Object> variables;
     }
-
 }

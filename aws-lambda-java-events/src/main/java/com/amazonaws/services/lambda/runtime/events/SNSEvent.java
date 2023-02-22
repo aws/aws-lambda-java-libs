@@ -59,7 +59,6 @@ public class SNSEvent implements Serializable {
 
         @JsonProperty("Value")
         private String value;
-
     }
 
     /**
@@ -107,7 +106,6 @@ public class SNSEvent implements Serializable {
 
         @JsonProperty("TopicArn")
         private String topicArn;
-
     }
 
     /**
@@ -134,6 +132,5 @@ public class SNSEvent implements Serializable {
 
         @JsonProperty("EventSubscriptionArn")
         private String eventSubscriptionArn;
-
     }
 }

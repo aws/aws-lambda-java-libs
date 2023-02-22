@@ -36,11 +36,8 @@ public class KinesisAnalyticsFirehoseInputPreprocessingEvent implements Serializ
     private static final long serialVersionUID = 3372554211277515302L;
 
     public String invocationId;
-
     public String applicationArn;
-
     public String streamArn;
-
     public List<Record> records;
 
     @Data
@@ -52,9 +49,7 @@ public class KinesisAnalyticsFirehoseInputPreprocessingEvent implements Serializ
         private static final long serialVersionUID = 9130920004800315787L;
 
         public String recordId;
-
         public KinesisFirehoseRecordMetadata kinesisFirehoseRecordMetadata;
-
         public ByteBuffer data;
 
         @Data
@@ -66,7 +61,6 @@ public class KinesisAnalyticsFirehoseInputPreprocessingEvent implements Serializ
             private static final long serialVersionUID = 692430771749481045L;
 
             public Long approximateArrivalTimestamp;
-
         }
     }
 }

@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -34,11 +32,9 @@ public class APIGatewayV2WebSocketResponse implements Serializable {
 
     private static final long serialVersionUID = -5155789062248356200L;
 
-    @JsonProperty("isBase64Encoded")
     @Builder.Default private boolean isBase64Encoded = false;
     private int statusCode;
     private Map<String, String> headers;
     private Map<String, String[]> multiValueHeaders;
     private String body;
-
 }

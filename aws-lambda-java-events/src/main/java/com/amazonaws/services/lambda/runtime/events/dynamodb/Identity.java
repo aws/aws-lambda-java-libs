@@ -11,30 +11,43 @@
  * and limitations under the License.
  */
 
-package com.amazonaws.services.lambda.runtime.events.apigateway;
+package com.amazonaws.services.lambda.runtime.events.dynamodb;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Map;
+
 
 /**
- * Class that represents an APIGatewayProxyResponseEvent object
- */
+* <p>
+* Contains details about the type of identity that made the request.
+* </p>
+*
+* @see <a href="http://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/Identity" target="_top">AWS API
+*      Documentation</a>
+*/
 
 @Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class APIGatewayProxyResponseEvent implements Serializable {
+public class Identity implements Serializable {
 
-    private static final long serialVersionUID = 2263167344670024172L;
-    
-    private Integer statusCode;
-    private Map<String, String> headers;
-    private String body;
-    private Boolean isBase64Encoded;
+    /**
+     * <p>
+     * A unique identifier for the entity that made the call. For Time To Live, the principalId is
+     * "dynamodb.amazonaws.com".
+     * </p>
+     */
+    private String principalId;
+
+    /**
+     * <p>
+     * The type of the identity. For Time To Live, the type is "Service".
+     * </p>
+     */
+    private String type;
 }

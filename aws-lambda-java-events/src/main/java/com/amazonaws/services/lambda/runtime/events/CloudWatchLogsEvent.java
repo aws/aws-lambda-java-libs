@@ -48,6 +48,5 @@ public class CloudWatchLogsEvent implements Serializable {
         private static final long serialVersionUID = -7793438350437169987L;
 
         private String data;
-
     }
 }

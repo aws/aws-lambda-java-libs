@@ -36,22 +36,18 @@ import java.util.List;
 public class EventBridgeEvent<T> {
 
     private String version;
-
     private String id;
 
     @JsonProperty("detail-type")
     private String detailType;
 
     private String source;
-
     private String account;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
     private Instant time;
 
     private String region;
-
     private List<String> resources;
-
     private T detail;
 }

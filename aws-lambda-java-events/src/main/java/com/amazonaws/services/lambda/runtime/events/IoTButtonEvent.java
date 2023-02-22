@@ -33,9 +33,6 @@ public class IoTButtonEvent implements Serializable {
     private static final long serialVersionUID = 8699582353606993478L;
 
     private String serialNumber;
-
     private String clickType;
-
     private String batteryVoltage;
-
 }

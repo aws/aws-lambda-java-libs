@@ -114,35 +114,10 @@ public class JacksonFactory implements PojoSerializerFactory {
         mapper.setConfig(dcfg);
         mapper.setSerializationInclusion(Include.NON_NULL);
 
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Void.class, new VoidDeserializer());
-        mapper.registerModule(module);
-
         mapper.registerModule(new JavaTimeModule());
         mapper.registerModule(new Jdk8Module());
 
         return mapper;
-    }
-
-    public static final class VoidDeserializer extends JsonDeserializer<Void> {
-
-        private final static Void VOID = createVoid();
-
-        private static Void createVoid() {
-            try {
-                Constructor<Void> constructor = Void.class.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                return constructor.newInstance();
-            } catch(Exception e) {
-                return null;
-            }
-        }
-
-        @Override
-        public Void deserialize(JsonParser parser, DeserializationContext ctx) {
-            return VOID;
-        }
-
     }
 
     private static JsonFactory createJsonFactory() {

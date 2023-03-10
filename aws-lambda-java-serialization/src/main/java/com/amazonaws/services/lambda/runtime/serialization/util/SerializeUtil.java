@@ -71,9 +71,10 @@ public class SerializeUtil {
      */
     @SuppressWarnings({"unchecked"})
     public static <T> String serializeDateTime(T dateTime, ClassLoader classLoader) {
-        Class dateTimeFormatterClass = loadCustomerClass("org.joda.time.format.DateTimeFormatter", classLoader);
-        Class dateTimeFormatClass = loadCustomerClass("org.joda.time.format.ISODateTimeFormat", classLoader);
-        Class readableInstantInterface = loadCustomerClass("org.joda.time.ReadableInstant", classLoader);
+        // Workaround not to let maven shade plugin relocating string literals https://issues.apache.org/jira/browse/MSHADE-156
+        Class dateTimeFormatterClass = loadCustomerClass("com.amazonaws.lambda.unshade.thirdparty.org.joda.time.format.DateTimeFormatter", classLoader);
+        Class dateTimeFormatClass = loadCustomerClass("com.amazonaws.lambda.unshade.thirdparty.org.joda.time.format.ISODateTimeFormat", classLoader);
+        Class readableInstantInterface = loadCustomerClass("com.amazonaws.lambda.unshade.thirdparty.org.joda.time.ReadableInstant", classLoader);
         return serializeDateTimeHelper(dateTime, dateTimeFormatterClass, dateTimeFormatClass, readableInstantInterface);
     }
 

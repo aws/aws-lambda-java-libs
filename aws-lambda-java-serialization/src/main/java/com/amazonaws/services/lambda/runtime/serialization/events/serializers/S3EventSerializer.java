@@ -220,7 +220,8 @@ public class S3EventSerializer<T> implements OrgJsonSerializer<T> {
         Class requestParametersClass = SerializeUtil.loadCustomerClass(baseClassName + "$RequestParametersEntity", classLoader);
         Class responseElementsClass = SerializeUtil.loadCustomerClass(baseClassName + "$ResponseElementsEntity", classLoader);
         Class userIdentityClass = SerializeUtil.loadCustomerClass(baseClassName + "$UserIdentityEntity", classLoader);
-        Class dateTimeClass = SerializeUtil.loadCustomerClass("org.joda.time.DateTime", classLoader);
+        // Workaround not to let maven shade plugin relocating string literals https://issues.apache.org/jira/browse/MSHADE-156
+        Class dateTimeClass = SerializeUtil.loadCustomerClass("com.amazonaws.lambda.unshade.thirdparty.org.joda.time.DateTime", classLoader);
         // serialize object
         JSONObject jsonObject = new JSONObject();
         Functions.R0<String> getAwsRegionMethod =

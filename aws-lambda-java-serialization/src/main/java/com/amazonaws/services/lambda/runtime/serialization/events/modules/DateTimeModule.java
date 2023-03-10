@@ -23,7 +23,8 @@ public class DateTimeModule extends JodaModule {
      * creates a DateTimeModule using customer class loader to pull org.joda.time.DateTime
      */
     public DateTimeModule(ClassLoader classLoader) {
-        Class dateTimeClass = SerializeUtil.loadCustomerClass("org.joda.time.DateTime", classLoader);
+        // Workaround not to let maven shade plugin relocating string literals https://issues.apache.org/jira/browse/MSHADE-156
+        Class dateTimeClass = SerializeUtil.loadCustomerClass("com.amazonaws.lambda.unshade.thirdparty.org.joda.time.DateTime", classLoader);
         this.addSerializer(dateTimeClass, getSerializer(dateTimeClass, classLoader));
         this.addDeserializer(dateTimeClass, getDeserializer(dateTimeClass));
     }

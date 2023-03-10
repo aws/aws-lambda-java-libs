@@ -69,6 +69,11 @@ public final class EventHandlerLoader {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static PojoSerializer<Object> getSerializer(Platform platform, Type type) {
+        PojoSerializer<Object> customSerializer = PojoSerializerLoader.getCustomerSerializer(type);
+        if (customSerializer != null) {
+            return customSerializer;
+        }
+
         // if serializing a Class that is a Lambda supported event, use Jackson with customizations
         if (type instanceof Class) {
             Class<Object> clazz = ((Class)type);

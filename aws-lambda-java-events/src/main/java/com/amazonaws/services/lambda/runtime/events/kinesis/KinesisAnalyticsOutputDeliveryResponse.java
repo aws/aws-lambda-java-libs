@@ -31,6 +31,8 @@ import java.util.List;
 @AllArgsConstructor
 public class KinesisAnalyticsOutputDeliveryResponse implements Serializable {
 
+    private static final long serialVersionUID = 4530412727972559896L;
+
     public enum Result {
 
         /**
@@ -44,8 +46,6 @@ public class KinesisAnalyticsOutputDeliveryResponse implements Serializable {
         DeliveryFailed
     }
 
-    private static final long serialVersionUID = 4530412727972559896L;
-
     public List<Record> records;
 
     @Data
@@ -57,8 +57,6 @@ public class KinesisAnalyticsOutputDeliveryResponse implements Serializable {
         private static final long serialVersionUID = -4034554254120467176L;
 
         public String recordId;
-
         public Result result;
-
     }
 }

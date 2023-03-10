@@ -59,6 +59,7 @@ public class CognitoUserPoolPostAuthenticationEvent extends CognitoUserPoolEvent
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the post authentication trigger.
          */

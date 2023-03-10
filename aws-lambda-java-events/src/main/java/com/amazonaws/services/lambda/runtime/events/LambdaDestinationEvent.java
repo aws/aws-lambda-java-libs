@@ -44,11 +44,8 @@ public class LambdaDestinationEvent implements Serializable {
     private Instant timestamp;
 
     private RequestContext requestContext;
-
     private Map<String, Object> requestPayload;
-
     private Object responseContext;
-
     private Object responsePayload;
 
     @Data
@@ -58,11 +55,8 @@ public class LambdaDestinationEvent implements Serializable {
     public static class RequestContext implements Serializable {
 
         private String requestId;
-
         private String functionArn;
-
         private String condition;
-
         private int approximateInvokeCount;
     }
 }

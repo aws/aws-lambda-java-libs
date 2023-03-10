@@ -35,27 +35,16 @@ public class APIGatewayProxyRequestEvent implements Serializable {
     private static final long serialVersionUID = 4189228800688527467L;
 
     private String resource;
-
     private String path;
-
     private String httpMethod;
-
     private Map<String, String> headers;
-
     private Map<String, List<String>> multiValueHeaders;
-
     private Map<String, String> queryStringParameters;
-
     private Map<String, List<String>> multiValueQueryStringParameters;
-
     private Map<String, String> pathParameters;
-
     private Map<String, String> stageVariables;
-
     private ProxyRequestContext requestContext;
-
     private String body;
-
     private Boolean isBase64Encoded;
 
     /**
@@ -71,35 +60,20 @@ public class APIGatewayProxyRequestEvent implements Serializable {
         private static final long serialVersionUID = 8783459961042799774L;
 
         private String accountId;
-
         private String apiId;
-
         private Map<String, Object> authorizer;
-
         private String domainName;
-
         private String domainPrefix;
-
         private String extendedRequestId;
-
         private String httpMethod;
-
         private RequestIdentity identity;
-
         private String path;
-
         private String protocol;
-
         private String requestId;
-
         private String requestTime;
-
         private Long requestTimeEpoch;
-
         private String resourceId;
-
         private String resourcePath;
-
         private String stage;
     }
 
@@ -112,31 +86,18 @@ public class APIGatewayProxyRequestEvent implements Serializable {
         private static final long serialVersionUID = -5283829736983640346L;
 
         private String cognitoIdentityPoolId;
-
         private String accountId;
-
         private String cognitoIdentityId;
-
         private String caller;
-
         private String apiKey;
-
         private String sourceIp;
-
         private String cognitoAuthenticationType;
-
         private String cognitoAuthenticationProvider;
-
         private String userArn;
-
         private String userAgent;
-
         private String user;
-
         private String accessKey;
-
         private String principalOrgId;
-
         private ClientCert clientCert;
     }
 

@@ -32,6 +32,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
 public class StreamsEventResponse implements Serializable {
+
     private static final long serialVersionUID = 3232053116472095907L;
 
     /**
@@ -44,6 +45,7 @@ public class StreamsEventResponse implements Serializable {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class BatchItemFailure implements Serializable {
+
         private static final long serialVersionUID = 1473983466096085881L;
 
         /**

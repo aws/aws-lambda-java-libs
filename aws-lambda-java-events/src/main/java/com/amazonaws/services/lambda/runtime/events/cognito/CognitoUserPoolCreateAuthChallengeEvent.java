@@ -62,15 +62,19 @@ public class CognitoUserPoolCreateAuthChallengeEvent extends CognitoUserPoolEven
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the create auth challenge trigger.
          */
         private Map<String, String> clientMetadata;
+
         /**
          * The name of the new challenge.
          */
         private String challengeName;
+
         private ChallengeResult[] session;
+
         /**
          * This boolean is populated when PreventUserExistenceErrors is set to ENABLED for your User Pool client.
          */
@@ -91,14 +95,17 @@ public class CognitoUserPoolCreateAuthChallengeEvent extends CognitoUserPoolEven
     @Data
     @NoArgsConstructor
     public static class ChallengeResult {
+
         /**
          * The challenge type. One of: "CUSTOM_CHALLENGE", "PASSWORD_VERIFIER", "SMS_MFA", "DEVICE_SRP_AUTH", "DEVICE_PASSWORD_VERIFIER", or "ADMIN_NO_SRP_AUTH".
          */
         private String challengeName;
+
         /**
          * Set to true if the user successfully completed the challenge, or false otherwise.
          */
         private boolean challengeResult;
+
         /**
          * Your name for the custom challenge. Used only if challengeName is CUSTOM_CHALLENGE.
          */
@@ -110,15 +117,18 @@ public class CognitoUserPoolCreateAuthChallengeEvent extends CognitoUserPoolEven
     @Data
     @NoArgsConstructor
     public static class Response {
+
         /**
          * One or more key-value pairs for the client app to use in the challenge to be presented to the user.
          * Contains the question that is presented to the user.
          */
         private Map<String, String> publicChallengeParameters;
+
         /**
          * Contains the valid answers for the question in publicChallengeParameters
          */
         private Map<String, String> privateChallengeParameters;
+
         /**
          * Your name for the custom challenge, if this is a custom challenge.
          */

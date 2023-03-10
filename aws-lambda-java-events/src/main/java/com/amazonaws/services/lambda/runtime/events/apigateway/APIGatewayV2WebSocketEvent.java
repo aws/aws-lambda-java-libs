@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +54,6 @@ public class APIGatewayV2WebSocketEvent implements Serializable {
         private String userAgent;
         private String user;
         private String accessKey;
-
     }
 
     @Data
@@ -89,7 +86,6 @@ public class APIGatewayV2WebSocketEvent implements Serializable {
         private long requestTimeEpoch;
         private String routeKey;
         private String status;
-
     }
 
     private String resource;
@@ -103,7 +99,5 @@ public class APIGatewayV2WebSocketEvent implements Serializable {
     private Map<String, String> stageVariables;
     private RequestContext requestContext;
     private String body;
-    @JsonProperty("isBase64Encoded")
     @Builder.Default private boolean isBase64Encoded = false;
-
 }

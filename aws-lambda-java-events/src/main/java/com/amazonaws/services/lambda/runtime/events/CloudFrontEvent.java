@@ -52,9 +52,7 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = 7041042740552686996L;
 
         private String key;
-
         private String value;
-
     }
 
     /**
@@ -70,7 +68,6 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = -286083903805870299L;
 
         private String distributionId;
-
     }
 
     /**
@@ -86,15 +83,10 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = 3245036101075464149L;
 
         private String uri;
-
         private String method;
-
         private String httpVersion;
-
         private String clientIp;
-
         private Map<String, List<Header>> headers;
-
     }
 
     /**
@@ -110,13 +102,9 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = -3711565862079053710L;
 
         private String status;
-
         private String statusDescription;
-
         private String httpVersion;
-
         private Map<String, List<Header>> headers;
-
     }
 
     /**
@@ -132,11 +120,8 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = -5940167419180448832L;
 
         private Config config;
-
         private Request request;
-
         private Response response;
-
     }
 
     /**
@@ -152,6 +137,5 @@ public class CloudFrontEvent implements Serializable {
         private static final long serialVersionUID = -6114551370798889850L;
 
         private CF cf;
-
     }
 }

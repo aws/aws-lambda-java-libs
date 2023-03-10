@@ -58,12 +58,14 @@ public class KinesisEvent implements Serializable {
          * </p>
          */
         private String sequenceNumber;
+
         /**
          * <p>
          * The approximate time that the record was inserted into the stream.
          * </p>
          */
         private java.time.Instant approximateArrivalTimestamp;
+
         /**
          * <p>
          * The data blob. The data in the blob is both opaque and immutable to Kinesis Data Streams, which does not inspect,
@@ -82,12 +84,14 @@ public class KinesisEvent implements Serializable {
          * </p>
          */
         private java.nio.ByteBuffer data;
+
         /**
          * <p>
          * Identifies which shard in the stream the data record is assigned to.
          * </p>
          */
         private String partitionKey;
+
         /**
          * <p>
          * The encryption type used on the record. This parameter can be one of the following values:
@@ -163,19 +167,12 @@ public class KinesisEvent implements Serializable {
         private static final long serialVersionUID = -3855723544907905206L;
 
         private String eventSource;
-
         private Record kinesis;
-
         private String eventID;
-
         private String invokeIdentityArn;
-
         private String eventName;
-
         private String eventVersion;
-
         private String eventSourceARN;
-
         private String awsRegion;
     }
 }

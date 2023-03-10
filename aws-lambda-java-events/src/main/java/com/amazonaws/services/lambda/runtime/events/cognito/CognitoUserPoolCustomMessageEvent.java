@@ -32,6 +32,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class CognitoUserPoolCustomMessageEvent extends CognitoUserPoolEvent {
+
     /**
      * The request from the Amazon Cognito service.
      */
@@ -61,14 +62,17 @@ public class CognitoUserPoolCustomMessageEvent extends CognitoUserPoolEvent {
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the custom message trigger.
          */
         private Map<String, String> clientMetadata;
+
         /**
          * A string for you to use as the placeholder for the verification code in the custom message.
          */
         private String codeParameter;
+
         /**
          * The username parameter. It is a required request parameter for the admin create user flow.
          */
@@ -88,14 +92,17 @@ public class CognitoUserPoolCustomMessageEvent extends CognitoUserPoolEvent {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class Response {
+
         /**
          * The custom SMS message to be sent to your users. Must include the codeParameter value received in the request.
          */
         private String smsMessage;
+
         /**
          * The custom email message to be sent to your users. Must include the codeParameter value received in the request.
          */
         private String emailMessage;
+
         /**
          * The subject line for the custom message.
          */

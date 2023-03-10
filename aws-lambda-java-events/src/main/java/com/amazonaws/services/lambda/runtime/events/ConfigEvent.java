@@ -91,5 +91,4 @@ public class ConfigEvent implements Serializable {
      *
      */
     private boolean eventLeftScope;
-
 }

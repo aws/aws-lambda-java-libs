@@ -34,6 +34,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LexV2Response implements Serializable {
+
     private SessionState sessionState;
     private Message[] messages;
     private Map<String, String> requestAttributes;
@@ -43,6 +44,7 @@ public class LexV2Response implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Message implements Serializable {
+
         private String contentType;
         private String content;
         private ImageResponseCard imageResponseCard;
@@ -53,6 +55,7 @@ public class LexV2Response implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ImageResponseCard implements Serializable {
+
         private String title;
         private String subtitle;
         private String imageUrl;
@@ -64,6 +67,7 @@ public class LexV2Response implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Button implements Serializable {
+
         private String text;
         private String value;
     }

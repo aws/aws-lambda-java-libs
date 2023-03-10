@@ -36,17 +36,11 @@ public class CognitoEvent implements Serializable {
     private static final long serialVersionUID = -3471890133562627751L;
 
     private String region;
-
     private Map<String, DatasetRecord> datasetRecords;
-
     private String identityPoolId;
-
     private String identityId;
-
     private String datasetName;
-
     private String eventType;
-
     private Integer version;
 
 	/**
@@ -63,7 +57,6 @@ public class CognitoEvent implements Serializable {
         private static final long serialVersionUID = -8853471047466644850L;
 
         private String oldValue;
-        
         private String newValue;
 
         /**

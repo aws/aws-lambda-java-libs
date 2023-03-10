@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +43,6 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable  {
     public static class Elb implements Serializable {
 
         private String targetGroupArn;
-
     }
 
     @Data
@@ -55,7 +52,6 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable  {
     public static class RequestContext implements Serializable {
 
         private Elb elb;
-
     }
 
     private RequestContext requestContext;
@@ -66,7 +62,5 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable  {
     private Map<String, String> headers;
     private Map<String, List<String>> multiValueHeaders;
     private String body;
-    @JsonProperty("isBase64Encoded")
     private boolean isBase64Encoded;
-
 }

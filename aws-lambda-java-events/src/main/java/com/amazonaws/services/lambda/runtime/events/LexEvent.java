@@ -34,17 +34,11 @@ public class LexEvent implements Serializable {
     private static final long serialVersionUID = 8660021082133163891L;
 
     private String messageVersion;
-
     private String invocationSource;
-
     private String userId;
-
     private Map<String, String> sessionAttributes;
-
     private String outputDialogMode;
-
     private CurrentIntent currentIntent;
-
     private Bot bot;
 
     /**
@@ -60,11 +54,8 @@ public class LexEvent implements Serializable {
         private static final long serialVersionUID = -5764739951985883358L;
 
         private String name;
-
         private String alias;
-
         private String version;
-
     }
 
     /**
@@ -80,11 +71,7 @@ public class LexEvent implements Serializable {
         private static final long serialVersionUID = 7405357938118538229L;
 
         private String name;
-
         private Map<String, String> slots;
-
         private String confirmationStatus;
-
     }
-
 }

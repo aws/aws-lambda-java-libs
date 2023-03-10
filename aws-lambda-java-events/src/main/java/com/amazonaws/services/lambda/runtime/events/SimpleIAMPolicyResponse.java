@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Map;
 
 /**
@@ -33,7 +31,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class SimpleIAMPolicyResponse {
 
-    @JsonProperty("isAuthorized")
     private boolean isAuthorized;
     private Map<String, String> context;
 }

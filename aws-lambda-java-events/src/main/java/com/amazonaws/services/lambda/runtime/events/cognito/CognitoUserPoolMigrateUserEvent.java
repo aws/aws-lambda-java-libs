@@ -32,6 +32,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class CognitoUserPoolMigrateUserEvent extends CognitoUserPoolEvent {
+
     /**
      * The request from the Amazon Cognito service.
      */
@@ -61,18 +62,22 @@ public class CognitoUserPoolMigrateUserEvent extends CognitoUserPoolEvent {
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * The username entered by the user.
          */
         private String userName;
+
         /**
          * The password entered by the user for sign-in. It is not set in the forgot-password flow.
          */
         private String password;
+
         /**
          * One or more key-value pairs containing the validation data in the user's sign-in request.
          */
         private Map<String, String> validationData;
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the migrate user trigger.
          */

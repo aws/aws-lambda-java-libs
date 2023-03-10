@@ -32,6 +32,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodePipelineEvent implements Serializable {
+
     private static final long serialVersionUID = -4828716548429210697L;
 
     @JsonProperty("CodePipeline.job")
@@ -42,6 +43,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Job implements Serializable {
+
         private static final long serialVersionUID = 2211711169692638977L;
 
         private String id;
@@ -54,6 +56,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Data implements Serializable {
+
         private static final long serialVersionUID = 8786599041834868262L;
 
         private ActionConfiguration actionConfiguration;
@@ -69,6 +72,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ActionConfiguration implements Serializable {
+
         private static final long serialVersionUID = -7285651174501621217L;
 
         private Configuration configuration;
@@ -79,10 +83,12 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Configuration implements Serializable {
+
         private static final long serialVersionUID = 580024317691702894L;
 
         @JsonProperty("FunctionName")
         private String functionName;
+
         @JsonProperty("UserParameters")
         private String userParameters;
     }
@@ -92,6 +98,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Artifact implements Serializable {
+
         private static final long serialVersionUID = 6406621244704594358L;
 
         private String name;
@@ -114,6 +121,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Location implements Serializable {
+
         private static final long serialVersionUID = 149382199413534713L;
 
         private String type;
@@ -125,6 +133,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class S3Location implements Serializable {
+
         private static final long serialVersionUID = -8922449809993769709L;
 
         private String bucketName;
@@ -136,6 +145,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ArtifactCredentials implements Serializable {
+
         private static final long serialVersionUID = 7710347495607396747L;
 
         private String accessKeyId;
@@ -148,6 +158,7 @@ public class CodePipelineEvent implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EncryptionKey implements Serializable {
+
         private static final long serialVersionUID = -9105569908901180610L;
 
         String id;

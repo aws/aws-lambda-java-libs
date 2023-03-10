@@ -26,6 +26,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 /** Represents a Kafka Event. **/
 public class KafkaEvent {
+
     private Map<String, List<KafkaEventRecord>> records;
     private String eventSource;
     private String eventSourceArn;
@@ -36,6 +37,7 @@ public class KafkaEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class KafkaEventRecord {
+
         private String topic;
         private int partition;
         private long offset;
@@ -51,6 +53,7 @@ public class KafkaEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class TopicPartition {
+
         private  String topic;
         private  int partition;
 

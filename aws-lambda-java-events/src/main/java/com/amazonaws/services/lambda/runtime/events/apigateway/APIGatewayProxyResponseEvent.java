@@ -34,10 +34,7 @@ public class APIGatewayProxyResponseEvent implements Serializable {
     private static final long serialVersionUID = 2263167344670024172L;
     
     private Integer statusCode;
-
     private Map<String, String> headers;
-    
     private String body;
-
     private Boolean isBase64Encoded;
 }

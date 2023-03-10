@@ -36,11 +36,8 @@ public class KinesisAnalyticsStreamsInputPreprocessingEvent implements Serializa
     private static final long serialVersionUID = 1770320710876513596L;
 
     public String invocationId;
-
     public String applicationArn;
-
     public String streamArn;
-
     public List<Record> records;
 
     @Data
@@ -52,9 +49,7 @@ public class KinesisAnalyticsStreamsInputPreprocessingEvent implements Serializa
         private static final long serialVersionUID = -2070268774061223434L;
 
         public String recordId;
-
         public KinesisStreamRecordMetadata kinesisStreamRecordMetadata;
-
         public ByteBuffer data;
 
         @Data
@@ -66,13 +61,9 @@ public class KinesisAnalyticsStreamsInputPreprocessingEvent implements Serializa
             private static final long serialVersionUID = 8831719215562345916L;
 
             public String sequenceNumber;
-
             public String partitionKey;
-
             public String shardId;
-
             public Long approximateArrivalTimestamp;
-
         }
     }
 }

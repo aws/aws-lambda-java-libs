@@ -21,8 +21,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Class that represents the output from an AppSync Lambda authorizer invocation.
  */
@@ -32,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @AllArgsConstructor
 public class AppSyncLambdaAuthorizerResponse {
 
-    @JsonProperty("isAuthorized")
     private boolean isAuthorized;
     private Map<String, String> resolverContext;
     private List<String> deniedFields;

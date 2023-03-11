@@ -5,6 +5,7 @@
 //
 package com.amazonaws.services.lambda.runtime.api.client;
 
+import com.amazonaws.services.lambda.crac.Core;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.api.client.LambdaRequestHandler.UserFaultHandler;
 import com.amazonaws.services.lambda.runtime.api.client.logging.FramedTelemetryLogSink;
@@ -32,6 +33,7 @@ import java.net.URLClassLoader;
 import java.security.Security;
 import java.util.Properties;
 
+
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
  *
@@ -58,6 +60,10 @@ public class AWSLambda {
     // System property for Lambda tracing, see aws-xray-sdk-java/LambdaSegmentContext
     // https://github.com/aws/aws-xray-sdk-java/blob/2f467e50db61abb2ed2bd630efc21bddeabd64d9/aws-xray-recorder-sdk-core/src/main/java/com/amazonaws/xray/contexts/LambdaSegmentContext.java#L39-L40
     private static final String LAMBDA_TRACE_HEADER_PROP = "com.amazonaws.xray.traceHeader";
+
+    private static final String INIT_TYPE_SNAP_START = "snap-start";
+
+    private static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_INITIALIZATION_TYPE);
 
     static {
         // Override the disabledAlgorithms setting to match configuration for openjdk8-u181.
@@ -211,14 +217,13 @@ public class AWSLambda {
             requestHandler = findRequestHandler(handler, customerClassLoader);
         } catch (UserFault userFault) {
             lambdaLogger.log(userFault.reportableError());
-            ByteArrayOutputStream payload = new ByteArrayOutputStream(1024);
-            Failure failure = new Failure(userFault);
-            GsonFactory.getInstance().getSerializer(Failure.class).toJson(failure, payload);
-            runtimeClient.postInitError(payload.toByteArray(), failure.getErrorType());
+            reportInitError(new Failure(userFault), runtimeClient);
             System.exit(1);
             return;
         }
-
+        if (INIT_TYPE_SNAP_START.equals(AWS_LAMBDA_INITIALIZATION_TYPE)) {
+            onInitComplete(runtimeClient, lambdaLogger);
+        }
         boolean shouldExit = false;
         while (!shouldExit) {
             UserFault userFault = null;
@@ -258,6 +263,49 @@ public class AWSLambda {
                 }
             }
         }
+    }
+
+    static void onInitComplete(final LambdaRuntimeClient runtimeClient, final LambdaLogger lambdaLogger) throws IOException {
+        try {
+            Core.getGlobalContext().beforeCheckpoint(null);
+            // Blocking call to RAPID /restore/next API, will return after taking snapshot.
+            // This will also be the 'entrypoint' when resuming from snapshots.
+            runtimeClient.getRestoreNext();
+        } catch (Exception e1) {
+            logExceptionCloudWatch(lambdaLogger, e1);
+            reportInitError(new Failure(e1), runtimeClient);
+            System.exit(64);
+        }
+        try {
+            Core.getGlobalContext().afterRestore(null);
+        } catch (Exception restoreExc) {
+            logExceptionCloudWatch(lambdaLogger, restoreExc);
+            Failure errorPayload = new Failure(restoreExc);
+            reportRestoreError(errorPayload, runtimeClient);
+            System.exit(64);
+        }
+    }
+
+    private static void logExceptionCloudWatch(LambdaLogger lambdaLogger, Exception exc) {
+        UserFault.filterStackTrace(exc);
+        UserFault userFault = UserFault.makeUserFault(exc, true);
+        lambdaLogger.log(userFault.reportableError());
+    }
+
+    static void reportInitError(final Failure failure,
+                                final LambdaRuntimeClient runtimeClient) throws IOException {
+
+        ByteArrayOutputStream payload = new ByteArrayOutputStream(1024);
+        JacksonFactory.getInstance().getSerializer(Failure.class).toJson(failure, payload);
+        runtimeClient.postInitError(payload.toByteArray(), failure.getErrorType());
+    }
+
+    static int reportRestoreError(final Failure failure,
+                                  final LambdaRuntimeClient runtimeClient) throws IOException {
+
+        ByteArrayOutputStream payload = new ByteArrayOutputStream(1024);
+        JacksonFactory.getInstance().getSerializer(Failure.class).toJson(failure, payload);
+        return runtimeClient.postRestoreError(payload.toByteArray(), failure.getErrorType());
     }
 
     private static PojoSerializer<XRayErrorCause> xRayErrorCauseSerializer;

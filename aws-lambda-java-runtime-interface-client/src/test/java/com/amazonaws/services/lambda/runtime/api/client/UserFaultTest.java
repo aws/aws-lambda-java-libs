@@ -4,10 +4,9 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static testpkg.StackTraceHelper.callThenThrowRuntimeException;
+import static testpkg.StackTraceHelper.throwCheckpointExceptionWithTwoSuppressedExceptions;
 import static testpkg.StackTraceHelper.throwRuntimeException;
 
 public class UserFaultTest {
@@ -70,5 +69,19 @@ public class UserFaultTest {
         String expected = msg + '\n';
         String actual = userFault.reportableError();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testSuppressedExceptionsAreIncluded() {
+        try{
+            throwCheckpointExceptionWithTwoSuppressedExceptions("error 1", "error 2");
+        } catch(Exception e1) {
+            UserFault userFault = UserFault.makeUserFault(e1);
+            String reportableUserFault = userFault.reportableError();
+
+            assertTrue(reportableUserFault.contains("com.amazonaws.services.lambda.crac.CheckpointException"), "CheckpointException missing in reported UserFault");
+            assertTrue(reportableUserFault.contains("Suppressed: java.lang.RuntimeException: error 1"), "Suppressed error 1 missing in reported UserFault");
+            assertTrue(reportableUserFault.contains("Suppressed: java.lang.RuntimeException: error 2"), "Suppressed error 2 missing in reported UserFault");
+        }
     }
 }

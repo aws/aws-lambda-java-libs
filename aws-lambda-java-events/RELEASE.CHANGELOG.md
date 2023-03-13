@@ -1,3 +1,12 @@
+### March 10, 2023
+`3.11.1`:
+- Extended ActiveMQEvent with custom properties ([#408](https://github.com/aws/aws-lambda-java-libs/pull/408))
+- Updated dependencies([#410](https://github.com/aws/aws-lambda-java-libs/pull/410)):
+  - `joda-time` from 2.6 to 2.10.8
+  - `jackson-databind` from 2.13.4.1 to 2.14.2
+  - `junit-jupiter-engine` from 5.7.0 to 5.9.2
+  - `json-unit-assertj` from 2.22.0 to 2.36.1
+
 ### November 24, 2021
 `3.11.0`:
 - Added support for SQSaaES Partial Batch Feature ([#279](https://github.com/aws/aws-lambda-java-libs/pull/279))

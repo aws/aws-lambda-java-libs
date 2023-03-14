@@ -1,4 +1,11 @@
-### February 3, 2022
+### March 14, 2023
+`2.3.0`
+- added CRaC context implementation
+- added runtime hooks execution logic
+- updated serialisation dependency
+- reduced Reflection API usage
+
+### February 3, 2023
 `2.2.0`
 - Added timestamps to TLV
 - Removed legacy `init` method support

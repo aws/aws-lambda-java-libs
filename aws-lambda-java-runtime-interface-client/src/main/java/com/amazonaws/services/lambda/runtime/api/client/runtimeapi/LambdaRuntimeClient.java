@@ -6,9 +6,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -55,6 +58,15 @@ public class LambdaRuntimeClient {
         post(endpoint, errorResponse, errorType, errorCause);
     }
 
+    public void getRestoreNext() throws IOException {
+        doGet(restoreNextEndpoint(), HTTP_OK);
+    }
+
+    public int postRestoreError(byte[] errorResponse, String errorType) throws IOException {
+        String endpoint = restoreErrorEndpoint();
+        return postError(endpoint, errorResponse, errorType, null);
+    }
+
     public void postInitError(byte[] errorResponse, String errorType) throws IOException {
         String endpoint = initErrorEndpoint();
         post(endpoint, errorResponse, errorType, null);
@@ -87,7 +99,7 @@ public class LambdaRuntimeClient {
     }
 
     private String invocationEndpoint() {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/invocation/";
+        return getBaseUrl() + "/2018-06-01/runtime/invocation/";
     }
 
     private String invocationErrorEndpoint(String requestId) {
@@ -95,7 +107,80 @@ public class LambdaRuntimeClient {
     }
 
     private String initErrorEndpoint() {
-        return "http://" + hostname + ":" + port + "/2018-06-01/runtime/init/error";
+        return getBaseUrl() + "/2018-06-01/runtime/init/error";
+    }
+
+    private String restoreErrorEndpoint() {
+        return getBaseUrl() + "/2018-06-01/runtime/restore/error";
+    }
+
+    private String restoreNextEndpoint() {
+        return getBaseUrl() + "/2018-06-01/runtime/restore/next";
+    }
+
+    private String getBaseUrl() {
+        return "http://" + hostname + ":" + port;
+    }
+
+    private int postError(String endpoint,
+                          byte[] errorResponse,
+                          String errorType,
+                          String errorCause) throws IOException {
+
+        Map<String, String> headers = new HashMap<>();
+        if (errorType != null && !errorType.isEmpty()) {
+            headers.put(ERROR_TYPE_HEADER, errorType);
+        }
+        if (errorCause != null && errorCause.getBytes().length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
+            headers.put(XRAY_ERROR_CAUSE_HEADER, errorCause);
+        }
+
+        return doPost(endpoint, DEFAULT_CONTENT_TYPE, headers, errorResponse);
+    }
+
+    private int doPost(String endpoint,
+                       String contentType,
+                       Map<String, String> headers,
+                       byte[] payload) throws IOException {
+
+        URL url = createUrl(endpoint);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", contentType);
+
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            conn.setRequestProperty(header.getKey(), header.getValue());
+        }
+
+        conn.setFixedLengthStreamingMode(payload.length);
+        conn.setDoOutput(true);
+
+        try (OutputStream outputStream = conn.getOutputStream()) {
+            outputStream.write(payload);
+        }
+
+        // get response code before closing the stream
+        int responseCode = conn.getResponseCode();
+
+        // don't need to read the response, close stream to ensure connection re-use
+        closeInputStreamQuietly(conn);
+
+        return responseCode;
+    }
+
+    private void doGet(String endpoint, int expectedHttpResponseCode) throws IOException {
+
+        URL url = createUrl(endpoint);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != expectedHttpResponseCode) {
+            throw new LambdaRuntimeClientException(endpoint, responseCode);
+        }
+
+        closeInputStreamQuietly(conn);
     }
 
     private URL createUrl(String endpoint) {
@@ -111,6 +196,25 @@ public class LambdaRuntimeClient {
         try {
             inputStream.close();
         } catch (IOException e) {
+        }
+    }
+
+    private void closeInputStreamQuietly(HttpURLConnection conn) {
+
+        InputStream inputStream;
+        try {
+            inputStream = conn.getInputStream();
+        } catch (IOException e) {
+            return;
+        }
+
+        if (inputStream == null) {
+            return;
+        }
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            // ignore
         }
     }
 }

@@ -87,6 +87,12 @@ public interface ReservedRuntimeEnvironmentVariables {
      */
     String AWS_LAMBDA_RUNTIME_API = "AWS_LAMBDA_RUNTIME_API";
 
+
+    /**
+     * Initialization type
+     */
+    String AWS_LAMBDA_INITIALIZATION_TYPE = "AWS_LAMBDA_INITIALIZATION_TYPE";
+
     /**
      * The path to your Lambda function code.
      */

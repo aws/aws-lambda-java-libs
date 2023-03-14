@@ -80,6 +80,12 @@ public final class UserFault extends RuntimeException {
         if(cause != null) {
             filterStackTrace(cause);
         }
+
+        Throwable[] suppressedExceptions = t.getSuppressed();
+        for(Throwable suppressed: suppressedExceptions) {
+            filterStackTrace(suppressed);
+        }
+
         return t;
     }
 

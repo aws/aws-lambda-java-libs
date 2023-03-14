@@ -81,4 +81,8 @@ public class Failure {
     public String getErrorType() {
         return errorType;
     }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 }

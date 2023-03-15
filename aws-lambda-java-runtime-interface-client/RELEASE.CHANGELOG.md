@@ -1,3 +1,7 @@
+### March 15, 2023
+`2.3.1`
+- ignore module-info for CDS preparation purposes   
+
 ### March 14, 2023
 `2.3.0`
 - added CRaC context implementation

@@ -132,7 +132,7 @@ public class AWSLambda {
     }
 
     public static void setupRuntimeLogger(LambdaLogger lambdaLogger)
-            throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
+            throws ClassNotFoundException {
         ReflectUtil.setStaticField(
                 Class.forName("com.amazonaws.services.lambda.runtime.LambdaRuntime"),
                 "logger",
@@ -158,9 +158,9 @@ public class AWSLambda {
     private static FileDescriptor intToFd(int fd) throws RuntimeException {
         try {
             Class<FileDescriptor> clazz = FileDescriptor.class;
-            Constructor<FileDescriptor> c = clazz.getDeclaredConstructor(new Class<?>[]{Integer.TYPE});
+            Constructor<FileDescriptor> c = clazz.getDeclaredConstructor(Integer.TYPE);
             c.setAccessible(true);
-            return c.newInstance(new Integer(fd));
+            return c.newInstance(fd);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -237,8 +237,10 @@ public class AWSLambda {
             ByteArrayOutputStream payload;
             try {
                 payload = requestHandler.call(request);
-                // TODO calling payload.toByteArray() creates a new copy of the underlying buffer
                 runtimeClient.postInvocationResponse(request.getId(), payload.toByteArray());
+                if (Thread.currentThread().isInterrupted()) {
+                    shouldExit = true;
+                }
             } catch (UserFault f) {
                 userFault = f;
                 UserFault.filterStackTrace(f);

@@ -70,7 +70,7 @@ pom.xml
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-      <version>2.2.0</version>
+      <version>2.3.0</version>
     </dependency>
   </dependencies>
   <build>

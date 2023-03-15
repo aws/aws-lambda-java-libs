@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.amazonaws.services.lambda.runtime.events.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +40,7 @@ public class APIGatewayCustomAuthorizerEvent {
     private String resource;
     private String path;
     private String httpMethod;
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
     private Map<String, String> queryStringParameters;
     private Map<String, String> pathParameters;
     private Map<String, String> stageVariables;

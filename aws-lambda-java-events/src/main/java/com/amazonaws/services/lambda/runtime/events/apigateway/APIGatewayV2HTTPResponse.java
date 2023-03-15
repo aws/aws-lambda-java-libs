@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.amazonaws.services.lambda.runtime.events.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +29,28 @@ import java.util.Map;
 public class APIGatewayV2HTTPResponse {
 
     private int statusCode;
-    private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<String> headers;
+    private HttpHeaders<List<String>> multiValueHeaders;
     private List<String> cookies;
     private String body;
     private boolean isBase64Encoded;
+
+    public static APIGatewayV2HTTPResponseBuilder builder() {
+        return new APIGatewayV2HTTPResponseBuilder();
+    }
+
+    public static class APIGatewayV2HTTPResponseBuilder {
+        private HttpHeaders<String> headers;
+        private HttpHeaders<List<String>> multiValueHeaders;
+
+        public APIGatewayV2HTTPResponseBuilder withHeaders(Map<String, String> headers) {
+            this.headers = HttpHeaders.mergeOrReplace(headers);
+            return this;
+        }
+
+        public APIGatewayV2HTTPResponseBuilder withMultiValueHeaders(Map<String, List<String>> multiValueHeaders) {
+            this.multiValueHeaders = HttpHeaders.mergeOrReplace(multiValueHeaders);
+            return this;
+        }
+    }
 }

@@ -59,8 +59,8 @@ public class ApplicationLoadBalancerRequestEvent implements Serializable  {
     private String path;
     private Map<String, String> queryStringParameters;
     private Map<String, List<String>> multiValueQueryStringParameters;
-    private Map<String, String> headers;
-    private Map<String, List<String>> multiValueHeaders;
+    private HttpHeaders<String> headers;
+    private HttpHeaders<List<String>> multiValueHeaders;
     private String body;
     private boolean isBase64Encoded;
 }

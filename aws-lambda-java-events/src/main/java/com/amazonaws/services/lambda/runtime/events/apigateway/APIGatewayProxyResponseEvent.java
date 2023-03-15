@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.amazonaws.services.lambda.runtime.events.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,7 @@ public class APIGatewayProxyResponseEvent implements Serializable {
     private static final long serialVersionUID = 2263167344670024172L;
     
     private Integer statusCode;
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
     private String body;
     private Boolean isBase64Encoded;
 }

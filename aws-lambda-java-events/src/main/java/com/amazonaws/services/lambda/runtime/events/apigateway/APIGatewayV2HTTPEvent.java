@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.amazonaws.services.lambda.runtime.events.HttpHeaders;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,13 +38,17 @@ public class APIGatewayV2HTTPEvent {
     private String rawPath;
     private String rawQueryString;
     private List<String> cookies;
-    private Map<String, String> headers;
+    private HttpHeaders<String> headers;
     private Map<String, String> queryStringParameters;
     private Map<String, String> pathParameters;
     private Map<String, String> stageVariables;
     private String body;
     private boolean isBase64Encoded;
     private RequestContext requestContext;
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = HttpHeaders.mergeOrReplace(headers);
+    }
 
     @AllArgsConstructor
     @Builder(setterPrefix = "with")

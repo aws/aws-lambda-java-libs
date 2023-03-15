@@ -19,8 +19,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +27,12 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class APIGatewayV2HTTPResponse {
+
     private int statusCode;
     private HttpHeaders<String> headers;
     private HttpHeaders<List<String>> multiValueHeaders;
     private List<String> cookies;
     private String body;
-    @JsonProperty("isBase64Encoded")
     private boolean isBase64Encoded;
 
     public static APIGatewayV2HTTPResponseBuilder builder() {

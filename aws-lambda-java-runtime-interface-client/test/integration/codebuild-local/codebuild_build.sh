@@ -1,5 +1,5 @@
 #!/bin/bash
-# This file is copied from https://github.com/aws/aws-codebuild-docker-images/blob/f0912e4b16e427da35351fc102f0f56f4ceb938a/local_builds/codebuild_build.sh
+# This file is copied from https://github.com/aws/aws-codebuild-docker-images/blob/282c6634e8c83c2a9841719b09aabfced3461981/local_builds/codebuild_build.sh
 
 function allOSRealPath() {
     if isOSWindows
@@ -36,6 +36,7 @@ function usage {
     echo "  -a        Used to specify an artifact output directory."
     echo "Options:"
     echo "  -l IMAGE  Used to override the default local agent image."
+    echo "  -r        Used to specify a report output directory."
     echo "  -s        Used to specify source information. Defaults to the current working directory for primary source."
     echo "               * First (-s) is for primary source"
     echo "               * Use additional (-s) in <sourceIdentifier>:<sourceLocation> format for secondary source"
@@ -61,10 +62,11 @@ awsconfig_flag=false
 mount_src_dir_flag=false
 docker_privileged_mode_flag=false
 
-while getopts "cmdi:a:s:b:e:l:p:h" opt; do
+while getopts "cmdi:a:r:s:b:e:l:p:h" opt; do
     case $opt in
         i  ) image_flag=true; image_name=$OPTARG;;
         a  ) artifact_flag=true; artifact_dir=$OPTARG;;
+        r  ) report_dir=$OPTARG;;
         b  ) buildspec=$OPTARG;;
         c  ) awsconfig_flag=true;;
         m  ) mount_src_dir_flag=true;;
@@ -105,6 +107,11 @@ fi
 
 docker_command+="\"IMAGE_NAME=$image_name\" -e \
     \"ARTIFACTS=$(allOSRealPath "$artifact_dir")\""
+
+if [ -n "$report_dir" ]
+then
+    docker_command+=" -e \"REPORTS=$(allOSRealPath "$report_dir")\""
+fi
 
 if [ -z "$source_dirs" ]
 then
@@ -176,7 +183,12 @@ else
     docker_command+=" -e \"INITIATOR=$USER\""
 fi
 
-docker_command+=" public.ecr.aws/codebuild/local-builds:latest"
+if [ -n "$local_agent_image" ]
+then
+    docker_command+=" $local_agent_image"
+else
+    docker_command+=" public.ecr.aws/codebuild/local-builds:latest"
+fi
 
 # Note we do not expose the AWS_SECRET_ACCESS_KEY or the AWS_SESSION_TOKEN
 exposed_command=$docker_command

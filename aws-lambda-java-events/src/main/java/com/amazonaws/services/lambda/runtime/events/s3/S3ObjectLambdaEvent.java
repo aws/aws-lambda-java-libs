@@ -114,6 +114,7 @@ public class S3ObjectLambdaEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetObjectContext {
+
         private String inputS3Url;
         private String outputRoute;
         private String outputToken;
@@ -124,6 +125,7 @@ public class S3ObjectLambdaEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Configuration {
+
         private String accessPointArn;
         private String supportingAccessPointArn;
         private String payload;
@@ -134,6 +136,7 @@ public class S3ObjectLambdaEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserRequest {
+
         private String url;
         private Map<String, String> headers;
     }
@@ -143,6 +146,7 @@ public class S3ObjectLambdaEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserIdentity {
+
         private String type;
         private String principalId;
         private String arn;

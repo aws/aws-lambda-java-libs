@@ -40,6 +40,7 @@ public class RabbitMQEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class RabbitMessage {
+
         private BasicProperties basicProperties;
         private boolean redelivered;
         private String data;

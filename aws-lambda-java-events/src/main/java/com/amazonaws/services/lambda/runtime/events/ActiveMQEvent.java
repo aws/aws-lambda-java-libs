@@ -16,10 +16,10 @@ package com.amazonaws.services.lambda.runtime.events;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an Active MQ event sent to Lambda
@@ -30,6 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
 public class ActiveMQEvent {
+
     private String eventSource;
     private String eventSourceArn;
     private List<ActiveMQMessage> messages;
@@ -39,6 +40,7 @@ public class ActiveMQEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class ActiveMQMessage {
+
         private String messageID;
         private String messageType;
         private long timestamp;
@@ -54,6 +56,7 @@ public class ActiveMQEvent {
         private String data;
         private long brokerInTime;
         private long brokerOutTime;
+        private Map<String, String> properties;
     }
 
     @Data
@@ -61,6 +64,7 @@ public class ActiveMQEvent {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class Destination {
+
         /** Queue Name **/
         private String physicalName;
     }

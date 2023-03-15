@@ -83,6 +83,9 @@ public class ConnectEvent implements Serializable {
         @JsonProperty("InstanceARN")
         private String instanceArn;
 
+        @JsonProperty("MediaStreams")
+        private MediaStreams mediaStreams;
+
         @JsonProperty("PreviousContactId")
         private String previousContactId;
 
@@ -104,6 +107,45 @@ public class ConnectEvent implements Serializable {
 
         @JsonProperty("Type")
         private String type;
+    }
+
+    /**
+     * Class to represent a MediaStreams object for Kinesis Media Streaming.
+     *
+     * @see <a href="https://docs.aws.amazon.com/connect/latest/adminguide/media-streaming-attributes.html">Media Streaming Attributes</a>
+     *
+     */
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MediaStreams implements Serializable {
+        @JsonProperty("Customer")
+        private Customer customer;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Customer implements Serializable {
+        @JsonProperty("Audio")
+        private Audio audio;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Audio implements Serializable {
+        @JsonProperty("StartFragmentNumber")
+        private String startFragmentNumber;
+        @JsonProperty("StartTimestamp")
+        private String startTimestamp;
+        @JsonProperty("StreamARN")
+        private String streamARN;
+        @JsonProperty("StopFragmentNumber")
+        private String stopFragmentNumber;
     }
 
     @Data

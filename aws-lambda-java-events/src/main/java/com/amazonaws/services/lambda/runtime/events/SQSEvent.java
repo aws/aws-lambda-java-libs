@@ -72,7 +72,6 @@ public class SQSEvent implements Serializable {
          * The dataType of message attribute
          */
         private String dataType;
-
     }
 
     @Data
@@ -84,25 +83,17 @@ public class SQSEvent implements Serializable {
         private static final long serialVersionUID = -2300083946005987098L;
 
         private String messageId;
-
         private String receiptHandle;
-
         private String body;
-
         private String md5OfBody;
-
         private String md5OfMessageAttributes;
 
         @JsonProperty("eventSourceARN")
         private String eventSourceArn;
 
         private String eventSource;
-
         private String awsRegion;
-
         private Map<String, String> attributes;
-
         private Map<String, MessageAttribute> messageAttributes;
-
     }
 }

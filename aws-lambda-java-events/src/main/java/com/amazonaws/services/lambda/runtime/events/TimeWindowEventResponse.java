@@ -33,6 +33,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
 public class TimeWindowEventResponse implements Serializable {
+
     private static final long serialVersionUID = 2259096191791166028L;
 
     /**
@@ -50,6 +51,7 @@ public class TimeWindowEventResponse implements Serializable {
     @AllArgsConstructor
     @Builder(setterPrefix = "with")
     public static class BatchItemFailure implements Serializable {
+
         private static final long serialVersionUID = 5224634072234167773L;
 
         /**

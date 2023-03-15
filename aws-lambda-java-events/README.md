@@ -34,6 +34,8 @@
 * `ConnectEvent`
 * `DynamodbEvent`
 * `IoTButtonEvent`
+* `IoTCustomAuthorizerEvent`
+* `IoTCustomAuthorizerResponse`
 * `KafkaEvent`
 * `KinesisAnalyticsFirehoseInputPreprocessingEvent`
 * `KinesisAnalyticsInputPreprocessingResponse`
@@ -73,7 +75,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.11.0</version>
+        <version>4.0.0</version>
     </dependency>
     ...
 </dependencies>
@@ -83,19 +85,19 @@
 
 ```groovy
 'com.amazonaws:aws-lambda-java-core:1.2.1'
-'com.amazonaws:aws-lambda-java-events:3.11.0'
+'com.amazonaws:aws-lambda-java-events:4.0.0'
 ```
 
 [Leiningen](http://leiningen.org) and [Boot](http://boot-clj.com)
 
 ```clojure
 [com.amazonaws/aws-lambda-java-core "1.2.1"]
-[com.amazonaws/aws-lambda-java-events "3.11.0"]
+[com.amazonaws/aws-lambda-java-events "4.0.0"]
 ```
 
 [sbt](http://www.scala-sbt.org)
 
 ```scala
 "com.amazonaws" % "aws-lambda-java-core" % "1.2.1"
-"com.amazonaws" % "aws-lambda-java-events" % "3.11.0"
+"com.amazonaws" % "aws-lambda-java-events" % "4.0.0"
 ```

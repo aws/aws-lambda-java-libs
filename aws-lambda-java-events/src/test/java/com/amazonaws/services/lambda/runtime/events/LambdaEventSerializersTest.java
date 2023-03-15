@@ -22,7 +22,7 @@ import com.amazonaws.services.lambda.runtime.events.s3.S3BatchEvent;
 import com.amazonaws.services.lambda.runtime.events.s3.S3BatchResponse;
 import com.amazonaws.services.lambda.runtime.events.s3.S3Event;
 import com.amazonaws.services.lambda.runtime.events.s3.S3ObjectLambdaEvent;
-import com.amazonaws.services.lambda.serialization.CustomPojoSerializer;
+import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -108,7 +108,7 @@ public class LambdaEventSerializersTest {
         assertEquals(expected, actual, STRICT);
     }
 
-        @Test
+    @Test
     public void testAPIGatewayV2WebSocketResponse() throws IOException, JSONException {
         String expected = EventUtils.readEvent("api_gateway_v2_web_socket_response.json");
         String actual = deserializeSerializeJsonToString(expected, APIGatewayV2WebSocketResponse.class);
@@ -176,6 +176,14 @@ public class LambdaEventSerializersTest {
     public void testCodeCommitEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("code_commit_event.json");
         String actual = deserializeSerializeJsonToString(expected, CodeCommitEvent.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
+    public void testCodePipelineEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("code_pipeline_event.json");
+        String actual = deserializeSerializeJsonToString(expected, CodePipelineEvent.class);
 
         assertEquals(expected, actual, STRICT);
     }
@@ -263,7 +271,8 @@ public class LambdaEventSerializersTest {
     @Test
     public void testCognitoUserPoolVerifyAuthChallengeResponseEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("cognito_user_pool_verify_auth_challenge_response_event.json");
-        String actual = deserializeSerializeJsonToString(expected, CognitoUserPoolVerifyAuthChallengeResponseEvent.class);
+        String actual = deserializeSerializeJsonToString(expected,
+                CognitoUserPoolVerifyAuthChallengeResponseEvent.class);
 
         assertEquals(expected, actual, STRICT);
     }
@@ -333,6 +342,22 @@ public class LambdaEventSerializersTest {
     }
 
     @Test
+    public void testIoTCustomAuthorizerEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("iot_custom_authorizer_event.json");
+        String actual = deserializeSerializeJsonToString(expected, IoTCustomAuthorizerEvent.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+    
+    @Test
+    public void testIoTCustomAuthorizerResponse() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("iot_custom_authorizer_response.json");
+        String actual = deserializeSerializeJsonToString(expected, IoTCustomAuthorizerResponse.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
     public void testKafkaEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("kafka_event.json");
         String actual = deserializeSerializeJsonToString(expected, KafkaEvent.class);
@@ -343,7 +368,8 @@ public class LambdaEventSerializersTest {
     @Test
     public void testKinesisAnalyticsFirehoseInputPreprocessingEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("kinesis_analytics_firehose_input_preprocessing_event.json");
-        String actual = deserializeSerializeJsonToString(expected, KinesisAnalyticsFirehoseInputPreprocessingEvent.class);
+        String actual = deserializeSerializeJsonToString(expected,
+                KinesisAnalyticsFirehoseInputPreprocessingEvent.class);
 
         assertEquals(expected, actual, STRICT);
     }
@@ -375,7 +401,8 @@ public class LambdaEventSerializersTest {
     @Test
     public void testKinesisAnalyticsStreamsInputPreprocessingEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("kinesis_analytics_streams_input_preprocessing_event.json");
-        String actual = deserializeSerializeJsonToString(expected, KinesisAnalyticsStreamsInputPreprocessingEvent.class);
+        String actual = deserializeSerializeJsonToString(expected,
+                KinesisAnalyticsStreamsInputPreprocessingEvent.class);
 
         assertEquals(expected, actual, STRICT);
     }
@@ -416,6 +443,30 @@ public class LambdaEventSerializersTest {
     public void testLexEvent() throws IOException, JSONException {
         String expected = EventUtils.readEvent("lex_event.json");
         String actual = deserializeSerializeJsonToString(expected, LexEvent.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
+    public void testLexV2Event() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("lex_v2_event.json");
+        String actual = deserializeSerializeJsonToString(expected, LexV2Event.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
+    public void testLexV2KendraSentimentEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("lex_v2_kendra_sentiment_event.json");
+        String actual = deserializeSerializeJsonToString(expected, LexV2Event.class);
+
+        assertEquals(expected, actual, STRICT);
+    }
+
+    @Test
+    public void testLexV2Response() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("lex_v2_response.json");
+        String actual = deserializeSerializeJsonToString(expected, LexV2Response.class);
 
         assertEquals(expected, actual, STRICT);
     }

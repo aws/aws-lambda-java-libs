@@ -66,6 +66,7 @@ public abstract class CognitoUserPoolEvent {
     @Data
     @NoArgsConstructor
     public static abstract class Request {
+
         /**
          * One or more pairs of user attribute names and values.
          */
@@ -77,6 +78,7 @@ public abstract class CognitoUserPoolEvent {
     @Data
     @NoArgsConstructor
     public static class CallerContext {
+
         /**
          * The AWS SDK version number.
          */

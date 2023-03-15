@@ -1,0 +1,25 @@
+{
+    "token" :"DF-125-sdfsadf",
+    "signatureVerified": true,
+    "protocols": ["tls", "http", "mqtt"],
+    "protocolData": {
+        "tls" : {
+            "serverName": "AST"
+        },
+        "http": {
+            "headers": {
+                "Authorization": "Basic:162312",
+                "Content-Type": "application/json"
+            },
+            "queryString": "?val=master&foo=bar"
+        },
+        "mqtt": {
+            "username": "myUserName",
+            "password": "myPassword",
+            "clientId": "myClientId"
+        }
+    },
+    "connectionMetadata": {
+        "id": "ddefac3e-e468-419b-94d8-3dfce68da184"
+    }
+}

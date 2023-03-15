@@ -34,9 +34,7 @@ public class KinesisAnalyticsOutputDeliveryEvent implements Serializable {
     private static final long serialVersionUID = -276093256265202318L;
 
     public String invocationId;
-
     public String applicationArn;
-
     public List<Record> records;
 
     @Data
@@ -48,9 +46,7 @@ public class KinesisAnalyticsOutputDeliveryEvent implements Serializable {
         private static final long serialVersionUID = -3545295536239762069L;
 
         public String recordId;
-
         public LambdaDeliveryRecordMetadata lambdaDeliveryRecordMetadata;
-
         public ByteBuffer data;
 
         @Data
@@ -62,7 +58,6 @@ public class KinesisAnalyticsOutputDeliveryEvent implements Serializable {
             private static final long serialVersionUID = -3809303175070680370L;
 
             public long retryHint;
-
         }
     }
 }

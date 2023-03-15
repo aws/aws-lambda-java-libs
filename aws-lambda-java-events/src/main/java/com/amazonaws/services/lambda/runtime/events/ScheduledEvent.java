@@ -39,7 +39,6 @@ public class ScheduledEvent implements Serializable {
     private static final long serialVersionUID = -5810383198587331146L;
 
     private String account;
-
     private String region;
 
     /**
@@ -54,12 +53,10 @@ public class ScheduledEvent implements Serializable {
     private String detailType;
 
     private String source;
-
     private String id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
     private Instant time;
 
     private List<String> resources;
-    
 }

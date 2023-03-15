@@ -51,6 +51,7 @@ public class APIGatewayCustomAuthorizerEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RequestContext {
+
         private String path;
         private String accountId;
         private String resourceId;
@@ -67,6 +68,7 @@ public class APIGatewayCustomAuthorizerEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Identity {
+
         private String apiKey;
         private String sourceIp;
     }

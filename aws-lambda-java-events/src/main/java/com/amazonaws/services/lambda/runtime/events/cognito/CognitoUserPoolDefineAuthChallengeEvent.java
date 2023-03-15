@@ -62,6 +62,7 @@ public class CognitoUserPoolDefineAuthChallengeEvent extends CognitoUserPoolEven
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the define auth challenge trigger.
          */
@@ -89,14 +90,17 @@ public class CognitoUserPoolDefineAuthChallengeEvent extends CognitoUserPoolEven
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class ChallengeResult {
+
         /**
          * The challenge type. One of: CUSTOM_CHALLENGE, SRP_A, PASSWORD_VERIFIER, SMS_MFA, DEVICE_SRP_AUTH, DEVICE_PASSWORD_VERIFIER, or ADMIN_NO_SRP_AUTH.
          */
         private String challengeName;
+
         /**
          * Set to true if the user successfully completed the challenge, or false otherwise.
          */
         private boolean challengeResult;
+
         /**
          * Your name for the custom challenge. Used only if challengeName is CUSTOM_CHALLENGE.
          */
@@ -108,6 +112,7 @@ public class CognitoUserPoolDefineAuthChallengeEvent extends CognitoUserPoolEven
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class Response {
+
         /**
          * Name of the next challenge, if you want to present a new challenge to your user.
          */

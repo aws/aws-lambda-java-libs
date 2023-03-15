@@ -62,6 +62,7 @@ public class CognitoUserPoolPreSignUpEvent extends CognitoUserPoolEvent {
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
     public static class Request extends CognitoUserPoolEvent.Request {
+
         /**
          * One or more name-value pairs containing the validation data in the request to register a user.
          * The validation data is set and then passed from the client in the request to register a user.
@@ -87,6 +88,7 @@ public class CognitoUserPoolPreSignUpEvent extends CognitoUserPoolEvent {
     @Data
     @NoArgsConstructor
     public static class Response {
+
         /**
          * Set to true to auto-confirm the user, or false otherwise.
          */

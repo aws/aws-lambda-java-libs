@@ -1,6 +1,7 @@
 ### March 16, 2023
 `2.3.1`
-- ignore module-info for CDS preparation purposes   
+- ignore module-info for CDS preparation purposes
+- clear thread interrupted flag instead of exiting Lambda Runtime
 
 ### March 14, 2023
 `2.3.0`

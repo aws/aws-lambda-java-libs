@@ -217,10 +217,6 @@
                                     <shadedPattern>${relocation.prefix}.com.google.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.joda.time</pattern>
-                                    <shadedPattern>${relocation.prefix}.org.joda.time</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.json</pattern>
                                     <shadedPattern>${relocation.prefix}.org.json</shadedPattern>
                                 </relocation>

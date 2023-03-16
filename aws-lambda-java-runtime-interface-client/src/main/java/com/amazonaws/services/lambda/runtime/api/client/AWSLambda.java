@@ -238,9 +238,7 @@ public class AWSLambda {
             try {
                 payload = requestHandler.call(request);
                 runtimeClient.postInvocationResponse(request.getId(), payload.toByteArray());
-                if (Thread.currentThread().isInterrupted()) {
-                    shouldExit = true;
-                }
+                boolean ignored = Thread.interrupted(); // clear interrupted flag in case if it was set by user's code
             } catch (UserFault f) {
                 userFault = f;
                 UserFault.filterStackTrace(f);

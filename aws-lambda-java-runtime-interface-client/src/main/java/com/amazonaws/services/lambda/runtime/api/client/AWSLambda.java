@@ -182,7 +182,6 @@ public class AWSLambda {
     }
 
     public static void main(String[] args) {
-        // TODO validate arguments, show usage
         startRuntime(args[0]);
     }
 

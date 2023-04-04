@@ -36,7 +36,7 @@ public class Failure {
         this.errorType = t.getClass().getName();
         StackTraceElement[] trace = t.getStackTrace();
         this.stackTrace = new String[trace.length];
-        for( int i = 0; i < trace.length; i++) {
+        for (int i = 0; i < trace.length; i++) {
             this.stackTrace[i] = trace[i].toString();
         }
         Throwable cause = t.getCause();

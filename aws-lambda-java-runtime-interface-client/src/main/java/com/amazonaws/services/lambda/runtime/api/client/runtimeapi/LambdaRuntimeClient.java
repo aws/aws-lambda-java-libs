@@ -16,9 +16,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * LambdaRuntimeClient is a client of the AWS Lambda Runtime HTTP API for custom runtimes.
- *
+ * <p>
  * API definition can be found at https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
- *
+ * <p>
  * Copyright (c) 2019 Amazon. All rights reserved.
  */
 public class LambdaRuntimeClient {
@@ -77,10 +77,10 @@ public class LambdaRuntimeClient {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", DEFAULT_CONTENT_TYPE);
-        if(errorType != null && !errorType.isEmpty()) {
+        if (errorType != null && !errorType.isEmpty()) {
             conn.setRequestProperty(ERROR_TYPE_HEADER, errorType);
         }
-        if(errorCause != null && errorCause.getBytes().length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
+        if (errorCause != null && errorCause.getBytes().length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
             conn.setRequestProperty(XRAY_ERROR_CAUSE_HEADER, errorCause);
         }
         conn.setFixedLengthStreamingMode(errorResponse.length);

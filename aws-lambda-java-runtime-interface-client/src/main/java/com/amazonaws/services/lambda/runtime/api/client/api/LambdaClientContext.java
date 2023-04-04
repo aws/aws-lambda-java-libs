@@ -2,10 +2,10 @@
 
 package com.amazonaws.services.lambda.runtime.api.client.api;
 
-import java.util.Map;
-
-import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.Client;
+import com.amazonaws.services.lambda.runtime.ClientContext;
+
+import java.util.Map;
 
 public class LambdaClientContext implements ClientContext {
 

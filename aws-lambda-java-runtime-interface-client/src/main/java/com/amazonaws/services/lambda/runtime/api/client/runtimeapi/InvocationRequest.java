@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 /**
  * An invocation request represents the response of the runtime API's next invocation API.
- *
+ * <p>
  * Copyright (c) 2019 Amazon. All rights reserved.
  */
 public class InvocationRequest {

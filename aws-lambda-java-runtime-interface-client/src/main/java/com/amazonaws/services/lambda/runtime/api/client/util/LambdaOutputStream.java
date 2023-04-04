@@ -14,7 +14,7 @@ public class LambdaOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        write(new byte[] {(byte)b});
+        write(new byte[]{(byte) b});
     }
 
     @Override
@@ -25,6 +25,6 @@ public class LambdaOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] bytes, int offset, int length) throws IOException {
-       inner.write(bytes, offset, length);
+        inner.write(bytes, offset, length);
     }
 }

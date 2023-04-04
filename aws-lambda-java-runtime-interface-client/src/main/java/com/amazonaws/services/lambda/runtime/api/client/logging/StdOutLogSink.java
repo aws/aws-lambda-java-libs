@@ -15,5 +15,6 @@ public class StdOutLogSink implements LogSink {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+    }
 }

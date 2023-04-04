@@ -38,8 +38,8 @@ public class PojoSerializerLoader {
 
         if (serializers.hasNext()) {
             throw new TooManyServiceProvidersFoundException(
-                        "Too many serializers provided inside the META-INF/services folder, only one is allowed"
-                );
+                    "Too many serializers provided inside the META-INF/services folder, only one is allowed"
+            );
         }
 
         initialized = true;
@@ -48,28 +48,28 @@ public class PojoSerializerLoader {
 
     public static PojoSerializer<Object> getCustomerSerializer(Type type) {
         if (!initialized) {
-            customPojoSerializer = loadSerializer(); 
+            customPojoSerializer = loadSerializer();
         }
-        
+
         if (customPojoSerializer == null) {
             return null;
         }
- 
+
         return new PojoSerializer<Object>() {
             @Override
             public Object fromJson(InputStream input) {
                 return customPojoSerializer.fromJson(input, type);
             }
- 
+
             @Override
             public Object fromJson(String input) {
                 return customPojoSerializer.fromJson(input, type);
             }
- 
+
             @Override
             public void toJson(Object value, OutputStream output) {
                 customPojoSerializer.toJson(value, output, type);
             }
-        };  
+        };
     }
 }

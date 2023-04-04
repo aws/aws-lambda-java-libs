@@ -22,16 +22,16 @@ public class LambdaContext implements Context {
     private final LambdaLogger logger;
 
     public LambdaContext(
-        int memoryLimit,
-        long deadlineTimeInMs,
-        String requestId,
-        String logGroupName,
-        String logStreamName,
-        String functionName,
-        CognitoIdentity identity,
-        String functionVersion,
-        String invokedFunctionArn,
-        ClientContext clientContext
+            int memoryLimit,
+            long deadlineTimeInMs,
+            String requestId,
+            String logGroupName,
+            String logStreamName,
+            String functionName,
+            CognitoIdentity identity,
+            String functionVersion,
+            String invokedFunctionArn,
+            ClientContext clientContext
     ) {
         this.memoryLimit = memoryLimit;
         this.deadlineTimeInMs = deadlineTimeInMs;

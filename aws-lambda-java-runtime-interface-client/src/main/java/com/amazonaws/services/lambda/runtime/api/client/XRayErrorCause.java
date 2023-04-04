@@ -18,7 +18,7 @@ public class XRayErrorCause {
 
     public XRayErrorCause(Throwable throwable) {
         working_directory = System.getProperty("user.dir");
-        exceptions = Collections.unmodifiableCollection(Collections.singletonList(new XRayException(throwable)));
+        exceptions = Collections.singletonList(new XRayException(throwable));
         paths = Collections.unmodifiableCollection(
                 Arrays.stream(throwable.getStackTrace())
                         .map(XRayErrorCause::determineFileName)

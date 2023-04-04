@@ -10,7 +10,7 @@ public final class HandlerInfo {
     public final Class<?> clazz;
     public final String methodName;
 
-    public HandlerInfo (Class<?> clazz, String methodName) {
+    public HandlerInfo(Class<?> clazz, String methodName) {
         this.clazz = clazz;
         this.methodName = methodName;
     }
@@ -19,7 +19,7 @@ public final class HandlerInfo {
         final int colonLoc = handler.lastIndexOf("::");
         final String className;
         final String methodName;
-        if(colonLoc < 0) {
+        if (colonLoc < 0) {
             className = handler;
             methodName = null;
         } else {
@@ -27,7 +27,7 @@ public final class HandlerInfo {
             methodName = handler.substring(colonLoc + 2);
         }
 
-        if(className.isEmpty() || (methodName != null && methodName.isEmpty())) {
+        if (className.isEmpty() || (methodName != null && methodName.isEmpty())) {
             throw new InvalidHandlerException();
         }
         return new HandlerInfo(Class.forName(className, true, cl), methodName);

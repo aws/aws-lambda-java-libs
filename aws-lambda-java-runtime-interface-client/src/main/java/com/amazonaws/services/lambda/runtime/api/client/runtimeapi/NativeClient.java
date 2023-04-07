@@ -22,31 +22,30 @@ class NativeClient {
             "aws-lambda-runtime-interface-client.musl.so",
     };
     private static final Throwable[] exceptions = new Throwable[libsToTry.length];
+
     static {
-            boolean loaded = false;
-            for (int i = 0; !loaded && i < libsToTry.length; ++i) {
-                try (InputStream lib = NativeClient.class.getResourceAsStream(
-                        Paths.get(architecturePathSuffix, libsToTry[i]).toString())) {
-                    Files.copy(lib, Paths.get(nativeLibPath), StandardCopyOption.REPLACE_EXISTING);
-                    System.load(nativeLibPath);
-                    loaded = true;
-                } catch (UnsatisfiedLinkError e) {
-                    exceptions[i] = e;
-                } catch (Exception e) {
-                    exceptions[i] = e;
-                }
+        boolean loaded = false;
+        for (int i = 0; !loaded && i < libsToTry.length; ++i) {
+            try (InputStream lib = NativeClient.class.getResourceAsStream(
+                    Paths.get(architecturePathSuffix, libsToTry[i]).toString())) {
+                Files.copy(lib, Paths.get(nativeLibPath), StandardCopyOption.REPLACE_EXISTING);
+                System.load(nativeLibPath);
+                loaded = true;
+            } catch (UnsatisfiedLinkError | Exception e) {
+                exceptions[i] = e;
             }
-            if (!loaded) {
-                for (int i = 0; i < libsToTry.length; ++i) {
-                    System.err.printf("Failed to load the native runtime interface client library %s. Exception: %s\n", libsToTry[i], exceptions[i].getMessage());
-                }
-                System.exit(-1);
+        }
+        if (!loaded) {
+            for (int i = 0; i < libsToTry.length; ++i) {
+                System.err.printf("Failed to load the native runtime interface client library %s. Exception: %s\n", libsToTry[i], exceptions[i].getMessage());
             }
-            String userAgent = String.format(
-                    "aws-lambda-java/%s-%s" ,
-                    System.getProperty("java.vendor.version"),
-                    NativeClient.class.getPackage().getImplementationVersion());
-            initializeClient(userAgent.getBytes());
+            System.exit(-1);
+        }
+        String userAgent = String.format(
+                "aws-lambda-java/%s-%s",
+                System.getProperty("java.vendor.version"),
+                NativeClient.class.getPackage().getImplementationVersion());
+        initializeClient(userAgent.getBytes());
     }
 
     /**

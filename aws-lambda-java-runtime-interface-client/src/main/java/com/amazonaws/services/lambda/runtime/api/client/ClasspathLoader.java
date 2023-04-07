@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 
 /**
  * This class loads all of the classes that are in jars on the classpath.
- *
+ * <p>
  * It is used to generate a class list and Application CDS archive that includes all the possible classes that could be
  * loaded by the runtime. This simplifies the process of generating the Application CDS archive.
  */
@@ -38,7 +38,7 @@ public class ClasspathLoader {
         try {
             Class.forName(name, true, SYSTEM_CLASS_LOADER);
         } catch (ClassNotFoundException e) {
-            System.err.println("[WARN] Failed to load " +  name + ": " + e.getMessage());
+            System.err.println("[WARN] Failed to load " + name + ": " + e.getMessage());
         }
     }
 
@@ -48,13 +48,13 @@ public class ClasspathLoader {
         while (en.hasMoreElements()) {
             JarEntry entry = en.nextElement();
 
-            if(!entry.getName().endsWith(".class")) {
+            if (!entry.getName().endsWith(".class")) {
                 continue;
             }
 
             String name = pathToClassName(entry.getName());
 
-            if(BLOCKLIST.contains(name)) {
+            if (BLOCKLIST.contains(name)) {
                 continue;
             }
 
@@ -65,11 +65,11 @@ public class ClasspathLoader {
     private static void loadClassesInClasspathEntry(String entry) throws IOException {
         File file = new File(entry);
 
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new FileNotFoundException("Classpath entry does not exist: " + file.getPath());
         }
 
-        if(file.isDirectory() || !file.getPath().endsWith(".jar")) {
+        if (file.isDirectory() || !file.getPath().endsWith(".jar")) {
             System.err.println("[WARN] Only jar classpath entries are supported. Skipping " + file.getPath());
             return;
         }
@@ -79,10 +79,10 @@ public class ClasspathLoader {
 
     private static void loadAllClasses() throws IOException {
         final String classPath = System.getProperty("java.class.path");
-        if(classPath == null) {
+        if (classPath == null) {
             return;
         }
-        for(String classPathEntry : classPath.split(File.pathSeparator)) {
+        for (String classPathEntry : classPath.split(File.pathSeparator)) {
             loadClassesInClasspathEntry(classPathEntry);
         }
     }

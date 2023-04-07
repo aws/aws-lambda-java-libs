@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public final class UserFault extends RuntimeException {
-    private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = -479308856905162038L;
 
     public final String msg;
     public final String exception;
@@ -66,8 +66,8 @@ public final class UserFault extends RuntimeException {
      */
     public static <T extends Throwable> T filterStackTrace(T t) {
         StackTraceElement[] trace = t.getStackTrace();
-        for(int i = 0; i < trace.length; i++) {
-            if(trace[i].getClassName().startsWith(packagePrefix)) {
+        for (int i = 0; i < trace.length; i++) {
+            if (trace[i].getClassName().startsWith(packagePrefix)) {
                 StackTraceElement[] newTrace = new StackTraceElement[i];
                 System.arraycopy(trace, 0, newTrace, 0, i);
                 t.setStackTrace(newTrace);
@@ -77,12 +77,12 @@ public final class UserFault extends RuntimeException {
 
 
         Throwable cause = t.getCause();
-        if(cause != null) {
+        if (cause != null) {
             filterStackTrace(cause);
         }
 
         Throwable[] suppressedExceptions = t.getSuppressed();
-        for(Throwable suppressed: suppressedExceptions) {
+        for (Throwable suppressed : suppressedExceptions) {
             filterStackTrace(suppressed);
         }
 
@@ -108,7 +108,7 @@ public final class UserFault extends RuntimeException {
     }
 
     public String reportableError() {
-        if(this.exception != null || this.trace != null) {
+        if (this.exception != null || this.trace != null) {
             return String.format("%s: %s\n%s\n",
                     this.msg,
                     this.exception == null ? "" : this.exception,

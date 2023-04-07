@@ -13,16 +13,16 @@ import java.time.Instant;
  * FramedTelemetryLogSink implements the logging contract between runtimes and the platform. It implements a simple
  * framing protocol so message boundaries can be determined. Each frame can be visualized as follows:
  *
- *  <pre>
+ * <pre>
  * {@code
  * +----------------------+------------------------+---------------------+-----------------------+
  * | Frame Type - 4 bytes | Length (len) - 4 bytes | Timestamp - 8 bytes | Message - 'len' bytes |
  * +----------------------+------------------------+---------------------+-----------------------+
  * }
  * </pre>
- *
+ * <p>
  * The first 4 bytes indicate the type of the frame - log frames have a type defined as the hex value 0xa55a0001. The
- * second 4 bytes should indicate the message's length. The next 8 bytes contain UNIX timestamp of the message in 
+ * second 4 bytes should indicate the message's length. The next 8 bytes contain UNIX timestamp of the message in
  * microsecond accuracy. The next 'len' bytes contain the message. The byte order is big-endian.
  */
 public class FramedTelemetryLogSink implements LogSink {

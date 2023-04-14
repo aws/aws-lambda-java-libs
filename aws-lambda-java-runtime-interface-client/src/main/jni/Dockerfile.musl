@@ -10,12 +10,17 @@ RUN apk update && \
         g++ \
         gcc \
         make \
+        patch \
         perl
 
 # Install curl dependency
 COPY ./deps/curl-$CURL_VERSION.tar.gz /src/deps/
+COPY ./deps/curl_001_disable_wakeup.patch /src/deps/
+
 RUN tar xzf /src/deps/curl-$CURL_VERSION.tar.gz -C /src/deps
+
 WORKDIR /src/deps/curl-$CURL_VERSION
+RUN patch lib/multihandle.h ../curl_001_disable_wakeup.patch
 RUN ./configure \
         --prefix $(pwd)/../artifacts \
         --disable-shared \

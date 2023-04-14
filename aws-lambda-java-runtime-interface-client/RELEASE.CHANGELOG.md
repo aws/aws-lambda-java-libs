@@ -1,3 +1,7 @@
+### April 14, 2023
+`2.3.2`
+- Add curl patch
+
 ### March 16, 2023
 `2.3.1`
 - ignore module-info for CDS preparation purposes

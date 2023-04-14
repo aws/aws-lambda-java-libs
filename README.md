@@ -140,7 +140,7 @@ The purpose of this package is to allow developers to deploy their applications 
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
- <version>2.1.1</version>
+ <version>2.3.2</version>
 </dependency>
 ```
 

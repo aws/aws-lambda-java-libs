@@ -66,6 +66,18 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
 
         private Map<String, Object> authorizer;
 
+        private String extendedRequestId;
+
+        private String requestTime;
+
+        private Long requestTimeEpoch;
+
+        private String domainName;
+
+        private String domainPrefix;
+
+        private String protocol;
+
         /**
          * default constructor
          */
@@ -306,6 +318,145 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
         }
 
         /**
+         * @return The API Gateway Extended Request Id
+         */
+        public String getExtendedRequestId() {
+            return extendedRequestId;
+        }
+
+        /**
+         * @param extendedRequestId The API Gateway Extended Request Id
+         */
+        public void setExtendedRequestId(String extendedRequestId) {
+            this.extendedRequestId = extendedRequestId;
+        }
+
+        /**
+         * @param extendedRequestId The API Gateway Extended Request Id
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withExtendedRequestId(String extendedRequestId) {
+            this.setExtendedRequestId(extendedRequestId);
+            return this;
+        }
+
+        /**
+         * @return The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         */
+        public String getRequestTime() {
+            return requestTime;
+        }
+
+        /**
+         * @param requestTime The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         */
+        public void setRequestTime(String requestTime) {
+            this.requestTime = requestTime;
+        }
+
+        /**
+         * @param requestTime The CLF-formatted request time (dd/MMM/yyyy:HH:mm:ss +-hhmm).
+         * @return  ProxyRequestContext object
+         */
+        public ProxyRequestContext withRequestTime(String requestTime) {
+            this.setRequestTime(requestTime);
+            return this;
+        }
+
+        /**
+         * @return The Epoch-formatted request time (in millis)
+         */
+        public Long getRequestTimeEpoch() {
+            return requestTimeEpoch;
+        }
+
+        /**
+         * @param requestTimeEpoch The Epoch-formatted request time (in millis)
+         */
+        public void setRequestTimeEpoch(Long requestTimeEpoch) {
+            this.requestTimeEpoch = requestTimeEpoch;
+        }
+
+        /**
+         * @param requestTimeEpoch The Epoch-formatted request time (in millis)
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withRequestTimeEpoch(Long requestTimeEpoch) {
+            this.setRequestTimeEpoch(requestTimeEpoch);
+            return this;
+        }
+
+        /**
+         * @return The full domain name used to invoke the API. This should be the same as the incoming Host header.
+         */
+        public String getDomainName() {
+            return domainName;
+        }
+
+        /**
+         * @param domainName The full domain name used to invoke the API.
+         *                   This should be the same as the incoming Host header.
+         */
+        public void setDomainName(String domainName) {
+            this.domainName = domainName;
+        }
+
+        /**
+         * @param domainName The full domain name used to invoke the API.
+         *                   This should be the same as the incoming Host header.
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withDomainName(String domainName) {
+            this.setDomainName(domainName);
+            return this;
+        }
+
+        /**
+         * @return The first label of the domainName. This is often used as a caller/customer identifier.
+         */
+        public String getDomainPrefix() {
+            return domainPrefix;
+        }
+
+        /**
+         * @param domainPrefix The first label of the domainName. This is often used as a caller/customer identifier.
+         */
+        public void setDomainPrefix(String domainPrefix) {
+            this.domainPrefix = domainPrefix;
+        }
+
+        /**
+         * @param domainPrefix The first label of the domainName. This is often used as a caller/customer identifier.
+         * @return
+         */
+        public ProxyRequestContext withDomainPrefix(String domainPrefix) {
+            this.setDomainPrefix(domainPrefix);
+            return this;
+        }
+        /**
+         * @return The request protocol, for example, HTTP/1.1.
+         */
+        public String getProtocol() {
+            return protocol;
+        }
+
+        /**
+         * @param protocol  The request protocol, for example, HTTP/1.1.
+         */
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
+        /**
+         * @param protocol  The request protocol, for example, HTTP/1.1.
+         * @return ProxyRequestContext object
+         */
+        public ProxyRequestContext withProtocol(String protocol) {
+            this.setProtocol(protocol);
+            return this;
+        }
+
+        /**
          * Returns a string representation of this object; useful for testing and debugging.
          *
          * @return A string representation of this object.
@@ -338,6 +489,18 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 sb.append("authorizer: ").append(getAuthorizer().toString());
             if (getOperationName() != null)
                 sb.append("operationName: ").append(getOperationName().toString());
+            if (getExtendedRequestId() != null)
+                sb.append("extendedRequestId: ").append(getExtendedRequestId()).append(",");
+            if (getRequestTime() != null)
+                sb.append("requestTime: ").append(getRequestTime()).append(",");
+            if (getProtocol() != null)
+                sb.append("protocol: ").append(getProtocol()).append(",");
+            if (getRequestTimeEpoch() != null)
+                sb.append("requestTimeEpoch: ").append(getRequestTimeEpoch()).append(",");
+            if (getDomainPrefix() != null)
+                sb.append("domainPrefix: ").append(getDomainPrefix()).append(",");
+            if (getDomainName() != null)
+                sb.append("domainName: ").append(getDomainName());
             sb.append("}");
             return sb.toString();
         }
@@ -396,6 +559,30 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
                 return false;
             if (other.getOperationName() != null && !other.getOperationName().equals(this.getOperationName()))
                 return false;
+            if (other.getExtendedRequestId() == null ^ this.getExtendedRequestId() == null)
+                return false;
+            if (other.getExtendedRequestId() != null && other.getExtendedRequestId().equals(this.getExtendedRequestId()) == false)
+                return false;
+            if (other.getRequestTime() == null ^ this.getRequestTime() == null)
+                return false;
+            if (other.getRequestTime() != null && other.getRequestTime().equals(this.getRequestTime()) == false)
+                return false;
+            if (other.getRequestTimeEpoch() == null ^ this.getRequestTimeEpoch() == null)
+                return false;
+            if (other.getRequestTimeEpoch() != null && other.getRequestTimeEpoch().equals(this.getRequestTimeEpoch()) == false)
+                return false;
+            if (other.getDomainName() == null ^ this.getDomainName() == null)
+                return false;
+            if (other.getDomainName() != null && other.getDomainName().equals(this.getDomainName()) == false)
+                return false;
+            if (other.getDomainPrefix() == null ^ this.getDomainPrefix() == null)
+                return false;
+            if (other.getDomainPrefix() != null && other.getDomainPrefix().equals(this.getDomainPrefix()) == false)
+                return false;
+            if (other.getProtocol() == null ^ this.getProtocol() == null)
+                return false;
+            if (other.getProtocol() != null && other.getProtocol().equals(this.getProtocol()) == false)
+                return false;
             return true;
         }
 
@@ -415,6 +602,12 @@ public class APIGatewayProxyRequestEvent implements Serializable, Cloneable {
             hashCode = prime * hashCode + ((getPath() == null) ? 0 : getPath().hashCode());
             hashCode = prime * hashCode + ((getAuthorizer() == null) ? 0 : getAuthorizer().hashCode());
             hashCode = prime * hashCode + ((getOperationName() == null) ? 0: getOperationName().hashCode());
+            hashCode = prime * hashCode + ((getExtendedRequestId() == null) ? 0 : getExtendedRequestId().hashCode());
+            hashCode = prime * hashCode + ((getRequestTime() == null) ? 0 : getRequestTime().hashCode());
+            hashCode = prime * hashCode + ((getRequestTimeEpoch() == null) ? 0 : getRequestTimeEpoch().hashCode());
+            hashCode = prime * hashCode + ((getDomainName() == null) ? 0 : getDomainName().hashCode());
+            hashCode = prime * hashCode + ((getDomainPrefix() == null) ? 0 : getDomainPrefix().hashCode());
+            hashCode = prime * hashCode + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
             return hashCode;
         }
 

@@ -55,8 +55,6 @@
 * `SQSBatchResponse`
 * `SQSEvent`
 
-*As of version `3.0.0`, users are no longer required to pull in SDK dependencies in order to use this library.*
-
 
 ### Getting Started
 
@@ -68,12 +66,12 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-core</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.11.0</version>
+        <version>3.11.2</version>
     </dependency>
     ...
 </dependencies>

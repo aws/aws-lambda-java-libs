@@ -41,7 +41,7 @@ public class HandlerStream implements RequestStreamHandler {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-core</artifactId>
- <version>1.2.1</version>
+ <version>1.2.2</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-events</artifactId>
- <version>3.11.0</version>
+ <version>3.11.2</version>
 </dependency>
 ```
 

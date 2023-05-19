@@ -21,7 +21,7 @@ Add the following Apache Maven dependencies to your `pom.xml` file:
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.11.0</version>
+        <version>3.11.2</version>
     </dependency>
 </dependencies>
 ```

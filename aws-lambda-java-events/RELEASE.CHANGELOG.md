@@ -1,3 +1,7 @@
+### May 18, 2023
+`3.11.2`:
+- Add missing fields to API Gateway request context
+
 ### March 10, 2023
 `3.11.1`:
 - Extended ActiveMQEvent with custom properties ([#408](https://github.com/aws/aws-lambda-java-libs/pull/408))

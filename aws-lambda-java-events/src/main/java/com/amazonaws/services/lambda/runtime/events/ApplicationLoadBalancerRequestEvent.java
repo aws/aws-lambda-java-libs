@@ -13,6 +13,9 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
+import com.amazonaws.services.lambda.runtime.events.helper.AwsLambdaRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.helper.RequestSource;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +37,13 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationLoadBalancerRequestEvent implements Serializable  {
+public class ApplicationLoadBalancerRequestEvent implements Serializable, AwsLambdaRequestEvent {
+
+    @Override
+    @JsonIgnore
+    public RequestSource getRequestSource() {
+        return RequestSource.ALB;
+    }
 
     @Data
     @Builder(setterPrefix = "with")

@@ -1,3 +1,8 @@
+### July 17, 2023
+`2.3.3`
+- Build platform specific JAR files
+- NativeClient optimisations
+
 ### April 14, 2023
 `2.3.2`
 - Add curl patch

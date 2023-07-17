@@ -41,39 +41,61 @@ public class InvocationRequest {
      */
     private String cognitoIdentity;
 
-    /**
-     * An input stream of the invocation's request body.
-     */
-    private InputStream stream;
-
     private byte[] content;
 
     public String getId() {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getXrayTraceId() {
         return xrayTraceId;
+    }
+
+    public void setXrayTraceId(String xrayTraceId) {
+        this.xrayTraceId = xrayTraceId;
     }
 
     public String getInvokedFunctionArn() {
         return invokedFunctionArn;
     }
 
+    public void setInvokedFunctionArn(String invokedFunctionArn) {
+        this.invokedFunctionArn = invokedFunctionArn;
+    }
+
     public long getDeadlineTimeInMs() {
         return deadlineTimeInMs;
+    }
+
+    public void setDeadlineTimeInMs(long deadlineTimeInMs) {
+        this.deadlineTimeInMs = deadlineTimeInMs;
     }
 
     public String getClientContext() {
         return clientContext;
     }
 
+    public void setClientContext(String clientContext) {
+        this.clientContext = clientContext;
+    }
+
     public String getCognitoIdentity() {
         return cognitoIdentity;
+    }
+
+    public void setCognitoIdentity(String cognitoIdentity) {
+        this.cognitoIdentity = cognitoIdentity;
     }
 
     public InputStream getContentAsStream() {
         return new ByteArrayInputStream(content);
     }
 
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 }

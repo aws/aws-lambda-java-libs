@@ -151,6 +151,33 @@ DOCKERHUB_PASSWORD=<dockerhub password>
 ```
 Recommended way is to set the Docker Hub credentials in CodeBuild job by retrieving them from AWS Secrets Manager.
 
+## Configuration
+The `aws-lambda-java-runtime-interface-client` JAR is a large uber jar, which contains compiled C libraries
+for x86_64 and aarch_64 for glibc and musl LIBC implementations. If the size is an issue, you can pick a smaller
+platform-specific JAR by setting the `<classifier>`.
+```
+<!-- Platform-specific Linux x86_64 JAR -->
+<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+    <version>2.3.2</version>
+    <classifier>linux-x86_64</classifier>
+</dependency>
+```
+
+Available platform classifiers: `linux-x86_64`, `linux-aarch_64`, `linux_musl-aarch_64`, `linux_musl-x86_64`
+
+The Lambda runtime interface client tries to load compatible library during execution, by unpacking it to a temporary
+location `/tmp/.libaws-lambda-jni.so`.
+If this behaviour is not desirable, it is possible to extract the `.so` files during build time and specify the location via
+`com.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient.JNI` system property, like
+```
+ENTRYPOINT [ "/usr/bin/java",
+"-Dcom.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient.JNI=/function/libaws-lambda-jni.linux_x86_64.so"
+"-cp", "./*",
+"com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+```
+
 ## Security
 
 If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.

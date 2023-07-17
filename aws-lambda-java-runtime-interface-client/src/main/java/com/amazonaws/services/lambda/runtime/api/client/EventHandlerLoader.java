@@ -24,8 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,6 +37,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.*;
@@ -81,12 +80,10 @@ public final class EventHandlerLoader {
             }
         }
         // else platform dependent (Android uses GSON but all other platforms use Jackson)
-        switch (platform) {
-            case ANDROID:
-                return GsonFactory.getInstance().getSerializer(type);
-            default:
-                return JacksonFactory.getInstance().getSerializer(type);
+        if (Objects.requireNonNull(platform) == Platform.ANDROID) {
+            return GsonFactory.getInstance().getSerializer(type);
         }
+        return JacksonFactory.getInstance().getSerializer(type);
     }
 
     private static PojoSerializer<Object> getSerializerCached(Platform platform, Type type) {
@@ -710,14 +707,14 @@ public final class EventHandlerLoader {
         }
     }
 
-    private static final boolean isContext(Type t) {
+    private static boolean isContext(Type t) {
         return Context.class.equals(t);
     }
 
     /**
      * Returns true if the last type in params is a lambda context object interface (Context).
      */
-    private static final boolean lastParameterIsContext(Class<?>[] params) {
+    private static boolean lastParameterIsContext(Class<?>[] params) {
         return params.length != 0 && isContext(params[params.length - 1]);
     }
 
@@ -830,21 +827,6 @@ public final class EventHandlerLoader {
         return wrapRequestStreamHandler(new PojoHandlerAsStreamHandler(instance, Optional.ofNullable(pType),
                 isVoid(rType) ? Optional.<Type>empty() : Optional.of(rType)
         ));
-    }
-
-    private static String exceptionToString(Throwable t) {
-        StringWriter writer = new StringWriter(65536);
-        try (PrintWriter wrapped = new PrintWriter(writer)) {
-            t.printStackTrace(wrapped);
-        }
-        StringBuffer buffer = writer.getBuffer();
-        if (buffer.length() > 262144) {
-            final String extra = " Truncated by Lambda";
-            buffer.delete(262144, buffer.length());
-            buffer.append(extra);
-        }
-
-        return buffer.toString();
     }
 
     private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {

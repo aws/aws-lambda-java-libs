@@ -38,6 +38,7 @@ public class LambdaRuntimeClient {
         this.hostname = parts[0];
         this.port = Integer.parseInt(parts[1]);
         this.invocationEndpoint = invocationEndpoint();
+        NativeClient.init();
     }
 
     public InvocationRequest waitForNextInvocation() {

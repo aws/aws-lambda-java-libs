@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-    <version>2.3.2</version>
+    <version>2.3.3</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Interface Client</name>
@@ -44,6 +44,9 @@
             separately from the Runtime Interface Client functionality until we figure something else out.
         -->
         <multiArch>true</multiArch>
+        <target_build_os/>
+        <target_build_arch/>
+        <ric.classifier/>
     </properties>
 
     <dependencies>
@@ -119,6 +122,8 @@
                                       failonerror="true" logError="true">
                                     <arg value="${project.build.directory}"/>
                                     <arg value="${multiArch}"/>
+                                    <arg value="${target_build_os}"/>
+                                    <arg value="${target_build_arch}"/>
                                 </exec>
                             </target>
                         </configuration>
@@ -147,6 +152,11 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                    <classifier>${ric.classifier}</classifier>
+                    <includes>
+                        <include>com/</include>
+                        <include>jni/*${ric.classifier}.so</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -287,6 +297,38 @@
                     <url>${env.MAVEN_REPO_URL}</url>
                 </repository>
             </distributionManagement>
+        </profile>
+        <profile>
+            <id>linux-x86_64</id>
+            <properties>
+                <target_build_os>linux</target_build_os>
+                <target_build_arch>x86_64</target_build_arch>
+                <ric.classifier>linux-x86_64</ric.classifier>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux_musl-x86_64</id>
+            <properties>
+                <target_build_os>linux_musl</target_build_os>
+                <target_build_arch>x86_64</target_build_arch>
+                <ric.classifier>linux_musl-x86_64</ric.classifier>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-aarch64</id>
+            <properties>
+                <target_build_os>linux</target_build_os>
+                <target_build_arch>aarch_64</target_build_arch>
+                <ric.classifier>linux-aarch_64</ric.classifier>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux_musl-aarch64</id>
+            <properties>
+                <target_build_os>linux_musl</target_build_os>
+                <target_build_arch>aarch_64</target_build_arch>
+                <ric.classifier>linux_musl-aarch_64</ric.classifier>
+            </properties>
         </profile>
     </profiles>
 </project>

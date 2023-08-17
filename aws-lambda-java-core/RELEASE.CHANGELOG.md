@@ -1,3 +1,7 @@
+### August 17, 2023
+`1.2.3`:
+- Extended logger interface with level-aware logging backend functions
+
 ### November 09, 2022
 `1.2.2`:
 - Added new `CustomPojoSerializer` interface

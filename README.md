@@ -41,7 +41,7 @@ public class HandlerStream implements RequestStreamHandler {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-core</artifactId>
- <version>1.2.2</version>
+ <version>1.2.3</version>
 </dependency>
 ```
 

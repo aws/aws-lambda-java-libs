@@ -16,6 +16,8 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationReq
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeClient;
 import com.amazonaws.services.lambda.runtime.api.client.util.LambdaOutputStream;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
 import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
@@ -187,7 +189,12 @@ public class AWSLambda {
 
     private static void startRuntime(String handler) {
         try (LogSink logSink = createLogSink()) {
-            startRuntime(handler, new LambdaContextLogger(logSink));
+            LambdaLogger logger = new LambdaContextLogger(
+                    logSink,
+                    LogLevel.fromString(LambdaEnvironment.LAMBDA_LOG_LEVEL),
+                    LogFormat.fromString(LambdaEnvironment.LAMBDA_LOG_FORMAT)
+            );
+            startRuntime(handler, logger);
         } catch (Throwable t) {
             throw new Error(t);
         }

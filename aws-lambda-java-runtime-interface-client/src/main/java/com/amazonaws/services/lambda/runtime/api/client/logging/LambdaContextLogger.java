@@ -2,33 +2,29 @@
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class LambdaContextLogger implements LambdaLogger {
+public class LambdaContextLogger extends AbstractLambdaLogger {
     // If a null string is passed in, replace it with "null",
     // replicating the behavior of System.out.println(null);
     private static final byte[] NULL_BYTES_VALUE = "null".getBytes(UTF_8);
 
     private final transient LogSink sink;
 
-    public LambdaContextLogger(LogSink sink) {
+    public LambdaContextLogger(LogSink sink, LogLevel logLevel, LogFormat logFormat) {
+        super(logLevel, logFormat);
         this.sink = sink;
     }
 
-    public void log(byte[] message) {
+    @Override
+    protected void logMessage(byte[] message, LogLevel logLevel) {
         if (message == null) {
             message = NULL_BYTES_VALUE;
         }
-        sink.log(message);
-    }
-
-    public void log(String message) {
-        if (message == null) {
-            this.log(NULL_BYTES_VALUE);
-        } else {
-            this.log(message.getBytes(UTF_8));
-        }
+        sink.log(logLevel, this.logFormat, message);
     }
 }

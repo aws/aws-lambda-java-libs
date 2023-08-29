@@ -9,6 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+
 /**
  * FramedTelemetryLogSink implements the logging contract between runtimes and the platform. It implements a simple
  * framing protocol so message boundaries can be determined. Each frame can be visualized as follows:
@@ -38,16 +41,21 @@ public class FramedTelemetryLogSink implements LogSink {
     }
 
     @Override
-    public synchronized void log(byte[] message) {
+    public synchronized void log(LogLevel logLevel, LogFormat logFormat, byte[] message) {
         try {
-            writeFrame(message);
+            writeFrame(logLevel, logFormat, message);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void writeFrame(byte[] message) throws IOException {
-        updateHeader(message.length);
+    @Override
+    public void log(byte[] message) {
+        log(LogLevel.UNDEFINED, LogFormat.TEXT, message);
+    }
+
+    private void writeFrame(LogLevel logLevel, LogFormat logFormat, byte[] message) throws IOException {
+        updateHeader(logLevel, logFormat, message.length);
         this.logOutputStream.write(this.headerBuf.array());
         this.logOutputStream.write(message);
     }
@@ -60,9 +68,9 @@ public class FramedTelemetryLogSink implements LogSink {
     /**
      * Updates the header ByteBuffer with the provided length. The header comprises the frame type and message length.
      */
-    private void updateHeader(int length) {
+    private void updateHeader(LogLevel logLevel, LogFormat logFormat, int length) {
         this.headerBuf.clear();
-        this.headerBuf.putInt(FrameType.LOG.getValue());
+        this.headerBuf.putInt(FrameType.getValue(logLevel, logFormat));
         this.headerBuf.putInt(length);
         this.headerBuf.putLong(timestamp());
         this.headerBuf.flip();

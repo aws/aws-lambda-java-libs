@@ -67,6 +67,16 @@ public interface ReservedRuntimeEnvironmentVariables {
     String AWS_LAMBDA_LOG_STREAM_NAME = "AWS_LAMBDA_LOG_STREAM_NAME";
 
     /**
+     * The logging level set for the function.
+     */
+    String AWS_LAMBDA_LOG_LEVEL = "AWS_LAMBDA_LOG_LEVEL";
+
+    /**
+     * The logging format set for the function.
+     */
+    String AWS_LAMBDA_LOG_FORMAT = "AWS_LAMBDA_LOG_FORMAT";
+
+    /**
      * Access key id obtained from the function's execution role.
      */
     String AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID";

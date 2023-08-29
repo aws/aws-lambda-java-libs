@@ -4,6 +4,7 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -11,6 +12,7 @@ import com.amazonaws.services.lambda.runtime.api.client.LambdaRequestHandler.Use
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaClientContext;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaCognitoIdentity;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
+import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
@@ -844,6 +846,22 @@ public final class EventHandlerLoader {
                 }
             }
 
+            /**
+             * Passes the LambdaContext to the logger so that the JSON formatter can include the requestId.
+             *
+             * We do casting here because both the LambdaRuntime and the LambdaLogger is in the core package,
+             * and the setLambdaContext(context) is a method we don't want to publish for customers. That method is
+             * only implemented on the internal LambdaContextLogger, so we check and cast to be able to call it.
+             * @param context the LambdaContext
+             */
+            private void safeAddContextToLambdaLogger(LambdaContext context) {
+                LambdaLogger logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
+                if (logger instanceof LambdaContextLogger) {
+                    LambdaContextLogger contextLogger = (LambdaContextLogger) logger;
+                    contextLogger.setLambdaContext(context);
+                }
+            }
+
             public ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
                 output.reset();
 
@@ -870,6 +888,8 @@ public final class EventHandlerLoader {
                         request.getInvokedFunctionArn(),
                         clientContext
                 );
+
+                safeAddContextToLambdaLogger(context);
 
                 if (LambdaRuntimeInternal.getUseLog4jAppender()) {
                     safeAddRequestIdToLog4j("org.apache.log4j.MDC", request, Object.class);

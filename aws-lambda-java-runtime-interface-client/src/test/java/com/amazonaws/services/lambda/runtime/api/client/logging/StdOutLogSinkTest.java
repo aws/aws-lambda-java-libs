@@ -10,6 +10,9 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+
 public class StdOutLogSinkTest {
 
     private final PrintStream originalOutPrintStream = System.out;
@@ -27,6 +30,20 @@ public class StdOutLogSinkTest {
         try {
             try (StdOutLogSink logSink = new StdOutLogSink()) {
                 logSink.log("hello\nworld".getBytes());
+            }
+        } finally {
+            System.setOut(originalOutPrintStream);
+        }
+
+        assertEquals("hello\nworld", bos.toString());
+    }
+
+    @Test
+    public void testSingleLogWithLogLevel() {
+        System.setOut(capturedOutPrintStream);
+        try {
+            try (StdOutLogSink logSink = new StdOutLogSink()) {
+                logSink.log(LogLevel.ERROR, LogFormat.TEXT, "hello\nworld".getBytes());
             }
         } finally {
             System.setOut(originalOutPrintStream);

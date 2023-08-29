@@ -1,3 +1,7 @@
+### August 29, 2023
+`2.4.0`
+- Logging improvements ([#436](https://github.com/aws/aws-lambda-java-libs/pull/436))
+
 ### July 17, 2023
 `2.3.3`
 - Build platform specific JAR files

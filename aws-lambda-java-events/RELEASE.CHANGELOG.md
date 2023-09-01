@@ -1,3 +1,7 @@
+### September 1, 2023
+`3.11.3`:
+- Update challengeAnswer field format in CognitoUserPoolEvent 
+
 ### May 18, 2023
 `3.11.2`:
 - Add missing fields to API Gateway request context

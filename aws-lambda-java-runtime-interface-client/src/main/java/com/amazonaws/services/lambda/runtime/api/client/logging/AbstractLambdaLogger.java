@@ -33,7 +33,8 @@ public abstract class AbstractLambdaLogger implements LambdaLogger {
     protected abstract void logMessage(byte[] message, LogLevel logLevel);
 
     protected void logMessage(String message, LogLevel logLevel) {
-        logMessage(message.getBytes(UTF_8), logLevel);
+        byte[] messageBytes = message == null ? null : message.getBytes(UTF_8);
+        logMessage(messageBytes, logLevel);
     }
 
     @Override

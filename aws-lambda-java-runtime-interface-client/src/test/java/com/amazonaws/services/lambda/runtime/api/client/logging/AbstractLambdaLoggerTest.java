@@ -13,16 +13,24 @@ import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
 
 public class AbstractLambdaLoggerTest {
-    class TestLogger extends AbstractLambdaLogger {
+    class TestSink implements LogSink {
         private List<byte[]> messages = new LinkedList<>();
 
-        public TestLogger(LogLevel logLevel, LogFormat logFormat) {
-            super(logLevel, logFormat);
+        public TestSink() {
         }
 
         @Override
-        protected void logMessage(byte[] message, LogLevel logLevel) {
+        public void log(byte[] message) {
             messages.add(message);
+        }
+
+        @Override
+        public void log(LogLevel logLevel, LogFormat logFormat, byte[] message) {
+            messages.add(message);
+        }
+
+        @Override
+        public void close() {
         }
 
         List<byte[]> getMessages() {
@@ -40,35 +48,96 @@ public class AbstractLambdaLoggerTest {
     }
 
     @Test
+    public void testLoggingNullValuesWithoutLogLevelInText() {
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.INFO, LogFormat.TEXT);
+
+        String isNullString = null;
+        byte[] isNullBytes = null;
+
+        logger.log(isNullString);
+        logger.log(isNullBytes);
+
+        assertEquals("null", new String(sink.getMessages().get(0)));
+        assertEquals("null", new String(sink.getMessages().get(1)));
+    }
+
+    @Test
+    public void testLoggingNullValuesWithoutLogLevelInJSON() {
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.INFO, LogFormat.JSON);
+
+        String isNullString = null;
+        byte[] isNullBytes = null;
+
+        logger.log(isNullString);
+        logger.log(isNullBytes);
+
+        assertEquals(2, sink.getMessages().size());
+    }
+
+    @Test
+    public void testLoggingNullValuesWithLogLevelInText() {
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.INFO, LogFormat.TEXT);
+
+        String isNullString = null;
+        byte[] isNullBytes = null;
+
+        logger.log(isNullString, LogLevel.ERROR);
+        logger.log(isNullBytes, LogLevel.ERROR);
+
+        assertEquals("[ERROR] null", new String(sink.getMessages().get(0)));
+        assertEquals("null", new String(sink.getMessages().get(1)));
+    }
+
+    @Test
+    public void testLoggingNullValuesWithLogLevelInJSON() {
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.INFO, LogFormat.JSON);
+
+        String isNullString = null;
+        byte[] isNullBytes = null;
+
+        logger.log(isNullString, LogLevel.ERROR);
+        logger.log(isNullBytes, LogLevel.ERROR);
+
+        assertEquals(2, sink.getMessages().size());
+    }
+    @Test
     public void testWithoutFiltering() {
-        TestLogger logger = new TestLogger(LogLevel.UNDEFINED, LogFormat.TEXT);
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.UNDEFINED, LogFormat.TEXT);
         logMessages(logger);
 
-        assertEquals(6, logger.getMessages().size());
+        assertEquals(6, sink.getMessages().size());
     }
 
     @Test
     public void testWithFiltering() {
-        TestLogger logger = new TestLogger(LogLevel.WARN, LogFormat.TEXT);
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.WARN, LogFormat.TEXT);
         logMessages(logger);
 
-        assertEquals(3, logger.getMessages().size());
+        assertEquals(3, sink.getMessages().size());
     }
 
     @Test
     public void testUndefinedLogLevelWithFiltering() {
-        TestLogger logger = new TestLogger(LogLevel.WARN, LogFormat.TEXT);
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.WARN, LogFormat.TEXT);
         logger.log("undefined");
 
-        assertEquals(1, logger.getMessages().size());
+        assertEquals(1, sink.getMessages().size());
     }
 
     @Test
     public void testFormattingLogMessages() {
-        TestLogger logger = new TestLogger(LogLevel.INFO, LogFormat.TEXT);
+        TestSink sink = new TestSink();
+        LambdaLogger logger = new LambdaContextLogger(sink, LogLevel.INFO, LogFormat.TEXT);
         logger.log("test message", LogLevel.INFO);
 
-        assertEquals(1, logger.getMessages().size());
-        assertEquals("[INFO] test message", new String(logger.getMessages().get(0)));
+        assertEquals(1, sink.getMessages().size());
+        assertEquals("[INFO] test message", new String(sink.getMessages().get(0)));
     }
 }

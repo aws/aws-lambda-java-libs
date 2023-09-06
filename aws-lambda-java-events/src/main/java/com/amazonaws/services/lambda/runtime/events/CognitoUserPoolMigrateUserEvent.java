@@ -26,6 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CognitoUserPoolMigrateUserEvent extends CognitoUserPoolEvent {
     /**
      * The request from the Amazon Cognito service.
@@ -55,6 +56,7 @@ public class CognitoUserPoolMigrateUserEvent extends CognitoUserPoolEvent {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
+    @ToString(callSuper = true)
     public static class Request extends CognitoUserPoolEvent.Request {
         /**
          * The username entered by the user.

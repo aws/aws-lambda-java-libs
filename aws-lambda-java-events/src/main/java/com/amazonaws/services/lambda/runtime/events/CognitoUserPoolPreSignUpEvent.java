@@ -26,6 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CognitoUserPoolPreSignUpEvent extends CognitoUserPoolEvent {
 
     /**
@@ -56,6 +57,7 @@ public class CognitoUserPoolPreSignUpEvent extends CognitoUserPoolEvent {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
+    @ToString(callSuper = true)
     public static class Request extends CognitoUserPoolEvent.Request {
         /**
          * One or more name-value pairs containing the validation data in the request to register a user.

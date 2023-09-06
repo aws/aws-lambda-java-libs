@@ -12,10 +12,7 @@
  */
 package com.amazonaws.services.lambda.runtime.events;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Map;
 
@@ -29,6 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CognitoUserPoolPostAuthenticationEvent extends CognitoUserPoolEvent {
 
     /**
@@ -52,6 +50,7 @@ public class CognitoUserPoolPostAuthenticationEvent extends CognitoUserPoolEvent
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
+    @ToString(callSuper = true)
     public static class Request extends CognitoUserPoolEvent.Request {
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the post authentication trigger.

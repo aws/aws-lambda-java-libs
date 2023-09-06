@@ -26,6 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CognitoUserPoolCustomMessageEvent extends CognitoUserPoolEvent {
     /**
      * The request from the Amazon Cognito service.
@@ -55,6 +56,7 @@ public class CognitoUserPoolCustomMessageEvent extends CognitoUserPoolEvent {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
+    @ToString(callSuper = true)
     public static class Request extends CognitoUserPoolEvent.Request {
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the custom message trigger.

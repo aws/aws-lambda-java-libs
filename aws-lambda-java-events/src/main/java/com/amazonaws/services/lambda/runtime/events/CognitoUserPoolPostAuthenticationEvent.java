@@ -12,7 +12,11 @@
  */
 package com.amazonaws.services.lambda.runtime.events;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Map;
 

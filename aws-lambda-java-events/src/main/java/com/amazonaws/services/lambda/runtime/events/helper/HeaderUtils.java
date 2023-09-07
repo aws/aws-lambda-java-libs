@@ -9,7 +9,7 @@ import java.util.*;
  * This class exposes some utility methods to work with request values such as headers
  * and query string parameters.
  */
-public class Utils {
+public class HeaderUtils {
 
     static final String HEADER_KEY_VALUE_SEPARATOR = "=";
     static final String HEADER_VALUE_SEPARATOR = ";";

@@ -13,7 +13,6 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.helper.AwsLambdaRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.helper.RequestSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

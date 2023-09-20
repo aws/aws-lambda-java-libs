@@ -15,6 +15,7 @@ public class HeaderUtils {
     static final String HEADER_VALUE_SEPARATOR = ";";
     static final String HEADER_QUALIFIER_SEPARATOR = ",";
     static final String ENCODING_VALUE_KEY = "charset";
+    static final Float EPSILON = .001f;
 
 
     //-------------------------------------------------------------
@@ -70,7 +71,7 @@ public class HeaderUtils {
     /**
      * Parses a header value using the default value separator "," and qualifier separator ";".
      * @param headerValue The value to be parsed
-     * @return A list of SimpleMapEntry objects with all of the possible values for the header.
+     * @return A list of HeaderValue objects
      */
     public static List<HeaderValue> parseHeaderValue(String headerValue) {
         return parseHeaderValue(headerValue, HEADER_VALUE_SEPARATOR, HEADER_QUALIFIER_SEPARATOR);
@@ -84,7 +85,7 @@ public class HeaderUtils {
      *
      * @param headerValue The string value for the HTTP header
      * @param valueSeparator The separator to be used for parsing header values
-     * @return A list of SimpleMapEntry objects with all of the possible values for the header.
+     * @return A list of HeaderValue objects with all of the possible values for the header.
      */
     public static List<HeaderValue> parseHeaderValue(String headerValue, String valueSeparator, String qualifierSeparator) {
         // Accept: text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8
@@ -147,7 +148,8 @@ public class HeaderUtils {
 
         // sort list by preference
         values.sort((HeaderValue first, HeaderValue second) -> {
-            if ((first.getPriority() - second.getPriority()) < .001f) {
+            // if the floats values are close enough, we consider them to be equal
+            if ((first.getPriority() - second.getPriority()) < EPSILON) {
                 return 0;
             }
             if (first.getPriority() < second.getPriority()) {
@@ -182,12 +184,8 @@ public class HeaderUtils {
         return null;
     }
 
-    public static String getFirstQueryParamValue(Map<String, List<String>> queryString, String key, boolean isCaseSensitive) {
+    public static String getFirstQueryParamValue(Map<String, List<String>> queryString, String key) {
         if (queryString != null) {
-            if (isCaseSensitive) {
-                return getFirst(queryString, key);
-            }
-
             for (String k : queryString.keySet()) {
                 if (k.toLowerCase(Locale.getDefault()).equals(key.toLowerCase(Locale.getDefault()))) {
                     return getFirst(queryString, k);
@@ -196,6 +194,10 @@ public class HeaderUtils {
         }
 
         return null;
+    }
+
+    public static String getFirstCaseSensitiveQueryParamValue(Map<String, List<String>> queryString, String key) {
+        return getFirst(queryString, key);
     }
 
     public  static String[] getQueryParamValues(Map<String, List<String>> qs, String key, boolean isCaseSensitive) {

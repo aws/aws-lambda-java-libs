@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -44,9 +47,15 @@ public class VpcLatticeV2RequestEvent {
         private Identity identity;
         private String region;
         /**
-         * microseconds
+         * Number of microseconds from the epoch
          */
         private String timeEpoch;
+
+        public LocalDateTime getlocalDateTime() {
+            // Truncating to milliseconds. Java 8 only supports Epoch with precision of milliseconds. Microseconds are supported in Java 9
+            long epochMilli = Long.parseLong(timeEpoch.substring(0, timeEpoch.length() - 3));
+            return Instant.ofEpochMilli(epochMilli).atZone(ZoneOffset.UTC).toLocalDateTime();
+        }
     }
 
     @Data

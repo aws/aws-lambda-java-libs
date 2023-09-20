@@ -58,5 +58,6 @@ public class VpcLatticeV2RequestEvent {
         private String type;
         private String principal;
         private String sessionName;
+        private String x509SanDns;
     }
 }

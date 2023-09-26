@@ -4,7 +4,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-serialization</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Serialization</name>
@@ -211,6 +211,27 @@
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>
                                     <shadedPattern>${relocation.prefix}.com.fasterxml.jackson</shadedPattern>
+                                    <excludes>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonInclude</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonInclude$Value</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonInclude$Include</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonProperty</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonProperty$Access</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonFormat</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonFormat$Shape</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonFormat$Feature</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonIgnore</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonSerialize</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonView</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonTypeInfo</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonRawValue</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonUnwrapped</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonBackReference</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JsonManagedReference</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JacksonAnnotation</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.JacksonAnnotationValue</exclude>
+                                        <exclude>com.fasterxml.jackson.annotation.OptBoolean</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.gson</pattern>

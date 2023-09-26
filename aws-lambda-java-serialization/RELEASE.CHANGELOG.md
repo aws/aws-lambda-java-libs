@@ -1,3 +1,7 @@
+### September 21, 2023
+`1.1.3`:
+- Add support for event v4 lib
+
 ### February 22, 2023
 `1.1.1`:
 - Register `JodaModule` to JacksonFactory

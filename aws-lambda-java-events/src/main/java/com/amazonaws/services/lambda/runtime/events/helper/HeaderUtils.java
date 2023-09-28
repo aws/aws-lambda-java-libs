@@ -262,51 +262,41 @@ public class HeaderUtils {
             attributes = new HashMap<>();
         }
 
-
         public String getKey() {
             return key;
         }
-
 
         public void setKey(String key) {
             this.key = key;
         }
 
-
         public String getValue() {
             return value;
         }
-
 
         public void setValue(String value) {
             this.value = value;
         }
 
-
         public String getRawValue() {
             return rawValue;
         }
-
 
         public void setRawValue(String rawValue) {
             this.rawValue = rawValue;
         }
 
-
         public float getPriority() {
             return priority;
         }
-
 
         public void setPriority(float priority) {
             this.priority = priority;
         }
 
-
         public Map<String, String> getAttributes() {
             return attributes;
         }
-
 
         public void setAttributes(Map<String, String> attributes) {
             this.attributes = attributes;

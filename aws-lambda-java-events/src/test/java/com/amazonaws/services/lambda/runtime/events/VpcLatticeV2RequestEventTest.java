@@ -14,6 +14,6 @@ class VpcLatticeV2RequestEventTest {
                 .withTimeEpoch("1690497599177430")
                 .build();
 
-        assertEquals("2023-07-27T22:39:59.177", requestContext.getlocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME));
+        assertEquals("2023-07-27T22:39:59.177", requestContext.getLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME));
     }
 }

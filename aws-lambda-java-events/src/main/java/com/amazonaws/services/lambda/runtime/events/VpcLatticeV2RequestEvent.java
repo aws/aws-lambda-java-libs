@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,6 +33,10 @@ public class VpcLatticeV2RequestEvent {
     private Map<String, String> queryStringParameters;
     private RequestContext requestContext;
     private String body;
+
+    /***
+     * isBase64Encoded is set if the body is a base64 encoded String.
+     */
     @Nullable
     private Boolean isBase64Encoded;
 
@@ -51,10 +55,11 @@ public class VpcLatticeV2RequestEvent {
          */
         private String timeEpoch;
 
-        public LocalDateTime getlocalDateTime() {
-            // Truncating to milliseconds. Java 8 only supports Epoch with precision of milliseconds. Microseconds are supported in Java 9
-            long epochMilli = Long.parseLong(timeEpoch.substring(0, timeEpoch.length() - 3));
-            return Instant.ofEpochMilli(epochMilli).atZone(ZoneOffset.UTC).toLocalDateTime();
+        public LocalDateTime getLocalDateTime() {
+            long epochMicroseconds = Long.parseLong(timeEpoch);
+            long epochMilliseconds = epochMicroseconds / 1000;
+
+            return Instant.ofEpochMilli(epochMilliseconds).atZone(ZoneOffset.UTC).toLocalDateTime();
         }
     }
 

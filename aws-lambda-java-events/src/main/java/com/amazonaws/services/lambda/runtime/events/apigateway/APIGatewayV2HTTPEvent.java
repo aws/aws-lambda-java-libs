@@ -13,8 +13,6 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
-import com.amazonaws.services.lambda.runtime.events.AwsLambdaRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.helper.RequestSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @Data
 @NoArgsConstructor
-public class APIGatewayV2HTTPEvent implements AwsLambdaRequestEvent {
+public class APIGatewayV2HTTPEvent implements LambdaRequestEvent {
 
     private String version;
     private String routeKey;

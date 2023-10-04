@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @Data
 @NoArgsConstructor
-public class APIGatewayV2HTTPEvent {
+public class APIGatewayV2HTTPEvent implements HttpRequestEvent {
 
     private String version;
     private String routeKey;
@@ -44,6 +45,12 @@ public class APIGatewayV2HTTPEvent {
     private String body;
     private boolean isBase64Encoded;
     private RequestContext requestContext;
+
+    @Override
+    @JsonIgnore
+    public RequestSource getRequestSource() {
+        return RequestSource.API_GATEWAY_HTTP;
+    }
 
     @AllArgsConstructor
     @Builder(setterPrefix = "with")

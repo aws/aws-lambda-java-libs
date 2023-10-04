@@ -13,6 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events.apigateway;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class APIGatewayProxyRequestEvent implements Serializable {
+public class APIGatewayProxyRequestEvent implements Serializable, HttpRequestEvent {
 
     private static final long serialVersionUID = 4189228800688527467L;
 
@@ -46,6 +47,12 @@ public class APIGatewayProxyRequestEvent implements Serializable {
     private ProxyRequestContext requestContext;
     private String body;
     private Boolean isBase64Encoded;
+
+    @Override
+    @JsonIgnore
+    public RequestSource getRequestSource() {
+        return RequestSource.API_GATEWAY_REST;
+    }
 
     /**
      * class that represents proxy request context

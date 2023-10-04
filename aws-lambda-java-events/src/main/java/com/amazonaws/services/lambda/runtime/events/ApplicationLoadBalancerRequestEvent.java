@@ -13,7 +13,7 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
-import com.amazonaws.services.lambda.runtime.events.apigateway.LambdaRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.apigateway.HttpRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.apigateway.RequestSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -37,7 +37,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationLoadBalancerRequestEvent implements Serializable, LambdaRequestEvent {
+public class ApplicationLoadBalancerRequestEvent implements Serializable, HttpRequestEvent {
 
     @Override
     @JsonIgnore

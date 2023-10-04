@@ -31,7 +31,7 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @Data
 @NoArgsConstructor
-public class APIGatewayV2HTTPEvent implements LambdaRequestEvent {
+public class APIGatewayV2HTTPEvent implements HttpRequestEvent {
 
     private String version;
     private String routeKey;

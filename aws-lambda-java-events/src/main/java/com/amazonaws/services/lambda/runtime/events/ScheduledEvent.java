@@ -165,17 +165,17 @@ public class ScheduledEvent implements Serializable, Cloneable {
     }
 
     /**
-     * @return the soruce of the event
+     * @return the source of the event
      */
     public String getSource() {
         return source;
     }
 
     /**
-     * @param soruce the soruce of the event
+     * @param source the source of the event
      */
-    public void setSource(String soruce) {
-        this.source = soruce;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     /**

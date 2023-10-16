@@ -34,7 +34,7 @@ import java.util.Map;
 public class APIGatewayProxyRequestEvent implements Serializable, HttpRequestEvent {
 
     private static final long serialVersionUID = 4189228800688527467L;
-
+    private String version;
     private String resource;
     private String path;
     private String httpMethod;

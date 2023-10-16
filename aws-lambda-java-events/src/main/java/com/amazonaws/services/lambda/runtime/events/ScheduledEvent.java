@@ -26,6 +26,8 @@ public class ScheduledEvent implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -5810383198587331146L;
 
+    private String version;
+
     private String account;
 
     private String region;
@@ -46,6 +48,29 @@ public class ScheduledEvent implements Serializable, Cloneable {
      * default constructor
      */
     public ScheduledEvent() {}
+
+    /**
+     * @return the version number
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * @param version the version number
+     */
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    /**
+     * @param version version number
+     * @return ScheduledEvent
+     */
+    public ScheduledEvent withVersion(String version) {
+        setVersion(version);
+        return this;
+    }
 
     /**
      * @return the account id
@@ -69,7 +94,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setAccount(account);
         return this;
     }
-    
+
     /**
      * @return the aws region
      */
@@ -92,7 +117,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setRegion(region);
         return this;
     }
-    
+
     /**
      * @return The details of the events (usually left blank)
      */
@@ -115,7 +140,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetail(detail);
         return this;
     }
-    
+
     /**
      * @return The details type - see cloud watch events for more info
      */
@@ -138,19 +163,19 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setDetailType(detailType);
         return this;
     }
-    
+
     /**
-     * @return the soruce of the event
+     * @return the source of the event
      */
     public String getSource() {
         return source;
     }
 
     /**
-     * @param soruce the soruce of the event
+     * @param source the source of the event
      */
-    public void setSource(String soruce) {
-        this.source = soruce;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     /**
@@ -161,7 +186,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setSource(source);
         return this;
     }
-    
+
     /**
      * @return the timestamp for when the event is scheduled
      */
@@ -184,7 +209,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setTime(time);
         return this;
     }
-    
+
     /**
      * @return the id of the event
      */
@@ -207,7 +232,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         setId(id);
         return this;
     }
-    
+
     /**
      * @return the resources used by event
      */
@@ -242,6 +267,8 @@ public class ScheduledEvent implements Serializable, Cloneable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (getVersion() != null)
+            sb.append("version: ").append(getVersion()).append(",");
         if (getAccount() != null)
             sb.append("account: ").append(getAccount()).append(",");
         if (getRegion() != null)
@@ -272,6 +299,10 @@ public class ScheduledEvent implements Serializable, Cloneable {
         if (obj instanceof ScheduledEvent == false)
             return false;
         ScheduledEvent other = (ScheduledEvent) obj;
+        if (other.getVersion() == null ^ this.getVersion() == null)
+            return false;
+        if (other.getVersion() != null && other.getVersion().equals(this.getVersion()) == false)
+            return false;
         if (other.getAccount() == null ^ this.getAccount() == null)
             return false;
         if (other.getAccount() != null && other.getAccount().equals(this.getAccount()) == false)
@@ -312,6 +343,7 @@ public class ScheduledEvent implements Serializable, Cloneable {
         final int prime = 31;
         int hashCode = 1;
 
+        hashCode = prime * hashCode + ((getVersion() == null) ? 0 : getVersion().hashCode());
         hashCode = prime * hashCode + ((getAccount() == null) ? 0 : getAccount().hashCode());
         hashCode = prime * hashCode + ((getRegion() == null) ? 0 : getRegion().hashCode());
         hashCode = prime * hashCode + ((getDetail() == null) ? 0 : getDetail().hashCode());
@@ -331,5 +363,5 @@ public class ScheduledEvent implements Serializable, Cloneable {
             throw new IllegalStateException("Got a CloneNotSupportedException from Object.clone()", e);
         }
     }
-    
+
 }

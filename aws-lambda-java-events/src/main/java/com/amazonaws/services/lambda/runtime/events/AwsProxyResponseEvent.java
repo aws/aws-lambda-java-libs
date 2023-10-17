@@ -29,5 +29,5 @@ public class AwsProxyResponseEvent {
 
     private String body;
 
-    private Boolean isBase64Encoded;
+    private boolean isBase64Encoded;
 }

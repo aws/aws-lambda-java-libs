@@ -575,6 +575,13 @@ public class LambdaEventSerializersTest {
         assertEquals(expected, actual, STRICT);
     }
 
+    @Test
+    public void testVpcLatticeV2RequestEvent() throws IOException, JSONException {
+        String expected = EventUtils.readEvent("vpc_lattice_v2_request.json");
+        String actual = deserializeSerializeJsonToString(expected, VpcLatticeV2RequestEvent.class);
+        assertEquals(expected, actual, STRICT);
+    }
+
     private <T> String deserializeSerializeJsonToString(String expected, Class<T> modelClass) {
         T event = CUSTOM_POJO_SERIALIZER.fromJson(expected, modelClass);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

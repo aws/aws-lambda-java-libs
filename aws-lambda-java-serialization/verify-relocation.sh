@@ -19,7 +19,7 @@ if [[ ! -z "$OUTPUT" ]]; then
 fi
 
 echo 'Validating that everything other than serialization module classes were relocated'
-OUTPUT=$(zipinfo ${ARTIFACT_PATH} | grep '.class' | grep -v ${SERIALIZATION_MODULE_PATTERN//.//} | grep -v 'com.fasterxml.jackson.annotation' | grep -v 'META-INF' | grep -v ${RELOCATION_PREFIX//.//} || true)
+OUTPUT=$(zipinfo ${ARTIFACT_PATH} | grep '.class' | grep -v ${SERIALIZATION_MODULE_PATTERN//.//} | grep -v 'META-INF' | grep -v ${RELOCATION_PREFIX//.//} || true)
 if [[ ! -z "$OUTPUT" ]]; then
     echo "Some classes were not relocated"
     echo ${OUTPUT}

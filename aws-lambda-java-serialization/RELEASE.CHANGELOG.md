@@ -1,3 +1,8 @@
+### October 19, 2023
+`1.1.4`:
+- Update org.json version to 20231013
+- Rollback relocation changes(1.1.3 version)
+
 ### September 21, 2023
 `1.1.3`:
 - Add support for event v4 lib

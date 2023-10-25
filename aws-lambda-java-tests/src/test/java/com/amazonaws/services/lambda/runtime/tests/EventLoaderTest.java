@@ -160,27 +160,43 @@ public class EventLoaderTest {
 
     @Test
     public void testLoadDynamoEvent() {
-        DynamodbEvent event = EventLoader.loadDynamoDbEvent("dynamo_event.json");
+        DynamodbEvent event = EventLoader.loadDynamoDbEvent("ddb/dynamo_event.json");
         assertThat(event).isNotNull();
         assertThat(event.getRecords()).hasSize(3);
+        assertDynamodbStreamRecord(event.getRecords().get(1));
+    }
 
-        DynamodbEvent.DynamodbStreamRecord record = event.getRecords().get(0);
+    @Test
+    public void testLoadDynamodbDDBStreamRecord() {
+        assertDynamodbStreamRecord(EventLoader.loadDynamodbStreamRecord("ddb/dynamo_ddb_stream_record.json"));
+    }
+
+    private static void assertDynamodbStreamRecord(final DynamodbEvent.DynamodbStreamRecord record) {
         assertThat(record)
+                .isNotNull()
                 .returns("arn:aws:dynamodb:eu-central-1:123456789012:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899", from(DynamodbEvent.DynamodbStreamRecord::getEventSourceARN))
-                .returns("INSERT", from(Record::getEventName));
+                .returns("MODIFY", from(Record::getEventName));
 
         StreamRecord streamRecord = record.getDynamodb();
         assertThat(streamRecord)
-                .returns("4421584500000000017450439091", StreamRecord::getSequenceNumber)
-                .returns(26L, StreamRecord::getSizeBytes)
+                .returns("4421584500000000017450439092", StreamRecord::getSequenceNumber)
+                .returns(59L, StreamRecord::getSizeBytes)
                 .returns("NEW_AND_OLD_IMAGES", StreamRecord::getStreamViewType)
                 .returns(Date.from(ofEpochSecond(1428537600)), StreamRecord::getApproximateCreationDateTime);
 
-        assertThat(streamRecord.getKeys()).contains(entry("Id", new AttributeValue().withN("101")));
-        assertThat(streamRecord.getNewImage()).containsAnyOf(
-                entry("Message", new AttributeValue("New item!")),
-                entry("Id", new AttributeValue().withN("101"))
-        );
+        assertThat(streamRecord.getKeys())
+                .isNotNull()
+                .contains(entry("Id", new AttributeValue().withN("101")));
+        assertThat(streamRecord.getNewImage())
+                .isNotNull()
+                .containsAnyOf(
+                        entry("Message", new AttributeValue("This item has changed")),
+                        entry("Id", new AttributeValue().withN("101")));
+        assertThat(streamRecord.getOldImage())
+                .isNotNull()
+                .containsAnyOf(
+                        entry("Message", new AttributeValue("New item!")),
+                        entry("Id", new AttributeValue().withN("101")));
     }
 
     @Test

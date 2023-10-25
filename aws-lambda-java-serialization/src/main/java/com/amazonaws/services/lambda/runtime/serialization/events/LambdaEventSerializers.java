@@ -180,6 +180,14 @@ public class LambdaEventSerializers {
                                     "com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord",
                                     "com.amazonaws.services.dynamodbv2.model.StreamRecord"),
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.DynamodbEvent$DynamodbStreamRecord"))),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbEvent$DynamodbStreamRecord",
+                    Arrays.asList(
+                            new AlternateNestedClass(
+                                    "com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue",
+                                    "com.amazonaws.services.dynamodbv2.model.AttributeValue"),
+                            new AlternateNestedClass(
+                                    "com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord",
+                                    "com.amazonaws.services.dynamodbv2.model.StreamRecord"))),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
                 Arrays.asList(
                     new AlternateNestedClass(

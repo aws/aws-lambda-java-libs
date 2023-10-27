@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Class to represent an Amazon Connect contact flow event.
  *
@@ -59,8 +61,32 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String initiationMethod;
         private String instanceArn;
         private String previousContactId;
-        private String queue;
+        private Queue queue;
         private SystemEndpoint systemEndpoint;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Queue implements Serializable, Cloneable {
+        @JsonProperty(value = "ARN")
+        private String arn;
+        @JsonProperty(value = "Name")
+        private String name;
+        @JsonProperty(value = "OutboundCallerId")
+        private OutboundCallerId outboundCallerId;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OutboundCallerId implements Serializable, Cloneable {
+        @JsonProperty(value = "Address")
+        private String address;
+        @JsonProperty(value = "Type")
+        private String type;
     }
 
     @Data

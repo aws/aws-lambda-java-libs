@@ -90,10 +90,35 @@ public class ConnectEvent implements Serializable {
         private String previousContactId;
 
         @JsonProperty("Queue")
-        private String queue;
+        private Queue queue;
 
         @JsonProperty("SystemEndpoint")
         private SystemEndpoint systemEndpoint;
+    }
+
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Queue implements Serializable {
+        @JsonProperty("ARN")
+        private String arn;
+        @JsonProperty("Name")
+        private String name;
+        @JsonProperty("OutboundCallerId")
+        private OutboundCallerId outboundCallerId;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OutboundCallerId implements Serializable {
+        @JsonProperty("Address")
+        private String address;
+        @JsonProperty("Type")
+        private String type;
     }
 
     @Data

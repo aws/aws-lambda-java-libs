@@ -22,7 +22,14 @@
         }
       },
       "PreviousContactId": "4a573372-1f28-4e26-b97b-XXXXXXXXXXX",
-      "Queue": "QueueName",
+      "Queue": {
+        "ARN": "arn:aws:connect:eu-west-2:111111111111:instance/cccccccc-bbbb-dddd-eeee-ffffffffffff/queue/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "Name": "PasswordReset",
+        "OutboundCallerId": {
+          "Address": "+12345678903",
+          "Type": "TELEPHONE_NUMBER"
+        }
+      },
       "SystemEndpoint": {
         "Address": "+1234567890",
         "Type": "TELEPHONE_NUMBER"

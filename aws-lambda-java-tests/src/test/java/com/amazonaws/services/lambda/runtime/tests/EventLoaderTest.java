@@ -182,7 +182,7 @@ public class EventLoaderTest {
                 .returns("4421584500000000017450439092", StreamRecord::getSequenceNumber)
                 .returns(59L, StreamRecord::getSizeBytes)
                 .returns("NEW_AND_OLD_IMAGES", StreamRecord::getStreamViewType)
-                .returns(Date.from(ofEpochSecond(1428537600)), StreamRecord::getApproximateCreationDateTime);
+                .returns(Date.from(ofEpochSecond(1635734407).plusNanos(123456789)), StreamRecord::getApproximateCreationDateTime);
 
         assertThat(streamRecord.getKeys())
                 .isNotNull()

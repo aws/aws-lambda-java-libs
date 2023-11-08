@@ -22,6 +22,11 @@ Example for Maven pom.xml
     <artifactId>log4j-api</artifactId>
     <version>2.17.1</version>
   </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-layout-template-json</artifactId>
+    <version>2.17.1</version>
+  </dependency>
   ....
 </dependencies>
 ```
@@ -108,7 +113,7 @@ Add the following file `<project-dir>/src/main/resources/log4j2.xml`
     </Lambda>
   </Appenders>
   <Loggers>
-    <Root level="info">
+    <Root level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}">
       <AppenderRef ref="Lambda" />
     </Root>
   </Loggers>
@@ -124,6 +129,8 @@ package example;
 
 import com.amazonaws.services.lambda.runtime.Context;
 
+import static org.apache.logging.log4j.CloseableThreadContext.put;
+import org.apache.logging.log4j.CloseableThreadContext.Instance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -142,6 +149,12 @@ public class Hello {
         logger.debug("log data from log4j debug \n this is continuation of log4j debug");
 
         logger.error("log data from log4j err. \n this is a continuation of log4j.err");
+
+        // When logging in JSON, you can also add custom fields
+        // In java11+ you can use the `try (var ctx = put("name", name)) {}` structure
+        Instance ctx = put("name", name);
+        logger.info("log line with input name");
+        ctx.close();
 
         // Return will include the log stream name so you can look
         // up the log later.

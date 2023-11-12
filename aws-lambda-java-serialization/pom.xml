@@ -5,7 +5,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-serialization</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Serialization</name>
@@ -32,12 +32,12 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws.core.version>1.2.2</aws.core.version>
-        <jackson.version>2.13.4.2</jackson.version>
-        <jackson.jsr10.version>2.13.4</jackson.jsr10.version>
-        <gson.version>2.10</gson.version>
-        <junit.version>5.9.1</junit.version>
-        <owasp.version>7.3.2</owasp.version>
+        <aws.core.version>1.2.3</aws.core.version>
+        <jackson.version>2.15.3</jackson.version>
+        <jackson.jsr10.version>2.15.3</jackson.jsr10.version>
+        <gson.version>2.10.1</gson.version>
+        <junit.version>5.10.0</junit.version>
+        <owasp.version>8.4.0</owasp.version>
     </properties>
 
     <dependencies>

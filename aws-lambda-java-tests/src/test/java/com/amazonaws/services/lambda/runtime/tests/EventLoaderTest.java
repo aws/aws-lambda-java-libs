@@ -163,15 +163,15 @@ public class EventLoaderTest {
         DynamodbEvent event = EventLoader.loadDynamoDbEvent("ddb/dynamo_event.json");
         assertThat(event).isNotNull();
         assertThat(event.getRecords()).hasSize(3);
-        assertDynamodbStreamRecord(event.getRecords().get(1));
+        assertDynamoDbStreamRecord(event.getRecords().get(1));
     }
 
     @Test
-    public void testLoadDynamodbDDBStreamRecord() {
-        assertDynamodbStreamRecord(EventLoader.loadDynamodbStreamRecord("ddb/dynamo_ddb_stream_record.json"));
+    public void testLoadDynamoDbStreamRecord() {
+        assertDynamoDbStreamRecord(EventLoader.loadDynamoDbStreamRecord("ddb/dynamo_ddb_stream_record.json"));
     }
 
-    private static void assertDynamodbStreamRecord(final DynamodbEvent.DynamodbStreamRecord record) {
+    private static void assertDynamoDbStreamRecord(final DynamodbEvent.DynamodbStreamRecord record) {
         assertThat(record)
                 .isNotNull()
                 .returns("arn:aws:dynamodb:eu-central-1:123456789012:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899", from(DynamodbEvent.DynamodbStreamRecord::getEventSourceARN))

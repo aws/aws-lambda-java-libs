@@ -65,7 +65,7 @@ public class EventLoader {
         return loadEvent(filename, DynamodbEvent.class);
     }
 
-    public static DynamodbEvent.DynamodbStreamRecord loadDynamodbStreamRecord(String filename) {
+    public static DynamodbEvent.DynamodbStreamRecord loadDynamoDbStreamRecord(String filename) {
         return loadEvent(filename, DynamodbEvent.DynamodbStreamRecord.class);
     }
 

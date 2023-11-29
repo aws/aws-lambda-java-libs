@@ -158,7 +158,7 @@ public class LambdaEventSerializers {
      * If mixins are required for inner classes of an event, then those nested classes must be specified here.
      */
     @SuppressWarnings("rawtypes")
-    private static final Map<String, List<NestedClass>> NESTED_CLASS_MAP = Stream.of(
+    private static final Map<String, List<? extends NestedClass>> NESTED_CLASS_MAP = Stream.of(
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.CodeCommitEvent",
                     Arrays.asList(
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.CodeCommitEvent$Record"))),
@@ -244,7 +244,7 @@ public class LambdaEventSerializers {
         }
         // if event model has nested classes then load those classes and check if mixins apply
         if (NESTED_CLASS_MAP.containsKey(eventClass.getName())) {
-            List<NestedClass> nestedClasses = NESTED_CLASS_MAP.get(eventClass.getName());
+            List<? extends NestedClass> nestedClasses = NESTED_CLASS_MAP.get(eventClass.getName());
             for (NestedClass nestedClass: nestedClasses) {
                 // if mixin exists for nested class then apply
                 if (MIXIN_MAP.containsKey(nestedClass.className)) {

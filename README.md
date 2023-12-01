@@ -71,7 +71,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-events</artifactId>
- <version>3.11.3</version>
+ <version>3.11.4</version>
 </dependency>
 ```
 
@@ -154,7 +154,7 @@ This package defines the Lambda serialization logic using in the `aws-lambda-jav
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-serialization</artifactId>
- <version>1.1.4</version>
+ <version>1.1.5</version>
 </dependency>
 ```
 

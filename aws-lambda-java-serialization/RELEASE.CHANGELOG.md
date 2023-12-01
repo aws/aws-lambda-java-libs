@@ -1,3 +1,7 @@
+### December 1, 2023
+`1.1.5`:
+- Add support for DynamodbEvent.DynamodbStreamRecord serialization
+
 ### October 19, 2023
 `1.1.4`:
 - Update org.json version to 20231013

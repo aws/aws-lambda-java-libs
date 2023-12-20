@@ -113,6 +113,10 @@ public class EventLoader {
         return loadEvent(filename, RabbitMQEvent.class);
     }
 
+    public static CognitoUserPoolPreTokenGenerationEventV2 loadCognitoUserPoolPreTokenGenerationEventV2(String filename) {
+        return loadEvent(filename, CognitoUserPoolPreTokenGenerationEventV2.class);
+    }
+
     public static <T> T loadEvent(String filename, Class<T> targetClass) {
 
         if (!filename.endsWith("json")) {

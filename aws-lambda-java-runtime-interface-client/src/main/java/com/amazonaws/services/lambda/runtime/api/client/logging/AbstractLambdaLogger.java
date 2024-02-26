@@ -65,4 +65,8 @@ public abstract class AbstractLambdaLogger implements LambdaLogger {
     public void setLambdaContext(LambdaContext lambdaContext) {
         this.logFormatter.setLambdaContext(lambdaContext);
     }
+
+    public LogFormat getLogFormat() {
+        return logFormat;
+    }
 }

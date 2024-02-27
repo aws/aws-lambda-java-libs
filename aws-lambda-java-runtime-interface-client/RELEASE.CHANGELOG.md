@@ -1,3 +1,7 @@
+### Februray 27, 2024
+`2.4.2`
+- Exceptions caught by the runtime are logged as ERROR in JSON mode
+
 ### September 4, 2023
 `2.4.1`
 - Null pointer bugfix ([#439](https://github.com/aws/aws-lambda-java-libs/pull/439))

@@ -189,7 +189,7 @@ public class AWSLambda {
 
     private static void startRuntime(String handler) {
         try (LogSink logSink = createLogSink()) {
-            LambdaLogger logger = new LambdaContextLogger(
+            LambdaContextLogger logger = new LambdaContextLogger(
                     logSink,
                     LogLevel.fromString(LambdaEnvironment.LAMBDA_LOG_LEVEL),
                     LogFormat.fromString(LambdaEnvironment.LAMBDA_LOG_FORMAT)
@@ -200,7 +200,7 @@ public class AWSLambda {
         }
     }
 
-    private static void startRuntime(String handler, LambdaLogger lambdaLogger) throws Throwable {
+    private static void startRuntime(String handler, LambdaContextLogger lambdaLogger) throws Throwable {
         UnsafeUtil.disableIllegalAccessWarning();
 
         System.setOut(new PrintStream(new LambdaOutputStream(System.out), false, "UTF-8"));
@@ -222,7 +222,7 @@ public class AWSLambda {
         try {
             requestHandler = findRequestHandler(handler, customerClassLoader);
         } catch (UserFault userFault) {
-            lambdaLogger.log(userFault.reportableError());
+            lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
             reportInitError(new Failure(userFault), runtimeClient);
             System.exit(1);
             return;
@@ -265,13 +265,13 @@ public class AWSLambda {
                         serializeAsXRayJson(t));
             } finally {
                 if (userFault != null) {
-                    lambdaLogger.log(userFault.reportableError());
+                    lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
                 }
             }
         }
     }
 
-    static void onInitComplete(final LambdaRuntimeClient runtimeClient, final LambdaLogger lambdaLogger) throws IOException {
+    static void onInitComplete(final LambdaRuntimeClient runtimeClient, final LambdaContextLogger lambdaLogger) throws IOException {
         try {
             Core.getGlobalContext().beforeCheckpoint(null);
             // Blocking call to RAPID /restore/next API, will return after taking snapshot.
@@ -292,10 +292,10 @@ public class AWSLambda {
         }
     }
 
-    private static void logExceptionCloudWatch(LambdaLogger lambdaLogger, Exception exc) {
+    private static void logExceptionCloudWatch(LambdaContextLogger lambdaLogger, Exception exc) {
         UserFault.filterStackTrace(exc);
         UserFault userFault = UserFault.makeUserFault(exc, true);
-        lambdaLogger.log(userFault.reportableError());
+        lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
     }
 
     static void reportInitError(final Failure failure,

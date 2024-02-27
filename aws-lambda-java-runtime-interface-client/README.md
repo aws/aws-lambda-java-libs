@@ -37,7 +37,7 @@ RUN mvn dependency:go-offline dependency:copy-dependencies
 
 # compile the function
 ADD . .
-RUN mvn package 
+RUN mvn package
 
 # copy the function artifact and dependencies onto a clean base
 FROM base
@@ -70,7 +70,7 @@ pom.xml
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-      <version>2.4.1</version>
+      <version>2.4.2</version>
     </dependency>
   </dependencies>
   <build>
@@ -106,18 +106,18 @@ public class App {
 
 ### Local Testing
 
-To make it easy to locally test Lambda functions packaged as container images we open-sourced a lightweight web-server, Lambda Runtime Interface Emulator (RIE), which allows your function packaged as a container image to accept HTTP requests. You can install the [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) on your local machine to test your function. Then when you run the image function, you set the entrypoint to be the emulator. 
+To make it easy to locally test Lambda functions packaged as container images we open-sourced a lightweight web-server, Lambda Runtime Interface Emulator (RIE), which allows your function packaged as a container image to accept HTTP requests. You can install the [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) on your local machine to test your function. Then when you run the image function, you set the entrypoint to be the emulator.
 
 *To install the emulator and test your Lambda function*
 
-1) Run the following command to download the RIE from GitHub and install it on your local machine. 
+1) Run the following command to download the RIE from GitHub and install it on your local machine.
 
 ```shell script
 mkdir -p ~/.aws-lambda-rie && \
     curl -Lo ~/.aws-lambda-rie/aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie && \
     chmod +x ~/.aws-lambda-rie/aws-lambda-rie
 ```
-2) Run your Lambda image function using the docker run command. 
+2) Run your Lambda image function using the docker run command.
 
 ```shell script
 docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
@@ -126,9 +126,9 @@ docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
     /usr/bin/java -cp './*' com.amazonaws.services.lambda.runtime.api.client.AWSLambda example.App::sayHello
 ```
 
-This runs the image as a container and starts up an endpoint locally at `http://localhost:9000/2015-03-31/functions/function/invocations`. 
+This runs the image as a container and starts up an endpoint locally at `http://localhost:9000/2015-03-31/functions/function/invocations`.
 
-3) Post an event to the following endpoint using a curl command: 
+3) Post an event to the following endpoint using a curl command:
 
 ```shell script
 curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
@@ -160,7 +160,7 @@ platform-specific JAR by setting the `<classifier>`.
 <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-    <version>2.4.1</version>
+    <version>2.4.2</version>
     <classifier>linux-x86_64</classifier>
 </dependency>
 ```

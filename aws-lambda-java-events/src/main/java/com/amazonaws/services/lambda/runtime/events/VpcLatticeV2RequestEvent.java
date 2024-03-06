@@ -83,5 +83,9 @@ public class VpcLatticeV2RequestEvent implements HttpRequestEvent {
         private String principal;
         private String sessionName;
         private String x509SanDns;
+        private String x509SanNameCn;
+        private String x509SubjectCn;
+        private String x509IssuerOu;
+        private String x509SanUri;
     }
 }

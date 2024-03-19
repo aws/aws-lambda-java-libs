@@ -2,6 +2,9 @@
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.XRayErrorCauseConverter;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,25 +50,25 @@ public class XRayErrorCauseTest {
     }
 
     private void assertXrayErrorCause(Throwable t) {
-        XRayErrorCause xRayErrorCause = new XRayErrorCause(t);
+        XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
 
-        assertEquals(TEST_WORKING_DIR, xRayErrorCause.getWorking_directory());
+        assertEquals(TEST_WORKING_DIR, xRayErrorCause.working_directory);
 
-        assertEquals(1, xRayErrorCause.getPaths().size());
-        assertTrue(xRayErrorCause.getPaths().contains("StackTraceHelper.java"));
+        assertEquals(1, xRayErrorCause.paths.size());
+        assertTrue(xRayErrorCause.paths.contains("StackTraceHelper.java"));
 
-        assertEquals(1, xRayErrorCause.getExceptions().size());
-        XRayErrorCause.XRayException xRayException = xRayErrorCause.getExceptions().iterator().next();
-        assertEquals("woops", xRayException.getMessage());
-        assertEquals("java.lang.RuntimeException", xRayException.getType());
+        assertEquals(1, xRayErrorCause.exceptions.size());
+        XRayException xRayException = xRayErrorCause.exceptions.iterator().next();
+        assertEquals("woops", xRayException.message);
+        assertEquals("java.lang.RuntimeException", xRayException.type);
 
-        assertEquals("throwRuntimeException", xRayException.getStack().get(0).getLabel());
-        assertEquals("StackTraceHelper.java", xRayException.getStack().get(0).getPath());
-        assertTrue(xRayException.getStack().get(0).getLine() > 0);
+        assertEquals("throwRuntimeException", xRayException.stack.get(0).label);
+        assertEquals("StackTraceHelper.java", xRayException.stack.get(0).path);
+        assertTrue(xRayException.stack.get(0).line > 0);
 
-        assertEquals("callThenThrowRuntimeException", xRayException.getStack().get(1).getLabel());
-        assertEquals("StackTraceHelper.java", xRayException.getStack().get(1).getPath());
-        assertTrue(xRayException.getStack().get(0).getLine() > 0);
+        assertEquals("callThenThrowRuntimeException", xRayException.stack.get(1).label);
+        assertEquals("StackTraceHelper.java", xRayException.stack.get(1).path);
+        assertTrue(xRayException.stack.get(0).line > 0);
     }
 
     private void clearStackTraceElementsFilename(Throwable t) {

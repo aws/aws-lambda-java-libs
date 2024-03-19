@@ -1,12 +1,11 @@
-package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
+package com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto;
 
 /**
  * An invocation request represents the response of the runtime API's next invocation API.
- * <p>
- * Copyright (c) 2019 Amazon. All rights reserved.
  */
 public class InvocationRequest {
 
@@ -63,6 +62,7 @@ public class InvocationRequest {
         return invokedFunctionArn;
     }
 
+    @SuppressWarnings("unused")
     public void setInvokedFunctionArn(String invokedFunctionArn) {
         this.invokedFunctionArn = invokedFunctionArn;
     }
@@ -71,6 +71,7 @@ public class InvocationRequest {
         return deadlineTimeInMs;
     }
 
+    @SuppressWarnings("unused")
     public void setDeadlineTimeInMs(long deadlineTimeInMs) {
         this.deadlineTimeInMs = deadlineTimeInMs;
     }
@@ -79,6 +80,7 @@ public class InvocationRequest {
         return clientContext;
     }
 
+    @SuppressWarnings("unused")
     public void setClientContext(String clientContext) {
         this.clientContext = clientContext;
     }
@@ -87,12 +89,13 @@ public class InvocationRequest {
         return cognitoIdentity;
     }
 
+    @SuppressWarnings("unused")
     public void setCognitoIdentity(String cognitoIdentity) {
         this.cognitoIdentity = cognitoIdentity;
     }
 
-    public InputStream getContentAsStream() {
-        return new ByteArrayInputStream(content);
+    public byte[] getContent() {
+        return content;
     }
 
     public void setContent(byte[] content) {

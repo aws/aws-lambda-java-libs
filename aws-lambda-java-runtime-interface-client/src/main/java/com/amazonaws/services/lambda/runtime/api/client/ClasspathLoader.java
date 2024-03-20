@@ -35,6 +35,7 @@ public class ClasspathLoader {
     private static void loadClass(String name) {
         try {
             Class.forName(name, true, SYSTEM_CLASS_LOADER);
+            System.out.println("Loaded " + name);
         } catch (ClassNotFoundException e) {
             System.err.println("[WARN] Failed to load " + name + ": " + e.getMessage());
         }

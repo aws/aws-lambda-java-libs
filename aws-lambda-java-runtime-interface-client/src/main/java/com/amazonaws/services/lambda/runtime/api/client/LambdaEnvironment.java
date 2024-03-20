@@ -16,4 +16,5 @@ public class LambdaEnvironment {
     public static final String LAMBDA_LOG_FORMAT = ENV_READER.getEnvOrDefault(AWS_LAMBDA_LOG_FORMAT, "TEXT");
     public static final String FUNCTION_NAME = ENV_READER.getEnv(AWS_LAMBDA_FUNCTION_NAME);
     public static final String FUNCTION_VERSION = ENV_READER.getEnv(AWS_LAMBDA_FUNCTION_VERSION);
+    public static final String RUNTIME_API = ENV_READER.getEnv(AWS_LAMBDA_RUNTIME_API);
 }

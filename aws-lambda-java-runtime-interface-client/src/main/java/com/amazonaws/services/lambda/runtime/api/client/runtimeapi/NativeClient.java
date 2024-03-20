@@ -1,6 +1,10 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
-
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
+
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -10,17 +14,18 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl.USER_AGENT;
+
 /**
- * This module defines the native Runtime Interface Client which is responsible for all HTTP
+ * This module defines the native Runtime Interface Client which is responsible for HTTP
  * interactions with the Runtime API.
  */
 class NativeClient {
     private static final String NATIVE_LIB_PATH = "/tmp/.libaws-lambda-jni.so";
     public static final String NATIVE_CLIENT_JNI_PROPERTY = "com.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient.JNI";
-
     static void init() {
         loadJNILib();
-        initUserAgent();
+        initializeClient(USER_AGENT.getBytes());
     }
 
     private static void loadJNILib() {
@@ -68,15 +73,6 @@ class NativeClient {
                     ". Exception: " + errorMessages.get(i));
         }
         System.exit(-1);
-    }
-
-    private static void initUserAgent() {
-        String userAgent = String.format(
-                "aws-lambda-java/%s-%s",
-                System.getProperty("java.vendor.version"),
-                NativeClient.class.getPackage().getImplementationVersion());
-
-        initializeClient(userAgent.getBytes());
     }
 
     static native void initializeClient(byte[] userAgent);

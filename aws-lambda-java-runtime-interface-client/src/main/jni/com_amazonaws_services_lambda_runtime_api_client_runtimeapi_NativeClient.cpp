@@ -44,7 +44,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     }
 
     jclass tempInvocationRequestClassRef;
-    tempInvocationRequestClassRef = env->FindClass("com/amazonaws/services/lambda/runtime/api/client/runtimeapi/InvocationRequest");
+    tempInvocationRequestClassRef = env->FindClass("com/amazonaws/services/lambda/runtime/api/client/runtimeapi/dto/InvocationRequest");
     invocationRequestClass = (jclass) env->NewGlobalRef(tempInvocationRequestClassRef);
     env->DeleteLocalRef(tempInvocationRequestClassRef);
 

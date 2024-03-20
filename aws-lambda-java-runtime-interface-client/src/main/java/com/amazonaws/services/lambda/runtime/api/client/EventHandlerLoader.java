@@ -13,7 +13,7 @@ import com.amazonaws.services.lambda.runtime.api.client.api.LambdaClientContext;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaCognitoIdentity;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
@@ -22,6 +22,7 @@ import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFact
 import com.amazonaws.services.lambda.runtime.serialization.util.Functions;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -902,7 +903,8 @@ public final class EventHandlerLoader {
                     }
                 }
 
-                handler.handleRequest(request.getContentAsStream(), output, context);
+                ByteArrayInputStream bais = new ByteArrayInputStream(request.getContent());
+                handler.handleRequest(bais, output, context);
                 return output;
             }
         };

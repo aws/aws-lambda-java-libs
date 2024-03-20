@@ -2,7 +2,7 @@
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 
 import java.io.ByteArrayOutputStream;
 

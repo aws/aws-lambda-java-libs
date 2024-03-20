@@ -1,4 +1,8 @@
-### Februray 27, 2024
+### March 20, 2024
+`2.5.0`
+- Runtime API client improvements ([#471](https://github.com/aws/aws-lambda-java-libs/pull/471))
+
+### February 27, 2024
 `2.4.2`
 - Exceptions caught by the runtime are logged as ERROR in JSON mode
 

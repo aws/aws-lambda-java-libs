@@ -30,6 +30,7 @@ public class AppSyncLambdaAuthorizerEvent {
 
     private RequestContext requestContext;
     private String authorizationToken;
+    private MutableMap<CharSequence, Any> requestHeaders;
 
     @Data
     @Builder(setterPrefix = "with")

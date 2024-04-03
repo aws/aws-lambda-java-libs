@@ -4,6 +4,7 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -11,7 +12,8 @@ import com.amazonaws.services.lambda.runtime.api.client.LambdaRequestHandler.Use
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaClientContext;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaCognitoIdentity;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
@@ -20,12 +22,11 @@ import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFact
 import com.amazonaws.services.lambda.runtime.serialization.util.Functions;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,6 +40,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.*;
@@ -81,12 +83,10 @@ public final class EventHandlerLoader {
             }
         }
         // else platform dependent (Android uses GSON but all other platforms use Jackson)
-        switch (platform) {
-            case ANDROID:
-                return GsonFactory.getInstance().getSerializer(type);
-            default:
-                return JacksonFactory.getInstance().getSerializer(type);
+        if (Objects.requireNonNull(platform) == Platform.ANDROID) {
+            return GsonFactory.getInstance().getSerializer(type);
         }
+        return JacksonFactory.getInstance().getSerializer(type);
     }
 
     private static PojoSerializer<Object> getSerializerCached(Platform platform, Type type) {
@@ -710,14 +710,14 @@ public final class EventHandlerLoader {
         }
     }
 
-    private static final boolean isContext(Type t) {
+    private static boolean isContext(Type t) {
         return Context.class.equals(t);
     }
 
     /**
      * Returns true if the last type in params is a lambda context object interface (Context).
      */
-    private static final boolean lastParameterIsContext(Class<?>[] params) {
+    private static boolean lastParameterIsContext(Class<?>[] params) {
         return params.length != 0 && isContext(params[params.length - 1]);
     }
 
@@ -832,21 +832,6 @@ public final class EventHandlerLoader {
         ));
     }
 
-    private static String exceptionToString(Throwable t) {
-        StringWriter writer = new StringWriter(65536);
-        try (PrintWriter wrapped = new PrintWriter(writer)) {
-            t.printStackTrace(wrapped);
-        }
-        StringBuffer buffer = writer.getBuffer();
-        if (buffer.length() > 262144) {
-            final String extra = " Truncated by Lambda";
-            buffer.delete(262144, buffer.length());
-            buffer.append(extra);
-        }
-
-        return buffer.toString();
-    }
-
     private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
         return new LambdaRequestHandler() {
             private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
@@ -859,6 +844,22 @@ public final class EventHandlerLoader {
                     log4jContextPutMethod = ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass);
                     log4jContextPutMethod.call("AWSRequestId", request.getId());
                 } catch (Exception e) {
+                }
+            }
+
+            /**
+             * Passes the LambdaContext to the logger so that the JSON formatter can include the requestId.
+             *
+             * We do casting here because both the LambdaRuntime and the LambdaLogger is in the core package,
+             * and the setLambdaContext(context) is a method we don't want to publish for customers. That method is
+             * only implemented on the internal LambdaContextLogger, so we check and cast to be able to call it.
+             * @param context the LambdaContext
+             */
+            private void safeAddContextToLambdaLogger(LambdaContext context) {
+                LambdaLogger logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
+                if (logger instanceof LambdaContextLogger) {
+                    LambdaContextLogger contextLogger = (LambdaContextLogger) logger;
+                    contextLogger.setLambdaContext(context);
                 }
             }
 
@@ -889,6 +890,8 @@ public final class EventHandlerLoader {
                         clientContext
                 );
 
+                safeAddContextToLambdaLogger(context);
+
                 if (LambdaRuntimeInternal.getUseLog4jAppender()) {
                     safeAddRequestIdToLog4j("org.apache.log4j.MDC", request, Object.class);
                     safeAddRequestIdToLog4j("org.apache.logging.log4j.ThreadContext", request, String.class);
@@ -900,7 +903,8 @@ public final class EventHandlerLoader {
                     }
                 }
 
-                handler.handleRequest(request.getContentAsStream(), output, context);
+                ByteArrayInputStream bais = new ByteArrayInputStream(request.getContent());
+                handler.handleRequest(bais, output, context);
                 return output;
             }
         };

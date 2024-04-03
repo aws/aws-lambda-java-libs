@@ -37,7 +37,7 @@ RUN mvn dependency:go-offline dependency:copy-dependencies
 
 # compile the function
 ADD . .
-RUN mvn package 
+RUN mvn package
 
 # copy the function artifact and dependencies onto a clean base
 FROM base
@@ -70,7 +70,7 @@ pom.xml
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-      <version>2.3.2</version>
+      <version>2.5.0</version>
     </dependency>
   </dependencies>
   <build>
@@ -106,18 +106,18 @@ public class App {
 
 ### Local Testing
 
-To make it easy to locally test Lambda functions packaged as container images we open-sourced a lightweight web-server, Lambda Runtime Interface Emulator (RIE), which allows your function packaged as a container image to accept HTTP requests. You can install the [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) on your local machine to test your function. Then when you run the image function, you set the entrypoint to be the emulator. 
+To make it easy to locally test Lambda functions packaged as container images we open-sourced a lightweight web-server, Lambda Runtime Interface Emulator (RIE), which allows your function packaged as a container image to accept HTTP requests. You can install the [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) on your local machine to test your function. Then when you run the image function, you set the entrypoint to be the emulator.
 
 *To install the emulator and test your Lambda function*
 
-1) Run the following command to download the RIE from GitHub and install it on your local machine. 
+1) Run the following command to download the RIE from GitHub and install it on your local machine.
 
 ```shell script
 mkdir -p ~/.aws-lambda-rie && \
     curl -Lo ~/.aws-lambda-rie/aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie && \
     chmod +x ~/.aws-lambda-rie/aws-lambda-rie
 ```
-2) Run your Lambda image function using the docker run command. 
+2) Run your Lambda image function using the docker run command.
 
 ```shell script
 docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
@@ -126,9 +126,9 @@ docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
     /usr/bin/java -cp './*' com.amazonaws.services.lambda.runtime.api.client.AWSLambda example.App::sayHello
 ```
 
-This runs the image as a container and starts up an endpoint locally at `http://localhost:9000/2015-03-31/functions/function/invocations`. 
+This runs the image as a container and starts up an endpoint locally at `http://localhost:9000/2015-03-31/functions/function/invocations`.
 
-3) Post an event to the following endpoint using a curl command: 
+3) Post an event to the following endpoint using a curl command:
 
 ```shell script
 curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
@@ -150,6 +150,33 @@ DOCKERHUB_USERNAME=<dockerhub username>
 DOCKERHUB_PASSWORD=<dockerhub password>
 ```
 Recommended way is to set the Docker Hub credentials in CodeBuild job by retrieving them from AWS Secrets Manager.
+
+## Configuration
+The `aws-lambda-java-runtime-interface-client` JAR is a large uber jar, which contains compiled C libraries
+for x86_64 and aarch_64 for glibc and musl LIBC implementations. If the size is an issue, you can pick a smaller
+platform-specific JAR by setting the `<classifier>`.
+```
+<!-- Platform-specific Linux x86_64 JAR -->
+<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
+    <version>2.5.0</version>
+    <classifier>linux-x86_64</classifier>
+</dependency>
+```
+
+Available platform classifiers: `linux-x86_64`, `linux-aarch_64`, `linux_musl-aarch_64`, `linux_musl-x86_64`
+
+The Lambda runtime interface client tries to load compatible library during execution, by unpacking it to a temporary
+location `/tmp/.libaws-lambda-jni.so`.
+If this behaviour is not desirable, it is possible to extract the `.so` files during build time and specify the location via
+`com.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient.JNI` system property, like
+```
+ENTRYPOINT [ "/usr/bin/java",
+"-Dcom.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient.JNI=/function/libaws-lambda-jni.linux_x86_64.so"
+"-cp", "./*",
+"com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+```
 
 ## Security
 

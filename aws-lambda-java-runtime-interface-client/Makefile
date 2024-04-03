@@ -45,10 +45,18 @@ pr: test test-smoke
 .PHONY: build
 build: 
 	mvn clean install
+	mvn install -P linux-x86_64
+	mvn install -P linux_musl-x86_64
+	mvn install -P linux-aarch64
+	mvn install -P linux_musl-aarch64
 
 .PHONY: publish
 publish:
 	./ric-dev-environment/publish_snapshot.sh
+
+.PHONY: publish
+test-publish:
+	./ric-dev-environment/test-platform-specific-jar-snapshot.sh
 
 define HELP_MESSAGE
 

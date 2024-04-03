@@ -1,3 +1,12 @@
+### December 1, 2023
+`3.11.4`:
+- Improve `toString` in Cognito events by calling `super`
+- Added missing `version` field to ScheduledEvent from CloudWatch
+
+### September 1, 2023
+`3.11.3`:
+- Update challengeAnswer field format in CognitoUserPoolEvent 
+
 ### May 18, 2023
 `3.11.2`:
 - Add missing fields to API Gateway request context

@@ -1,12 +1,11 @@
-package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
+package com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto;
 
 /**
  * An invocation request represents the response of the runtime API's next invocation API.
- * <p>
- * Copyright (c) 2019 Amazon. All rights reserved.
  */
 public class InvocationRequest {
 
@@ -41,39 +40,65 @@ public class InvocationRequest {
      */
     private String cognitoIdentity;
 
-    /**
-     * An input stream of the invocation's request body.
-     */
-    private InputStream stream;
-
     private byte[] content;
 
     public String getId() {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getXrayTraceId() {
         return xrayTraceId;
+    }
+
+    public void setXrayTraceId(String xrayTraceId) {
+        this.xrayTraceId = xrayTraceId;
     }
 
     public String getInvokedFunctionArn() {
         return invokedFunctionArn;
     }
 
+    @SuppressWarnings("unused")
+    public void setInvokedFunctionArn(String invokedFunctionArn) {
+        this.invokedFunctionArn = invokedFunctionArn;
+    }
+
     public long getDeadlineTimeInMs() {
         return deadlineTimeInMs;
+    }
+
+    @SuppressWarnings("unused")
+    public void setDeadlineTimeInMs(long deadlineTimeInMs) {
+        this.deadlineTimeInMs = deadlineTimeInMs;
     }
 
     public String getClientContext() {
         return clientContext;
     }
 
+    @SuppressWarnings("unused")
+    public void setClientContext(String clientContext) {
+        this.clientContext = clientContext;
+    }
+
     public String getCognitoIdentity() {
         return cognitoIdentity;
     }
 
-    public InputStream getContentAsStream() {
-        return new ByteArrayInputStream(content);
+    @SuppressWarnings("unused")
+    public void setCognitoIdentity(String cognitoIdentity) {
+        this.cognitoIdentity = cognitoIdentity;
     }
 
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 }

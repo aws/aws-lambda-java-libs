@@ -1,3 +1,16 @@
+### December 1, 2023
+`1.1.5`:
+- Add support for DynamodbEvent.DynamodbStreamRecord serialization
+
+### October 19, 2023
+`1.1.4`:
+- Update org.json version to 20231013
+- Rollback relocation changes(1.1.3 version)
+
+### September 21, 2023
+`1.1.3`:
+- Add support for event v4 lib
+
 ### February 22, 2023
 `1.1.1`:
 - Register `JodaModule` to JacksonFactory

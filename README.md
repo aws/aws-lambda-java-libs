@@ -21,7 +21,7 @@ Example request handler
 public class Handler implements RequestHandler<Map<String, String>, String>{
  @Override
  public String handleRequest(Map<String, String> event, Context context) {
- 
+
  }
 }
 ```
@@ -32,7 +32,7 @@ Example request stream handler
 public class HandlerStream implements RequestStreamHandler {
   @Override
   public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-    
+
   }
 }
 ```
@@ -41,7 +41,7 @@ public class HandlerStream implements RequestStreamHandler {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-core</artifactId>
- <version>1.2.2</version>
+ <version>1.2.3</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-events</artifactId>
- <version>3.11.2</version>
+ <version>3.11.4</version>
 </dependency>
 ```
 
@@ -101,7 +101,7 @@ public void testInjectSQSEvent(SQSEvent event) {
 ## aws-lambda-java-events-sdk-transformer
 
 This package provides helper classes/methods to use alongside `aws-lambda-java-events` in order to transform
-Lambda input event model objects into SDK-compatible output model objects.  
+Lambda input event model objects into SDK-compatible output model objects.
 See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for more information.
 
 - [Release Notes](aws-lambda-java-events-sdk-transformer/RELEASE.CHANGELOG.md)
@@ -125,7 +125,7 @@ See the [README](aws-lambda-java-log4j2/README.md) or the [official documentatio
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-log4j2</artifactId>
- <version>1.5.1</version>
+ <version>1.6.0</version>
 </dependency>
 ```
 
@@ -140,7 +140,7 @@ The purpose of this package is to allow developers to deploy their applications 
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
- <version>2.3.2</version>
+ <version>2.5.0</version>
 </dependency>
 ```
 
@@ -154,7 +154,7 @@ This package defines the Lambda serialization logic using in the `aws-lambda-jav
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-serialization</artifactId>
- <version>1.0.1</version>
+ <version>1.1.5</version>
 </dependency>
 ```
 

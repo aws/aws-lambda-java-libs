@@ -10,7 +10,7 @@ Example for Maven pom.xml
   <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.5.1</version>
+    <version>1.6.0</version>
   </dependency>
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
@@ -20,6 +20,11 @@ Example for Maven pom.xml
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-api</artifactId>
+    <version>2.17.1</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-layout-template-json</artifactId>
     <version>2.17.1</version>
   </dependency>
   ....
@@ -65,10 +70,10 @@ If using maven shade plugin, set the plugin configuration as follows
 If you are using the [John Rengelman](https://github.com/johnrengelman/shadow) Gradle shadow plugin, then the plugin configuration is as follows:
 
 ```groovy
- 
+
 dependencies{
   ...
-    implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.5.1'
+    implementation group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.6.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
 }
@@ -83,8 +88,8 @@ shadowJar {
 build.dependsOn(shadowJar)
 
 ```
- 
-If you are using the `sam build` and `sam deploy` commands to deploy your lambda function, then you don't 
+
+If you are using the `sam build` and `sam deploy` commands to deploy your lambda function, then you don't
 need to use the shadow jar plugin. The `sam` cli-tool merges itself the `Log4j2Plugins.dat`
 files.
 
@@ -94,21 +99,28 @@ Add the following file `<project-dir>/src/main/resources/log4j2.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
+<Configuration>
   <Appenders>
-    <Lambda name="Lambda">
-      <PatternLayout>
+    <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
+      <LambdaTextFormat>
+        <PatternLayout>
           <pattern>%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1}:%L - %m%n</pattern>
-      </PatternLayout>
+        </PatternLayout>
+      </LambdaTextFormat>
+      <LambdaJSONFormat>
+        <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json" />
+      </LambdaJSONFormat>
     </Lambda>
   </Appenders>
   <Loggers>
-    <Root level="info">
+    <Root level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}">
       <AppenderRef ref="Lambda" />
     </Root>
   </Loggers>
 </Configuration>
 ```
+
+If the `AWS_LAMBDA_LOG_FORMAT` is set to `JSON`, the `LambdaJSONFormat` formatter will be applied, otherwise the `LambdaTextFormat`.
 
 ### 3. Example code
 
@@ -117,6 +129,8 @@ package example;
 
 import com.amazonaws.services.lambda.runtime.Context;
 
+import static org.apache.logging.log4j.CloseableThreadContext.put;
+import org.apache.logging.log4j.CloseableThreadContext.Instance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -135,6 +149,12 @@ public class Hello {
         logger.debug("log data from log4j debug \n this is continuation of log4j debug");
 
         logger.error("log data from log4j err. \n this is a continuation of log4j.err");
+
+        // When logging in JSON, you can also add custom fields
+        // In java11+ you can use the `try (var ctx = put("name", name)) {}` structure
+        Instance ctx = put("name", name);
+        logger.info("log line with input name");
+        ctx.close();
 
         // Return will include the log stream name so you can look
         // up the log later.

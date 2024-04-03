@@ -26,6 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CognitoUserPoolVerifyAuthChallengeResponseEvent extends CognitoUserPoolEvent {
     /**
      * The request from the Amazon Cognito service.
@@ -55,6 +56,7 @@ public class CognitoUserPoolVerifyAuthChallengeResponseEvent extends CognitoUser
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
+    @ToString(callSuper = true)
     public static class Request extends CognitoUserPoolEvent.Request {
         /**
          * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the verify auth challenge trigger.
@@ -67,7 +69,7 @@ public class CognitoUserPoolVerifyAuthChallengeResponseEvent extends CognitoUser
         /**
          * The answer from the user's response to the challenge.
          */
-        private Map<String, String> challengeAnswer;
+        private String challengeAnswer;
         /**
          * This boolean is populated when PreventUserExistenceErrors is set to ENABLED for your User Pool client
          */
@@ -76,7 +78,7 @@ public class CognitoUserPoolVerifyAuthChallengeResponseEvent extends CognitoUser
         @Builder(setterPrefix = "with")
         public Request(Map<String, String> userAttributes,
                        Map<String, String> clientMetadata,
-                       Map<String, String> challengeAnswer,
+                       String challengeAnswer,
                        Map<String, String> privateChallengeParameters,
                        boolean userNotFound) {
             super(userAttributes);

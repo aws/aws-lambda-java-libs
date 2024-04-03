@@ -24,8 +24,6 @@ public class ClasspathLoader {
     private static final int CLASS_SUFFIX_LEN = ".class".length();
 
     static {
-        // NativeClient loads a native library and crashes if loaded here so just exclude it
-        BLOCKLIST.add("com.amazonaws.services.lambda.runtime.api.client.runtimeapi.NativeClient");
         // Ignore module info class for serialization lib
         BLOCKLIST.add("META-INF.versions.9.module-info");
     }
@@ -37,6 +35,7 @@ public class ClasspathLoader {
     private static void loadClass(String name) {
         try {
             Class.forName(name, true, SYSTEM_CLASS_LOADER);
+            System.out.println("Loaded " + name);
         } catch (ClassNotFoundException e) {
             System.err.println("[WARN] Failed to load " + name + ": " + e.getMessage());
         }

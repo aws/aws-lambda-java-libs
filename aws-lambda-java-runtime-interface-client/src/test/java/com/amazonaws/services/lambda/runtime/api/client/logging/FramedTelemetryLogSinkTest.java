@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+
 public class FramedTelemetryLogSinkTest {
 
     private static final int DEFAULT_BUFFER_SIZE = 256;
@@ -35,13 +38,16 @@ public class FramedTelemetryLogSinkTest {
 
     @Test
     public void logSingleFrame() throws IOException {
-        byte[] message = "hello world\nsomething on a new line!\n".getBytes();
+        byte[] message = "{\"message\": \"hello world\nsomething on a new line!\"}".getBytes();
+        LogLevel logLevel = LogLevel.ERROR;
+        LogFormat logFormat = LogFormat.JSON;
+
         File tmpFile = tmpFolder.resolve("pipe").toFile();
         FileOutputStream fos = new FileOutputStream(tmpFile);
         FileDescriptor fd = fos.getFD();
         long before = timestamp();
         try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
-            logSink.log(message);
+            logSink.log(logLevel, logFormat, message);
         }
         long after = timestamp();
 
@@ -54,7 +60,7 @@ public class FramedTelemetryLogSinkTest {
 
         // first 4 bytes indicate the type
         int type = buf.getInt();
-        assertEquals(FrameType.LOG.getValue(), type);
+        assertEquals(FrameType.getValue(logLevel, logFormat), type);
 
         // next 4 bytes indicate the length of the message
         int len = buf.getInt();
@@ -71,7 +77,7 @@ public class FramedTelemetryLogSinkTest {
         assertArrayEquals(message, actual);
 
         // rest of buffer should be empty
-        while(buf.hasRemaining())
+        while (buf.hasRemaining())
             assertEquals(ZERO_BYTE, buf.get());
     }
 
@@ -79,13 +85,16 @@ public class FramedTelemetryLogSinkTest {
     public void logMultipleFrames() throws IOException {
         byte[] firstMessage = "hello world\nsomething on a new line!".getBytes();
         byte[] secondMessage = "hello again\nhere's another message\n".getBytes();
+        LogLevel logLevel = LogLevel.ERROR;
+        LogFormat logFormat = LogFormat.TEXT;
+
         File tmpFile = tmpFolder.resolve("pipe").toFile();
         FileOutputStream fos = new FileOutputStream(tmpFile);
         FileDescriptor fd = fos.getFD();
         long before = timestamp();
         try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
-            logSink.log(firstMessage);
-            logSink.log(secondMessage);
+            logSink.log(logLevel, logFormat, firstMessage);
+            logSink.log(logLevel, logFormat, secondMessage);
         }
         long after = timestamp();
 
@@ -96,10 +105,10 @@ public class FramedTelemetryLogSinkTest {
         // reset the position to the start
         buf.position(0);
 
-        for(byte[] message : Arrays.asList(firstMessage, secondMessage)) {
+        for (byte[] message : Arrays.asList(firstMessage, secondMessage)) {
             // first 4 bytes indicate the type
             int type = buf.getInt();
-            assertEquals(FrameType.LOG.getValue(), type);
+            assertEquals(FrameType.getValue(logLevel, logFormat), type);
 
             // next 4 bytes indicate the length of the message
             int len = buf.getInt();
@@ -117,7 +126,7 @@ public class FramedTelemetryLogSinkTest {
         }
 
         // rest of buffer should be empty
-        while(buf.hasRemaining())
+        while (buf.hasRemaining())
             assertEquals(ZERO_BYTE, buf.get());
     }
 
@@ -125,7 +134,7 @@ public class FramedTelemetryLogSinkTest {
      * The implementation of FramedTelemetryLogSink was based on java.nio.channels.WritableByteChannel which would
      * throw ClosedByInterruptException if Thread.currentThread.interrupt() was called. The implementation was changed
      * and this test ensures that logging works even if the current thread was interrupted.
-     *
+     * <p>
      * https://t.corp.amazon.com/0304370986/
      */
     @Test
@@ -138,7 +147,7 @@ public class FramedTelemetryLogSinkTest {
             try (FramedTelemetryLogSink logSink = new FramedTelemetryLogSink(fd)) {
                 Thread.currentThread().interrupt();
 
-                logSink.log(message);
+                logSink.log(LogLevel.ERROR, LogFormat.TEXT, message);
             }
 
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
@@ -150,8 +159,8 @@ public class FramedTelemetryLogSinkTest {
 
             assertEquals(expectedBytes, readBytes);
 
-            for(int i = 0; i < message.length; i++) {
-                assertEquals(buffer[i + headerSizeBytes], message[i]);
+            for (int i = 0; i < message.length; i++) {
+                assertEquals(message[i], buffer[i + headerSizeBytes]);
             }
         } finally {
             // clear interrupted status of the current thread

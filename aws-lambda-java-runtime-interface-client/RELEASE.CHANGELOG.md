@@ -1,3 +1,24 @@
+### March 20, 2024
+`2.5.0`
+- Runtime API client improvements ([#471](https://github.com/aws/aws-lambda-java-libs/pull/471))
+
+### February 27, 2024
+`2.4.2`
+- Exceptions caught by the runtime are logged as ERROR in JSON mode
+
+### September 4, 2023
+`2.4.1`
+- Null pointer bugfix ([#439](https://github.com/aws/aws-lambda-java-libs/pull/439))
+
+### August 29, 2023
+`2.4.0`
+- Logging improvements ([#436](https://github.com/aws/aws-lambda-java-libs/pull/436))
+
+### July 17, 2023
+`2.3.3`
+- Build platform specific JAR files
+- NativeClient optimisations
+
 ### April 14, 2023
 `2.3.2`
 - Add curl patch

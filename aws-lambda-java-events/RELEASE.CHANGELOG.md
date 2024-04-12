@@ -1,3 +1,7 @@
+### April 12, 2024
+`3.11.5`:
+- Add requestHeaders field for Appsync lambda authorizer event([#473](https://github.com/aws/aws-lambda-java-libs/pull/473))
+
 ### December 1, 2023
 `3.11.4`:
 - Improve `toString` in Cognito events by calling `super`

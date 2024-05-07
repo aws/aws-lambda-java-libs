@@ -366,8 +366,6 @@ public class EventLoaderTest {
     public void testLoadScheduledV2Event() {
         ScheduledV2Event event = EventLoader.loadScheduledV2Event("scheduler_event.json");
 
-        System.out.println("Event: " + event.toString());
-
         assertThat(event).isNotNull();
         assertThat(event.getDetailType()).isEqualTo("Scheduled Event");
         assertThat(event.getSource()).isEqualTo("aws.scheduler");

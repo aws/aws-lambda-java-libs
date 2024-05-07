@@ -101,6 +101,10 @@ public class EventLoader {
         return loadEvent(filename, ScheduledEvent.class);
     }
 
+    public static ScheduledV2Event loadScheduledV2Event(String filename) {
+        return loadEvent(filename, ScheduledV2Event.class);
+    }
+
     public static SNSEvent loadSNSEvent(String filename) {
         return loadEvent(filename, SNSEvent.class);
     }
@@ -127,7 +131,7 @@ public class EventLoader {
         }
         if (stream == null) {
             try {
-                stream = new FileInputStream(new File(filename));
+                stream = new FileInputStream(filename);
             } catch (FileNotFoundException e) {
                 throw new EventLoadingException("Cannot load " + filename, e);
             }

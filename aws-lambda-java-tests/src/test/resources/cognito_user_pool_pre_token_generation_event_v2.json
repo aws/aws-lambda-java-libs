@@ -1,0 +1,33 @@
+{
+    "version": "2",
+    "triggerSource": "TokenGeneration_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_EXAMPLE",
+    "userName": "JaneDoe",
+    "callerContext": {
+        "awsSdkVersion": "aws-sdk-unknown-unknown",
+        "clientId": "1example23456789"
+    },
+    "request": {
+        "userAttributes": {
+            "sub": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
+            "cognito:user_status": "CONFIRMED",
+            "email_verified": "true",
+            "phone_number_verified": "true",
+            "phone_number": "+12065551212",
+            "family_name": "Zoe",
+            "email": "Jane.Doe@example.com"
+        },
+        "groupConfiguration": {
+            "groupsToOverride": ["group-1", "group-2", "group-3"],
+            "iamRolesToOverride": ["arn:aws:iam::123456789012:role/sns_caller1", "arn:aws:iam::123456789012:role/sns_caller2", "arn:aws:iam::123456789012:role/sns_caller3"],
+            "preferredRole": ["arn:aws:iam::123456789012:role/sns_caller"]
+        },
+        "scopes": [
+            "aws.cognito.signin.user.admin", "openid", "email", "phone"
+        ]
+    },
+    "response": {
+        "claimsAndScopeOverrideDetails": []
+    }
+}

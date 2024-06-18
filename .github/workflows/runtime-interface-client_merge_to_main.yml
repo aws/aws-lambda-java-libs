@@ -48,6 +48,8 @@ jobs:
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build
+      env:
+        IS_JAVA_8: true
 
     - name: Issue AWS credentials
       uses: aws-actions/configure-aws-credentials@v1

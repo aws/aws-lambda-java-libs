@@ -26,6 +26,8 @@ jobs:
     - name: Runtime Interface Client smoke tests - Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
+      env:
+        IS_JAVA_8: true
     
   build:
     runs-on: ubuntu-latest
@@ -52,6 +54,8 @@ jobs:
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build
+      env:
+        IS_JAVA_8: true
       
     - name: Save the built jar
       uses: actions/upload-artifact@v3

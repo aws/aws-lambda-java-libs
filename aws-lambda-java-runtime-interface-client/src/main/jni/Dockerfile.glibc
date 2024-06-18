@@ -53,9 +53,16 @@ RUN /usr/bin/c++ -c \
         -I${JAVA_HOME}/include/linux \
         -I ./deps/artifacts/include \
         com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.cpp -o com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o && \
+    /usr/bin/c++ -c \
+        -std=gnu++11 \
+        -fPIC \
+        -I${JAVA_HOME}/include \
+        -I${JAVA_HOME}/include/linux \
+        -I ./deps/artifacts/include \
+        com_amazonaws_services_lambda_crac_DNSManager.cpp -o com_amazonaws_services_lambda_crac_DNSManager.o && \
     /usr/bin/c++ -shared \
         -std=gnu++11 \
-        -o aws-lambda-runtime-interface-client.so com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o \
+        -o aws-lambda-runtime-interface-client.so com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient.o com_amazonaws_services_lambda_crac_DNSManager.o \
         -L ./deps/artifacts/lib64/ \
         -L ./deps/artifacts/lib/ \
         -laws-lambda-runtime \

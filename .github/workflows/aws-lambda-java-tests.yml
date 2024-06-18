@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'aws-lambda-java-tests/**'
+      - 'aws-lambda-java-tests/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-tests/**'
+      - 'aws-lambda-java-tests/**'
+      - '.github/workflows/aws-lambda-java-tests.yml'
 
 jobs:
   build:

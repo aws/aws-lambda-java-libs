@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-events/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-events/**'
+      - '.github/workflows/aws-lambda-java-events.yml'
 
 jobs:
   build:

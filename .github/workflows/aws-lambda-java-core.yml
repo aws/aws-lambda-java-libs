@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'aws-lambda-java-core/**'
+      - 'aws-lambda-java-core/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-core/**'
+      - 'aws-lambda-java-core/**'
+      - '.github/workflows/aws-lambda-java-core.yml'
 
 jobs:
   build:

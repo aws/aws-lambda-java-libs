@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'aws-lambda-java-events-sdk-transformer/**'
+      - 'aws-lambda-java-events-sdk-transformer/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-events-sdk-transformer/**'
+      - 'aws-lambda-java-events-sdk-transformer/**'
+      - '.github/workflows/aws-lambda-java-events-sdk-transformer.yml'
 
 jobs:
   build:

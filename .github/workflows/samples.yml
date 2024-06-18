@@ -12,6 +12,7 @@ on:
     branches: [ '*' ]
     paths:
       - 'samples/kinesis-firehose-event-handler/**'
+      - '.github/workflows/samples.yml'
 
 jobs:
   build:

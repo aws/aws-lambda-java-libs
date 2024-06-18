@@ -7,11 +7,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-serialization/**'
   pull_request:
     branches: [ '*' ]
     paths:
-    - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-serialization/**'
+      - '.github/workflows/aws-lambda-java-serialization.yml'
 
 jobs:
   build:

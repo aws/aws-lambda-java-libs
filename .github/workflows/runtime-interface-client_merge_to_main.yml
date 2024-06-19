@@ -15,6 +15,7 @@ on:
     branches: [ main ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
+  workflow_dispatch:
 
 jobs:
 

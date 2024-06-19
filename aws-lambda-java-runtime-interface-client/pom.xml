@@ -35,6 +35,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
+        <maven-install-plugin.version>2.4</maven-install-plugin.version>
+        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <!--
             The test/integration/codebuild/buildspec.*.yml files will set -DmultiArch=false
@@ -95,6 +97,16 @@
             </extension>
         </extensions>
         <plugins>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-install-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-deploy-plugin.version}</version>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M9</version>

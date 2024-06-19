@@ -290,6 +290,10 @@ public class EventLoaderTest {
         assertThat(contactData.getSystemEndpoint())
                 .returns("+21234567890",from(ConnectEvent.SystemEndpoint::getAddress))
                 .returns("TELEPHONE_NUMBER",from(ConnectEvent.SystemEndpoint::getType));
+
+        assertThat(contactData.getQueue())
+                .returns("arn:aws:connect:eu-central-1:123456789012:instance/9308c2a1-9bc6-4cea-8290-6c0b4a6d38fa/queue/941464de-39b7-4cae-82e9-a44f070ef59e", from(ConnectEvent.Queue::getArn))
+                .returns("ExampleQueue",from(ConnectEvent.Queue::getName));
     }
 
     @Test

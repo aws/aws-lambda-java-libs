@@ -1,3 +1,7 @@
+### June 18, 2024
+`2.5.1`
+- Runtime API client improvements: fix a DNS cache issue
+
 ### March 20, 2024
 `2.5.0`
 - Runtime API client improvements ([#471](https://github.com/aws/aws-lambda-java-libs/pull/471))

@@ -34,7 +34,7 @@
             "stat": "Average",
             "unit": "Percent"
           },
-          "returnData": True
+          "returnData": true
         }
       ]
     }

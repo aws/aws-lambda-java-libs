@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents an CloudWatch Metric Alarm event. This event occurs when a metric alarm is triggered.
+ *
+ * @see <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-and-actions">Using Amazon CloudWatch alarms</a>
+ */
 @Data
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloudWatchAlarmEvent {
-
+public class CloudWatchMetricAlarmEvent {
     private String source;
     private String alarmArn;
     private String accountId;
@@ -28,7 +32,7 @@ public class CloudWatchAlarmEvent {
     public static class AlarmData {
         private String alarmName;
         private State state;
-        private State previousState;
+        private PreviousState previousState;
         private Configuration configuration;
     }
 
@@ -36,37 +40,48 @@ public class CloudWatchAlarmEvent {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class State {
+    public static class State {
+        private String value;
+        private String reason;
+        private String timestamp;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PreviousState {
         private String value;
         private String reason;
         private String reasonData;
         private String timestamp;
-        private String actionsSuppressedBy;
-        private String actionsSuppressedReason;
     }
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class Configuration {
+    public static class Configuration {
         private String description;
         private List<Metric> metrics;
-        private Boolean returnData;
-
-        private String alarmRule;
-        private String actionsSuppressor;
-        private Integer actionsSuppressorWaitPeriod;
-        private Integer actionsSuppressorExtensionPeriod;
     }
 
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class Metric {
+    public static class Metric {
         private String id;
         private MetricStat metricStat;
+        private Boolean returnData;
+    }
+
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MetricStat {
+        private MetricDetail metric;
         private Integer period;
         private String stat;
         private String unit;
@@ -76,7 +91,7 @@ public class CloudWatchAlarmEvent {
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class MetricStat {
+    public static class MetricDetail {
         private String namespace;
         private String name;
         private Map<String, String> dimensions;

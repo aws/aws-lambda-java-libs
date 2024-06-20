@@ -58,7 +58,7 @@ jobs:
         IS_JAVA_8: true
       
     - name: Save the built jar
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: aws-lambda-java-runtime-interface-client
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar

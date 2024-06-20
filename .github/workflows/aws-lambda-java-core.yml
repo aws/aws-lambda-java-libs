@@ -39,3 +39,5 @@ jobs:
     - name: Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
+      env:
+        IS_JAVA_8: true

@@ -7,7 +7,6 @@ package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,22 +16,25 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
-    private final String baseUrl;
-    private final String invocationEndpoint;
+
     static final String USER_AGENT = String.format(
-            "aws-lambda-java/%s-%s",
-            System.getProperty("java.vendor.version"),
-            LambdaRuntimeApiClientImpl.class.getPackage().getImplementationVersion());
+        "aws-lambda-java/%s-%s",
+        System.getProperty("java.vendor.version"),
+        LambdaRuntimeApiClientImpl.class.getPackage().getImplementationVersion());
+
     private static final String DEFAULT_CONTENT_TYPE = "application/json";
     private static final String XRAY_ERROR_CAUSE_HEADER = "Lambda-Runtime-Function-XRay-Error-Cause";
     private static final String ERROR_TYPE_HEADER = "Lambda-Runtime-Function-Error-Type";
-    private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024; // 1MiB
+    // 1MiB
+    private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
+
+    private final String baseUrl;
+    private final String invocationEndpoint;
 
     public LambdaRuntimeApiClientImpl(String hostnameAndPort) {
         Objects.requireNonNull(hostnameAndPort, "hostnameAndPort cannot be null");

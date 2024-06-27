@@ -1,4 +1,7 @@
-/* Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
@@ -6,7 +9,6 @@ import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -14,13 +16,13 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class JsonLogFormatter implements LogFormatter {
-    private final PojoSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getSerializer(StructuredLogMessage.class);
-    private LambdaContext lambdaContext;
-
     private static final DateTimeFormatter dateFormatter =
-            DateTimeFormatter
-                    .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                    .withZone(ZoneId.of("UTC"));
+            DateTimeFormatter.
+                ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").
+                withZone(ZoneId.of("UTC"));
+    private final PojoSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getSerializer(StructuredLogMessage.class);
+
+    private LambdaContext lambdaContext;
 
     @Override
     public String format(String message, LogLevel logLevel) {

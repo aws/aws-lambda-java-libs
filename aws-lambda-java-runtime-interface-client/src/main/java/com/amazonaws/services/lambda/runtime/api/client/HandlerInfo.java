@@ -1,14 +1,15 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
 public final class HandlerInfo {
-    public static class InvalidHandlerException extends RuntimeException {
-        public static final long serialVersionUID = -1;
-    }
-
+    
     public final Class<?> clazz;
     public final String methodName;
+
 
     public HandlerInfo(Class<?> clazz, String methodName) {
         this.clazz = clazz;
@@ -36,5 +37,9 @@ public final class HandlerInfo {
     public static String className(String handler) {
         final int colonLoc = handler.lastIndexOf("::");
         return (colonLoc < 0) ? handler : handler.substring(0, colonLoc);
+    }
+
+    public static class InvalidHandlerException extends RuntimeException {
+        public static final long serialVersionUID = -1;
     }
 }

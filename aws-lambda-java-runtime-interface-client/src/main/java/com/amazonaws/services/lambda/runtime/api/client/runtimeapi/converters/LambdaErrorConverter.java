@@ -17,8 +17,8 @@ public class LambdaErrorConverter {
     }
 
     public static LambdaError fromThrowable(Throwable throwable) {
-        String errorMessage = throwable.getLocalizedMessage() == null ?
-                throwable.getClass().getName() : throwable.getLocalizedMessage();
+        String errorMessage = throwable.getLocalizedMessage() == null 
+            ? throwable.getClass().getName() : throwable.getLocalizedMessage();
         String errorType = throwable.getClass().getName();
 
         StackTraceElement[] trace = throwable.getStackTrace();

@@ -1,6 +1,7 @@
 /*
- *  Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.crac;
 
@@ -57,19 +58,19 @@ public class ContextImpl extends Context<Resource> {
     }
 
     private List<Resource> getCheckpointQueueReverseOrderOfRegistration() {
-        return checkpointQueue.entrySet()
-                .stream()
-                .sorted((r1, r2) -> (int) (r2.getValue() - r1.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        return checkpointQueue.entrySet().
+            stream().
+            sorted((r1, r2) -> (int) (r2.getValue() - r1.getValue())).
+            map(Map.Entry::getKey).
+            collect(Collectors.toList());
     }
 
     private List<Resource> getCheckpointQueueForwardOrderOfRegistration() {
-        return checkpointQueue.entrySet()
-                .stream()
-                .sorted((r1, r2) -> (int) (r1.getValue() - r2.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        return checkpointQueue.entrySet().
+            stream().
+            sorted((r1, r2) -> (int) (r1.getValue() - r2.getValue())).
+            map(Map.Entry::getKey).
+            collect(Collectors.toList());
     }
 
     private void executeBeforeCheckpointHooks() throws CheckpointException {

@@ -1,9 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.util;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class LambdaOutputStream extends OutputStream {
     private final OutputStream inner;

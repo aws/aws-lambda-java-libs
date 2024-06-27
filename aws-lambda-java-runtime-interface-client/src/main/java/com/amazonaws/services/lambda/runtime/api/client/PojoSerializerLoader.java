@@ -1,10 +1,12 @@
-/* Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
-
+import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;

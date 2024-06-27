@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.JniHelper;
-
 import static com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl.USER_AGENT;
 
 /**

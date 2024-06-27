@@ -30,10 +30,10 @@ public class JniHelper {
             System.load(jniLib);
         } else {
             String[] libsToTry = new String[]{
-                    "libaws-lambda-jni.linux-x86_64.so",
-                    "libaws-lambda-jni.linux-aarch_64.so",
-                    "libaws-lambda-jni.linux_musl-x86_64.so",
-                    "libaws-lambda-jni.linux_musl-aarch_64.so"
+                "libaws-lambda-jni.linux-x86_64.so",
+                "libaws-lambda-jni.linux-aarch_64.so",
+                "libaws-lambda-jni.linux_musl-x86_64.so",
+                "libaws-lambda-jni.linux_musl-aarch_64.so"
             };
             unpackAndLoad(libsToTry, NativeClient.class);
         }
@@ -56,8 +56,10 @@ public class JniHelper {
         }
 
         for (int i = 0; i < libsToTry.length; ++i) {
-            System.err.println("Failed to load the native runtime interface client library " + libsToTry[i] +
-                    ". Exception: " + errorMessages.get(i));
+            System.err.println("Failed to load the native runtime interface client library " 
+                + libsToTry[i]
+                + ". Exception: " 
+                + errorMessages.get(i));
         }
         System.exit(-1);
     } 

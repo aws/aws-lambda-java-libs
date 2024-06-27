@@ -1,4 +1,7 @@
-/* Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
@@ -9,5 +12,5 @@ public interface LogFormatter {
     String format(String message, LogLevel logLevel);
 
     default void setLambdaContext(LambdaContext context) {
-    };
+    }
 }

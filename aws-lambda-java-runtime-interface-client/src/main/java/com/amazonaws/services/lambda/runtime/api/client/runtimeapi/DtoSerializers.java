@@ -8,21 +8,10 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaErr
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
-import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class DtoSerializers {
-    /**
-     * Implementation of
-     * <a href="https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom">Initialization-on-demand holder idiom</a>
-     * This way the serializers will be loaded lazily
-     */
-    private static class SingletonHelper {
-        private static final PojoSerializer<LambdaError> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getSerializer(LambdaError.class);
-        private static final PojoSerializer<XRayErrorCause> X_RAY_ERROR_CAUSE_SERIALIZER = GsonFactory.getInstance().getSerializer(XRayErrorCause.class);
-    }
 
     public static byte[] serialize(LambdaError error) {
         return serialize(error, SingletonHelper.LAMBDA_ERROR_SERIALIZER);
@@ -39,5 +28,15 @@ public class DtoSerializers {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    /**
+     * Implementation of
+     * <a href="https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom">Initialization-on-demand holder idiom</a>
+     * This way the serializers will be loaded lazily
+     */
+    private static class SingletonHelper {
+        private static final PojoSerializer<LambdaError> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getSerializer(LambdaError.class);
+        private static final PojoSerializer<XRayErrorCause> X_RAY_ERROR_CAUSE_SERIALIZER = GsonFactory.getInstance().getSerializer(XRayErrorCause.class);
     }
 }

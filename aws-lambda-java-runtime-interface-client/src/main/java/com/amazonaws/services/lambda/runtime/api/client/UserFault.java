@@ -4,6 +4,8 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class UserFault extends RuntimeException {
     private static final long serialVersionUID = -479308856905162038L;
@@ -65,6 +67,16 @@ public final class UserFault extends RuntimeException {
      * the same object for convenience.
      */
     public static <T extends Throwable> T filterStackTrace(T t) {
+        return filterStackTrace(t, new HashSet<>(), new HashSet<>());
+    }
+
+    private static <T extends Throwable> T filterStackTrace(T t, Set<Throwable> visited, Set<Throwable> visitedSuppressed) {
+        if (visited.contains(t)) {
+            return t;
+        }
+
+        visited.add(t);
+
         StackTraceElement[] trace = t.getStackTrace();
         for (int i = 0; i < trace.length; i++) {
             if (trace[i].getClassName().startsWith(packagePrefix)) {
@@ -78,12 +90,15 @@ public final class UserFault extends RuntimeException {
 
         Throwable cause = t.getCause();
         if (cause != null) {
-            filterStackTrace(cause);
+            filterStackTrace(cause, visited, visitedSuppressed);
         }
 
         Throwable[] suppressedExceptions = t.getSuppressed();
-        for (Throwable suppressed : suppressedExceptions) {
-            filterStackTrace(suppressed);
+        for(Throwable suppressed: suppressedExceptions) {
+            if (!visitedSuppressed.contains(suppressed)) {
+                visitedSuppressed.add(suppressed);
+                filterStackTrace(suppressed, visited, visitedSuppressed);
+            }
         }
 
         return t;

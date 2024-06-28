@@ -84,4 +84,44 @@ public class UserFaultTest {
             assertTrue(reportableUserFault.contains("Suppressed: java.lang.RuntimeException: error 2"), "Suppressed error 2 missing in reported UserFault");
         }
     }
+
+    @Test
+    public void testCircularExceptionReference() {
+        RuntimeException e1 = new RuntimeException();
+        RuntimeException e2 = new RuntimeException(e1);
+        e1.initCause(e2);
+
+        try {
+            throw e2;
+        } catch (Exception e) {
+            String stackTrace = UserFault.trace(e);
+            String expectedStackTrace = "java.lang.RuntimeException: java.lang.RuntimeException\n" +
+                            "Caused by: java.lang.RuntimeException\n" +
+                            "Caused by: [CIRCULAR REFERENCE: java.lang.RuntimeException: java.lang.RuntimeException]\n";
+
+            assertEquals(expectedStackTrace, stackTrace);
+        }
+    }
+
+    @Test
+    public void testCircularSuppressedExceptionReference() {
+        RuntimeException e1 = new RuntimeException("Primary Exception");
+        RuntimeException e2 = new RuntimeException(e1);
+        RuntimeException e3 = new RuntimeException("Exception with suppressed");
+
+        e1.addSuppressed(e2);
+        e3.addSuppressed(e2);
+
+        try {
+            throw e3;
+        } catch (Exception e) {
+            String stackTrace = UserFault.trace(e);
+            String expectedStackTrace = "java.lang.RuntimeException: Exception with suppressed\n" +
+                            "\tSuppressed: java.lang.RuntimeException: java.lang.RuntimeException: Primary Exception\n" +
+                            "\tCaused by: java.lang.RuntimeException: Primary Exception\n" +
+                            "\t\tSuppressed: [CIRCULAR REFERENCE: java.lang.RuntimeException: java.lang.RuntimeException: Primary Exception]\n";
+
+            assertEquals(expectedStackTrace, stackTrace);
+        }
+    }
 }

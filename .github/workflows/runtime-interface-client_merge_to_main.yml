@@ -15,6 +15,7 @@ on:
     branches: [ main ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
+  workflow_dispatch:
 
 jobs:
 
@@ -29,13 +30,13 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set up JDK 1.8
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: 8
         distribution: corretto
 
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v3
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -48,9 +49,11 @@ jobs:
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build
+      env:
+        IS_JAVA_8: true
 
     - name: Issue AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ secrets.AWS_REGION }}
         role-to-assume: ${{ secrets.AWS_ROLE }}

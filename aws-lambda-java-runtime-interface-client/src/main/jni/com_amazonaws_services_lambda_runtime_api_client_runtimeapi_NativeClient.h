@@ -1,3 +1,7 @@
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 #include <jni.h>
 
 #ifndef _Included_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient

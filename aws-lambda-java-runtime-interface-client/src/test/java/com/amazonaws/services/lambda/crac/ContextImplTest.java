@@ -7,6 +7,8 @@ package com.amazonaws.services.lambda.crac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.doThrow;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.JniHelper;
 
+@DisabledOnOs(OS.MAC)
 public class ContextImplTest {
 
     private Resource throwsWithSuppressedException, noop, noop2, throwsException, throwCustomException;

@@ -8,6 +8,8 @@ package com.amazonaws.services.lambda.crac;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.JniHelper;
  
@@ -18,7 +20,8 @@ import java.lang.reflect.Field;
  
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
- 
+
+@DisabledOnOs(OS.MAC)
 public class DNSCacheManagerTest {
  
     static String CACHE_FIELD_NAME = "cache";

@@ -96,7 +96,7 @@ public final class UserFault extends RuntimeException {
         }
 
         Throwable[] suppressedExceptions = t.getSuppressed();
-        for(Throwable suppressed: suppressedExceptions) {
+        for (Throwable suppressed: suppressedExceptions) {
             if (!visitedSuppressed.contains(suppressed)) {
                 visitedSuppressed.add(suppressed);
                 filterStackTrace(suppressed, visited, visitedSuppressed);

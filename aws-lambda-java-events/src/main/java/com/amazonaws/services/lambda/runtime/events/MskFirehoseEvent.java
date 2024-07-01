@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-package events;
+package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;

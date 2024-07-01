@@ -45,8 +45,16 @@ public class EventLoader {
         return loadEvent(filename, CloudFrontEvent.class);
     }
 
+    public static CloudWatchCompositeAlarmEvent loadCloudWatchCompositeAlarmEvent(String filename) {
+        return loadEvent(filename, CloudWatchCompositeAlarmEvent.class);
+    }
+
     public static CloudWatchLogsEvent loadCloudWatchLogsEvent(String filename) {
         return loadEvent(filename, CloudWatchLogsEvent.class);
+    }
+
+    public static CloudWatchMetricAlarmEvent loadCloudWatchMetricAlarmEvent(String filename) {
+        return loadEvent(filename, CloudWatchMetricAlarmEvent.class);
     }
 
     public static CodeCommitEvent loadCodeCommitEvent(String filename) {

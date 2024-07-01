@@ -1,6 +1,37 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayCustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2CustomAuthorizerEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.ActiveMQEvent;
+import com.amazonaws.services.lambda.runtime.events.ApplicationLoadBalancerRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.CloudFormationCustomResourceEvent;
+import com.amazonaws.services.lambda.runtime.events.CloudFrontEvent;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEvent;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEvent.AlarmData;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEvent.Configuration;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEvent.PreviousState;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEvent.State;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent;
+import com.amazonaws.services.lambda.runtime.events.CloudWatchMetricAlarmEvent;
+import com.amazonaws.services.lambda.runtime.events.CodeCommitEvent;
+import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPreTokenGenerationEventV2;
+import com.amazonaws.services.lambda.runtime.events.ConfigEvent;
+import com.amazonaws.services.lambda.runtime.events.ConnectEvent;
+import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
+import com.amazonaws.services.lambda.runtime.events.KafkaEvent;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.KinesisFirehoseEvent;
+import com.amazonaws.services.lambda.runtime.events.LambdaDestinationEvent;
+import com.amazonaws.services.lambda.runtime.events.LexEvent;
+import com.amazonaws.services.lambda.runtime.events.RabbitMQEvent;
+import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
+import com.amazonaws.services.lambda.runtime.events.SecretsManagerRotationEvent;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.Record;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord;
@@ -14,8 +45,6 @@ import java.util.Map;
 
 import static java.time.Instant.ofEpochSecond;
 import static org.assertj.core.api.Assertions.*;
-
-import com.amazonaws.services.lambda.runtime.events.*;
 
 public class EventLoaderTest {
 
@@ -375,5 +404,109 @@ public class EventLoaderTest {
         CognitoUserPoolPreTokenGenerationEventV2.Request request = event.getRequest();
         String[] requestScopes = request.getScopes();
         assertThat("aws.cognito.signin.user.admin").isEqualTo(requestScopes[0]);
+    }
+
+    @Test
+    public void testCloudWatchCompositeAlarmEvent() {
+        CloudWatchCompositeAlarmEvent event = EventLoader.loadCloudWatchCompositeAlarmEvent("cloudwatch_composite_alarm.json");
+        assertThat(event).isNotNull();
+        assertThat(event)
+                .returns("aws.cloudwatch", from(CloudWatchCompositeAlarmEvent::getSource))
+                .returns("arn:aws:cloudwatch:us-east-1:111122223333:alarm:SuppressionDemo.Main", from(CloudWatchCompositeAlarmEvent::getAlarmArn))
+                .returns("111122223333", from(CloudWatchCompositeAlarmEvent::getAccountId))
+                .returns("2023-08-04T12:56:46.138+0000", from(CloudWatchCompositeAlarmEvent::getTime))
+                .returns("us-east-1", from(CloudWatchCompositeAlarmEvent::getRegion));
+
+        AlarmData alarmData = event.getAlarmData();
+        assertThat(alarmData).isNotNull();
+        assertThat(alarmData)
+                .returns("CompositeDemo.Main", from(AlarmData::getAlarmName));
+
+        State state = alarmData.getState();
+        assertThat(state).isNotNull();
+        assertThat(state)
+                .returns("ALARM", from(State::getValue))
+                .returns("arn:aws:cloudwatch:us-east-1:111122223333:alarm:CompositeDemo.FirstChild transitioned to ALARM at Friday 04 August, 2023 12:54:46 UTC", from(State::getReason))
+                .returns("{\"triggeringAlarms\":[{\"arn\":\"arn:aws:cloudwatch:us-east-1:111122223333:alarm:CompositeDemo.FirstChild\",\"state\":{\"value\":\"ALARM\",\"timestamp\":\"2023-08-04T12:54:46.138+0000\"}}]}", from(State::getReasonData))
+                .returns("2023-08-04T12:56:46.138+0000", from(State::getTimestamp));
+
+        PreviousState previousState = alarmData.getPreviousState();
+        assertThat(previousState).isNotNull();
+        assertThat(previousState)
+                .returns("ALARM", from(PreviousState::getValue))
+                .returns("arn:aws:cloudwatch:us-east-1:111122223333:alarm:CompositeDemo.FirstChild transitioned to ALARM at Friday 04 August, 2023 12:54:46 UTC", from(PreviousState::getReason))
+                .returns("{\"triggeringAlarms\":[{\"arn\":\"arn:aws:cloudwatch:us-east-1:111122223333:alarm:CompositeDemo.FirstChild\",\"state\":{\"value\":\"ALARM\",\"timestamp\":\"2023-08-04T12:54:46.138+0000\"}}]}", from(PreviousState::getReasonData))
+                .returns("2023-08-04T12:54:46.138+0000", from(PreviousState::getTimestamp))
+                .returns("WaitPeriod", from(PreviousState::getActionsSuppressedBy))
+                .returns("Actions suppressed by WaitPeriod", from(PreviousState::getActionsSuppressedReason));
+
+        Configuration configuration = alarmData.getConfiguration();
+        assertThat(configuration).isNotNull();
+        assertThat(configuration)
+                .returns("ALARM(CompositeDemo.FirstChild) OR ALARM(CompositeDemo.SecondChild)", from(Configuration::getAlarmRule))
+                .returns("CompositeDemo.ActionsSuppressor", from(Configuration::getActionsSuppressor))
+                .returns(120, from(Configuration::getActionsSuppressorWaitPeriod))
+                .returns(180, from(Configuration::getActionsSuppressorExtensionPeriod));
+    }
+
+    @Test
+    public void testCloudWatchMetricAlarmEvent() {
+        CloudWatchMetricAlarmEvent event = EventLoader.loadCloudWatchMetricAlarmEvent("cloudwatch_metric_alarm.json");
+        assertThat(event).isNotNull();
+        assertThat(event)
+                .returns("aws.cloudwatch", from(CloudWatchMetricAlarmEvent::getSource))
+                .returns("arn:aws:cloudwatch:us-east-1:444455556666:alarm:lambda-demo-metric-alarm", from(CloudWatchMetricAlarmEvent::getAlarmArn))
+                .returns("444455556666", from(CloudWatchMetricAlarmEvent::getAccountId))
+                .returns("2023-08-04T12:36:15.490+0000", from(CloudWatchMetricAlarmEvent::getTime))
+                .returns("us-east-1", from(CloudWatchMetricAlarmEvent::getRegion));
+
+        CloudWatchMetricAlarmEvent.AlarmData alarmData = event.getAlarmData();
+        assertThat(alarmData).isNotNull();
+        assertThat(alarmData)
+                .returns("lambda-demo-metric-alarm", from(CloudWatchMetricAlarmEvent.AlarmData::getAlarmName));
+
+        CloudWatchMetricAlarmEvent.State state = alarmData.getState();
+        assertThat(state).isNotNull();
+        assertThat(state)
+                .returns("ALARM", from(CloudWatchMetricAlarmEvent.State::getValue))
+                .returns("test", from(CloudWatchMetricAlarmEvent.State::getReason))
+                .returns("2023-08-04T12:36:15.490+0000", from(CloudWatchMetricAlarmEvent.State::getTimestamp));
+
+        CloudWatchMetricAlarmEvent.PreviousState previousState = alarmData.getPreviousState();
+        assertThat(previousState).isNotNull();
+        assertThat(previousState)
+                .returns("INSUFFICIENT_DATA", from(CloudWatchMetricAlarmEvent.PreviousState::getValue))
+                .returns("Insufficient Data: 5 datapoints were unknown.", from(CloudWatchMetricAlarmEvent.PreviousState::getReason))
+                .returns("{\"version\":\"1.0\",\"queryDate\":\"2023-08-04T12:31:29.591+0000\",\"statistic\":\"Average\",\"period\":60,\"recentDatapoints\":[],\"threshold\":5.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2023-08-04T12:30:00.000+0000\"},{\"timestamp\":\"2023-08-04T12:29:00.000+0000\"},{\"timestamp\":\"2023-08-04T12:28:00.000+0000\"},{\"timestamp\":\"2023-08-04T12:27:00.000+0000\"},{\"timestamp\":\"2023-08-04T12:26:00.000+0000\"}]}", from(CloudWatchMetricAlarmEvent.PreviousState::getReasonData))
+                .returns("2023-08-04T12:31:29.595+0000", from(CloudWatchMetricAlarmEvent.PreviousState::getTimestamp));
+
+        CloudWatchMetricAlarmEvent.Configuration configuration = alarmData.getConfiguration();
+        assertThat(configuration).isNotNull();
+        assertThat(configuration)
+                .returns("Metric Alarm to test Lambda actions", from(CloudWatchMetricAlarmEvent.Configuration::getDescription));
+
+        List<CloudWatchMetricAlarmEvent.Metric> metrics = configuration.getMetrics();
+        assertThat(metrics).hasSize(1);
+        CloudWatchMetricAlarmEvent.Metric metric = metrics.get(0);
+        assertThat(metric)
+                .returns("1234e046-06f0-a3da-9534-EXAMPLEe4c", from(CloudWatchMetricAlarmEvent.Metric::getId));
+
+        CloudWatchMetricAlarmEvent.MetricStat metricStat = metric.getMetricStat();
+        assertThat(metricStat).isNotNull();
+        assertThat(metricStat)
+                .returns(60, from(CloudWatchMetricAlarmEvent.MetricStat::getPeriod))
+                .returns("Average", from(CloudWatchMetricAlarmEvent.MetricStat::getStat))
+                .returns("Percent", from(CloudWatchMetricAlarmEvent.MetricStat::getUnit));
+
+        CloudWatchMetricAlarmEvent.MetricDetail metricDetail = metricStat.getMetric();
+        assertThat(metricDetail).isNotNull();
+        assertThat(metricDetail)
+                .returns("AWS/Logs", from(CloudWatchMetricAlarmEvent.MetricDetail::getNamespace))
+                .returns("CallCount", from(CloudWatchMetricAlarmEvent.MetricDetail::getName));
+
+        Map<String, String> dimensions = metricDetail.getDimensions();
+        assertThat(dimensions).isNotEmpty().hasSize(1);
+        assertThat(dimensions)
+                .contains(entry("InstanceId", "i-12345678"));
     }
 }

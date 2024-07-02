@@ -45,6 +45,7 @@
 * `LambdaDestinationEvent`
 * `LexEvent`
 * `MSKFirehoseEvent`
+* `MSKFirehoseResponse`
 * `RabbitMQEvent`
 * `S3BatchEvent`
 * `S3BatchResponse`

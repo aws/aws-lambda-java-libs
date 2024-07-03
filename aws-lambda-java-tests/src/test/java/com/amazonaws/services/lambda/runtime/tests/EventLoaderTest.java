@@ -119,6 +119,16 @@ public class EventLoaderTest {
     }
 
     @Test
+    public void testLoadMSKFirehoseEvent() {
+        MSKFirehoseEvent event = EventLoader.loadMSKFirehoseEvent("msk_firehose_event.json");
+
+        assertThat(event).isNotNull();
+        assertThat(event.getDeliveryStreamArn()).isEqualTo("arn:aws:kinesis:EXAMPLE");
+        assertThat(event.getRecords()).hasSize(1);
+        assertThat(event.getRecords().get(0).getKafkaRecordValue().array()).asString().isEqualTo("{"Name":"Hello World"}");
+    }
+
+    @Test
     public void testLoadS3Event() {
         S3Event event = EventLoader.loadS3Event("s3_event.json");
         assertThat(event).isNotNull();

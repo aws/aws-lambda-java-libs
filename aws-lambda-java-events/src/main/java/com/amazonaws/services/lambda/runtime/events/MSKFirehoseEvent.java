@@ -11,24 +11,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Created by vermshas on 6/28/24.
- * {
- *     "invocationId": "",
- *     "sourceMSKArn": "",
- *     "deliveryStreamArn": "",
- *     "region": "us-east-1",
- *     "records": [
- *         {
- *             "recordId": "00000000000000000000000000000000000000000000000000000000000000",
- *             "approximateArrivalTimestamp": 1716369573887,
- *             "mskRecordMetadata": {
- *                 "offset": "0",
- *                 "partitionId": "1",
- *                 "approximateArrivalTimestamp": 1716369573887
- *             },
- *             "kafkaRecordValue": ""
- *         }
- *     ]
- * }
  */
 
 @Data

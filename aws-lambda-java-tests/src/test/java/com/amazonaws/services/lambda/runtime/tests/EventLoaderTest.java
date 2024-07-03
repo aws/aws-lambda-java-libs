@@ -121,9 +121,10 @@ public class EventLoaderTest {
     @Test
     public void testLoadMSKFirehoseEvent() {
         MSKFirehoseEvent event = EventLoader.loadMSKFirehoseEvent("msk_firehose_event.json");
-
+        
         assertThat(event).isNotNull();
-        assertThat(event.getDeliveryStreamArn()).isEqualTo("arn:aws:kinesis:EXAMPLE");
+        assertThat(event.getSourceMSKArn()).isEqualTo("arn:aws:kafka:EXAMPLE");
+        assertThat(event.getDeliveryStreamArn()).isEqualTo("arn:aws:firehose:EXAMPLE");
         assertThat(event.getRecords()).hasSize(1);
         assertThat(event.getRecords().get(0).getKafkaRecordValue().array()).asString().isEqualTo("{\"Name\":\"Hello World\"}");
     }

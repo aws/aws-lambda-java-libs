@@ -1,7 +1,7 @@
 {
   "invocationId": "12345621-4787-0000-a418-36e56Example",
-  "sourceMSKArn": "",
-  "deliveryStreamArn": "",
+  "sourceMSKArn": "arn:aws:kafka:EXAMPLE",
+  "deliveryStreamArn": "arn:aws:firehose:EXAMPLE",
   "region": "us-east-1",
   "records": [
     {

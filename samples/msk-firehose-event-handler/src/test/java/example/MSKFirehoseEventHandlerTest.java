@@ -16,7 +16,7 @@ public class MSKFirehoseEventHandlerTest {
     @ParameterizedTest
     @Event(value = "event.json", type = MSKFirehoseEvent.class)
     public void testEventHandler(MSKFirehoseEvent event) {
-        Sample Sample = new Sample();
+        MSKFirehoseEventHandler Sample = new MSKFirehoseEventHandler();
         MSKFirehoseResponse response = Sample.handleRequest(event, context);
 
         String expectedString = "{\"Name\":\"Hello World\"}";

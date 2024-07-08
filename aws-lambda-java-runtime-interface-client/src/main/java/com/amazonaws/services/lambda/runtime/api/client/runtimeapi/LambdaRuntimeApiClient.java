@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import java.io.IOException;
 
 /**
@@ -19,7 +17,7 @@ public interface LambdaRuntimeApiClient {
      * Report Init error
      * @param error error to report
      */
-    void reportInitError(LambdaError error, RapidErrorType errorType) throws IOException;
+    void reportInitError(LambdaError error) throws IOException;
 
     /**
      * Get next invocation
@@ -38,15 +36,7 @@ public interface LambdaRuntimeApiClient {
      * @param requestId request id
      * @param error error to report
      */
-    void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType) throws IOException;
-
-    /**
-     * Report invocation error
-     * @param requestId request id
-     * @param error error to report
-     * @param xRayErrorCause X-Ray error cause
-     */
-    void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType, XRayErrorCause xRayErrorCause) throws IOException;
+    void reportInvocationError(String requestId, LambdaError error) throws IOException;
 
     /**
      * SnapStart endpoint to report that beforeCheckoint hooks were executed
@@ -57,5 +47,5 @@ public interface LambdaRuntimeApiClient {
      * SnapStart endpoint to report errors during afterRestore hooks execution
      * @param error error to report
      */
-    void reportRestoreError(LambdaError error, RapidErrorType errorType) throws IOException;
+    void reportRestoreError(LambdaError error) throws IOException;
 }

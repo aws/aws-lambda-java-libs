@@ -12,7 +12,6 @@ import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLog
 import com.amazonaws.services.lambda.runtime.api.client.logging.LogSink;
 import com.amazonaws.services.lambda.runtime.api.client.logging.StdOutLogSink;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaError;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaError;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClient;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.RapidErrorType;

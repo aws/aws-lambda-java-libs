@@ -44,9 +44,9 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     @Override
-    public void reportInitError(LambdaError error) throws IOException {
+    public void reportInitError(LambdaError error, RapidErrorType errorType) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/init/error";
-        reportLambdaError(endpoint, error, null);
+        reportLambdaError(endpoint, error, errorType, null);
     }
 
     @Override
@@ -60,14 +60,14 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     @Override
-    public void reportInvocationError(String requestId, LambdaError error) throws IOException {
-        reportInvocationError(requestId, error, null);
+    public void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType) throws IOException {
+        reportInvocationError(requestId, error, errorType, null);
     }
 
     @Override
-    public void reportInvocationError(String requestId, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException {
+    public void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType, XRayErrorCause xRayErrorCause) throws IOException {
         String endpoint = invocationEndpoint + requestId + "/error";
-        reportLambdaError(endpoint, error, xRayErrorCause);
+        reportLambdaError(endpoint, error, errorType, xRayErrorCause);
     }
 
     @Override
@@ -80,16 +80,15 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     @Override
-    public void reportRestoreError(LambdaError error) throws IOException {
+    public void reportRestoreError(LambdaError error, RapidErrorType errorType) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/restore/error";
-        reportLambdaError(endpoint, error, null);
+        reportLambdaError(endpoint, error, errorType, null);
     }
 
-    void reportLambdaError(String endpoint, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException {
+    void reportLambdaError(String endpoint, LambdaError error, RapidErrorType errorType, XRayErrorCause xRayErrorCause) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        if (error.errorType != null && !error.errorType.isEmpty()) {
-            headers.put(ERROR_TYPE_HEADER, error.errorType);
-        }
+        headers.put(ERROR_TYPE_HEADER, errorType.getRapidError());
+
         if (xRayErrorCause != null) {
             byte[] xRayErrorCauseJson = DtoSerializers.serialize(xRayErrorCause);
             if (xRayErrorCauseJson != null && xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {

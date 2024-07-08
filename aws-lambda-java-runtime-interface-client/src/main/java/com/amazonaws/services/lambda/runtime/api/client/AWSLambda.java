@@ -13,6 +13,7 @@ import com.amazonaws.services.lambda.runtime.api.client.logging.LogSink;
 import com.amazonaws.services.lambda.runtime.api.client.logging.StdOutLogSink;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClient;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.RapidErrorType;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.LambdaErrorConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.XRayErrorCauseConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
@@ -216,7 +217,7 @@ public class AWSLambda {
         } catch (UserFault userFault) {
             lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
             LambdaError error = LambdaErrorConverter.fromUserFault(userFault);
-            runtimeClient.reportInitError(error);
+            runtimeClient.reportInitError(error, RapidErrorType.BadFunctionCode);
             System.exit(1);
             return;
         }
@@ -245,7 +246,7 @@ public class AWSLambda {
                 UserFault.filterStackTrace(f);
 
                 LambdaError error = LambdaErrorConverter.fromUserFault(f);
-                runtimeClient.reportInvocationError(request.getId(), error);
+                runtimeClient.reportInvocationError(request.getId(), error, RapidErrorType.BadFunctionCode);
             } catch (Throwable t) {
                 shouldExit = t instanceof VirtualMachineError || t instanceof IOError;
                 UserFault.filterStackTrace(t);
@@ -253,7 +254,7 @@ public class AWSLambda {
 
                 LambdaError error = LambdaErrorConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
-                runtimeClient.reportInvocationError(request.getId(), error, xRayErrorCause);
+                runtimeClient.reportInvocationError(request.getId(), error, RapidErrorType.UserException, xRayErrorCause);
             } finally {
                 if (userFault != null) {
                     lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
@@ -269,7 +270,7 @@ public class AWSLambda {
         } catch (Exception e1) {
             logExceptionCloudWatch(lambdaLogger, e1);
             LambdaError error = LambdaErrorConverter.fromThrowable(e1);
-            runtimeClient.reportInitError(error);
+            runtimeClient.reportInitError(error, RapidErrorType.BeforeCheckpointError);
             System.exit(64);
         }
         try {
@@ -277,7 +278,7 @@ public class AWSLambda {
         } catch (Exception restoreExc) {
             logExceptionCloudWatch(lambdaLogger, restoreExc);
             LambdaError error = LambdaErrorConverter.fromThrowable(restoreExc);
-            runtimeClient.reportRestoreError(error);
+            runtimeClient.reportRestoreError(error, RapidErrorType.AfterRestoreError);
             System.exit(64);
         }
     }

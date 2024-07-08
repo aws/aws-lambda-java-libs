@@ -19,7 +19,7 @@ public interface LambdaRuntimeApiClient {
      * Report Init error
      * @param error error to report
      */
-    void reportInitError(LambdaError error) throws IOException;
+    void reportInitError(LambdaError error, RapidErrorType errorType) throws IOException;
 
     /**
      * Get next invocation
@@ -38,7 +38,7 @@ public interface LambdaRuntimeApiClient {
      * @param requestId request id
      * @param error error to report
      */
-    void reportInvocationError(String requestId, LambdaError error) throws IOException;
+    void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType) throws IOException;
 
     /**
      * Report invocation error
@@ -46,7 +46,7 @@ public interface LambdaRuntimeApiClient {
      * @param error error to report
      * @param xRayErrorCause X-Ray error cause
      */
-    void reportInvocationError(String requestId, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException;
+    void reportInvocationError(String requestId, LambdaError error, RapidErrorType errorType, XRayErrorCause xRayErrorCause) throws IOException;
 
     /**
      * SnapStart endpoint to report that beforeCheckoint hooks were executed
@@ -57,5 +57,5 @@ public interface LambdaRuntimeApiClient {
      * SnapStart endpoint to report errors during afterRestore hooks execution
      * @param error error to report
      */
-    void reportRestoreError(LambdaError error) throws IOException;
+    void reportRestoreError(LambdaError error, RapidErrorType errorType) throws IOException;
 }

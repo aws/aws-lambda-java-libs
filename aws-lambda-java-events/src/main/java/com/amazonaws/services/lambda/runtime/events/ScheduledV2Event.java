@@ -5,14 +5,23 @@
 
 package com.amazonaws.services.lambda.runtime.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * represents a scheduled V2 event
+ * Represents a Scheduled V2 event sent to Lambda
+ * <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-schedulev2.html">ScheduleV2</a>
  */
+@Data
+@Builder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScheduledV2Event implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -463442139623175611L;
@@ -34,219 +43,6 @@ public class ScheduledV2Event implements Serializable, Cloneable {
     private DateTime time;
 
     private List<String> resources;
-
-    /**
-     * default constructor
-     */
-    public ScheduledV2Event() {
-    }
-
-    /**
-     * @return the version number
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * @param version the version number
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    /**
-     * @param version version number
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withVersion(String version) {
-        setVersion(version);
-        return this;
-    }
-
-    /**
-     * @return the account id
-     */
-    public String getAccount() {
-        return account;
-    }
-
-    /**
-     * @param account the account id
-     */
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    /**
-     * @param account account id
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withAccount(String account) {
-        setAccount(account);
-        return this;
-    }
-
-    /**
-     * @return the aws region
-     */
-    public String getRegion() {
-        return region;
-    }
-
-    /**
-     * @param region the aws region
-     */
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    /**
-     * @param region aws region
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withRegion(String region) {
-        setRegion(region);
-        return this;
-    }
-
-    /**
-     * @return The details of the events (usually left blank)
-     */
-    public String getDetail() {
-        return detail;
-    }
-
-    /**
-     * @param detail The details of the events (usually left blank)
-     */
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    /**
-     * @param detail details of the events (usually left blank)
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withDetail(String detail) {
-        setDetail(detail);
-        return this;
-    }
-
-    /**
-     * @return The details type - see cloud watch events for more info
-     */
-    public String getDetailType() {
-        return detailType;
-    }
-
-    /**
-     * @param detailType The details type - see cloud watch events for more info
-     */
-    public void setDetailType(String detailType) {
-        this.detailType = detailType;
-    }
-
-    /**
-     * @param detailType The details type - see cloud watch events for more info
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withDetailType(String detailType) {
-        setDetailType(detailType);
-        return this;
-    }
-
-    /**
-     * @return the source of the event
-     */
-    public String getSource() {
-        return source;
-    }
-
-    /**
-     * @param source the source of the event
-     */
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    /**
-     * @param source source of the event
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withSource(String source) {
-        setSource(source);
-        return this;
-    }
-
-    /**
-     * @return the timestamp for when the event is scheduled
-     */
-    public DateTime getTime() {
-        return this.time;
-    }
-
-    /**
-     * @param time the timestamp for when the event is scheduled
-     */
-    public void setTime(DateTime time) {
-        this.time = time;
-    }
-
-    /**
-     * @param time the timestamp for when the event is scheduled
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withTime(DateTime time) {
-        setTime(time);
-        return this;
-    }
-
-    /**
-     * @return the id of the event
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id of the event
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * @param id id of event
-     * @return ScheduledV2Event
-     */
-    public ScheduledV2Event withId(String id) {
-        setId(id);
-        return this;
-    }
-
-    /**
-     * @return the resources used by event
-     */
-    public List<String> getResources() {
-        return this.resources;
-    }
-
-    /**
-     * @param resources the resources used by event
-     */
-    public void setResources(List<String> resources) {
-        this.resources = resources;
-    }
-
-    /**
-     * @param resources list of resource names
-     * @return Scheduled V2 event object
-     */
-    public ScheduledV2Event withResources(List<String> resources) {
-        setResources(resources);
-        return this;
-    }
 
     /**
      * Returns a string representation of this object; useful for testing and debugging.
@@ -287,7 +83,7 @@ public class ScheduledV2Event implements Serializable, Cloneable {
         if (obj == null)
             return false;
 
-        if (obj instanceof ScheduledV2Event == false)
+        if (!(obj instanceof ScheduledV2Event))
             return false;
         ScheduledV2Event other = (ScheduledV2Event) obj;
         if (other.getVersion() == null ^ this.getVersion() == null)

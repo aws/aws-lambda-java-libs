@@ -9,9 +9,7 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.time.Instant.ofEpochSecond;
 import static org.assertj.core.api.Assertions.*;
@@ -367,9 +365,15 @@ public class EventLoaderTest {
         ScheduledV2Event event = EventLoader.loadScheduledV2Event("scheduler_event.json");
 
         assertThat(event).isNotNull();
+        assertThat(event.getVersion()).isEqualTo("0");
+        assertThat(event.getId()).isEqualTo("4e6638b7-b892-4482-9762-8c58d4e71ecc");
         assertThat(event.getDetailType()).isEqualTo("Scheduled Event");
         assertThat(event.getSource()).isEqualTo("aws.scheduler");
+        assertThat(event.getAccount()).isEqualTo("123456789012");
         assertThat(event.getTime()).isEqualTo(DateTime.parse("2024-05-07T15:58:34Z"));
+        assertThat(event.getRegion()).isEqualTo("eu-central-1");
+        assertThat(event.getResources()).isNotEmpty();
+        assertThat(event.getResources()).isEqualTo(Collections.singletonList("arn:aws:scheduler:eu-central-1:123456789012:schedule/default/demoschedule"));
         assertThat(event.getDetail()).isEqualTo("{}");
     }
 }

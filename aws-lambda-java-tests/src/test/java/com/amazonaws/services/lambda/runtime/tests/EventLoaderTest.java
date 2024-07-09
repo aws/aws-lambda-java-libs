@@ -127,6 +127,13 @@ public class EventLoaderTest {
         assertThat(event.getDeliveryStreamArn()).isEqualTo("arn:aws:firehose:EXAMPLE");
         assertThat(event.getRecords()).hasSize(1);
         assertThat(event.getRecords().get(0).getKafkaRecordValue().array()).asString().isEqualTo("{\"Name\":\"Hello World\"}");
+        assertThat(event.getRecords().get(0).getApproximateArrivalTimestamp()).asString().isEqualTo("1716369573887");
+        assertThat(event.getRecords().get(0).getMskRecordMetadata()).asString().isEqualTo("{\n" +
+                "                \"offset\": \"0\",\n" +
+                "                \"partitionId\": \"1\",\n" +
+                "                \"approximateArrivalTimestamp\": 1716369573887\n" +
+                "            }");
+
     }
 
     @Test

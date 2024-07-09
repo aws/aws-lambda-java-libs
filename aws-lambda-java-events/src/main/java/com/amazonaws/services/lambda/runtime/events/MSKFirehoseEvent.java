@@ -1,3 +1,8 @@
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 package com.amazonaws.services.lambda.runtime.events;
 
 import java.nio.ByteBuffer;
@@ -8,10 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-/**
- * Created by vermshas on 6/28/24.
- */
 
 @Data
 @Builder(setterPrefix = "with")

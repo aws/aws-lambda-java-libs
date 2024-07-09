@@ -1,3 +1,7 @@
+### June 11, 2024
+`3.11.6`:
+- Add the V2 version of the pre token generation event([#465](https://github.com/aws/aws-lambda-java-libs/pull/465))
+
 ### April 12, 2024
 `3.11.5`:
 - Add requestHeaders field for Appsync lambda authorizer event([#473](https://github.com/aws/aws-lambda-java-libs/pull/473))

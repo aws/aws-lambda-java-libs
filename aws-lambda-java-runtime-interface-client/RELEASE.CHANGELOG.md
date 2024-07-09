@@ -1,3 +1,8 @@
+### June 28, 2024
+`2.5.1`
+- Runtime API client improvements: fix a DNS cache issue
+- Runtime API client improvements: fix circular exception references causing stackOverflow
+
 ### March 20, 2024
 `2.5.0`
 - Runtime API client improvements ([#471](https://github.com/aws/aws-lambda-java-libs/pull/471))

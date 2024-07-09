@@ -18,6 +18,10 @@ else
     echo "Already -SNAPSHOT version"
 fi
 
+# get the updated project version
+snapshotProjectVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+echo "Updated project version is ${snapshotProjectVersion}"
+
 CLASSIFIERS_ARRAY=("linux-x86_64" "linux_musl-x86_64" "linux-aarch_64" "linux_musl-aarch_64")
 
 for str in "${CLASSIFIERS_ARRAY[@]}"; do
@@ -36,7 +40,7 @@ mvn -B -X -P ci-repo \
     -DgroupId=com.amazonaws \
     -DartifactId=aws-lambda-java-runtime-interface-client \
     -Dpackaging=jar \
-    -Dversion=$projectVersion \
+    -Dversion=$snapshotProjectVersion \
     -Dfile=./target/aws-lambda-java-runtime-interface-client-$projectVersion.jar \
     -Dfiles=$FILES \
     -Dclassifiers=$CLASSIFIERS \

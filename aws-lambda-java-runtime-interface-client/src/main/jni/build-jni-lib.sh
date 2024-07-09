@@ -51,10 +51,21 @@ function build_for_libc_arch() {
       echo "multi-arch not requested, assuming this is a workaround to goofyness when docker buildx is enabled on Linux CI environments."
       echo "enabling docker buildx often updates the docker api version, so assuming that docker cli is also too old to use --output type=tar, so doing alternative build-tag-run approach"
       image_name="lambda-java-jni-lib-${libc_impl}-${arch}"
+
+      # GitHub actions is using dockerx build under the hood. We need to pass --load option to be able to run the image
+      # This args is NOT part of the classic docker build command, so we need to check against a GitHub Action env var not to make local build crash.
+      if [[ "${GITHUB_RUN_ID:+isset}" == "isset" ]]; then
+        EXTRA_LOAD_ARG="--load"
+      else
+        EXTRA_LOAD_ARG=""
+      fi
+
       docker build --platform="${docker_platform}" \
             -t "${image_name}" \
             -f "${SRC_DIR}/Dockerfile.${libc_impl}" \
-            --build-arg CURL_VERSION=${CURL_VERSION} "${SRC_DIR}"
+            --build-arg CURL_VERSION=${CURL_VERSION} "${SRC_DIR}" ${EXTRA_LOAD_ARG}
+
+      echo "Docker image has been successfully built"
 
       docker run --rm --entrypoint /bin/cat "${image_name}" \
             /src/aws-lambda-runtime-interface-client.so > "${artifact}"

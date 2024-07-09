@@ -1,12 +1,14 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
+import com.amazonaws.services.lambda.runtime.events.*;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
 
-import java.io.*;
-
-import com.amazonaws.services.lambda.runtime.events.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Load events from json files and serialize them in Events
@@ -115,6 +117,10 @@ public class EventLoader {
 
     public static RabbitMQEvent loadRabbitMQEvent(String filename) {
         return loadEvent(filename, RabbitMQEvent.class);
+    }
+
+    public static CognitoUserPoolPreTokenGenerationEventV2 loadCognitoUserPoolPreTokenGenerationEventV2(String filename) {
+        return loadEvent(filename, CognitoUserPoolPreTokenGenerationEventV2.class);
     }
 
     public static <T> T loadEvent(String filename, Class<T> targetClass) {

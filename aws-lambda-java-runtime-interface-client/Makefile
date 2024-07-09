@@ -4,6 +4,13 @@ ARCHITECTURE := $(shell arch)
 ARCHITECTURE_ALIAS := $($(shell echo "$(ARCHITECTURE)_ALIAS"))
 ARCHITECTURE_ALIAS := $(or $(ARCHITECTURE_ALIAS),amd64) # on any other archs defaulting to amd64
 
+# Java 8 does not support passing some args (such add --add-opens) so we need to clear them
+ifeq ($(IS_JAVA_8),true)
+	EXTRA_LOAD_ARG := -DargLineForReflectionTestOnly=""
+else
+	EXTRA_LOAD_ARG :=
+endif
+
 # This optional module exports MAVEN_REPO_URL, MAVEN_REPO_USERNAME and MAVEN_REPO_PASSWORD environment variables
 # making it possible to publish resulting artifacts to a codeartifact maven repository
 -include ric-dev-environment/codeartifact-repo.mk
@@ -15,7 +22,7 @@ target:
 
 .PHONY: test
 test:
-	mvn test
+	mvn test $(EXTRA_LOAD_ARG)
 
 .PHONY: setup-codebuild-agent
 setup-codebuild-agent:
@@ -44,11 +51,11 @@ pr: test test-smoke
 
 .PHONY: build
 build: 
-	mvn clean install
-	mvn install -P linux-x86_64
-	mvn install -P linux_musl-x86_64
-	mvn install -P linux-aarch64
-	mvn install -P linux_musl-aarch64
+	mvn clean install $(EXTRA_LOAD_ARG)
+	mvn install -P linux-x86_64 $(EXTRA_LOAD_ARG)
+	mvn install -P linux_musl-x86_64 $(EXTRA_LOAD_ARG)
+	mvn install -P linux-aarch64 $(EXTRA_LOAD_ARG)
+	mvn install -P linux_musl-aarch64 $(EXTRA_LOAD_ARG)
 
 .PHONY: publish
 publish:

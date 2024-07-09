@@ -13,6 +13,7 @@ import java.util.*;
 
 import static java.time.Instant.ofEpochSecond;
 import static org.assertj.core.api.Assertions.*;
+import com.amazonaws.services.lambda.runtime.events.*;
 
 public class EventLoaderTest {
 
@@ -375,5 +376,19 @@ public class EventLoaderTest {
         assertThat(event.getResources()).isNotEmpty();
         assertThat(event.getResources()).isEqualTo(Collections.singletonList("arn:aws:scheduler:eu-central-1:123456789012:schedule/default/demoschedule"));
         assertThat(event.getDetail()).isEqualTo("{}");
+    }
+
+    @Test
+    public void testLoadCognitoUserPoolPreTokenGenerationEventV2() {
+        CognitoUserPoolPreTokenGenerationEventV2 event = EventLoader.loadCognitoUserPoolPreTokenGenerationEventV2("cognito_user_pool_pre_token_generation_event_v2.json");
+        assertThat(event).isNotNull();
+        assertThat(event)
+                .returns("2", from(CognitoUserPoolPreTokenGenerationEventV2::getVersion))
+                .returns("us-east-1", from(CognitoUserPoolPreTokenGenerationEventV2::getRegion))
+                .returns("TokenGeneration_Authentication", from(CognitoUserPoolPreTokenGenerationEventV2::getTriggerSource));
+
+        CognitoUserPoolPreTokenGenerationEventV2.Request request = event.getRequest();
+        String[] requestScopes = request.getScopes();
+        assertThat("aws.cognito.signin.user.admin").isEqualTo(requestScopes[0]);
     }
 }

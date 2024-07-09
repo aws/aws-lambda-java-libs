@@ -23,25 +23,9 @@ public class ContextImpl extends Context<Resource> {
 
     @Override
     public synchronized void beforeCheckpoint(Context<? extends Resource> context) throws CheckpointException {
-
-        List<Throwable> exceptionsThrown = new ArrayList<>();
-        for (Resource resource : getCheckpointQueueReverseOrderOfRegistration()) {
-            try {
-                resource.beforeCheckpoint(this);
-            } catch (CheckpointException e) {
-                Collections.addAll(exceptionsThrown, e.getSuppressed());
-            } catch (Exception e) {
-                exceptionsThrown.add(e);
-            }
-        }
-
-        if (!exceptionsThrown.isEmpty()) {
-            CheckpointException checkpointException = new CheckpointException();
-            for (Throwable t : exceptionsThrown) {
-                checkpointException.addSuppressed(t);
-            }
-            throw checkpointException;
-        }
+        executeBeforeCheckpointHooks();
+        DNSManager.clearCache();
+        System.gc();
     }
 
     @Override
@@ -86,5 +70,26 @@ public class ContextImpl extends Context<Resource> {
                 .sorted((r1, r2) -> (int) (r1.getValue() - r2.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    private void executeBeforeCheckpointHooks() throws CheckpointException {
+        List<Throwable> exceptionsThrown = new ArrayList<>();
+        for (Resource resource : getCheckpointQueueReverseOrderOfRegistration()) {
+            try {
+                resource.beforeCheckpoint(this);
+            } catch (CheckpointException e) {
+                Collections.addAll(exceptionsThrown, e.getSuppressed());
+            } catch (Exception e) {
+                exceptionsThrown.add(e);
+            }
+        }
+
+        if (!exceptionsThrown.isEmpty()) {
+            CheckpointException checkpointException = new CheckpointException();
+            for (Throwable t : exceptionsThrown) {
+                checkpointException.addSuppressed(t);
+            }
+            throw checkpointException;
+        }
     }
 }

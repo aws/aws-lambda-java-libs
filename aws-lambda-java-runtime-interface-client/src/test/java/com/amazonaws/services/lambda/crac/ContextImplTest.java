@@ -1,21 +1,34 @@
 /*
- *  Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
-
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 package com.amazonaws.services.lambda.crac;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.JniHelper;
+
+@DisabledOnOs(OS.MAC)
 public class ContextImplTest {
 
     private Resource throwsWithSuppressedException, noop, noop2, throwsException, throwCustomException;
+
+    @BeforeAll
+    public static void jniLoad() {
+        JniHelper.load();
+    }
 
     @BeforeEach
     public void setup() throws Exception {

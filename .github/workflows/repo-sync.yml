@@ -3,6 +3,10 @@ name: Repo Sync
 on:
   schedule:
     - cron: "0 8 * * 1-5" # At 08:00 on every day-of-week from Monday through Friday
+  pull_request:
+    branches: [ '*' ]
+    paths:
+      - '.github/workflows/repo-sync.yml'
   workflow_dispatch:
 
 jobs:

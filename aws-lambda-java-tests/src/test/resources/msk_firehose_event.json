@@ -1,0 +1,18 @@
+{
+  "invocationId": "12345621-4787-0000-a418-36e56Example",
+  "sourceMSKArn": "arn:aws:kafka:EXAMPLE",
+  "deliveryStreamArn": "arn:aws:firehose:EXAMPLE",
+  "region": "us-east-1",
+  "records": [
+    {
+      "recordId": "00000000000000000000000000000000000000000000000000000000000000",
+      "approximateArrivalTimestamp": 1716369573887,
+      "mskRecordMetadata": {
+        "offset": "0",
+        "partitionId": "1",
+        "approximateArrivalTimestamp": 1716369573887
+      },
+      "kafkaRecordValue": "eyJOYW1lIjoiSGVsbG8gV29ybGQifQ=="
+    }
+  ]
+}

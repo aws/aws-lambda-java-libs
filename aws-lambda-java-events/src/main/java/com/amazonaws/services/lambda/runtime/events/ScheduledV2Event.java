@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Represents a Scheduled V2 event sent to Lambda
- * <a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-schedulev2.html">ScheduleV2</a>
+ * <a href="https://docs.aws.amazon.com/lambda/latest/dg/with-eventbridge-scheduler.html">Using Lambda with Amazon EventBridge Scheduler</a>
  */
 @Data
 @Builder(setterPrefix = "with")

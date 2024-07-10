@@ -97,6 +97,10 @@ public class EventLoader {
         return loadEvent(filename, LexEvent.class);
     }
 
+    public static MSKFirehoseEvent loadMSKFirehoseEvent(String filename) {
+        return loadEvent(filename, MSKFirehoseEvent.class);
+    }
+
     public static S3Event loadS3Event(String filename) {
         return loadEvent(filename, S3Event.class);
     }

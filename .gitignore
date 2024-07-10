@@ -25,3 +25,6 @@ dependency-reduced-pom.xml
 
 # OSX
 .DS_Store
+
+# snapshot process
+aws-lambda-java-runtime-interface-client/pom.xml.versionsBackup

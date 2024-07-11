@@ -1,6 +1,7 @@
 ### July 11, 2024
 `3.12.0`:
 - Added the object representations of the CloudWatch alarms([#493](https://github.com/aws/aws-lambda-java-libs/pull/493))
+- Added event class MskFirehoseEvent.java for Firehose Lambda transformation when MSK is the source([#490](https://github.com/aws/aws-lambda-java-libs/pull/490))
 
 ### June 11, 2024
 `3.11.6`:

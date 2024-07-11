@@ -16,7 +16,9 @@
 * `AppSyncLambdaAuthorizerResponse`
 * `CloudFormationCustomResourceEvent`
 * `CloudFrontEvent`
+* `CloudWatchCompositeAlarmEvent`
 * `CloudWatchLogsEvent`
+* `CloudWatchMetricAlarmEvent`
 * `CodeCommitEvent`
 * `CognitoEvent`
 * `CognitoUserPoolCreateAuthChallengeEvent`

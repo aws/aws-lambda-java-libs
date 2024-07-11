@@ -1,3 +1,7 @@
+### July 11, 2024
+`3.12.0`:
+- Added the object representations of the CloudWatch alarms([#493](https://github.com/aws/aws-lambda-java-libs/pull/493))
+
 ### June 11, 2024
 `3.11.6`:
 - Add the V2 version of the pre token generation event([#465](https://github.com/aws/aws-lambda-java-libs/pull/465))

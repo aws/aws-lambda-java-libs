@@ -26,6 +26,7 @@ import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
 import com.amazonaws.services.lambda.runtime.events.KinesisFirehoseEvent;
 import com.amazonaws.services.lambda.runtime.events.LambdaDestinationEvent;
 import com.amazonaws.services.lambda.runtime.events.LexEvent;
+import com.amazonaws.services.lambda.runtime.events.MSKFirehoseEvent;
 import com.amazonaws.services.lambda.runtime.events.RabbitMQEvent;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;

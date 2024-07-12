@@ -10,6 +10,8 @@ For information on how to optimize your functions watch the re:Invent talk [Opti
 
 ## Core Java Lambda interfaces - aws-lambda-java-core
 
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-core.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-core)
+
 This package defines the Lambda [Context](http://docs.aws.amazon.com/lambda/latest/dg/java-context-object.html) object
 as well as [interfaces](http://docs.aws.amazon.com/lambda/latest/dg/java-handler-using-predefined-interfaces.html) that Lambda accepts.
 
@@ -47,6 +49,8 @@ public class HandlerStream implements RequestStreamHandler {
 
 ## Java objects of Lambda event sources - aws-lambda-java-events
 
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-events.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-events)
+
 This package defines [event sources](http://docs.aws.amazon.com/lambda/latest/dg/intro-invocation-modes.html) that Lambda natively accepts.
 See the [documentation](aws-lambda-java-events/README.md) for a list of currently supported event sources.
 Using this library you can have Java objects which represent event sources.
@@ -77,6 +81,8 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 
 ## Java Lambda JUnit Support - aws-lambda-java-tests
 
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-tests.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-tests)
+
 This package provides utils to ease Lambda Java testing. It uses the same Lambda serialisation logic and `aws-lambda-java-events` to inject events in your JUnit tests.
 
 - [Release Notes](aws-lambda-java-tests/RELEASE.CHANGELOG.md)
@@ -100,6 +106,8 @@ public void testInjectSQSEvent(SQSEvent event) {
 
 ## aws-lambda-java-events-sdk-transformer
 
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-events-sdk-transformer.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-events-sdk-transformer)
+
 This package provides helper classes/methods to use alongside `aws-lambda-java-events` in order to transform
 Lambda input event model objects into SDK-compatible output model objects.
 See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for more information.
@@ -116,6 +124,8 @@ See the [documentation](aws-lambda-java-events-sdk-transformer/README.md) for mo
 
 ## Java Lambda Log4J2 support - aws-lambda-java-log4j2
 
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-log4j2.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-log4j2)
+
 This package defines the Lambda adapter to use with Log4J version 2.
 See the [README](aws-lambda-java-log4j2/README.md) or the [official documentation](http://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-wt-logging-using-log4j) for information on how to use the adapter.
 
@@ -130,6 +140,7 @@ See the [README](aws-lambda-java-log4j2/README.md) or the [official documentatio
 ```
 
 ## Java implementation of the Runtime Interface Client API - aws-lambda-java-runtime-interface-client
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-runtime-interface-client.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-runtime-interface-client)
 
 This package defines the Lambda Java Runtime Interface Client package, a Lambda Runtime component that starts the runtime and interacts with the Runtime API - i.e., it calls the API for invocation events, starts the function code, calls the API to return the response.
 The purpose of this package is to allow developers to deploy their applications in Lambda under the form of Container Images. See the [README](aws-lambda-java-runtime-interface-client/README.md) for information on how to use the library.
@@ -145,6 +156,8 @@ The purpose of this package is to allow developers to deploy their applications 
 ```
 
 ## Java Lambda provided serialization support - aws-lambda-java-serialization
+
+[![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-serialization.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-serialization)
 
 This package defines the Lambda serialization logic using in the `aws-lambda-java-runtime-client` library. It has no current standalone usage.
 

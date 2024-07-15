@@ -34,7 +34,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <maven-install-plugin.version>2.4</maven-install-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
@@ -87,6 +87,12 @@
             <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.12.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -112,7 +118,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M9</version>
                 <configuration>
-                    <argLine>${argLineForReflectionTestOnly}</argLine>
+                    <argLine>${argLineForReflectionTestOnly} ${argLine}</argLine>
                 </configuration>
                 <dependencies>
                     <dependency>

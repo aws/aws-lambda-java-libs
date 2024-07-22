@@ -62,4 +62,10 @@ public class S3BatchResponse {
                 .withInvocationId(s3BatchEvent.getInvocationId())
                 .withInvocationSchemaVersion(s3BatchEvent.getInvocationSchemaVersion());
     }
+
+    public static S3BatchResponseBuilder fromS3BatchEvent(S3BatchEventV2 s3BatchEvent) {
+        return S3BatchResponse.builder()
+                .withInvocationId(s3BatchEvent.getInvocationId())
+                .withInvocationSchemaVersion(s3BatchEvent.getInvocationSchemaVersion());
+    }
 }

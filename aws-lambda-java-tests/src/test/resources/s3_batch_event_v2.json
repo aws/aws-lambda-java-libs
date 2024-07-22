@@ -1,0 +1,21 @@
+{
+  "invocationSchemaVersion": "2.0",
+  "invocationId": "Jr3s8KZqYWRmaiBhc2RmdW9hZHNmZGpmaGFzbGtkaGZzatx7Ruy",
+  "job": {
+    "id": "ry77cd60-61f6-4a2b-8a21-d07600c874gf",
+    "userArguments": {
+      "MyDestinationBucket": "destination-directory-bucket-name",
+      "MyDestinationBucketRegion": "us-east-1",
+      "MyDestinationPrefix": "copied/",
+      "MyDestinationObjectKeySuffix": "_new_suffix"
+    }
+  },
+  "tasks": [
+    {
+      "taskId": "y5R3a2lkZ29lc2hlurcS",
+      "s3Key": "s3objectkey",
+      "s3VersionId": null,
+      "s3Bucket": "source-directory-bucket-name"
+    }
+  ]
+}

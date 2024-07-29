@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_initializeClient
-  (JNIEnv *, jobject, jbyteArray);
+  (JNIEnv *, jobject, jbyteArray, jbyteArray);
 
 JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_next
   (JNIEnv *, jobject);

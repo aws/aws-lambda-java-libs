@@ -38,7 +38,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
         Objects.requireNonNull(hostnameAndPort, "hostnameAndPort cannot be null");
         this.baseUrl = "http://" + hostnameAndPort;
         this.invocationEndpoint = this.baseUrl + "/2018-06-01/runtime/invocation/";
-        NativeClient.init();
+        NativeClient.init(hostnameAndPort);
     }
 
     @Override

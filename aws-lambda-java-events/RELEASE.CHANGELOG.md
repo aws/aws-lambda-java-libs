@@ -1,4 +1,4 @@
-### July 29m 2024
+### July 29, 2024
 `3.13.0`:
 - Add S3BatchEventV2 ([#496](https://github.com/aws/aws-lambda-java-libs/pull/496))
 

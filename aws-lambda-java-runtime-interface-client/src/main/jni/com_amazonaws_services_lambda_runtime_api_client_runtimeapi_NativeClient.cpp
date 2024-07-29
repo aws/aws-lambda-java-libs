@@ -69,9 +69,9 @@ static std::string toNativeString(JNIEnv *env, jbyteArray jArray) {
   return nativeString;
 }
 
-JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_initializeClient(JNIEnv *env, jobject thisObject, jbyteArray userAgent) {
+JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_initializeClient(JNIEnv *env, jobject thisObject, jbyteArray userAgent, jbyteArray awsLambdaRuntimeApi) {
   std::string user_agent = toNativeString(env, userAgent);
-  std::string endpoint(getenv("AWS_LAMBDA_RUNTIME_API"));
+  std::string endpoint = toNativeString(env, awsLambdaRuntimeApi);
   CLIENT = new aws::lambda_runtime::runtime(endpoint, user_agent);
 }
 

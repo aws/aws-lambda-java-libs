@@ -105,6 +105,10 @@ public class EventLoader {
         return loadEvent(filename, S3Event.class);
     }
 
+    public static S3BatchEventV2 loadS3BatchEventV2(String filename) {
+        return loadEvent(filename, S3BatchEventV2.class);
+    }
+
     public static SecretsManagerRotationEvent loadSecretsManagerRotationEvent(String filename) {
         return loadEvent(filename, SecretsManagerRotationEvent.class);
     }

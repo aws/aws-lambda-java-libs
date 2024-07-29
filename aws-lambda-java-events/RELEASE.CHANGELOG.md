@@ -1,3 +1,7 @@
+### July 29m 2024
+`3.13.0`:
+- Add S3BatchEventV2 ([#496](https://github.com/aws/aws-lambda-java-libs/pull/496))
+
 ### July 11, 2024
 `3.12.0`:
 - Added the object representations of the CloudWatch alarms([#493](https://github.com/aws/aws-lambda-java-libs/pull/493))

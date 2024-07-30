@@ -7,7 +7,6 @@ package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
-
 import java.io.IOException;
 
 /**

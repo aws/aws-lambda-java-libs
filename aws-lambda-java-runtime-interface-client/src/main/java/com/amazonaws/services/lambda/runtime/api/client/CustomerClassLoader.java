@@ -1,4 +1,7 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
@@ -24,7 +27,8 @@ class CustomerClassLoader extends URLClassLoader {
         @Override
         public boolean accept(File dir, String name) {
             int offset = name.length() - 4;
-            if (offset <= 0) { /* must be at least A.jar */
+            // must be at least A.jar
+            if (offset <= 0) {
                 return false;
             } else {
                 return name.startsWith(".jar", offset);

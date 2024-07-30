@@ -1,6 +1,7 @@
 /*
- *  Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.crac;
 
@@ -9,10 +10,10 @@ package com.amazonaws.services.lambda.crac;
  */
 public final class Core {
 
+    private static Context<Resource> globalContext = new ContextImpl();
+
     private Core() {
     }
-
-    private static Context<Resource> globalContext = new ContextImpl();
 
     public static Context<Resource> getGlobalContext() {
         return globalContext;

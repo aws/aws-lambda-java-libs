@@ -23,7 +23,6 @@ import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -50,6 +49,8 @@ import java.util.Properties;
  */
 public class AWSLambda {
 
+    protected static URLClassLoader customerClassLoader;
+
     private static final String TRUST_STORE_PROPERTY = "javax.net.ssl.trustStore";
 
     private static final String JAVA_SECURITY_PROPERTIES = "java.security.properties";
@@ -67,8 +68,6 @@ public class AWSLambda {
     private static final String INIT_TYPE_SNAP_START = "snap-start";
 
     private static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_INITIALIZATION_TYPE);
-
-    protected static URLClassLoader customerClassLoader;
 
     private static LambdaRuntimeApiClient runtimeClient;
 
@@ -238,7 +237,8 @@ public class AWSLambda {
             try {
                 payload = requestHandler.call(request);
                 runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
-                boolean ignored = Thread.interrupted(); // clear interrupted flag in case if it was set by user's code
+                // clear interrupted flag in case if it was set by user's code
+                boolean ignored = Thread.interrupted();
             } catch (UserFault f) {
                 shouldExit = f.fatal;
                 userFault = f;

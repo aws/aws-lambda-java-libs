@@ -1,10 +1,19 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.api.client.util.EnvReader;
-
-import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.*;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_FUNCTION_MEMORY_SIZE;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_FUNCTION_NAME;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_FUNCTION_VERSION;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_LOG_FORMAT;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_LOG_GROUP_NAME;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_LOG_LEVEL;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_LOG_STREAM_NAME;
+import static com.amazonaws.services.lambda.runtime.api.client.ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_API;
 import static java.lang.Integer.parseInt;
 
 public class LambdaEnvironment {

@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import java.io.IOException;
 
 /**
@@ -39,14 +37,6 @@ public interface LambdaRuntimeApiClient {
      * @param error error to report
      */
     void reportInvocationError(String requestId, LambdaError error) throws IOException;
-
-    /**
-     * Report invocation error
-     * @param requestId request id
-     * @param error error to report
-     * @param xRayErrorCause X-Ray error cause
-     */
-    void reportInvocationError(String requestId, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException;
 
     /**
      * SnapStart endpoint to report that beforeCheckoint hooks were executed

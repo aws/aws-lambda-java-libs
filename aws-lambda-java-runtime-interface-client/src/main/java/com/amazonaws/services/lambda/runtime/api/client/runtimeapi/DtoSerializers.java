@@ -4,7 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.ErrorRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class DtoSerializers {
 
-    public static byte[] serialize(LambdaError error) {
+    public static byte[] serialize(ErrorRequest error) {
         return serialize(error, SingletonHelper.LAMBDA_ERROR_SERIALIZER);
     }
 
@@ -36,7 +36,7 @@ public class DtoSerializers {
      * This way the serializers will be loaded lazily
      */
     private static class SingletonHelper {
-        private static final PojoSerializer<LambdaError> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getSerializer(LambdaError.class);
+        private static final PojoSerializer<ErrorRequest> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getSerializer(ErrorRequest.class);
         private static final PojoSerializer<XRayErrorCause> X_RAY_ERROR_CAUSE_SERIALIZER = GsonFactory.getInstance().getSerializer(XRayErrorCause.class);
     }
 }

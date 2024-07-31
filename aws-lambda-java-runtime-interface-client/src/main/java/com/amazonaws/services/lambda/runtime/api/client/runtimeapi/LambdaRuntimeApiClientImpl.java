@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,7 +44,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     @Override
     public void reportInitError(LambdaError error) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/init/error";
-        reportLambdaError(endpoint, error, null);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
     }
 
     @Override
@@ -61,13 +59,8 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
 
     @Override
     public void reportInvocationError(String requestId, LambdaError error) throws IOException {
-        reportInvocationError(requestId, error, null);
-    }
-
-    @Override
-    public void reportInvocationError(String requestId, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException {
         String endpoint = invocationEndpoint + requestId + "/error";
-        reportLambdaError(endpoint, error, xRayErrorCause);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
     }
 
     @Override
@@ -82,22 +75,21 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     @Override
     public void reportRestoreError(LambdaError error) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/restore/error";
-        reportLambdaError(endpoint, error, null);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
     }
 
-    void reportLambdaError(String endpoint, LambdaError error, XRayErrorCause xRayErrorCause) throws IOException {
+    void reportLambdaError(String endpoint, LambdaError error, int maxXrayHeaderSize) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        if (error.errorType != null && !error.errorType.isEmpty()) {
-            headers.put(ERROR_TYPE_HEADER, error.errorType);
-        }
-        if (xRayErrorCause != null) {
-            byte[] xRayErrorCauseJson = DtoSerializers.serialize(xRayErrorCause);
-            if (xRayErrorCauseJson != null && xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
+        headers.put(ERROR_TYPE_HEADER, error.errorType.getRapidError());
+
+        if (error.xRayErrorCause != null) {
+            byte[] xRayErrorCauseJson = DtoSerializers.serialize(error.xRayErrorCause);
+            if (xRayErrorCauseJson != null && xRayErrorCauseJson.length < maxXrayHeaderSize) {
                 headers.put(XRAY_ERROR_CAUSE_HEADER, new String(xRayErrorCauseJson));
             }
         }
 
-        byte[] payload = DtoSerializers.serialize(error);
+        byte[] payload = DtoSerializers.serialize(error.errorRequest);
         int responseCode = doPost(endpoint, headers, payload);
         if (responseCode != HTTP_ACCEPTED) {
             throw new LambdaRuntimeClientException(endpoint, responseCode);

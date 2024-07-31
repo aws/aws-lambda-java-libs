@@ -64,6 +64,6 @@ jobs:
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 
     - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}

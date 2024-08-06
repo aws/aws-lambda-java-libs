@@ -10,6 +10,7 @@ on:
     branches: [ main ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
+    - '.github/workflows/runtime-interface-client_merge_to_main.yml'
   workflow_dispatch:
 
 jobs:

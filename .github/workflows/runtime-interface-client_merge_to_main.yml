@@ -54,7 +54,7 @@ jobs:
         IS_JAVA_8: true
 
     - name: Issue AWS credentials
-      if: ${{ github.repository != "aws/aws-lambda-java-libs" }}
+      if: ${{ github.repository != 'aws/aws-lambda-java-libs' }}
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ secrets.AWS_REGION }}
@@ -63,7 +63,7 @@ jobs:
         role-duration-seconds: 900
 
     - name: Prepare codeartifact properties
-      if: ${{ github.repository != "aws/aws-lambda-java-libs" }}
+      if: ${{ github.repository != 'aws/aws-lambda-java-libs' }}
       working-directory: ./aws-lambda-java-runtime-interface-client/ric-dev-environment
       run: |
         cat <<EOF > codeartifact-properties.mk
@@ -74,14 +74,14 @@ jobs:
         EOF
 
     - name: Publish
-      if: ${{ github.repository != "aws/aws-lambda-java-libs" }}
+      if: ${{ github.repository != 'aws/aws-lambda-java-libs' }}
       working-directory: ./aws-lambda-java-runtime-interface-client
       env:
         ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       run: make publish
 
     - name: Upload coverage to Codecov
-      if: ${{ github.repository != "aws/aws-lambda-java-libs" }}
+      if: ${{ github.repository != 'aws/aws-lambda-java-libs' }}
       uses: codecov/codecov-action@v4
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

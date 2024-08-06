@@ -9,6 +9,7 @@ on:
     paths:
       - 'aws-lambda-java-runtime-interface-client/**'
       - '.github/workflows/runtime-interface-client_pr.yml'
+      - '.github/workflows/runtime-interface-client_merge_to_main.yml'
 
 jobs:
 

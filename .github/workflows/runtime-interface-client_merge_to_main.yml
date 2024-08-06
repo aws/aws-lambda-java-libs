@@ -79,7 +79,7 @@ jobs:
       env:
         ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       run: make publish
-    
+
     - name: Upload coverage to Codecov
       if: github.repository == "aws/aws-lambda-java-libs"
       uses: codecov/codecov-action@v4

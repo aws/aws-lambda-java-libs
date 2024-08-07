@@ -15,6 +15,7 @@ on:
     branches: [ main ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
+    - '.github/workflows/runtime-interface-client_*.yml'
   workflow_dispatch:
 
 jobs:
@@ -53,6 +54,9 @@ jobs:
         IS_JAVA_8: true
 
     - name: Issue AWS credentials
+      if: env.ENABLE_SNAPSHOT != null
+      env:
+        ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ secrets.AWS_REGION }}
@@ -61,6 +65,9 @@ jobs:
         role-duration-seconds: 900
 
     - name: Prepare codeartifact properties
+      if: env.ENABLE_SNAPSHOT != null
+      env:
+        ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       working-directory: ./aws-lambda-java-runtime-interface-client/ric-dev-environment
       run: |
         cat <<EOF > codeartifact-properties.mk
@@ -71,7 +78,14 @@ jobs:
         EOF
 
     - name: Publish
+      if: env.ENABLE_SNAPSHOT != null
       working-directory: ./aws-lambda-java-runtime-interface-client
       env:
         ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       run: make publish
+
+    - name: Upload coverage to Codecov
+      if: env.CODECOV_TOKEN != null
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

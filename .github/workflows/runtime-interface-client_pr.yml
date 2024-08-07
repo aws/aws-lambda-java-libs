@@ -8,7 +8,7 @@ on:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-runtime-interface-client/**'
-      - '.github/workflows/runtime-interface-client_pr.yml'
+      - '.github/workflows/runtime-interface-client_*.yml'
 
 jobs:
 
@@ -50,13 +50,13 @@ jobs:
 
     - name: Available buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
-          
+
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build
       env:
         IS_JAVA_8: true
-      
+
     - name: Save the built jar
       uses: actions/upload-artifact@v4
       with:
@@ -64,6 +64,7 @@ jobs:
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 
     - name: Upload coverage to Codecov
+      if: env.CODECOV_TOKEN != null
       uses: codecov/codecov-action@v4
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

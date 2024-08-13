@@ -45,6 +45,6 @@ public class S3BatchEventV2 {
         private String taskId;
         private String s3Key;
         private String s3VersionId;
-        private String s3BucketName;
+        private String s3Bucket;
     }
 }

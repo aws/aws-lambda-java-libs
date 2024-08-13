@@ -16,5 +16,6 @@ public class S3BatchEventV2Test {
         assertThat(event.getJob().getUserArguments().get("MyDestinationBucket")).isEqualTo("destination-directory-bucket-name");
         assertThat(event.getTasks()).hasSize(1);
         assertThat(event.getTasks().get(0).getS3Key()).isEqualTo("s3objectkey");
+        assertThat(event.getTasks().get(0).getS3Bucket()).isEqualTo("source-directory-bucket-name");
     }
 }

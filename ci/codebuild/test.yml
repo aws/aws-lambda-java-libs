@@ -1,10 +1,17 @@
 version: 0.2
+
+env:
+  variables:
+    DOCKER_IMAGE_NAME: "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_WEBHOOK_TRIGGER//\//-}"
+
 phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Tag name is $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_WEBHOOK_TRIGGER//\//-}
+      - echo Image name is $DOCKER_IMAGE_NAME
+      - docker build -t $DOCKER_IMAGE_NAME .
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image
+      - docker push $DOCKER_IMAGE_NAME

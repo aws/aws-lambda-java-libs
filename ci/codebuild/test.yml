@@ -3,5 +3,8 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Build...
+      - echo Tag name is $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_WEBHOOK_TRIGGER//\//-}
+  post_build:
+    commands:
       - echo Build completed on `date`
+      - echo Pushing the Docker image

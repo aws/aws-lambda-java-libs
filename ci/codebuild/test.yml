@@ -16,5 +16,4 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image
-      - $(aws ecr get-login --no-include-email --region $AWS_REGION)
       - docker push $DOCKER_IMAGE_NAME

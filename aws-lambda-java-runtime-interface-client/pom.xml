@@ -127,7 +127,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>aws.lambda.runtime.interface.client</Automatic-Module-Name>
+                            <Automatic-Module-Name>aws.lambda.runtime.client</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

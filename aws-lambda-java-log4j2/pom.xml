@@ -75,6 +75,7 @@
               <goal>add-module-info</goal>
             </goals>
             <configuration>
+              <failOnWarning>false</failOnWarning>
               <overwriteExistingFiles>true</overwriteExistingFiles>
               <module>
                 <moduleInfoFile>./module-info.java

@@ -1,3 +1,7 @@
+### September 13, 2024
+`3.14.0`:
+- Fix name of s3Bucket field of Task class in S3BatchEventV2 ([#506](https://github.com/aws/aws-lambda-java-libs/pull/506))
+
 ### July 29, 2024
 `3.13.0`:
 - Add S3BatchEventV2 ([#496](https://github.com/aws/aws-lambda-java-libs/pull/496))

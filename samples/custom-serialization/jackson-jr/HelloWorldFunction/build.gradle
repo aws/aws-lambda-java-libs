@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.14.0'
+    implementation 'com.fasterxml.jackson.jr:jackson-jr-objects:2.15.2'
+    implementation 'com.fasterxml.jackson.jr:jackson-jr-annotation-support:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+}
+
+sourceCompatibility = 21
+targetCompatibility = 21

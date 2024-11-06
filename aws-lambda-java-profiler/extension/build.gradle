@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id "com.gradleup.shadow" version "8.3.3"
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.5'
+    implementation("tools.profiler:async-profiler:3.0")
+    implementation("software.amazon.awssdk:s3:2.28.9") {
+        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.amazonaws.services.lambda.extension.ExtensionMain'
+        attributes 'Premain-Class': 'com.amazonaws.services.lambda.extension.PreMain'
+        attributes 'Can-Redefine-Class': true
+    }
+}
+
+shadowJar {
+    archiveFileName = "profiler-extension.jar"
+}
+
+build.dependsOn jar

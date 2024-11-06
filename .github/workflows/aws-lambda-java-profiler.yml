@@ -1,12 +1,16 @@
 name: Run integration tests for aws-lambda-java-profiler
 
 on:
+  pull_request:
+    branches: [ '*' ]
+    paths:
+      - 'aws-lambda-java-profiler/**'
+      - '.github/workflows/aws-lambda-java-profiler.yml'
   push:
     branches: ['*']
     paths:
       - 'aws-lambda-java-profiler/**'
       - '.github/workflows/aws-lambda-java-profiler.yml'
-  workflow_dispatch:
 
 jobs:
 
@@ -29,8 +33,8 @@ jobs:
       - name: Issue AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION_PROFILER_EXTENSION_INTEGRATION_TEST }}
+          role-to-assume: ${{ secrets.AWS_ROLE_PROFILER_EXTENSION_INTEGRATION_TEST }}
           role-session-name: GitHubActionsRunIntegrationTests
           role-duration-seconds: 900
 

@@ -6,6 +6,7 @@ package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -360,6 +361,9 @@ public class SQSEvent implements Serializable, Cloneable {
          * @return message attributes
          */
         public Map<String, MessageAttribute> getMessageAttributes() {
+            if (messageAttributes == null) {
+                return Collections.emptyMap();
+            }
             return messageAttributes;
         }
 

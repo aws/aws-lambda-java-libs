@@ -1,0 +1,7 @@
+**/target/
+**/HelloWorld.iml
+**/samconfig.toml
+**/dependency-reduced-pom.xml
+**/.aws-sam
+**/.gradle
+**/bin

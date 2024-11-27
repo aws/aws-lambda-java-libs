@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+"-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+"http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+  <module name="NewlineAtEndOfFile" />
+  <module name="OrderedProperties" />
+  <module name="FileTabCharacter" />
+  <module name="Header">
+    <property name="header"
+      value="/*\nCopyright Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: Apache-2.0\n*/\n"/>
+  </module>
+  <module name="FileTabCharacter"/>
+  <module name="TreeWalker">
+    <module name="UnusedImports"/>
+    <module name="NeedBraces"/>
+    <module name="EqualsHashCode"/>
+    <module name="EmptyStatement"/>
+    <module name="EqualsAvoidNull"/>
+    <module name="MissingSwitchDefault"/>
+    <module name="MultipleVariableDeclarations"/>
+    <module name="OneStatementPerLine"/>
+    <module name="RedundantImport"/>
+    <module name="AvoidStarImport"/>
+    <module name="DefaultComesLast"/>
+    <module name="SuppressWarningsHolder" />
+    <module name="EmptyForInitializerPad" />
+    <module name="GenericWhitespace" />
+    <module name="MethodParamPad" />
+    <module name="NoLineWrap" />
+    <module name="NoWhitespaceAfter" />
+    <module name="NoWhitespaceBefore" />
+    <module name="NoWhitespaceBeforeCaseDefaultColon" />
+    <module name="OperatorWrap" />
+    <module name="ParenPad" />
+    <module name="SeparatorWrap" />
+    <module name="SingleSpaceSeparator" />
+    <module name="TypecastParenPad" />
+    <module name="WhitespaceAfter" />
+    <module name="WhitespaceAround" />
+    <module name="AvoidNestedBlocks" />
+    <module name="EmptyBlock" />
+    <module name="EmptyCatchBlock" />
+    <module name="LeftCurly" />
+    <module name="NeedBraces" />
+    <module name="RightCurly" />
+    <module name="InnerTypeLast" />
+    <module name="MutableException" />
+    <module name="OneTopLevelClass" />
+    <module name="ThrowsCount" />
+
+    <module name="AvoidNoArgumentSuperConstructorCall" />
+    <module name="CovariantEquals" />
+    <module name="DeclarationOrder" />
+    <module name="DefaultComesLast" />
+    <module name="EmptyStatement" />
+    <module name="EqualsAvoidNull" />
+    <module name="EqualsHashCode" />
+    <module name="FallThrough" />
+    <module name="IllegalInstantiation" />
+    <module name="IllegalToken" />
+    <module name="IllegalTokenText" />
+    <module name="IllegalType" />
+    <module name="InnerAssignment" />
+    <module name="MatchXpath" />
+    <module name="MissingSwitchDefault" />
+    <module name="ModifiedControlVariable" />
+    <module name="MultipleVariableDeclarations" />
+    <module name="NestedForDepth" />
+    <module name="NestedTryDepth" />
+    <module name="NoArrayTrailingComma" />
+    <module name="NoClone" />
+    <module name="NoEnumTrailingComma" />
+    <module name="NoFinalizer" />
+    <module name="OneStatementPerLine" />
+    <module name="OverloadMethodsDeclarationOrder" />
+    <module name="PackageDeclaration" />
+    <module name="ParameterAssignment" />
+    <module name="RequireThis" />
+    <module name="SimplifyBooleanExpression" />
+    <module name="SimplifyBooleanReturn" />
+    <module name="StringLiteralEquality" />
+    <module name="SuperClone" />
+    <module name="SuperFinalize" />
+    <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+    <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+    <module name="UnnecessarySemicolonInEnumeration" />
+    <module name="UnnecessarySemicolonInTryWithResources" />
+    <module name="VariableDeclarationUsageDistance" />
+
+    <module name="ImportOrder" />
+    <module name="RedundantImport" />
+    <module name="UnusedImports" />
+
+    <module name="ArrayTypeStyle" />
+    <module name="AvoidEscapedUnicodeCharacters" />
+    <module name="CommentsIndentation" />
+    <module name="DescendantToken" />
+    <module name="Indentation" />
+    <module name="NoCodeInFile" />
+    <module name="OuterTypeFilename" />
+    <module name="TodoComment" />
+    <module name="TrailingComment" />
+    <module name="UpperEll" />
+
+    <module name="LambdaBodyLength" />
+    <module name="MethodCount" />
+    <module name="MethodLength" />
+    <module name="OuterTypeNumber" />
+    <module name="RecordComponentNumber" />
+  </module>
+
+  <module name="SuppressWarningsFilter" />
+</module>

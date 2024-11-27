@@ -1,10 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.util;
 
-import sun.misc.Unsafe;
-
 import java.lang.reflect.Field;
+import sun.misc.Unsafe;
 
 /**
  * Utilities for easy access to sun.misc.Unsafe

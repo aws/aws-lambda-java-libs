@@ -1,7 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,8 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 
-import com.amazonaws.services.lambda.runtime.logging.LogLevel;
-import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 
 /**
  * FramedTelemetryLogSink implements the logging contract between runtimes and the platform. It implements a simple
@@ -62,7 +65,8 @@ public class FramedTelemetryLogSink implements LogSink {
 
     private long timestamp() {
         Instant instant = Instant.now();
-        return instant.getEpochSecond() * 1_000_000 + instant.getNano() / 1000; // microsecond precision
+        // microsecond precision
+        return instant.getEpochSecond() * 1_000_000 + instant.getNano() / 1000;
     }
 
     /**

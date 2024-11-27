@@ -1,4 +1,7 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
@@ -10,12 +13,11 @@ import java.util.Set;
 public final class UserFault extends RuntimeException {
     private static final long serialVersionUID = -479308856905162038L;
 
+    private static final String packagePrefix = AWSLambda.class.getPackage().getName();
     public final String msg;
     public final String exception;
     public final String trace;
     public final Boolean fatal;
-
-    private static final String packagePrefix = AWSLambda.class.getPackage().getName();
 
     public UserFault(String msg, String exception, String trace) {
         this.msg = msg;
@@ -94,7 +96,7 @@ public final class UserFault extends RuntimeException {
         }
 
         Throwable[] suppressedExceptions = t.getSuppressed();
-        for(Throwable suppressed: suppressedExceptions) {
+        for (Throwable suppressed: suppressedExceptions) {
             if (!visitedSuppressed.contains(suppressed)) {
                 visitedSuppressed.add(suppressed);
                 filterStackTrace(suppressed, visited, visitedSuppressed);

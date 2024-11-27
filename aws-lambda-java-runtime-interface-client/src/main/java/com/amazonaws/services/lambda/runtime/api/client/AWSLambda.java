@@ -11,19 +11,18 @@ import com.amazonaws.services.lambda.runtime.api.client.logging.FramedTelemetryL
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LogSink;
 import com.amazonaws.services.lambda.runtime.api.client.logging.StdOutLogSink;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaError;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClient;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.RapidErrorType;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.LambdaErrorConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.XRayErrorCauseConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.LambdaError;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.api.client.util.LambdaOutputStream;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -50,6 +49,8 @@ import java.util.Properties;
  */
 public class AWSLambda {
 
+    protected static URLClassLoader customerClassLoader;
+
     private static final String TRUST_STORE_PROPERTY = "javax.net.ssl.trustStore";
 
     private static final String JAVA_SECURITY_PROPERTIES = "java.security.properties";
@@ -67,8 +68,6 @@ public class AWSLambda {
     private static final String INIT_TYPE_SNAP_START = "snap-start";
 
     private static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_INITIALIZATION_TYPE);
-
-    protected static URLClassLoader customerClassLoader;
 
     private static LambdaRuntimeApiClient runtimeClient;
 
@@ -216,7 +215,9 @@ public class AWSLambda {
             requestHandler = findRequestHandler(handler, customerClassLoader);
         } catch (UserFault userFault) {
             lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
-            LambdaError error = LambdaErrorConverter.fromUserFault(userFault);
+            LambdaError error = new LambdaError(
+                    LambdaErrorConverter.fromUserFault(userFault),
+                    RapidErrorType.BadFunctionCode);
             runtimeClient.reportInitError(error);
             System.exit(1);
             return;
@@ -238,22 +239,26 @@ public class AWSLambda {
             try {
                 payload = requestHandler.call(request);
                 runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
-                boolean ignored = Thread.interrupted(); // clear interrupted flag in case if it was set by user's code
+                // clear interrupted flag in case if it was set by user's code
+                boolean ignored = Thread.interrupted();
             } catch (UserFault f) {
                 shouldExit = f.fatal;
                 userFault = f;
                 UserFault.filterStackTrace(f);
-
-                LambdaError error = LambdaErrorConverter.fromUserFault(f);
+                LambdaError error = new LambdaError(
+                        LambdaErrorConverter.fromUserFault(f),
+                        RapidErrorType.BadFunctionCode);
                 runtimeClient.reportInvocationError(request.getId(), error);
             } catch (Throwable t) {
                 shouldExit = t instanceof VirtualMachineError || t instanceof IOError;
                 UserFault.filterStackTrace(t);
                 userFault = UserFault.makeUserFault(t);
 
-                LambdaError error = LambdaErrorConverter.fromThrowable(t);
-                XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
-                runtimeClient.reportInvocationError(request.getId(), error, xRayErrorCause);
+                LambdaError error = new LambdaError(
+                        LambdaErrorConverter.fromThrowable(t),
+                        XRayErrorCauseConverter.fromThrowable(t),
+                        RapidErrorType.UserException);
+                runtimeClient.reportInvocationError(request.getId(), error);
             } finally {
                 if (userFault != null) {
                     lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
@@ -268,16 +273,18 @@ public class AWSLambda {
             runtimeClient.restoreNext();
         } catch (Exception e1) {
             logExceptionCloudWatch(lambdaLogger, e1);
-            LambdaError error = LambdaErrorConverter.fromThrowable(e1);
-            runtimeClient.reportInitError(error);
+            runtimeClient.reportInitError(new LambdaError(
+                    LambdaErrorConverter.fromThrowable(e1),
+                    RapidErrorType.BeforeCheckpointError));
             System.exit(64);
         }
         try {
             Core.getGlobalContext().afterRestore(null);
         } catch (Exception restoreExc) {
             logExceptionCloudWatch(lambdaLogger, restoreExc);
-            LambdaError error = LambdaErrorConverter.fromThrowable(restoreExc);
-            runtimeClient.reportRestoreError(error);
+            runtimeClient.reportRestoreError(new LambdaError(
+                    LambdaErrorConverter.fromThrowable(restoreExc),
+                    RapidErrorType.AfterRestoreError));
             System.exit(64);
         }
     }

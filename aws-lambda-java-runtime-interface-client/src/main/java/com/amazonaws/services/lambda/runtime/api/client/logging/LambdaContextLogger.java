@@ -1,11 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
-import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class LambdaContextLogger extends AbstractLambdaLogger {
@@ -23,8 +24,9 @@ public class LambdaContextLogger extends AbstractLambdaLogger {
     @Override
     protected void logMessage(byte[] message, LogLevel logLevel) {
         if (message == null) {
-            message = NULL_BYTES_VALUE;
+            sink.log(logLevel, this.logFormat, NULL_BYTES_VALUE);
+        } else {
+            sink.log(logLevel, this.logFormat, message);
         }
-        sink.log(logLevel, this.logFormat, message);
     }
 }

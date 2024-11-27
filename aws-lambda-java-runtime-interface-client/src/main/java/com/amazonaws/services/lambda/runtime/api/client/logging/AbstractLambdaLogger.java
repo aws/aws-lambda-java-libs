@@ -1,13 +1,15 @@
-/* Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Provides default implementation of the convenience logger functions.
@@ -15,9 +17,9 @@ import com.amazonaws.services.lambda.runtime.logging.LogLevel;
  * void logMessage(byte[] message, LogLevel logLevel);
  */
 public abstract class AbstractLambdaLogger implements LambdaLogger {
+    protected final LogFormat logFormat;
     private final LogFiltering logFiltering;
     private final LogFormatter logFormatter;
-    protected final LogFormat logFormat;
 
     public AbstractLambdaLogger(LogLevel logLevel, LogFormat logFormat) {
         this.logFiltering = new LogFiltering(logLevel);

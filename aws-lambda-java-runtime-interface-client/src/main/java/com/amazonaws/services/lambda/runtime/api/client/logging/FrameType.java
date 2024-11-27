@@ -1,9 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
-import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
 /**
  * The first 4 bytes of the framing protocol is the Frame Type, that's made of a magic number (3 bytes) and 1 byte of flags.
@@ -29,15 +32,15 @@ public class FrameType {
 
     private final int val;
 
-    public static int getValue(LogLevel logLevel, LogFormat logFormat) {
-        return LOG_MAGIC |
-                (logLevel.ordinal() << OFFSET_LOG_LEVEL) |
-                (1 << OFFSET_TIMESTAMP_PRESENT) |
-                (logFormat.ordinal() << OFFSET_LOG_FORMAT);
-    }
-
     FrameType(int val) {
         this.val = val;
+    }
+
+    public static int getValue(LogLevel logLevel, LogFormat logFormat) {
+        return LOG_MAGIC 
+            | (logLevel.ordinal() << OFFSET_LOG_LEVEL) 
+            | (1 << OFFSET_TIMESTAMP_PRESENT)
+            | (logFormat.ordinal() << OFFSET_LOG_FORMAT);
     }
 
     public int getValue() {

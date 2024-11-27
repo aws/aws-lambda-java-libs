@@ -16,7 +16,7 @@ jobs:
     env:
       IS_CONFIGURED: ${{ secrets.SOURCE_REPO != '' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ env.IS_CONFIGURED == 'true' }}
       - uses: repo-sync/github-sync@v2
         name: Sync repo to branch

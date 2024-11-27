@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
-import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.JniHelper;
-
 import static com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl.USER_AGENT;
 
 /**
@@ -14,12 +12,12 @@ import static com.amazonaws.services.lambda.runtime.api.client.runtimeapi.Lambda
  * interactions with the Runtime API.
  */
 class NativeClient {
-    static void init() {
+    static void init(String awsLambdaRuntimeApi) {
         JniHelper.load();
-        initializeClient(USER_AGENT.getBytes());
+        initializeClient(USER_AGENT.getBytes(), awsLambdaRuntimeApi.getBytes());
     }
     
-    static native void initializeClient(byte[] userAgent);
+    static native void initializeClient(byte[] userAgent, byte[] awsLambdaRuntimeApi);
 
     static native InvocationRequest next();
 

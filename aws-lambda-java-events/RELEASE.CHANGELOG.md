@@ -1,3 +1,16 @@
+### September 13, 2024
+`3.14.0`:
+- Fix name of s3Bucket field of Task class in S3BatchEventV2 ([#506](https://github.com/aws/aws-lambda-java-libs/pull/506))
+
+### July 29, 2024
+`3.13.0`:
+- Add S3BatchEventV2 ([#496](https://github.com/aws/aws-lambda-java-libs/pull/496))
+
+### July 11, 2024
+`3.12.0`:
+- Added the object representations of the CloudWatch alarms([#493](https://github.com/aws/aws-lambda-java-libs/pull/493))
+- Added event class MskFirehoseEvent.java for Firehose Lambda transformation when MSK is the source([#490](https://github.com/aws/aws-lambda-java-libs/pull/490))
+
 ### June 11, 2024
 `3.11.6`:
 - Add the V2 version of the pre token generation event([#465](https://github.com/aws/aws-lambda-java-libs/pull/465))

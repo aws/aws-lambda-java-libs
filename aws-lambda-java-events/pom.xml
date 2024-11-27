@@ -5,7 +5,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-events</artifactId>
-    <version>3.11.6</version>
+    <version>3.14.0</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Events Library</name>
@@ -35,6 +35,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <lombok.version>1.18.22</lombok.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <distributionManagement>

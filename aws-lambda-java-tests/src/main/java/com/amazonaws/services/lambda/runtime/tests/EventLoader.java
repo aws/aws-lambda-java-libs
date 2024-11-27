@@ -44,8 +44,16 @@ public class EventLoader {
         return loadEvent(filename, CloudFrontEvent.class);
     }
 
+    public static CloudWatchCompositeAlarmEvent loadCloudWatchCompositeAlarmEvent(String filename) {
+        return loadEvent(filename, CloudWatchCompositeAlarmEvent.class);
+    }
+
     public static CloudWatchLogsEvent loadCloudWatchLogsEvent(String filename) {
         return loadEvent(filename, CloudWatchLogsEvent.class);
+    }
+
+    public static CloudWatchMetricAlarmEvent loadCloudWatchMetricAlarmEvent(String filename) {
+        return loadEvent(filename, CloudWatchMetricAlarmEvent.class);
     }
 
     public static CodeCommitEvent loadCodeCommitEvent(String filename) {
@@ -88,8 +96,16 @@ public class EventLoader {
         return loadEvent(filename, LexEvent.class);
     }
 
+    public static MSKFirehoseEvent loadMSKFirehoseEvent(String filename) {
+        return loadEvent(filename, MSKFirehoseEvent.class);
+    }
+
     public static S3Event loadS3Event(String filename) {
         return loadEvent(filename, S3Event.class);
+    }
+
+    public static S3BatchEventV2 loadS3BatchEventV2(String filename) {
+        return loadEvent(filename, S3BatchEventV2.class);
     }
 
     public static SecretsManagerRotationEvent loadSecretsManagerRotationEvent(String filename) {

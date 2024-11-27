@@ -8,14 +8,14 @@ on:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-runtime-interface-client/**'
-      - '.github/workflows/runtime-interface-client_pr.yml'
+      - '.github/workflows/runtime-interface-client_*.yml'
 
 jobs:
 
   smoke-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up JDK 1.8
       uses: actions/setup-java@v4
@@ -32,7 +32,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up JDK 1.8
       uses: actions/setup-java@v4
@@ -44,21 +44,27 @@ jobs:
       uses: docker/setup-qemu-action@v3
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
       with:
         install: true
 
     - name: Available buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
-          
+
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build
       env:
         IS_JAVA_8: true
-      
+
     - name: Save the built jar
       uses: actions/upload-artifact@v4
       with:
         name: aws-lambda-java-runtime-interface-client
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
+
+    - name: Upload coverage to Codecov
+      if: env.CODECOV_TOKEN != null
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

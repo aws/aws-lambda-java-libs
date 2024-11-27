@@ -7,7 +7,6 @@ package com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.StackElement;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayException;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,9 +21,9 @@ public class XRayErrorCauseConverter {
         String workingDirectory = System.getProperty("user.dir");
         XRayException xRayException = getXRayExceptionFromThrowable(throwable);
         Collection<XRayException> exceptions = Collections.singletonList(xRayException);
-        Collection<String> paths = Arrays.stream(throwable.getStackTrace())
-                .map(XRayErrorCauseConverter::determineFileName)
-                .collect(Collectors.toSet());
+        Collection<String> paths = Arrays.stream(throwable.getStackTrace()).
+            map(XRayErrorCauseConverter::determineFileName).
+            collect(Collectors.toSet());
 
         return new XRayErrorCause(workingDirectory, exceptions, paths);
     }
@@ -32,9 +31,9 @@ public class XRayErrorCauseConverter {
     static XRayException getXRayExceptionFromThrowable(Throwable throwable) {
         String message = throwable.getMessage();
         String type = throwable.getClass().getName();
-        List<StackElement> stack = Arrays.stream(throwable.getStackTrace())
-                .map(XRayErrorCauseConverter::convertStackTraceElement)
-                .collect(Collectors.toList());
+        List<StackElement> stack = Arrays.stream(throwable.getStackTrace()).
+            map(XRayErrorCauseConverter::convertStackTraceElement).
+            collect(Collectors.toList());
         return new XRayException(message, type, stack);
     }
 

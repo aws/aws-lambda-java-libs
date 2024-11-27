@@ -1,4 +1,7 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
@@ -21,7 +24,6 @@ import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory
 import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
 import com.amazonaws.services.lambda.runtime.serialization.util.Functions;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,8 +44,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.amazonaws.services.lambda.runtime.api.client.UserFault.*;
+import static com.amazonaws.services.lambda.runtime.api.client.UserFault.filterStackTrace;
+import static com.amazonaws.services.lambda.runtime.api.client.UserFault.makeUserFault;
+import static com.amazonaws.services.lambda.runtime.api.client.UserFault.trace;
 
 public final class EventHandlerLoader {
     private static final byte[] _JsonNull = new byte[]{'n', 'u', 'l', 'l'};
@@ -54,7 +57,41 @@ public final class EventHandlerLoader {
         UNKNOWN
     }
 
+    private static volatile PojoSerializer<LambdaClientContext> contextSerializer;
+    private static volatile PojoSerializer<LambdaCognitoIdentity> cognitoSerializer;
+
     private static final EnumMap<Platform, Map<Type, PojoSerializer<Object>>> typeCache = new EnumMap<>(Platform.class);
+
+    private static final Comparator<Method> methodPriority = new Comparator<Method>() {
+        public int compare(Method lhs, Method rhs) {
+
+            //1. Non bridge methods are preferred over bridge methods.
+            if (!lhs.isBridge() && rhs.isBridge()) {
+                return -1;
+            } else if (!rhs.isBridge() && lhs.isBridge()) {
+                return 1;
+            }
+
+            //2. We prefer longer signatures to shorter signatures. Except we count a method whose last argument is
+            //Context as having 1 more argument than it really does. This is a stupid thing to do, but we
+            //need to keep it for back compat reasons.
+            Class<?>[] lParams = lhs.getParameterTypes();
+            Class<?>[] rParams = rhs.getParameterTypes();
+
+            int lParamCompareLength = lParams.length;
+            int rParamCompareLength = rParams.length;
+
+            if (lastParameterIsContext(lParams)) {
+                ++lParamCompareLength;
+            }
+
+            if (lastParameterIsContext(rParams)) {
+                ++rParamCompareLength;
+            }
+
+            return -Integer.compare(lParamCompareLength, rParamCompareLength);
+        }
+    };
 
     private EventHandlerLoader() {
     }
@@ -105,9 +142,6 @@ public final class EventHandlerLoader {
         return serializer;
     }
 
-    private static volatile PojoSerializer<LambdaClientContext> contextSerializer;
-    private static volatile PojoSerializer<LambdaCognitoIdentity> cognitoSerializer;
-
     private static PojoSerializer<LambdaClientContext> getContextSerializer() {
         if (contextSerializer == null) {
             contextSerializer = GsonFactory.getInstance().getSerializer(LambdaClientContext.class);
@@ -150,6 +184,424 @@ public final class EventHandlerLoader {
 
     private static boolean isVoid(Type type) {
         return Void.TYPE.equals(type) || (type instanceof Class) && Void.class.isAssignableFrom((Class<?>) type);
+    }
+
+    private static <T> Constructor<T> getConstructor(Class<T> clazz) throws Exception {
+        final Constructor<T> constructor;
+        try {
+            constructor = clazz.getConstructor();
+        } catch (NoSuchMethodException e) {
+            if (clazz.getEnclosingClass() != null && !Modifier.isStatic(clazz.getModifiers())) {
+                throw new Exception("Class "
+                        + clazz.getName()
+                        + " cannot be instantiated because it is a non-static inner class");
+            } else {
+                throw new Exception("Class " + clazz.getName() + " has no public zero-argument constructor", e);
+            }
+        }
+        return constructor;
+    }
+
+    private static <T> T newInstance(Constructor<? extends T> constructor) {
+        try {
+            return constructor.newInstance();
+        } catch (UserFault e) {
+            throw e;
+        } catch (InvocationTargetException e) {
+            throw makeUserFault(e.getCause() == null ? e : e.getCause(), true);
+        } catch (InstantiationException e) {
+            throw UnsafeUtil.throwException(e.getCause() == null ? e : e.getCause());
+        } catch (IllegalAccessException e) {
+            throw UnsafeUtil.throwException(e);
+        }
+    }
+
+    /**
+     * perform a breadth-first search for the first parameterized type for iface
+     *
+     * @return null of no type found. Otherwise the type found.
+     */
+    private static Type[] findInterfaceParameters(Class<?> clazz, Class<?> iface) {
+        LinkedList<ClassContext> clazzes = new LinkedList<>();
+        clazzes.addFirst(new ClassContext(clazz, (Type[]) null));
+        while (!clazzes.isEmpty()) {
+            final ClassContext curContext = clazzes.removeLast();
+            Type[] interfaces = curContext.clazz.getGenericInterfaces();
+
+            for (Type type : interfaces) {
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType candidate = (ParameterizedType) type;
+                    Type rawType = candidate.getRawType();
+                    if (!(rawType instanceof Class)) {
+                        //should be impossible
+                        System.err.println("raw type is not a class: " + rawType);
+                        continue;
+                    }
+                    Class<?> rawClass = (Class<?>) rawType;
+                    if (iface.isAssignableFrom(rawClass)) {
+                        return new ClassContext(candidate, curContext).actualTypeArguments;
+                    } else {
+                        clazzes.addFirst(new ClassContext(candidate, curContext));
+                    }
+                } else if (type instanceof Class) {
+                    clazzes.addFirst(new ClassContext((Class<?>) type, curContext));
+                } else {
+                    //should never happen?
+                    System.err.println("Unexpected type class " + type.getClass().getName());
+                }
+            }
+
+            final Type superClass = curContext.clazz.getGenericSuperclass();
+            if (superClass instanceof ParameterizedType) {
+                clazzes.addFirst(new ClassContext((ParameterizedType) superClass, curContext));
+            } else if (superClass != null) {
+                clazzes.addFirst(new ClassContext((Class<?>) superClass, curContext));
+            }
+        }
+        return null;
+    }
+
+
+    @SuppressWarnings({"rawtypes"})
+    private static LambdaRequestHandler wrapRequestHandlerClass(final Class<? extends RequestHandler> clazz) {
+        Type[] ptypes = findInterfaceParameters(clazz, RequestHandler.class);
+        if (ptypes == null) {
+            return new UserFaultHandler(makeUserFault("Class "
+                    + clazz.getName()
+                    + " does not implement RequestHandler with concrete type parameters"));
+        }
+        if (ptypes.length != 2) {
+            return new UserFaultHandler(makeUserFault(
+                    "Invalid class signature for RequestHandler. Expected two generic types, got " + ptypes.length));
+        }
+
+        for (Type t : ptypes) {
+            if (t instanceof TypeVariable) {
+                Type[] bounds = ((TypeVariable) t).getBounds();
+                boolean foundBound = false;
+                if (bounds != null) {
+                    for (Type bound : bounds) {
+                        if (!Object.class.equals(bound)) {
+                            foundBound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!foundBound) {
+                    return new UserFaultHandler(makeUserFault("Class " + clazz.getName()
+                            + " does not implement RequestHandler with concrete type parameters: parameter "
+                            + t + " has no upper bound."));
+                }
+            }
+        }
+
+        final Type pType = ptypes[0];
+        final Type rType = ptypes[1];
+
+        final Constructor<? extends RequestHandler> constructor;
+        try {
+            constructor = getConstructor(clazz);
+            return wrapPojoHandler(newInstance(constructor), pType, rType);
+        } catch (UserFault f) {
+            return new UserFaultHandler(f);
+        } catch (Throwable e) {
+            return new UserFaultHandler(makeUserFault(e));
+        }
+    }
+
+    private static LambdaRequestHandler wrapRequestStreamHandlerClass(final Class<? extends RequestStreamHandler> clazz) {
+        final Constructor<? extends RequestStreamHandler> constructor;
+        try {
+            constructor = getConstructor(clazz);
+            return wrapRequestStreamHandler(newInstance(constructor));
+        } catch (UserFault f) {
+            return new UserFaultHandler(f);
+        } catch (Throwable e) {
+            return new UserFaultHandler(makeUserFault(e));
+        }
+    }
+
+    private static LambdaRequestHandler loadStreamingRequestHandler(Class<?> clazz) {
+        if (RequestStreamHandler.class.isAssignableFrom(clazz)) {
+            return wrapRequestStreamHandlerClass(clazz.asSubclass(RequestStreamHandler.class));
+        } else if (RequestHandler.class.isAssignableFrom(clazz)) {
+            return wrapRequestHandlerClass(clazz.asSubclass(RequestHandler.class));
+        } else {
+            return new UserFaultHandler(makeUserFault("Class does not implement an appropriate handler interface: "
+                    + clazz.getName()));
+        }
+    }
+
+    public static LambdaRequestHandler loadEventHandler(HandlerInfo handlerInfo) {
+        if (handlerInfo.methodName == null) {
+            return loadStreamingRequestHandler(handlerInfo.clazz);
+        } else {
+            return loadEventPojoHandler(handlerInfo);
+        }
+    }
+
+    private static Optional<LambdaRequestHandler> getOneLengthHandler(
+            Class<?> clazz,
+            Method m,
+            Type pType,
+            Type rType
+    ) {
+        if (InputStream.class.equals(pType)) {
+            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, false, false));
+        } else if (OutputStream.class.equals(pType)) {
+            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, false, true, false));
+        } else if (isContext(pType)) {
+            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, null, rType, true));
+        } else {
+            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, pType, rType, false));
+        }
+    }
+
+    private static Optional<LambdaRequestHandler> getTwoLengthHandler(
+            Class<?> clazz,
+            Method m,
+            Type pType1,
+            Type pType2,
+            Type rType
+    ) {
+        if (OutputStream.class.equals(pType1)) {
+            if (isContext(pType2)) {
+                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, false, true, true));
+            } else {
+                System.err.println(
+                        "Ignoring two-argument overload because first argument type is OutputStream and second argument type is not Context");
+                return Optional.empty();
+            }
+        } else if (isContext(pType1)) {
+            System.err.println("Ignoring two-argument overload because first argument type is Context");
+            return Optional.empty();
+        } else if (InputStream.class.equals(pType1)) {
+            if (OutputStream.class.equals(pType2)) {
+                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, true, false));
+            } else if (isContext(pType2)) {
+                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, false, true));
+            } else {
+                System.err.println("Ignoring two-argument overload because second parameter type, "
+                        + ReflectUtil.getRawClass(pType2).getName()
+                        + ", is not OutputStream.");
+                return Optional.empty();
+            }
+        } else if (isContext(pType2)) {
+            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, pType1, rType, true));
+        } else {
+            System.err.println("Ignoring two-argument overload because second parameter type is not Context");
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<LambdaRequestHandler> getThreeLengthHandler(
+            Class<?> clazz,
+            Method m,
+            Type pType1,
+            Type pType2,
+            Type pType3,
+            Type rType
+    ) {
+        if (InputStream.class.equals(pType1) && OutputStream.class.equals(pType2) && isContext(pType3)) {
+            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, true, true));
+        } else {
+            System.err.println(
+                    "Ignoring three-argument overload because argument signature is not (InputStream, OutputStream, Context");
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<LambdaRequestHandler> getHandlerFromOverload(Class<?> clazz, Method m) {
+        final Type rType = m.getGenericReturnType();
+        final Type[] pTypes = m.getGenericParameterTypes();
+
+        if (pTypes.length == 0) {
+            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, null, rType, false));
+        } else if (pTypes.length == 1) {
+            return getOneLengthHandler(clazz, m, pTypes[0], rType);
+        } else if (pTypes.length == 2) {
+            return getTwoLengthHandler(clazz, m, pTypes[0], pTypes[1], rType);
+        } else if (pTypes.length == 3) {
+            return getThreeLengthHandler(clazz, m, pTypes[0], pTypes[1], pTypes[2], rType);
+        } else {
+            System.err.println("Ignoring an overload of method "
+                    + m.getName()
+                    + " because it has too many parameters: Expected at most 3, got "
+                    + pTypes.length);
+            return Optional.empty();
+        }
+    }
+
+    private static boolean isContext(Type t) {
+        return Context.class.equals(t);
+    }
+
+    /**
+     * Returns true if the last type in params is a lambda context object interface (Context).
+     */
+    private static boolean lastParameterIsContext(Class<?>[] params) {
+        return params.length != 0 && isContext(params[params.length - 1]);
+    }
+
+    /**
+     * Implement a comparator for Methods. We sort overloaded handler methods using this comparator, and then pick the
+     * lowest sorted method.
+     */
+    
+    private static LambdaRequestHandler loadEventPojoHandler(HandlerInfo handlerInfo) {
+        Method[] methods;
+        try {
+            methods = handlerInfo.clazz.getMethods();
+        } catch (NoClassDefFoundError e) {
+            return new LambdaRequestHandler.UserFaultHandler(new UserFault(
+                    "Error loading method " + handlerInfo.methodName + " on class " + handlerInfo.clazz.getName(),
+                    e.getClass().getName(),
+                    trace(e)
+            ));
+        }
+        if (methods.length == 0) {
+            final String msg = "Class "
+                    + handlerInfo.getClass().getName()
+                    + " has no public method named "
+                    + handlerInfo.methodName;
+            return new UserFaultHandler(makeUserFault(msg));
+        }
+
+        /*
+         * We support the following signatures
+         * Anything (InputStream, OutputStream, Context)
+         * Anything (InputStream, OutputStream)
+         * Anything (OutputStream, Context)
+         * Anything (InputStream, Context)
+         * Anything (InputStream)
+         * Anything (OutputStream)
+         * Anything (Context)
+         * Anything (AlmostAnything, Context)
+         * Anything (AlmostAnything)
+         * Anything ()
+         *
+         * where AlmostAnything is any type except InputStream, OutputStream, Context
+         * Anything represents any type (primitive, void, or Object)
+         *
+         * prefer methods with longer signatures, add extra weight to those ending with a Context object
+         *
+         */
+
+        int slide = 0;
+
+        for (int i = 0; i < methods.length; i++) {
+            Method m = methods[i];
+            methods[i - slide] = m;
+            if (!m.getName().equals(handlerInfo.methodName)) {
+                slide++;
+                continue;
+            }
+        }
+
+        final int end = methods.length - slide;
+        Arrays.sort(methods, 0, end, methodPriority);
+
+        for (int i = 0; i < end; i++) {
+            Method m = methods[i];
+            Optional<LambdaRequestHandler> result = getHandlerFromOverload(handlerInfo.clazz, m);
+            if (result.isPresent()) {
+                return result.get();
+            } else {
+                continue;
+            }
+        }
+
+        return new UserFaultHandler(makeUserFault("No public method named "
+                + handlerInfo.methodName
+                + " with appropriate method signature found on class "
+                + handlerInfo.clazz.getName()));
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    private static LambdaRequestHandler wrapPojoHandler(RequestHandler instance, Type pType, Type rType) {
+        return wrapRequestStreamHandler(new PojoHandlerAsStreamHandler(instance, Optional.ofNullable(pType),
+                isVoid(rType) ? Optional.<Type>empty() : Optional.of(rType)
+        ));
+    }
+
+    private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
+        return new LambdaRequestHandler() {
+            private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+            private Functions.V2<String, String> log4jContextPutMethod = null;
+
+            private void safeAddRequestIdToLog4j(String log4jContextClassName,
+                                                 InvocationRequest request, Class contextMapValueClass) {
+                try {
+                    Class<?> log4jContextClass = ReflectUtil.loadClass(AWSLambda.customerClassLoader, log4jContextClassName);
+                    log4jContextPutMethod = ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass);
+                    log4jContextPutMethod.call("AWSRequestId", request.getId());
+                } catch (Exception e) {
+                    // nothing to do here
+                }
+            }
+
+            /**
+             * Passes the LambdaContext to the logger so that the JSON formatter can include the requestId.
+             *
+             * We do casting here because both the LambdaRuntime and the LambdaLogger is in the core package,
+             * and the setLambdaContext(context) is a method we don't want to publish for customers. That method is
+             * only implemented on the internal LambdaContextLogger, so we check and cast to be able to call it.
+             * @param context the LambdaContext
+             */
+            private void safeAddContextToLambdaLogger(LambdaContext context) {
+                LambdaLogger logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
+                if (logger instanceof LambdaContextLogger) {
+                    LambdaContextLogger contextLogger = (LambdaContextLogger) logger;
+                    contextLogger.setLambdaContext(context);
+                }
+            }
+
+            public ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
+                output.reset();
+
+                LambdaCognitoIdentity cognitoIdentity = null;
+                if (request.getCognitoIdentity() != null && !request.getCognitoIdentity().isEmpty()) {
+                    cognitoIdentity = getCognitoSerializer().fromJson(request.getCognitoIdentity());
+                }
+
+                LambdaClientContext clientContext = null;
+                if (request.getClientContext() != null && !request.getClientContext().isEmpty()) {
+                    //Use GSON here because it handles immutable types without requiring annotations
+                    clientContext = getContextSerializer().fromJson(request.getClientContext());
+                }
+
+                LambdaContext context = new LambdaContext(
+                        LambdaEnvironment.MEMORY_LIMIT,
+                        request.getDeadlineTimeInMs(),
+                        request.getId(),
+                        LambdaEnvironment.LOG_GROUP_NAME,
+                        LambdaEnvironment.LOG_STREAM_NAME,
+                        LambdaEnvironment.FUNCTION_NAME,
+                        cognitoIdentity,
+                        LambdaEnvironment.FUNCTION_VERSION,
+                        request.getInvokedFunctionArn(),
+                        clientContext
+                );
+
+                safeAddContextToLambdaLogger(context);
+
+                if (LambdaRuntimeInternal.getUseLog4jAppender()) {
+                    safeAddRequestIdToLog4j("org.apache.log4j.MDC", request, Object.class);
+                    safeAddRequestIdToLog4j("org.apache.logging.log4j.ThreadContext", request, String.class);
+                    // if put method not assigned in either call to safeAddRequestIdtoLog4j then log4jContextPutMethod = null
+                    if (log4jContextPutMethod == null) {
+                        System.err.println("Customer using log4j appender but unable to load either " 
+                            + "org.apache.log4j.MDC or org.apache.logging.log4j.ThreadContext. " 
+                            + "Customer cannot see RequestId in log4j log lines.");
+                    }
+                }
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(request.getContent());
+                handler.handleRequest(bais, output, context);
+                return output;
+            }
+        };
     }
 
     /**
@@ -392,36 +844,6 @@ public final class EventHandlerLoader {
         }
     }
 
-    private static <T> Constructor<T> getConstructor(Class<T> clazz) throws Exception {
-        final Constructor<T> constructor;
-        try {
-            constructor = clazz.getConstructor();
-        } catch (NoSuchMethodException e) {
-            if (clazz.getEnclosingClass() != null && !Modifier.isStatic(clazz.getModifiers())) {
-                throw new Exception("Class "
-                        + clazz.getName()
-                        + " cannot be instantiated because it is a non-static inner class");
-            } else {
-                throw new Exception("Class " + clazz.getName() + " has no public zero-argument constructor", e);
-            }
-        }
-        return constructor;
-    }
-
-    private static <T> T newInstance(Constructor<? extends T> constructor) {
-        try {
-            return constructor.newInstance();
-        } catch (UserFault e) {
-            throw e;
-        } catch (InvocationTargetException e) {
-            throw makeUserFault(e.getCause() == null ? e : e.getCause(), true);
-        } catch (InstantiationException e) {
-            throw UnsafeUtil.throwException(e.getCause() == null ? e : e.getCause());
-        } catch (IllegalAccessException e) {
-            throw UnsafeUtil.throwException(e);
-        }
-    }
-
     private static final class ClassContext {
         public final Class<?> clazz;
         public final Type[] actualTypeArguments;
@@ -493,420 +915,4 @@ public final class EventHandlerLoader {
         }
     }
 
-    /**
-     * perform a breadth-first search for the first parameterized type for iface
-     *
-     * @return null of no type found. Otherwise the type found.
-     */
-    private static Type[] findInterfaceParameters(Class<?> clazz, Class<?> iface) {
-        LinkedList<ClassContext> clazzes = new LinkedList<>();
-        clazzes.addFirst(new ClassContext(clazz, (Type[]) null));
-        while (!clazzes.isEmpty()) {
-            final ClassContext curContext = clazzes.removeLast();
-            Type[] interfaces = curContext.clazz.getGenericInterfaces();
-
-            for (Type type : interfaces) {
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType candidate = (ParameterizedType) type;
-                    Type rawType = candidate.getRawType();
-                    if (!(rawType instanceof Class)) {
-                        //should be impossible
-                        System.err.println("raw type is not a class: " + rawType);
-                        continue;
-                    }
-                    Class<?> rawClass = (Class<?>) rawType;
-                    if (iface.isAssignableFrom(rawClass)) {
-                        return new ClassContext(candidate, curContext).actualTypeArguments;
-                    } else {
-                        clazzes.addFirst(new ClassContext(candidate, curContext));
-                    }
-                } else if (type instanceof Class) {
-                    clazzes.addFirst(new ClassContext((Class<?>) type, curContext));
-                } else {
-                    //should never happen?
-                    System.err.println("Unexpected type class " + type.getClass().getName());
-                }
-            }
-
-            final Type superClass = curContext.clazz.getGenericSuperclass();
-            if (superClass instanceof ParameterizedType) {
-                clazzes.addFirst(new ClassContext((ParameterizedType) superClass, curContext));
-            } else if (superClass != null) {
-                clazzes.addFirst(new ClassContext((Class<?>) superClass, curContext));
-            }
-        }
-        return null;
-    }
-
-
-    @SuppressWarnings({"rawtypes"})
-    private static LambdaRequestHandler wrapRequestHandlerClass(final Class<? extends RequestHandler> clazz) {
-        Type[] ptypes = findInterfaceParameters(clazz, RequestHandler.class);
-        if (ptypes == null) {
-            return new UserFaultHandler(makeUserFault("Class "
-                    + clazz.getName()
-                    + " does not implement RequestHandler with concrete type parameters"));
-        }
-        if (ptypes.length != 2) {
-            return new UserFaultHandler(makeUserFault(
-                    "Invalid class signature for RequestHandler. Expected two generic types, got " + ptypes.length));
-        }
-
-        for (Type t : ptypes) {
-            if (t instanceof TypeVariable) {
-                Type[] bounds = ((TypeVariable) t).getBounds();
-                boolean foundBound = false;
-                if (bounds != null) {
-                    for (Type bound : bounds) {
-                        if (!Object.class.equals(bound)) {
-                            foundBound = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!foundBound) {
-                    return new UserFaultHandler(makeUserFault("Class " + clazz.getName()
-                            + " does not implement RequestHandler with concrete type parameters: parameter "
-                            + t + " has no upper bound."));
-                }
-            }
-        }
-
-        final Type pType = ptypes[0];
-        final Type rType = ptypes[1];
-
-        final Constructor<? extends RequestHandler> constructor;
-        try {
-            constructor = getConstructor(clazz);
-            return wrapPojoHandler(newInstance(constructor), pType, rType);
-        } catch (UserFault f) {
-            return new UserFaultHandler(f);
-        } catch (Throwable e) {
-            return new UserFaultHandler(makeUserFault(e));
-        }
-    }
-
-    private static LambdaRequestHandler wrapRequestStreamHandlerClass(final Class<? extends RequestStreamHandler> clazz) {
-        final Constructor<? extends RequestStreamHandler> constructor;
-        try {
-            constructor = getConstructor(clazz);
-            return wrapRequestStreamHandler(newInstance(constructor));
-        } catch (UserFault f) {
-            return new UserFaultHandler(f);
-        } catch (Throwable e) {
-            return new UserFaultHandler(makeUserFault(e));
-        }
-    }
-
-    private static LambdaRequestHandler loadStreamingRequestHandler(Class<?> clazz) {
-        if (RequestStreamHandler.class.isAssignableFrom(clazz)) {
-            return wrapRequestStreamHandlerClass(clazz.asSubclass(RequestStreamHandler.class));
-        } else if (RequestHandler.class.isAssignableFrom(clazz)) {
-            return wrapRequestHandlerClass(clazz.asSubclass(RequestHandler.class));
-        } else {
-            return new UserFaultHandler(makeUserFault("Class does not implement an appropriate handler interface: "
-                    + clazz.getName()));
-        }
-    }
-
-    public static LambdaRequestHandler loadEventHandler(HandlerInfo handlerInfo) {
-        if (handlerInfo.methodName == null) {
-            return loadStreamingRequestHandler(handlerInfo.clazz);
-        } else {
-            return loadEventPojoHandler(handlerInfo);
-        }
-    }
-
-    private static Optional<LambdaRequestHandler> getOneLengthHandler(
-            Class<?> clazz,
-            Method m,
-            Type pType,
-            Type rType
-    ) {
-        if (InputStream.class.equals(pType)) {
-            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, false, false));
-        } else if (OutputStream.class.equals(pType)) {
-            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, false, true, false));
-        } else if (isContext(pType)) {
-            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, null, rType, true));
-        } else {
-            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, pType, rType, false));
-        }
-    }
-
-    private static Optional<LambdaRequestHandler> getTwoLengthHandler(
-            Class<?> clazz,
-            Method m,
-            Type pType1,
-            Type pType2,
-            Type rType
-    ) {
-        if (OutputStream.class.equals(pType1)) {
-            if (isContext(pType2)) {
-                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, false, true, true));
-            } else {
-                System.err.println(
-                        "Ignoring two-argument overload because first argument type is OutputStream and second argument type is not Context");
-                return Optional.empty();
-            }
-        } else if (isContext(pType1)) {
-            System.err.println("Ignoring two-argument overload because first argument type is Context");
-            return Optional.empty();
-        } else if (InputStream.class.equals(pType1)) {
-            if (OutputStream.class.equals(pType2)) {
-                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, true, false));
-            } else if (isContext(pType2)) {
-                return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, false, true));
-            } else {
-                System.err.println("Ignoring two-argument overload because second parameter type, "
-                        + ReflectUtil.getRawClass(pType2).getName()
-                        + ", is not OutputStream.");
-                return Optional.empty();
-            }
-        } else if (isContext(pType2)) {
-            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, pType1, rType, true));
-        } else {
-            System.err.println("Ignoring two-argument overload because second parameter type is not Context");
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<LambdaRequestHandler> getThreeLengthHandler(
-            Class<?> clazz,
-            Method m,
-            Type pType1,
-            Type pType2,
-            Type pType3,
-            Type rType
-    ) {
-        if (InputStream.class.equals(pType1) && OutputStream.class.equals(pType2) && isContext(pType3)) {
-            return Optional.of(StreamMethodRequestHandler.makeRequestHandler(clazz, m, true, true, true));
-        } else {
-            System.err.println(
-                    "Ignoring three-argument overload because argument signature is not (InputStream, OutputStream, Context");
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<LambdaRequestHandler> getHandlerFromOverload(Class<?> clazz, Method m) {
-        final Type rType = m.getGenericReturnType();
-        final Type[] pTypes = m.getGenericParameterTypes();
-
-        if (pTypes.length == 0) {
-            return Optional.of(PojoMethodRequestHandler.makeRequestHandler(clazz, m, null, rType, false));
-        } else if (pTypes.length == 1) {
-            return getOneLengthHandler(clazz, m, pTypes[0], rType);
-        } else if (pTypes.length == 2) {
-            return getTwoLengthHandler(clazz, m, pTypes[0], pTypes[1], rType);
-        } else if (pTypes.length == 3) {
-            return getThreeLengthHandler(clazz, m, pTypes[0], pTypes[1], pTypes[2], rType);
-        } else {
-            System.err.println("Ignoring an overload of method "
-                    + m.getName()
-                    + " because it has too many parameters: Expected at most 3, got "
-                    + pTypes.length);
-            return Optional.empty();
-        }
-    }
-
-    private static boolean isContext(Type t) {
-        return Context.class.equals(t);
-    }
-
-    /**
-     * Returns true if the last type in params is a lambda context object interface (Context).
-     */
-    private static boolean lastParameterIsContext(Class<?>[] params) {
-        return params.length != 0 && isContext(params[params.length - 1]);
-    }
-
-    /**
-     * Implement a comparator for Methods. We sort overloaded handler methods using this comparator, and then pick the
-     * lowest sorted method.
-     */
-    private static final Comparator<Method> methodPriority = new Comparator<Method>() {
-        public int compare(Method lhs, Method rhs) {
-
-            //1. Non bridge methods are preferred over bridge methods.
-            if (!lhs.isBridge() && rhs.isBridge()) {
-                return -1;
-            } else if (!rhs.isBridge() && lhs.isBridge()) {
-                return 1;
-            }
-
-            //2. We prefer longer signatures to shorter signatures. Except we count a method whose last argument is
-            //Context as having 1 more argument than it really does. This is a stupid thing to do, but we
-            //need to keep it for back compat reasons.
-            Class<?>[] lParams = lhs.getParameterTypes();
-            Class<?>[] rParams = rhs.getParameterTypes();
-
-            int lParamCompareLength = lParams.length;
-            int rParamCompareLength = rParams.length;
-
-            if (lastParameterIsContext(lParams)) {
-                ++lParamCompareLength;
-            }
-
-            if (lastParameterIsContext(rParams)) {
-                ++rParamCompareLength;
-            }
-
-            return -Integer.compare(lParamCompareLength, rParamCompareLength);
-        }
-    };
-
-    private static LambdaRequestHandler loadEventPojoHandler(HandlerInfo handlerInfo) {
-        Method[] methods;
-        try {
-            methods = handlerInfo.clazz.getMethods();
-        } catch (NoClassDefFoundError e) {
-            return new LambdaRequestHandler.UserFaultHandler(new UserFault(
-                    "Error loading method " + handlerInfo.methodName + " on class " + handlerInfo.clazz.getName(),
-                    e.getClass().getName(),
-                    trace(e)
-            ));
-        }
-        if (methods.length == 0) {
-            final String msg = "Class "
-                    + handlerInfo.getClass().getName()
-                    + " has no public method named "
-                    + handlerInfo.methodName;
-            return new UserFaultHandler(makeUserFault(msg));
-        }
-
-        /*
-         * We support the following signatures
-         * Anything (InputStream, OutputStream, Context)
-         * Anything (InputStream, OutputStream)
-         * Anything (OutputStream, Context)
-         * Anything (InputStream, Context)
-         * Anything (InputStream)
-         * Anything (OutputStream)
-         * Anything (Context)
-         * Anything (AlmostAnything, Context)
-         * Anything (AlmostAnything)
-         * Anything ()
-         *
-         * where AlmostAnything is any type except InputStream, OutputStream, Context
-         * Anything represents any type (primitive, void, or Object)
-         *
-         * prefer methods with longer signatures, add extra weight to those ending with a Context object
-         *
-         */
-
-        int slide = 0;
-
-        for (int i = 0; i < methods.length; i++) {
-            Method m = methods[i];
-            methods[i - slide] = m;
-            if (!m.getName().equals(handlerInfo.methodName)) {
-                slide++;
-                continue;
-            }
-        }
-
-        final int end = methods.length - slide;
-        Arrays.sort(methods, 0, end, methodPriority);
-
-        for (int i = 0; i < end; i++) {
-            Method m = methods[i];
-            Optional<LambdaRequestHandler> result = getHandlerFromOverload(handlerInfo.clazz, m);
-            if (result.isPresent()) {
-                return result.get();
-            } else {
-                continue;
-            }
-        }
-
-        return new UserFaultHandler(makeUserFault("No public method named "
-                + handlerInfo.methodName
-                + " with appropriate method signature found on class "
-                + handlerInfo.clazz.getName()));
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    private static LambdaRequestHandler wrapPojoHandler(RequestHandler instance, Type pType, Type rType) {
-        return wrapRequestStreamHandler(new PojoHandlerAsStreamHandler(instance, Optional.ofNullable(pType),
-                isVoid(rType) ? Optional.<Type>empty() : Optional.of(rType)
-        ));
-    }
-
-    private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
-        return new LambdaRequestHandler() {
-            private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-            private Functions.V2<String, String> log4jContextPutMethod = null;
-
-            private void safeAddRequestIdToLog4j(String log4jContextClassName,
-                                                 InvocationRequest request, Class contextMapValueClass) {
-                try {
-                    Class<?> log4jContextClass = ReflectUtil.loadClass(AWSLambda.customerClassLoader, log4jContextClassName);
-                    log4jContextPutMethod = ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass);
-                    log4jContextPutMethod.call("AWSRequestId", request.getId());
-                } catch (Exception e) {
-                }
-            }
-
-            /**
-             * Passes the LambdaContext to the logger so that the JSON formatter can include the requestId.
-             *
-             * We do casting here because both the LambdaRuntime and the LambdaLogger is in the core package,
-             * and the setLambdaContext(context) is a method we don't want to publish for customers. That method is
-             * only implemented on the internal LambdaContextLogger, so we check and cast to be able to call it.
-             * @param context the LambdaContext
-             */
-            private void safeAddContextToLambdaLogger(LambdaContext context) {
-                LambdaLogger logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
-                if (logger instanceof LambdaContextLogger) {
-                    LambdaContextLogger contextLogger = (LambdaContextLogger) logger;
-                    contextLogger.setLambdaContext(context);
-                }
-            }
-
-            public ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
-                output.reset();
-
-                LambdaCognitoIdentity cognitoIdentity = null;
-                if (request.getCognitoIdentity() != null && !request.getCognitoIdentity().isEmpty()) {
-                    cognitoIdentity = getCognitoSerializer().fromJson(request.getCognitoIdentity());
-                }
-
-                LambdaClientContext clientContext = null;
-                if (request.getClientContext() != null && !request.getClientContext().isEmpty()) {
-                    //Use GSON here because it handles immutable types without requiring annotations
-                    clientContext = getContextSerializer().fromJson(request.getClientContext());
-                }
-
-                LambdaContext context = new LambdaContext(
-                        LambdaEnvironment.MEMORY_LIMIT,
-                        request.getDeadlineTimeInMs(),
-                        request.getId(),
-                        LambdaEnvironment.LOG_GROUP_NAME,
-                        LambdaEnvironment.LOG_STREAM_NAME,
-                        LambdaEnvironment.FUNCTION_NAME,
-                        cognitoIdentity,
-                        LambdaEnvironment.FUNCTION_VERSION,
-                        request.getInvokedFunctionArn(),
-                        clientContext
-                );
-
-                safeAddContextToLambdaLogger(context);
-
-                if (LambdaRuntimeInternal.getUseLog4jAppender()) {
-                    safeAddRequestIdToLog4j("org.apache.log4j.MDC", request, Object.class);
-                    safeAddRequestIdToLog4j("org.apache.logging.log4j.ThreadContext", request, String.class);
-                    // if put method not assigned in either call to safeAddRequestIdtoLog4j then log4jContextPutMethod = null
-                    if (log4jContextPutMethod == null) {
-                        System.err.println("Customer using log4j appender but unable to load either " +
-                                "org.apache.log4j.MDC or org.apache.logging.log4j.ThreadContext. " +
-                                "Customer cannot see RequestId in log4j log lines.");
-                    }
-                }
-
-                ByteArrayInputStream bais = new ByteArrayInputStream(request.getContent());
-                handler.handleRequest(bais, output, context);
-                return output;
-            }
-        };
-    }
 }

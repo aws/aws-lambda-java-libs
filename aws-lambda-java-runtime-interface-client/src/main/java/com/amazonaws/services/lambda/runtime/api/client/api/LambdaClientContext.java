@@ -1,10 +1,12 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client.api;
 
 import com.amazonaws.services.lambda.runtime.Client;
 import com.amazonaws.services.lambda.runtime.ClientContext;
-
 import java.util.Map;
 
 public class LambdaClientContext implements ClientContext {

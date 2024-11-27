@@ -16,7 +16,9 @@
 * `AppSyncLambdaAuthorizerResponse`
 * `CloudFormationCustomResourceEvent`
 * `CloudFrontEvent`
+* `CloudWatchCompositeAlarmEvent`
 * `CloudWatchLogsEvent`
+* `CloudWatchMetricAlarmEvent`
 * `CodeCommitEvent`
 * `CognitoEvent`
 * `CognitoUserPoolCreateAuthChallengeEvent`
@@ -44,6 +46,8 @@
 * `KinesisFirehoseEvent`
 * `LambdaDestinationEvent`
 * `LexEvent`
+* `MSKFirehoseEvent`
+* `MSKFirehoseResponse`
 * `RabbitMQEvent`
 * `S3BatchEvent`
 * `S3BatchResponse`
@@ -70,7 +74,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.11.6</version>
+        <version>3.14.0</version>
     </dependency>
     ...
 </dependencies>

@@ -1,3 +1,7 @@
+### August 7, 2024
+`2.6.0`
+- Runtime API client improvements: use Lambda-Runtime-Function-Error-Type for reporting errors in format "Runtime.<Error>" 
+
 ### June 28, 2024
 `2.5.1`
 - Runtime API client improvements: fix a DNS cache issue

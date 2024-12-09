@@ -17,7 +17,10 @@ import com.amazonaws.services.lambda.runtime.events.CloudWatchCompositeAlarmEven
 import com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent;
 import com.amazonaws.services.lambda.runtime.events.CloudWatchMetricAlarmEvent;
 import com.amazonaws.services.lambda.runtime.events.CodeCommitEvent;
+import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPreTokenGenerationEventV2.ClaimsAndScopeOverrideDetails;
+import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPreTokenGenerationEventV2.Response;
 import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPreTokenGenerationEventV2;
+import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPreTokenGenerationEventV2.GroupOverrideDetails;
 import com.amazonaws.services.lambda.runtime.events.ConfigEvent;
 import com.amazonaws.services.lambda.runtime.events.ConnectEvent;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
@@ -111,8 +114,8 @@ public class EventLoaderTest {
 
         KafkaEvent.KafkaEventRecord record = event.getRecords().get("mytopic-01").get(0);
         assertThat(record.getValue()).decodedAsBase64().asString().isEqualTo("Hello from Kafka !!");
-         
-        String headerValue = new String(record.getHeaders().get(0).get("headerKey"));    
+
+        String headerValue = new String(record.getHeaders().get(0).get("headerKey"));
         assertThat(headerValue).isEqualTo("headerValue");
     }
 
@@ -151,7 +154,7 @@ public class EventLoaderTest {
     @Test
     public void testLoadMSKFirehoseEvent() {
         MSKFirehoseEvent event = EventLoader.loadMSKFirehoseEvent("msk_firehose_event.json");
-        
+
         assertThat(event).isNotNull();
         assertThat(event.getSourceMSKArn()).isEqualTo("arn:aws:kafka:EXAMPLE");
         assertThat(event.getDeliveryStreamArn()).isEqualTo("arn:aws:firehose:EXAMPLE");
@@ -418,6 +421,29 @@ public class EventLoaderTest {
         CognitoUserPoolPreTokenGenerationEventV2.Request request = event.getRequest();
         String[] requestScopes = request.getScopes();
         assertThat("aws.cognito.signin.user.admin").isEqualTo(requestScopes[0]);
+    }
+
+    @Test
+    public void testGroupOverrideDetailsCognitoUserPoolPreTokenGenerationEventV2() {
+        CognitoUserPoolPreTokenGenerationEventV2 event = EventLoader.loadCognitoUserPoolPreTokenGenerationEventV2(
+            "cognito_user_pool_pre_token_generation_event_v2_with_response.json");
+
+        assertThat(event).isNotNull();
+        assertThat(event)
+            .extracting(CognitoUserPoolPreTokenGenerationEventV2::getResponse)
+            .extracting(Response::getClaimsAndScopeOverrideDetails)
+            .extracting(ClaimsAndScopeOverrideDetails::getGroupOverrideDetails)
+            .extracting(GroupOverrideDetails::getGroupsToOverride)
+            .asList()
+            .contains("my_group");
+
+        assertThat(event)
+            .extracting(CognitoUserPoolPreTokenGenerationEventV2::getResponse)
+            .extracting(Response::getClaimsAndScopeOverrideDetails)
+            .extracting(ClaimsAndScopeOverrideDetails::getGroupOverrideDetails)
+            .extracting(GroupOverrideDetails::getIamRolesToOverride)
+            .asList()
+            .contains("my_role");
     }
 
     @Test

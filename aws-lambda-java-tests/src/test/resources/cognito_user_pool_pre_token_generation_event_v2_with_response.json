@@ -1,0 +1,48 @@
+{
+    "version": "2",
+    "triggerSource": "TokenGeneration_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_EXAMPLE",
+    "userName": "JaneDoe",
+    "callerContext": {
+        "awsSdkVersion": "aws-sdk-unknown-unknown",
+        "clientId": "1example23456789"
+    },
+    "request": {
+        "userAttributes": {
+            "string": "string"
+        },
+        "scopes": ["string", "string"],
+        "groupConfiguration": {
+            "groupsToOverride": ["string", "string"],
+            "iamRolesToOverride": ["string", "string"],
+            "preferredRole": "string"
+        },
+        "clientMetadata": {
+            "string": "string"
+        }
+    },
+    "response": {
+        "claimsAndScopeOverrideDetails": {
+            "idTokenGeneration": {
+                "claimsToAddOrOverride": {
+                    "string": ["accepted datatype"]
+                },
+                "claimsToSuppress": ["string", "string"]
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {
+                    "string": ["accepted datatype"]
+                },
+                "claimsToSuppress": ["string", "string"],
+                "scopesToAdd": ["string", "string"],
+                "scopesToSuppress": ["string", "string"]
+            },
+            "groupOverrideDetails": {
+                "groupsToOverride": ["my_group", "string"],
+                "iamRolesToOverride": ["my_role", "string"],
+                "preferredRole": "string"
+            }
+        }
+    }
+}

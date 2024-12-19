@@ -127,8 +127,8 @@ public class CognitoUserPoolPreTokenGenerationEventV2 extends CognitoUserPoolEve
     @Builder(setterPrefix = "with")
     @NoArgsConstructor
     public static class GroupOverrideDetails {
-        private Map<String, String> groupsToOverride;
-        private Map<String, String> iamRolesToOverride;
+        private String[] groupsToOverride;
+        private String[] iamRolesToOverride;
         private String preferredRole;
     }
 }

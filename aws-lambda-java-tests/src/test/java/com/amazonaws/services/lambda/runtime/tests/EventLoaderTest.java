@@ -418,6 +418,17 @@ public class EventLoaderTest {
         CognitoUserPoolPreTokenGenerationEventV2.Request request = event.getRequest();
         String[] requestScopes = request.getScopes();
         assertThat("aws.cognito.signin.user.admin").isEqualTo(requestScopes[0]);
+
+        CognitoUserPoolPreTokenGenerationEventV2.Response response = event.getResponse();
+        String[] groupsToOverride = response.getClaimsAndScopeOverrideDetails().getGroupOverrideDetails().getGroupsToOverride();
+        String[] iamRolesToOverride = response.getClaimsAndScopeOverrideDetails().getGroupOverrideDetails().getIamRolesToOverride();
+        String preferredRole = response.getClaimsAndScopeOverrideDetails().getGroupOverrideDetails().getPreferredRole();
+
+        assertThat("group-99").isEqualTo(groupsToOverride[0]);
+        assertThat("group-98").isEqualTo(groupsToOverride[1]);
+        assertThat("arn:aws:iam::123456789012:role/sns_caller99").isEqualTo(iamRolesToOverride[0]);
+        assertThat("arn:aws:iam::123456789012:role/sns_caller98").isEqualTo(iamRolesToOverride[1]);
+        assertThat("arn:aws:iam::123456789012:role/sns_caller_99").isEqualTo(preferredRole);
     }
 
     @Test

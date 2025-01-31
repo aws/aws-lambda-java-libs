@@ -21,13 +21,19 @@
         "groupConfiguration": {
             "groupsToOverride": ["group-1", "group-2", "group-3"],
             "iamRolesToOverride": ["arn:aws:iam::123456789012:role/sns_caller1", "arn:aws:iam::123456789012:role/sns_caller2", "arn:aws:iam::123456789012:role/sns_caller3"],
-            "preferredRole": ["arn:aws:iam::123456789012:role/sns_caller"]
+            "preferredRole": "arn:aws:iam::123456789012:role/sns_caller"
         },
         "scopes": [
             "aws.cognito.signin.user.admin", "openid", "email", "phone"
         ]
     },
     "response": {
-        "claimsAndScopeOverrideDetails": []
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": ["group-99", "group-98"],
+                "iamRolesToOverride": ["arn:aws:iam::123456789012:role/sns_caller99", "arn:aws:iam::123456789012:role/sns_caller98"],
+                "preferredRole": "arn:aws:iam::123456789012:role/sns_caller_99"
+            }
+        }
     }
 }

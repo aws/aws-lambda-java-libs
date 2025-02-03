@@ -48,10 +48,8 @@ jobs:
       # Install events module
       - name: Install events with Maven
         run: |
-          mvn -B install \
-          -Dmaven.compiler.plugin.version=3.11.0 \
-          -Dmaven.compiler.source=1.8 \
-          -Dmaven.compiler.target=1.8 \
+          mvn -B clean install \
+          -P release \
           --file aws-lambda-java-events/pom.xml
       # Build custom-serialization samples
       - name: install sam

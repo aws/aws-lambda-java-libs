@@ -49,13 +49,6 @@ jobs:
             21
           distribution: corretto
 
-      # Check Java versions
-      - name: Verify Java installations
-        run: |
-          echo "Default Java version:"
-          java -version
-          echo "JAVA_HOME=$JAVA_HOME"
-
       # Install events module using Java 8
       - name: Install events with Maven
         run: |
@@ -63,13 +56,7 @@ jobs:
           mvn -B clean install \
           -Dmaven.compiler.source=1.8 \
           -Dmaven.compiler.target=1.8 \
-          -Dmaven.compiler.forceJavacCompilerUse=true \
-          -Dmaven.compiler.plugin.version=3.5.1 \
           --file aws-lambda-java-events/pom.xml
-
-      # Switch back to Java 21 for the rest of the build
-      - name: Set JAVA_HOME back to Java 21
-        run: export JAVA_HOME=$JAVA_HOME_21_X64
 
       # Build custom-serialization samples
       - name: install sam

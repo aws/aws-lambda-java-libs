@@ -47,7 +47,12 @@ jobs:
 
       # Install events module
       - name: Install events with Maven
-        run: mvn -B install --file aws-lambda-java-events/pom.xml
+        run: |
+          mvn -B install \
+          -Dmaven.compiler.plugin.version=3.11.0 \
+          -Dmaven.compiler.source=21 \
+          -Dmaven.compiler.target=21 \
+          --file aws-lambda-java-events/pom.xml
       # Build custom-serialization samples
       - name: install sam
         uses: aws-actions/setup-sam@v2

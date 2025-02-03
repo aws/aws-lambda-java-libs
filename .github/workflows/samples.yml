@@ -44,6 +44,10 @@ jobs:
         with:
           java-version: 21
           distribution: corretto
+
+      # Install events module
+      - name: Install events with Maven
+        run: mvn -B install --file aws-lambda-java-events/pom.xml
       # Build custom-serialization samples
       - name: install sam
         uses: aws-actions/setup-sam@v2

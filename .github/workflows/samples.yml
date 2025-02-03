@@ -50,8 +50,8 @@ jobs:
         run: |
           mvn -B install \
           -Dmaven.compiler.plugin.version=3.11.0 \
-          -Dmaven.compiler.source=21 \
-          -Dmaven.compiler.target=21 \
+          -Dmaven.compiler.source=1.8 \
+          -Dmaven.compiler.target=1.8 \
           --file aws-lambda-java-events/pom.xml
       # Build custom-serialization samples
       - name: install sam

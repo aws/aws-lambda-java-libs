@@ -31,6 +31,7 @@
 * `CognitoUserPoolPreAuthenticationEvent`
 * `CognitoUserPoolPreSignUpEvent`
 * `CognitoUserPoolPreTokenGenerationEvent`
+* `CognitoUserPoolPreTokenGenerationEventV2`
 * `CognitoUserPoolVerifyAuthChallengeResponseEvent`
 * `ConfigEvent`
 * `ConnectEvent`
@@ -73,7 +74,7 @@
     <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-lambda-java-events</artifactId>
-        <version>3.14.0</version>
+        <version>3.15.0</version>
     </dependency>
     ...
 </dependencies>

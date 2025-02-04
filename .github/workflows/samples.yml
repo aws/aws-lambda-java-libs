@@ -40,10 +40,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      # Set up both Java 8 and 21
+      - name: Set up Java 8 and 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: |
+            8
+            21
           distribution: corretto
+
+      # Install events module using Java 8
+      - name: Install events with Maven
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          mvn -B clean install \
+          -Dmaven.compiler.source=1.8 \
+          -Dmaven.compiler.target=1.8 \
+          --file aws-lambda-java-events/pom.xml
+
       # Build custom-serialization samples
       - name: install sam
         uses: aws-actions/setup-sam@v2
@@ -57,4 +71,3 @@ jobs:
         run: cd samples/custom-serialization/moshi && sam build && sam local invoke -e events/event.json | grep 200
       - name: test request-stream-handler
         run: cd samples/custom-serialization/request-stream-handler && sam build && sam local invoke -e events/event.json | grep 200
-

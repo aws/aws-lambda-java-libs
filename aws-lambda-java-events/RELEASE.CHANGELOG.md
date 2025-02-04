@@ -1,3 +1,7 @@
+### Feb 3, 2025
+`3.16.0`:
+- Add RotationToken to SecretsManagerRotationEvent ([#520](https://github.com/aws/aws-lambda-java-libs/pull/520))
+
 ### January 31, 2025
 `3.15.0`:
 - Fix `CognitoUserPoolPreTokenGenerationEventV2` model ([#519](https://github.com/aws/aws-lambda-java-libs/pull/519))

@@ -21,4 +21,8 @@ public abstract class SecretsManagerRotationEventMixin {
     // needed because Jackson expects "clientRequestToken" instead of "ClientRequestToken"
     @JsonProperty("ClientRequestToken") abstract String getClientRequestToken();
     @JsonProperty("ClientRequestToken") abstract void setClientRequestToken(String clientRequestToken);
+
+    // needed because Jackson expects "rotationToken" instead of "RotationToken"
+    @JsonProperty("RotationToken") abstract String getRotationToken();
+    @JsonProperty("RotationToken") abstract void setRotationToken(String rotationToken);
 }

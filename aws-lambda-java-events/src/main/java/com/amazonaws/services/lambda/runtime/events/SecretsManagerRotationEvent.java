@@ -35,5 +35,6 @@ public class SecretsManagerRotationEvent {
     private String step;
     private String secretId;
     private String clientRequestToken;
+    private String rotationToken;
 
 }

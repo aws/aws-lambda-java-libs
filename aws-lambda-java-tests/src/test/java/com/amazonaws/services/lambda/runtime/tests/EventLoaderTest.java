@@ -369,7 +369,9 @@ public class EventLoaderTest {
         assertThat(event)
                 .returns("123e4567-e89b-12d3-a456-426614174000", from(SecretsManagerRotationEvent::getClientRequestToken))
                 .returns("arn:aws:secretsmanager:eu-central-1:123456789012:secret:/powertools/secretparam-xBPaJ5", from(SecretsManagerRotationEvent::getSecretId))
-                .returns("CreateSecret", from(SecretsManagerRotationEvent::getStep));
+                .returns("CreateSecret", from(SecretsManagerRotationEvent::getStep))
+                .returns("8a4cc1ac-82ea-47c7-bd9f-aeb370b1b6a6", from(SecretsManagerRotationEvent::getRotationToken));
+;
     }
 
     @Test

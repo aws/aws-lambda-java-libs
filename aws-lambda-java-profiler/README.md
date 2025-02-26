@@ -12,6 +12,8 @@ profiling data and automatically uploads the data as flame graphs to S3.
     <img src="docs/example-cold-start-flame-graph.png" alt="A flame graph of a Java Lambda function">
 </p>
 
+This is an alpha release and not yet ready for production use. We're especially interested in early feedback on features, performance, and compatibility. Please send feedback by opening a [GitHub issue](https://github.com/aws/aws-lambda-java-libs/issues/new).
+
 ### Usage
 
 To use the profiler you need to 
@@ -75,12 +77,6 @@ When the agent is constructed, it starts the profiler and registers itself as a 
 
 A new thread is created to handle calling `/next` and uploading the results of the profiler to S3. The bucket to upload
 the result to is configurable using an environment variable.
-
-### Project Structure
-
-- `Agent.java`: Main class that coordinates profiling and S3 uploads.
-- `AgentEntry.java`: Entry point for the Java agent.
-- `ExtensionClient.java`: Handles communication with the Lambda Extensions API.
 
 ### Troubleshooting
 

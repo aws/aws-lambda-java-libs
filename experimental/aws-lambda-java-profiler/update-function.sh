@@ -34,7 +34,7 @@ aws lambda update-function-configuration \
 # Add environment variables
 aws lambda update-function-configuration \
     --function-name "$FUNCTION_NAME" \
-    --environment "Variables={PROFILER_RESULTS_BUCKET_NAME=$BUCKET_NAME, JAVA_TOOL_OPTIONS=-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar}"
+    --environment "Variables={AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME=$BUCKET_NAME, JAVA_TOOL_OPTIONS=-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar}"
 
 # Update the function's permissions to write to the S3 bucket
 # Get the function's execution role

@@ -30,6 +30,8 @@ dependency-reduced-pom.xml
 aws-lambda-java-runtime-interface-client/pom.xml.versionsBackup
 
 # profiler
-aws-lambda-java-profiler/integration_tests/helloworld/build
-aws-lambda-java-profiler/extension/build/
+experimental/aws-lambda-java-profiler/integration_tests/helloworld/build
+experimental/aws-lambda-java-profiler/extension/build/
+experimental/aws-lambda-java-profiler/integration_tests/helloworld/bin
+!experimental/aws-lambda-java-profiler/extension/gradle/wrapper/*.jar
 /scratch/

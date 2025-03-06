@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 public class S3Manager {
 
-    private static final String RESULTS_BUCKET = "PROFILER_RESULTS_BUCKET_NAME";
+    private static final String RESULTS_BUCKET = "AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME";
     private static final String FUNCTION_NAME = System.getenv().getOrDefault("AWS_LAMBDA_FUNCTION_NAME", "function");
     private S3Client s3Client;
     private String bucketName;
@@ -23,7 +23,7 @@ public class S3Manager {
         final String bucketName = System.getenv(RESULTS_BUCKET);
         Logger.debug("creating S3Manager with bucketName = " + bucketName);
         if (null == bucketName || bucketName.isEmpty()) {
-            throw new IllegalArgumentException("please set the bucket name using PROFILER_RESULTS_BUCKET_NAME environment variable");
+            throw new IllegalArgumentException("please set the bucket name using AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME environment variable");
         }
         this.s3Client = S3Client.builder().build();
         this.bucketName = bucketName;

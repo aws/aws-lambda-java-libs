@@ -39,27 +39,27 @@ jobs:
           role-duration-seconds: 900
 
       - name: Build layer
-        working-directory: ./aws-lambda-java-profiler/extension
+        working-directory: ./experimental/aws-lambda-java-profiler/extension
         run: ./build_layer.sh
       
       - name: Publish layer
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/publish_layer.sh
 
       - name: Create the bucket layer
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/create_bucket.sh
 
       - name: Create Java function
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/create_function.sh
 
       - name: Invoke Java function
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/invoke_function.sh
 
       - name: Download from s3
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/download_from_s3.sh
 
       - name: Upload profiles
@@ -70,5 +70,5 @@ jobs:
         
       - name: cleanup
         if: always()
-        working-directory: ./aws-lambda-java-profiler
+        working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/cleanup.sh

@@ -17,11 +17,11 @@ import one.profiler.AsyncProfiler;
 
 public class PreMain {    
 
-    private static final String DEFAULT_PROFILER_START_COMMAND = "start,event=wall,interval=1us";
-    private static final String DEFAULT_PROFILER_STOP_COMMAND = "stop,file=%s,include=*AWSLambda.main,include=start_thread";
-    private static final String PROFILER_START_COMMAND = System.getenv().getOrDefault("PROFILER_START_COMMAND", DEFAULT_PROFILER_START_COMMAND);
-    private static final String PROFILER_STOP_COMMAND = System.getenv().getOrDefault("PROFILER_STOP_COMMAND", DEFAULT_PROFILER_STOP_COMMAND);
-    private static final String INTERNAL_COMMUNICATION_PORT = System.getenv().getOrDefault("PROFILER_COMMUNICATION_PORT", "1234");
+    private static final String DEFAULT_AWS_LAMBDA_PROFILER_START_COMMAND = "start,event=wall,interval=1us";
+    private static final String DEFAULT_AWS_LAMBDA_PROFILER_STOP_COMMAND = "stop,file=%s,include=*AWSLambda.main,include=start_thread";
+    private static final String PROFILER_START_COMMAND = System.getenv().getOrDefault("AWS_LAMBDA_PROFILER_START_COMMAND", DEFAULT_AWS_LAMBDA_PROFILER_START_COMMAND);
+    private static final String PROFILER_STOP_COMMAND = System.getenv().getOrDefault("AWS_LAMBDA_PROFILER_STOP_COMMAND", DEFAULT_AWS_LAMBDA_PROFILER_STOP_COMMAND);
+    private static final String INTERNAL_COMMUNICATION_PORT = System.getenv().getOrDefault("AWS_LAMBDA_PROFILER_COMMUNICATION_PORT", "1234");
 
     public static void premain(String agentArgs, Instrumentation inst) {
         Logger.debug("premain is starting");

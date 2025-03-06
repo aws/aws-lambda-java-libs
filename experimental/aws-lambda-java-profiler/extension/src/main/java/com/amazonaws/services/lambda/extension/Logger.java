@@ -8,7 +8,7 @@ public class Logger {
     private static final String PREFIX = "[PROFILER] ";
 
     private static boolean initializeDebugFlag() {
-        String envValue = System.getenv("PROFILER_DEBUG");
+        String envValue = System.getenv("AWS_LAMBDA_PROFILER_DEBUG");
         return "true".equalsIgnoreCase(envValue) || "1".equals(envValue);
     }
 

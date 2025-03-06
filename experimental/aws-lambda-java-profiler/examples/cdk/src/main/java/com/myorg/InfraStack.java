@@ -36,7 +36,7 @@ public class InfraStack extends Stack {
                 .build();
 
         var environmentVariables = Map.of("JAVA_TOOL_OPTIONS", "-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler.jar",
-                "PROFILER_RESULTS_BUCKET_NAME", resultsBucketName);
+                "AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME", resultsBucketName);
 
         var function = Function.Builder.create(this, "example-profiler-function")
                 .runtime(JAVA_21)

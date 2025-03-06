@@ -23,7 +23,6 @@ public class ExtensionClient {
 			"            ]" +
 			"        }";
 	private static final String LAMBDA_EXTENSION_IDENTIFIER = "Lambda-Extension-Identifier";
-	private static final String LAMBDA_EXTENSION_FUNCTION_ERROR_TYPE = "Lambda-Extension-Function-Error-Type";
 	private static final HttpClient client = HttpClient.newBuilder().build();
 
 	public static String registerExtension() {

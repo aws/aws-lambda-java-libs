@@ -8,7 +8,7 @@ RUNTIME="java21"
 LAYER_ARN=$(cat /tmp/layer_arn)
 
 JAVA_TOOL_OPTIONS="-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar"
-PROFILER_RESULTS_BUCKET_NAME="aws-lambda-java-profiler-bucket-${GITHUB_RUN_ID}"
+AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME="aws-lambda-java-profiler-bucket-${GITHUB_RUN_ID}"
 
 # Compile the Hello World project
 cd integration_tests/helloworld
@@ -35,7 +35,7 @@ POLICY_DOCUMENT=$(cat <<EOF
         {
             "Effect": "Allow",
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::$PROFILER_RESULTS_BUCKET_NAME/*"
+            "Resource": "arn:aws:s3:::$AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME/*"
         }
     ]
 }
@@ -60,7 +60,7 @@ aws lambda create-function \
     --timeout 30 \
     --memory-size 512 \
     --zip-file fileb://integration_tests/helloworld/build/distributions/code.zip \
-    --environment "Variables={JAVA_TOOL_OPTIONS='$JAVA_TOOL_OPTIONS',PROFILER_RESULTS_BUCKET_NAME='$PROFILER_RESULTS_BUCKET_NAME',PROFILER_DEBUG='true'}" \
+    --environment "Variables={JAVA_TOOL_OPTIONS='$JAVA_TOOL_OPTIONS',AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME='$AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME',AWS_LAMBDA_PROFILER_DEBUG='true'}" \
     --layers "$LAYER_ARN"
 
 echo "Lambda function '$FUNCTION_NAME' created successfully with Java 21 runtime"

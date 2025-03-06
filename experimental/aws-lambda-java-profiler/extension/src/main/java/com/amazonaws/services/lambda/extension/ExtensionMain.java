@@ -15,6 +15,7 @@ public class ExtensionMain {
     private static boolean coldstart = true;
     private static final String REQUEST_ID = "requestId";
     private static final String EVENT_TYPE = "eventType";
+    private static final String INTERNAL_COMMUNICATION_PORT = System.getenv().getOrDefault("AWS_LAMBDA_PROFILER_COMMUNICATION_PORT", "1234");
     public static final String HEADER_NAME = "X-FileName";
 
     private static S3Manager s3Manager;
@@ -100,9 +101,10 @@ public class ExtensionMain {
 
     private static void startProfiler() {
         try {
-           HttpRequest request = HttpRequest.newBuilder()
+            String url = String.format("http://localhost:%s/profiler/start", INTERNAL_COMMUNICATION_PORT);
+            HttpRequest request = HttpRequest.newBuilder()
                             .GET()
-                            .uri(URI.create("http://localhost:1234/profiler/start"))
+                            .uri(URI.create(url))
                             .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
@@ -116,10 +118,11 @@ public class ExtensionMain {
 
     private static void stopProfiler(String fileNameSuffix) {
         try {
+            String url = String.format("http://localhost:%s/profiler/stop", INTERNAL_COMMUNICATION_PORT);
             HttpRequest request = HttpRequest.newBuilder()
                             .GET()
                             .setHeader(HEADER_NAME, fileNameSuffix)
-                            .uri(URI.create("http://localhost:1234/profiler/stop"))
+                            .uri(URI.create(url))
                             .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {

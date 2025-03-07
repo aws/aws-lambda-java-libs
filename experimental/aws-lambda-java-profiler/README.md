@@ -105,6 +105,9 @@ This project has adopted the [Amazon Open Source Code of Conduct](https://aws.gi
 
 ## License
 
-This project is licensed under the [Apache 2.0](../../LICENSE) License. It uses the [async-profiler](https://github.com/async-profiler/async-profiler), which is also released under the Apache 2.0 license.
+This project is licensed under the [Apache 2.0](../../LICENSE) License. It uses the following projects:
 
+- [async-profiler](https://github.com/async-profiler/async-profiler) (Apache 2.0 license)
+- [AWS SDK for Java 2.0](https://github.com/aws/aws-sdk-java-v2) (Apache 2.0 license)
+- Other libraries in this repository (Apache 2.0 license)
 

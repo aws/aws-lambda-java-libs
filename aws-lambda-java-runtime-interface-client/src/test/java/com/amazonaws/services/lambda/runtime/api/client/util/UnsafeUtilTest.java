@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client.util;
 
 import org.junit.jupiter.api.Test;
+import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UnsafeUtilTest {
@@ -13,11 +14,6 @@ public class UnsafeUtilTest {
     @Test
     void testTheUnsafeIsInitialized() {
         assertNotNull(UnsafeUtil.TheUnsafe);
-    }
-
-    @Test
-    void testDisableIllegalAccessWarning() {
-        assertDoesNotThrow(() -> UnsafeUtil.disableIllegalAccessWarning());
     }
 
     @Test

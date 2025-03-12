@@ -2,6 +2,7 @@
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 SPDX-License-Identifier: Apache-2.0
 */
+
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.crac.Core;
@@ -30,11 +31,11 @@ import java.io.FileInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.security.Security;
 import java.util.Properties;
-
 
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
@@ -176,24 +177,28 @@ public class AWSLambda {
         }
     }
 
-    public static void main(String[] args) {
-        startRuntime(args[0]);
-    }
+    public static void main(String[] args) throws Throwable {
+        try {
+            LambdaContextLogger logger = initLogger();
+            LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], logger);
+            startRuntimeLoop(lambdaRequestHandler, logger);
 
-    private static void startRuntime(String handler) {
-        try (LogSink logSink = createLogSink()) {
-            LambdaContextLogger logger = new LambdaContextLogger(
-                    logSink,
-                    LogLevel.fromString(LambdaEnvironment.LAMBDA_LOG_LEVEL),
-                    LogFormat.fromString(LambdaEnvironment.LAMBDA_LOG_FORMAT)
-            );
-            startRuntime(handler, logger);
-        } catch (Throwable t) {
+        } catch (IOException | ClassNotFoundException t) {
             throw new Error(t);
         }
     }
 
-    private static void startRuntime(String handler, LambdaContextLogger lambdaLogger) throws Throwable {
+    private static LambdaContextLogger initLogger() {
+        LogSink logSink = createLogSink();
+        LambdaContextLogger logger = new LambdaContextLogger(
+                logSink,
+                LogLevel.fromString(LambdaEnvironment.LAMBDA_LOG_LEVEL),
+                LogFormat.fromString(LambdaEnvironment.LAMBDA_LOG_FORMAT));
+
+        return logger;
+    }
+
+    private static LambdaRequestHandler getLambdaRequestHandlerObject(String handler, LambdaContextLogger lambdaLogger) throws UnsupportedEncodingException, ClassNotFoundException, IOException {
         UnsafeUtil.disableIllegalAccessWarning();
 
         System.setOut(new PrintStream(new LambdaOutputStream(System.out), false, "UTF-8"));
@@ -210,7 +215,7 @@ public class AWSLambda {
         Thread.currentThread().setContextClassLoader(customerClassLoader);
 
         // Load the user's handler
-        LambdaRequestHandler requestHandler;
+        LambdaRequestHandler requestHandler = null;
         try {
             requestHandler = findRequestHandler(handler, customerClassLoader);
         } catch (UserFault userFault) {
@@ -220,11 +225,16 @@ public class AWSLambda {
                     RapidErrorType.BadFunctionCode);
             runtimeClient.reportInitError(error);
             System.exit(1);
-            return;
         }
+
         if (INIT_TYPE_SNAP_START.equals(AWS_LAMBDA_INITIALIZATION_TYPE)) {
             onInitComplete(lambdaLogger);
         }
+
+        return requestHandler;
+    }
+
+    private static void startRuntimeLoop(LambdaRequestHandler requestHandler, LambdaContextLogger lambdaLogger) throws Throwable {
         boolean shouldExit = false;
         while (!shouldExit) {
             UserFault userFault = null;
@@ -240,7 +250,7 @@ public class AWSLambda {
                 payload = requestHandler.call(request);
                 runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
                 // clear interrupted flag in case if it was set by user's code
-                boolean ignored = Thread.interrupted();
+                Thread.interrupted();
             } catch (UserFault f) {
                 shouldExit = f.fatal;
                 userFault = f;
@@ -278,6 +288,7 @@ public class AWSLambda {
                     RapidErrorType.BeforeCheckpointError));
             System.exit(64);
         }
+
         try {
             Core.getGlobalContext().afterRestore(null);
         } catch (Exception restoreExc) {

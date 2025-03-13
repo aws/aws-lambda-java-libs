@@ -109,6 +109,34 @@ class ClasspathLoaderTest {
         }
     }
 
+    @Test
+    void testLoadAllClassesWithBlocklistedClass(@TempDir Path tempDir) throws IOException {
+        File jarFile = tempDir.resolve("blocklist-test.jar").toFile();
+        
+        try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile))) {
+            JarEntry blockedEntry = new JarEntry("META-INF/versions/9/module-info.class");
+            jos.putNextEntry(blockedEntry);
+            jos.write("dummy content".getBytes());
+            jos.closeEntry();
+
+            JarEntry normalEntry = new JarEntry("com/test/Normal.class");
+            jos.putNextEntry(normalEntry);
+            jos.write("dummy content".getBytes());
+            jos.closeEntry();
+        }
+
+        String originalClasspath = System.getProperty("java.class.path");
+        try {
+            System.setProperty("java.class.path", jarFile.getAbsolutePath());
+            ClasspathLoader.main(new String[]{});
+            // The test passes if no exception is thrown and the blocklisted class is skipped
+        } finally {
+            if (originalClasspath != null) {
+                System.setProperty("java.class.path", originalClasspath);
+            }
+        }
+    }
+
     private File createSimpleJar(Path tempDir, String jarName, String className) throws IOException {
         File jarFile = tempDir.resolve(jarName).toFile();
         

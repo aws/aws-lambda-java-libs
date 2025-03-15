@@ -124,4 +124,42 @@ public class UserFaultTest {
             assertEquals(expectedStackTrace, stackTrace);
         }
     }
+
+    private Exception createExceptionWithStackTrace() {
+        try {
+            throw new RuntimeException("Test exception");
+        } catch (RuntimeException e) {
+            return e;
+        }
+    }
+
+    @Test
+    void testMakeInitErrorUserFault() {
+        String className = "com.example.TestClass";
+        Exception testException = createExceptionWithStackTrace();
+        
+        UserFault initFault = UserFault.makeInitErrorUserFault(testException, className);
+        UserFault notFoundFault = UserFault.makeClassNotFoundUserFault(testException, className);
+        
+        assertNotNull(initFault.trace);
+        assertNotNull(notFoundFault.trace);
+        
+        assertFalse(initFault.trace.contains("com.amazonaws.services.lambda.runtime"));
+        assertFalse(notFoundFault.trace.contains("com.amazonaws.services.lambda.runtime"));
+    }
+
+    @Test
+    void testMakeClassNotFoundUserFault() {
+        String className = "com.example.MissingClass";
+        Exception testException = new ClassNotFoundException("Class not found in classpath");
+        
+        UserFault fault = UserFault.makeClassNotFoundUserFault(testException, className);
+        
+        assertNotNull(fault);
+        assertEquals("Class not found: com.example.MissingClass", fault.msg);
+        assertEquals("java.lang.ClassNotFoundException", fault.exception);
+        assertNotNull(fault.trace);
+        assertFalse(fault.fatal);
+        assertTrue(fault.trace.contains("ClassNotFoundException"));
+    }
 }

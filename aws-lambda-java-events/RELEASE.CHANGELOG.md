@@ -1,3 +1,9 @@
+### January 31, 2025
+`3.15.0`:
+- Fix `CognitoUserPoolPreTokenGenerationEventV2` model ([#519](https://github.com/aws/aws-lambda-java-libs/pull/519))
+- Add RotationToken to SecretsManagerRotationEvent ([#520](https://github.com/aws/aws-lambda-java-libs/pull/520))
+
+
 ### September 13, 2024
 `3.14.0`:
 - Fix name of s3Bucket field of Task class in S3BatchEventV2 ([#506](https://github.com/aws/aws-lambda-java-libs/pull/506))

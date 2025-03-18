@@ -139,6 +139,18 @@ See the [README](aws-lambda-java-log4j2/README.md) or the [official documentatio
 </dependency>
 ```
 
+## Lambda Profiler Extension for Java - aws-lambda-java-profiler
+
+<p align="center">
+    <img src="experimental/aws-lambda-java-profiler/docs/example-cold-start-flame-graph-small.png" alt="A flame graph of a Java Lambda function">
+</p>
+
+This project allows you to profile your Java functions invoke by invoke, with high fidelity, and no code changes. It 
+uses the [async-profiler](https://github.com/async-profiler/async-profiler) project to produce profiling data and 
+automatically uploads the data as flame graphs to S3.
+
+Follow our [Quick Start](experimental/aws-lambda-java-profiler#quick-start) to profile your functions.
+
 ## Java implementation of the Runtime Interface Client API - aws-lambda-java-runtime-interface-client
 [![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-runtime-interface-client.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-runtime-interface-client)
 

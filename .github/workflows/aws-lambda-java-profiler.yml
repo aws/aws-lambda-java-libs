@@ -1,0 +1,74 @@
+name: Run integration tests for aws-lambda-java-profiler
+
+on:
+  pull_request:
+    branches: [ '*' ]
+    paths:
+      - 'aws-lambda-java-profiler/**'
+      - '.github/workflows/aws-lambda-java-profiler.yml'
+  push:
+    branches: ['*']
+    paths:
+      - 'aws-lambda-java-profiler/**'
+      - '.github/workflows/aws-lambda-java-profiler.yml'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: corretto
+
+      - name: Issue AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION_PROFILER_EXTENSION_INTEGRATION_TEST }}
+          role-to-assume: ${{ secrets.AWS_ROLE_PROFILER_EXTENSION_INTEGRATION_TEST }}
+          role-session-name: GitHubActionsRunIntegrationTests
+          role-duration-seconds: 900
+
+      - name: Build layer
+        working-directory: ./experimental/aws-lambda-java-profiler/extension
+        run: ./build_layer.sh
+      
+      - name: Publish layer
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/publish_layer.sh
+
+      - name: Create the bucket layer
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/create_bucket.sh
+
+      - name: Create Java function
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/create_function.sh
+
+      - name: Invoke Java function
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/invoke_function.sh
+
+      - name: Download from s3
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/download_from_s3.sh
+
+      - name: Upload profiles
+        uses: actions/upload-artifact@v4
+        with:
+          name: profiles
+          path: /tmp/s3-artifacts 
+        
+      - name: cleanup
+        if: always()
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/cleanup.sh

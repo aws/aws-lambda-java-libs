@@ -31,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.security.Security;
@@ -138,6 +137,42 @@ public class AWSLambda {
         return requestHandler;
     }
 
+    private static LambdaRequestHandler getLambdaRequestHandlerObject(String handler, LambdaContextLogger lambdaLogger) throws ClassNotFoundException, IOException {
+        UnsafeUtil.disableIllegalAccessWarning();
+
+        System.setOut(new PrintStream(new LambdaOutputStream(System.out), false, "UTF-8"));
+        System.setErr(new PrintStream(new LambdaOutputStream(System.err), false, "UTF-8"));
+        setupRuntimeLogger(lambdaLogger);
+
+        runtimeClient = new LambdaRuntimeApiClientImpl(LambdaEnvironment.RUNTIME_API);
+
+        String taskRoot = System.getProperty("user.dir");
+        String libRoot = "/opt/java";
+        // Make system classloader the customer classloader's parent to ensure any aws-lambda-java-core classes
+        // are loaded from the system classloader.
+        customerClassLoader = new CustomerClassLoader(taskRoot, libRoot, ClassLoader.getSystemClassLoader());
+        Thread.currentThread().setContextClassLoader(customerClassLoader);
+
+        // Load the user's handler
+        LambdaRequestHandler requestHandler = null;
+        try {
+            requestHandler = findRequestHandler(handler, customerClassLoader);
+        } catch (UserFault userFault) {
+            lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+            LambdaError error = new LambdaError(
+                    LambdaErrorConverter.fromUserFault(userFault),
+                    RapidErrorType.BadFunctionCode);
+            runtimeClient.reportInitError(error);
+            System.exit(1);
+        }
+
+        if (INIT_TYPE_SNAP_START.equals(AWS_LAMBDA_INITIALIZATION_TYPE)) {
+            onInitComplete(lambdaLogger);
+        }
+
+        return requestHandler;
+    }
+
     public static void setupRuntimeLogger(LambdaLogger lambdaLogger)
             throws ClassNotFoundException {
         ReflectUtil.setStaticField(
@@ -178,8 +213,7 @@ public class AWSLambda {
     }
 
     public static void main(String[] args) throws Throwable {
-        try {
-            LambdaContextLogger logger = initLogger();
+        try (LambdaContextLogger logger = initLogger()){
             LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], logger);
             startRuntimeLoop(lambdaRequestHandler, logger);
 
@@ -196,42 +230,6 @@ public class AWSLambda {
                 LogFormat.fromString(LambdaEnvironment.LAMBDA_LOG_FORMAT));
 
         return logger;
-    }
-
-    private static LambdaRequestHandler getLambdaRequestHandlerObject(String handler, LambdaContextLogger lambdaLogger) throws UnsupportedEncodingException, ClassNotFoundException, IOException {
-        UnsafeUtil.disableIllegalAccessWarning();
-
-        System.setOut(new PrintStream(new LambdaOutputStream(System.out), false, "UTF-8"));
-        System.setErr(new PrintStream(new LambdaOutputStream(System.err), false, "UTF-8"));
-        setupRuntimeLogger(lambdaLogger);
-
-        runtimeClient = new LambdaRuntimeApiClientImpl(LambdaEnvironment.RUNTIME_API);
-
-        String taskRoot = System.getProperty("user.dir");
-        String libRoot = "/opt/java";
-        // Make system classloader the customer classloader's parent to ensure any aws-lambda-java-core classes
-        // are loaded from the system classloader.
-        customerClassLoader = new CustomerClassLoader(taskRoot, libRoot, ClassLoader.getSystemClassLoader());
-        Thread.currentThread().setContextClassLoader(customerClassLoader);
-
-        // Load the user's handler
-        LambdaRequestHandler requestHandler = null;
-        try {
-            requestHandler = findRequestHandler(handler, customerClassLoader);
-        } catch (UserFault userFault) {
-            lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
-            LambdaError error = new LambdaError(
-                    LambdaErrorConverter.fromUserFault(userFault),
-                    RapidErrorType.BadFunctionCode);
-            runtimeClient.reportInitError(error);
-            System.exit(1);
-        }
-
-        if (INIT_TYPE_SNAP_START.equals(AWS_LAMBDA_INITIALIZATION_TYPE)) {
-            onInitComplete(lambdaLogger);
-        }
-
-        return requestHandler;
     }
 
     private static void startRuntimeLoop(LambdaRequestHandler requestHandler, LambdaContextLogger lambdaLogger) throws Throwable {

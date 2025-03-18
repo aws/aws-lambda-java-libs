@@ -14,7 +14,7 @@ on:
 
 jobs:
 
-  publish:
+  build:
     runs-on: ubuntu-latest
 
     permissions:

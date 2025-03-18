@@ -88,6 +88,7 @@ the result to is configurable using an environment variable.
 - Ensure the Lambda function execution role has the necessary permissions to write to the S3 bucket.
 - Verify that the environment variables are set correctly in your Lambda function configuration.
 - Check CloudWatch logs for any error messages from the extension.
+- The profiler extension uses dependencies such as `com.amazonaws:aws-lambda-java-core`, `com.amazonaws:aws-lambda-java-events` and `software.amazon.awssdk:s3`. If you're using the same dependencies in your Lambda function, make sure that the versions match those used by the extension as mismatched versions can lead to compatibility issues.
 
 ## Contributing
 

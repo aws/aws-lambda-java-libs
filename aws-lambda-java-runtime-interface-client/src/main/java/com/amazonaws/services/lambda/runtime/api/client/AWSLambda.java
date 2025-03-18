@@ -213,7 +213,7 @@ public class AWSLambda {
     }
 
     public static void main(String[] args) throws Throwable {
-        try (LambdaContextLogger logger = initLogger()){
+        try (LambdaContextLogger logger = initLogger()) {
             LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], logger);
             startRuntimeLoop(lambdaRequestHandler, logger);
 

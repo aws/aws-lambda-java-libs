@@ -31,6 +31,10 @@ aws lambda update-function-configuration \
     --function-name "$FUNCTION_NAME" \
     --layers $(aws lambda list-layer-versions --layer-name profiler-layer --query 'LayerVersions[0].LayerVersionArn' --output text)
 
+# Wait for the function is updated
+aws lambda wait function-updated \
+    --function-name "$FUNCTION_NAME"
+
 # Add environment variables
 aws lambda update-function-configuration \
     --function-name "$FUNCTION_NAME" \

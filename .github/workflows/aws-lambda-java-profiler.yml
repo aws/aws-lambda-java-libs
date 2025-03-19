@@ -4,12 +4,12 @@ on:
   pull_request:
     branches: [ '*' ]
     paths:
-      - 'aws-lambda-java-profiler/**'
+      - 'experimental/aws-lambda-java-profiler/**'
       - '.github/workflows/aws-lambda-java-profiler.yml'
   push:
     branches: ['*']
     paths:
-      - 'aws-lambda-java-profiler/**'
+      - 'experimental/aws-lambda-java-profiler/**'
       - '.github/workflows/aws-lambda-java-profiler.yml'
 
 jobs:

@@ -35,10 +35,27 @@ aws lambda update-function-configuration \
 aws lambda wait function-updated \
     --function-name "$FUNCTION_NAME"
 
-# Add environment variables
+# Get existing environment variables (handle null case)
+EXISTING_VARS=$(aws lambda get-function-configuration --function-name "$FUNCTION_NAME" --query "Environment.Variables" --output json 2>/dev/null)
+if [[ -z "$EXISTING_VARS" || "$EXISTING_VARS" == "null" ]]; then
+  EXISTING_VARS="{}"
+fi
+
+# Define new environment variables in JSON format
+NEW_VARS=$(jq -n --arg bucket "$BUCKET_NAME" \
+  --arg java_opts "-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar" \
+  '{AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME: $bucket, JAVA_TOOL_OPTIONS: $java_opts}')
+
+# Merge existing and new variables (compact JSON output)
+UPDATED_VARS=$(echo "$EXISTING_VARS" | jq -c --argjson new_vars "$NEW_VARS" '. + $new_vars')
+
+# Convert JSON to "Key=Value" format for AWS CLI
+ENV_VARS_FORMATTED=$(echo "$UPDATED_VARS" | jq -r 'to_entries | map("\(.key)=\(.value)") | join(",")')
+
+# Update Lambda function with correct format
 aws lambda update-function-configuration \
-    --function-name "$FUNCTION_NAME" \
-    --environment "Variables={AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME=$BUCKET_NAME, JAVA_TOOL_OPTIONS=-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar}"
+  --function-name "$FUNCTION_NAME" \
+  --environment "Variables={$ENV_VARS_FORMATTED}"
 
 # Update the function's permissions to write to the S3 bucket
 # Get the function's execution role

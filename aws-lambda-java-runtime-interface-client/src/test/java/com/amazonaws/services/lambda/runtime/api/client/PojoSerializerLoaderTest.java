@@ -7,7 +7,6 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +31,6 @@ class PojoSerializerLoaderTest {
     @Mock
     private CustomPojoSerializer mockSerializer;
 
-    @AfterEach
     @BeforeEach
     void setUp() throws Exception {
         resetStaticFields();

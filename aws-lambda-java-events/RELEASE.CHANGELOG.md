@@ -1,7 +1,3 @@
-### June 17, 2025
-`3.16.0`:
-- Add Schema metadata related attributes in KafkaEvent ([#548](https://github.com/aws/aws-lambda-java-libs/pull/548))
-
 ### January 31, 2025
 `3.15.0`:
 - Fix `CognitoUserPoolPreTokenGenerationEventV2` model ([#519](https://github.com/aws/aws-lambda-java-libs/pull/519))

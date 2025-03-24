@@ -75,7 +75,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-events</artifactId>
- <version>3.16.0</version>
+ <version>3.15.0</version>
 </dependency>
 ```
 
@@ -163,7 +163,7 @@ The purpose of this package is to allow developers to deploy their applications 
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
- <version>2.7.0</version>
+ <version>2.6.0</version>
 </dependency>
 ```
 

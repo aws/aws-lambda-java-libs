@@ -1,7 +1,3 @@
-### May 21, 2025
-`2.7.0`
-- Adding support for multi tenancy ([#540](https://github.com/aws/aws-lambda-java-libs/pull/540))
-
 ### August 7, 2024
 `2.6.0`
 - Runtime API client improvements: use Lambda-Runtime-Function-Error-Type for reporting errors in format "Runtime.<Error>" 

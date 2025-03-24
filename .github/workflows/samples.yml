@@ -15,7 +15,7 @@ on:
       - '.github/workflows/samples.yml'
 
 jobs:
-  build-kinesis-sample:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

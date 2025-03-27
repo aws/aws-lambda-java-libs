@@ -6,10 +6,10 @@ import one.profiler.AsyncProfiler;
 
 public class ShutdownHook implements Runnable {
 
-    private AsyncProfiler profiler;
+    private String stopCommand;
 
-    public ShutdownHook(AsyncProfiler profiler) {
-        this.profiler = profiler;
+    public ShutdownHook(String stopCommand) {
+        this.stopCommand = stopCommand;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class ShutdownHook implements Runnable {
         try {
             final String fileName = "/tmp/profiling-data-shutdown.html";
             Logger.debug("stopping the profiler");
-            AsyncProfiler.getInstance().execute(String.format("stop,file=%s,include=*AWSLambda.main,include=start_thread", fileName));
+            AsyncProfiler.getInstance().execute(String.format(this.stopCommand, fileName));
         } catch (Exception e) {
             Logger.error("could not stop the profiler");
         }

@@ -28,7 +28,7 @@ public class PreMain {
         if(!createFileIfNotExist("/tmp/aws-lambda-java-profiler")) {
             Logger.debug("starting the profiler for coldstart");
             startProfiler();
-            registerShutdownHook(AsyncProfiler.getInstance());
+            registerShutdownHook();
             try {
                 Integer port = Integer.parseInt(INTERNAL_COMMUNICATION_PORT);
                 Logger.debug("using profile communication port = " + port);
@@ -101,9 +101,9 @@ public class PreMain {
         }
     }
 
-    public static void registerShutdownHook(AsyncProfiler profiler) {
+    public static void registerShutdownHook() {
         Logger.debug("registering shutdown hook");
-        Thread shutdownHook = new Thread(new ShutdownHook(profiler));
+        Thread shutdownHook = new Thread(new ShutdownHook(PROFILER_STOP_COMMAND));
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 

@@ -56,7 +56,7 @@ public class ExtensionMain {
             // no need to stop the profiler as it has been stopped by the shutdown hook
             s3Manager.upload(previousFileSuffix, true);
         } catch (Exception e) {
-            Logger.error("could not start the profiler");
+            Logger.error("could not upload the file");
             throw e;
         }
         System.exit(0);

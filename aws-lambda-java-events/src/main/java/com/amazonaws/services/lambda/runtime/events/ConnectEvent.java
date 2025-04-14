@@ -59,7 +59,7 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String initiationMethod;
         private String instanceArn;
         private String previousContactId;
-        private String queue;
+        private Queue queue;
         private SystemEndpoint systemEndpoint;
     }
 
@@ -72,6 +72,15 @@ public class ConnectEvent implements Serializable, Cloneable {
         private String type;
     }
 
+    @Data
+    @Builder(setterPrefix = "with")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Queue implements Serializable, Cloneable {
+        private String name;
+        private String arn;
+    }
+    
     @Data
     @Builder(setterPrefix = "with")
     @NoArgsConstructor

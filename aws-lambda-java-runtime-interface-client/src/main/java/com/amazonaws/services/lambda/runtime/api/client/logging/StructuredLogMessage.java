@@ -12,4 +12,5 @@ class StructuredLogMessage {
     public String message;
     public LogLevel level;
     public String AWSRequestId;
+    public String tenantId;
 }

@@ -40,6 +40,11 @@ public class InvocationRequest {
      */
     private String cognitoIdentity;
 
+    /**
+     * The tenant ID associated with the request.
+     */
+    private String tenantId;
+
     private byte[] content;
 
     public String getId() {
@@ -92,6 +97,14 @@ public class InvocationRequest {
     @SuppressWarnings("unused")
     public void setCognitoIdentity(String cognitoIdentity) {
         this.cognitoIdentity = cognitoIdentity;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
     public byte[] getContent() {

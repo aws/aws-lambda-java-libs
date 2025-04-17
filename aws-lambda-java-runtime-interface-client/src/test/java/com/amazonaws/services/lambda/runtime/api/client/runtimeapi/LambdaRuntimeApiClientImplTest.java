@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.ErrorRequest;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.StackElement;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayException;
@@ -312,27 +313,62 @@ public class LambdaRuntimeApiClientImplTest {
     }
 
     @Test
-    public void nextTest() {
+    public void nextWithoutTenantIdHeaderTest() {
         try {
-            MockResponse mockResponse = new MockResponse();
-            mockResponse.setResponseCode(HTTP_ACCEPTED);
-            mockResponse.setHeader("lambda-runtime-aws-request-id", "1234567890");
-            mockResponse.setHeader("Content-Type", "application/json");
+            MockResponse mockResponse = buildMockResponseForNextInvocation();
             mockWebServer.enqueue(mockResponse);
 
-            lambdaRuntimeApiClientImpl.nextInvocation();
-            RecordedRequest recordedRequest = mockWebServer.takeRequest();
-            HttpUrl actualUrl = recordedRequest.getRequestUrl();
-            String expectedUrl = "http://" + getHostnamePort() + "/2018-06-01/runtime/invocation/next";
-            assertEquals(expectedUrl, actualUrl.toString());
-
-            String actualBody = recordedRequest.getBody().readUtf8();
-            assertEquals("", actualBody);
+            InvocationRequest invocationRequest = lambdaRuntimeApiClientImpl.nextInvocation();
+            verifyNextInvocationRequest();
+            assertNull(invocationRequest.getTenantId());
         } catch(Exception e) {
             fail();
         }
     }
 
+    @Test
+    public void nextWithTenantIdHeaderTest() {
+        try {
+            MockResponse mockResponse = buildMockResponseForNextInvocation();
+            String expectedTenantId = "my-tenant-id";
+            mockResponse.setHeader("lambda-runtime-aws-tenant-id", expectedTenantId);
+            mockWebServer.enqueue(mockResponse);
+
+            InvocationRequest invocationRequest = lambdaRuntimeApiClientImpl.nextInvocation();
+            verifyNextInvocationRequest();
+            assertEquals(expectedTenantId, invocationRequest.getTenantId());
+
+        } catch(Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void nextWithEmptyTenantIdHeaderTest() {
+        try {
+            MockResponse mockResponse = buildMockResponseForNextInvocation();
+            mockResponse.setHeader("lambda-runtime-aws-tenant-id", "");
+            mockWebServer.enqueue(mockResponse);
+    
+            InvocationRequest invocationRequest = lambdaRuntimeApiClientImpl.nextInvocation();
+            verifyNextInvocationRequest();
+            assertNull(invocationRequest.getTenantId());
+        } catch(Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void nextWithNullTenantIdHeaderTest() {
+        try {
+            MockResponse mockResponse = buildMockResponseForNextInvocation();
+            assertThrows(NullPointerException.class, () -> {
+                mockResponse.setHeader("lambda-runtime-aws-tenant-id", null);
+            });
+        } catch(Exception e) {
+            fail();
+        }
+    }
 
     @Test
     public void createUrlMalformedTest() {
@@ -374,6 +410,24 @@ public class LambdaRuntimeApiClientImplTest {
         } catch(Exception e) {
             fail();
         }
+    }
+
+    private MockResponse buildMockResponseForNextInvocation() {
+        MockResponse mockResponse = new MockResponse();
+        mockResponse.setResponseCode(HTTP_ACCEPTED);
+        mockResponse.setHeader("lambda-runtime-aws-request-id", "1234567890");
+        mockResponse.setHeader("Content-Type", "application/json");
+        return mockResponse;
+    }
+
+    private void verifyNextInvocationRequest() throws Exception {
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        HttpUrl actualUrl = recordedRequest.getRequestUrl();
+        String expectedUrl = "http://" + getHostnamePort() + "/2018-06-01/runtime/invocation/next";
+        assertEquals(expectedUrl, actualUrl.toString());
+
+        String actualBody = recordedRequest.getBody().readUtf8();
+        assertEquals("", actualBody);
     }
 
     private String getHostnamePort() {

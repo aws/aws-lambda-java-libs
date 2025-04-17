@@ -29,6 +29,25 @@ public class JsonLogFormatterTest {
                 null,
                 null,
                 "function-arn",
+                null,
+                null
+        );
+        assertFormatsString("test log", LogLevel.WARN, context);
+    }
+
+    @Test
+    void testFormattingWithTenantIdInLambdaContext() {
+        LambdaContext context = new LambdaContext(
+                0,
+                0,
+                "request-id",
+                null,
+                null,
+                "function-name",
+                null,
+                null,
+                "function-arn",
+                "tenant-id",
                 null
         );
         assertFormatsString("test log", LogLevel.WARN, context);
@@ -52,6 +71,7 @@ public class JsonLogFormatterTest {
 
         if (context != null) {
             assertEquals(context.getAwsRequestId(), result.AWSRequestId);
+            assertEquals(context.getTenantId(), result.tenantId);
         }
     }
 }

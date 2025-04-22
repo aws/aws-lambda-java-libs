@@ -41,6 +41,7 @@ public class JsonLogFormatter implements LogFormatter {
 
         if (lambdaContext != null) {
             msg.AWSRequestId = lambdaContext.getAwsRequestId();
+            msg.tenantId = lambdaContext.getTenantId();
         }
         return msg;
     }

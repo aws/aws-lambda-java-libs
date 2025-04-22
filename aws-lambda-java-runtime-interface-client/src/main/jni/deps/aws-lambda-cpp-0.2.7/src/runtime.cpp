@@ -40,6 +40,7 @@ static constexpr auto CLIENT_CONTEXT_HEADER = "lambda-runtime-client-context";
 static constexpr auto COGNITO_IDENTITY_HEADER = "lambda-runtime-cognito-identity";
 static constexpr auto DEADLINE_MS_HEADER = "lambda-runtime-deadline-ms";
 static constexpr auto FUNCTION_ARN_HEADER = "lambda-runtime-invoked-function-arn";
+static constexpr auto TENANT_ID_HEADER = "lambda-runtime-aws-tenant-id";
 
 enum Endpoints {
     INIT,
@@ -300,6 +301,10 @@ runtime::next_outcome runtime::get_next()
             "Received payload: %s\nTime remaining: %" PRId64,
             req.payload.c_str(),
             static_cast<int64_t>(req.get_time_remaining().count()));
+    }
+
+    if (resp.has_header(TENANT_ID_HEADER)) {
+        req.tenant_id = resp.get_header(TENANT_ID_HEADER);
     }
     return next_outcome(req);
 }

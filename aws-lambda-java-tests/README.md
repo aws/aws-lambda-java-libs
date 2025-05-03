@@ -52,7 +52,7 @@ Also have surefire in your plugins:
 	<plugin>
 	    <groupId>org.apache.maven.plugins</groupId>
 	    <artifactId>maven-surefire-plugin</artifactId>
-	    <version>2.22.2</version>
+	    <version>3.2.5</version>
 	</plugin>
   </plugins>
 </build>

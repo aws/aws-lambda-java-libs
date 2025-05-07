@@ -116,7 +116,7 @@ public final class EventHandlerLoader {
         if (type instanceof Class) {
             Class<Object> clazz = ((Class) type);
             if (LambdaEventSerializers.isLambdaSupportedEvent(clazz.getName())) {
-                return LambdaEventSerializers.serializerFor(clazz, AWSLambda.customerClassLoader);
+                return LambdaEventSerializers.serializerFor(clazz, AWSLambda.getCustomerClassLoader());
             }
         }
         // else platform dependent (Android uses GSON but all other platforms use Jackson)
@@ -533,7 +533,7 @@ public final class EventHandlerLoader {
             private void safeAddRequestIdToLog4j(String log4jContextClassName,
                                                  InvocationRequest request, Class contextMapValueClass) {
                 try {
-                    Class<?> log4jContextClass = ReflectUtil.loadClass(AWSLambda.customerClassLoader, log4jContextClassName);
+                    Class<?> log4jContextClass = ReflectUtil.loadClass(AWSLambda.getCustomerClassLoader(), log4jContextClassName);
                     log4jContextPutMethod = ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass);
                     log4jContextPutMethod.call("AWSRequestId", request.getId());
                 } catch (Exception e) {

@@ -106,4 +106,17 @@ public interface ReservedRuntimeEnvironmentVariables {
      * The environment's time zone (UTC). The execution environment uses NTP to synchronize the system clock.
      */
     String TZ = "TZ";
+
+    /**
+     * Boolean determining whether the RIC should run multi-concurrent runtime loops. Default value is "false".
+     * In case it is set to "true", AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY can be used to set the required number of concurrent runtime loops.
+     */
+    String AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC = "AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC";
+
+    /*
+     * Used to set the required number of concurrent runtime loops, 
+     * Only used if AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC is set to "true", 
+     * If AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY is not set, the default number of concurrent runtime loops is the number of cores.
+     */
+    String AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY = "AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY";
 }

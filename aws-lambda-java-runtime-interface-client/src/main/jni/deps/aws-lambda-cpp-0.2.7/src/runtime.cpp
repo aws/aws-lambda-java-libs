@@ -40,7 +40,7 @@ static constexpr auto CLIENT_CONTEXT_HEADER = "lambda-runtime-client-context";
 static constexpr auto COGNITO_IDENTITY_HEADER = "lambda-runtime-cognito-identity";
 static constexpr auto DEADLINE_MS_HEADER = "lambda-runtime-deadline-ms";
 static constexpr auto FUNCTION_ARN_HEADER = "lambda-runtime-invoked-function-arn";
-static constexpr auto TENANT_ID_HEADER = "lambda-runtime-aws-tenant-id";
+thread_local static CURL* m_curl_handle = curl_easy_init();
 
 enum Endpoints {
     INIT,
@@ -163,63 +163,62 @@ runtime::runtime(std::string const& endpoint) : runtime(endpoint, "AWS_Lambda_Cp
 runtime::runtime(std::string const& endpoint, std::string const& user_agent)
     : m_user_agent_header("User-Agent: " + user_agent), m_endpoints{{endpoint + "/2018-06-01/runtime/init/error",
                                                                      endpoint + "/2018-06-01/runtime/invocation/next",
-                                                                     endpoint + "/2018-06-01/runtime/invocation/"}},
-      m_curl_handle(curl_easy_init())
+                                                                     endpoint + "/2018-06-01/runtime/invocation/"}}
 {
-    if (!m_curl_handle) {
+    if (!lambda_runtime::m_curl_handle) {
         logging::log_error(LOG_TAG, "Failed to acquire curl easy handle for next.");
     }
 }
 
 runtime::~runtime()
 {
-    curl_easy_cleanup(m_curl_handle);
+    curl_easy_cleanup(lambda_runtime::m_curl_handle);
 }
 
 void runtime::set_curl_next_options()
 {
     // lambda freezes the container when no further tasks are available. The freezing period could be longer than the
     // request timeout, which causes the following get_next request to fail with a timeout error.
-    curl_easy_reset(m_curl_handle);
-    curl_easy_setopt(m_curl_handle, CURLOPT_TIMEOUT, 0L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_CONNECTTIMEOUT, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_NOSIGNAL, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_TCP_NODELAY, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    curl_easy_reset(lambda_runtime::m_curl_handle);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_TIMEOUT, 0L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_CONNECTTIMEOUT, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_TCP_NODELAY, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
-    curl_easy_setopt(m_curl_handle, CURLOPT_HTTPGET, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_URL, m_endpoints[Endpoints::NEXT].c_str());
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_URL, m_endpoints[Endpoints::NEXT].c_str());
 
-    curl_easy_setopt(m_curl_handle, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HEADERFUNCTION, write_header);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HEADERFUNCTION, write_header);
 
-    curl_easy_setopt(m_curl_handle, CURLOPT_PROXY, "");
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_PROXY, "");
 
 #ifndef NDEBUG
-    curl_easy_setopt(m_curl_handle, CURLOPT_VERBOSE, 1);
-    curl_easy_setopt(m_curl_handle, CURLOPT_DEBUGFUNCTION, rt_curl_debug_callback);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_VERBOSE, 1);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_DEBUGFUNCTION, rt_curl_debug_callback);
 #endif
 }
 
 void runtime::set_curl_post_result_options()
 {
-    curl_easy_reset(m_curl_handle);
-    curl_easy_setopt(m_curl_handle, CURLOPT_TIMEOUT, 0L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_CONNECTTIMEOUT, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_NOSIGNAL, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_TCP_NODELAY, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    curl_easy_reset(lambda_runtime::m_curl_handle);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_TIMEOUT, 0L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_CONNECTTIMEOUT, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_TCP_NODELAY, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
-    curl_easy_setopt(m_curl_handle, CURLOPT_POST, 1L);
-    curl_easy_setopt(m_curl_handle, CURLOPT_READFUNCTION, read_data);
-    curl_easy_setopt(m_curl_handle, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HEADERFUNCTION, write_header);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_READFUNCTION, read_data);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HEADERFUNCTION, write_header);
 
-    curl_easy_setopt(m_curl_handle, CURLOPT_PROXY, "");
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_PROXY, "");
 
 #ifndef NDEBUG
-    curl_easy_setopt(m_curl_handle, CURLOPT_VERBOSE, 1);
-    curl_easy_setopt(m_curl_handle, CURLOPT_DEBUGFUNCTION, rt_curl_debug_callback);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_VERBOSE, 1);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_DEBUGFUNCTION, rt_curl_debug_callback);
 #endif
 }
 
@@ -227,15 +226,15 @@ runtime::next_outcome runtime::get_next()
 {
     http::response resp;
     set_curl_next_options();
-    curl_easy_setopt(m_curl_handle, CURLOPT_WRITEDATA, &resp);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HEADERDATA, &resp);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_WRITEDATA, &resp);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HEADERDATA, &resp);
 
     curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, m_user_agent_header.c_str());
-    curl_easy_setopt(m_curl_handle, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HTTPHEADER, headers);
 
     logging::log_debug(LOG_TAG, "Making request to %s", m_endpoints[Endpoints::NEXT].c_str());
-    CURLcode curl_code = curl_easy_perform(m_curl_handle);
+    CURLcode curl_code = curl_easy_perform(lambda_runtime::m_curl_handle);
     logging::log_debug(LOG_TAG, "Completed request to %s", m_endpoints[Endpoints::NEXT].c_str());
     curl_slist_free_all(headers);
 
@@ -247,13 +246,13 @@ runtime::next_outcome runtime::get_next()
 
     {
         long resp_code;
-        curl_easy_getinfo(m_curl_handle, CURLINFO_RESPONSE_CODE, &resp_code);
+        curl_easy_getinfo(lambda_runtime::m_curl_handle, CURLINFO_RESPONSE_CODE, &resp_code);
         resp.set_response_code(static_cast<aws::http::response_code>(resp_code));
     }
 
     {
         char* content_type = nullptr;
-        curl_easy_getinfo(m_curl_handle, CURLINFO_CONTENT_TYPE, &content_type);
+        curl_easy_getinfo(lambda_runtime::m_curl_handle, CURLINFO_CONTENT_TYPE, &content_type);
         resp.set_content_type(content_type);
     }
 
@@ -327,7 +326,7 @@ runtime::post_outcome runtime::do_post(
     invocation_response const& handler_response)
 {
     set_curl_post_result_options();
-    curl_easy_setopt(m_curl_handle, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_URL, url.c_str());
     logging::log_info(LOG_TAG, "Making request to %s", url.c_str());
 
     curl_slist* headers = nullptr;
@@ -348,11 +347,11 @@ runtime::post_outcome runtime::do_post(
 
     std::pair<std::string const&, size_t> ctx{payload, 0};
     aws::http::response resp;
-    curl_easy_setopt(m_curl_handle, CURLOPT_WRITEDATA, &resp);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HEADERDATA, &resp);
-    curl_easy_setopt(m_curl_handle, CURLOPT_READDATA, &ctx);
-    curl_easy_setopt(m_curl_handle, CURLOPT_HTTPHEADER, headers);
-    CURLcode curl_code = curl_easy_perform(m_curl_handle);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_WRITEDATA, &resp);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HEADERDATA, &resp);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_READDATA, &ctx);
+    curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_HTTPHEADER, headers);
+    CURLcode curl_code = curl_easy_perform(lambda_runtime::m_curl_handle);
     curl_slist_free_all(headers);
 
     if (curl_code != CURLE_OK) {
@@ -366,7 +365,7 @@ runtime::post_outcome runtime::do_post(
     }
 
     long http_response_code;
-    curl_easy_getinfo(m_curl_handle, CURLINFO_RESPONSE_CODE, &http_response_code);
+    curl_easy_getinfo(lambda_runtime::m_curl_handle, CURLINFO_RESPONSE_CODE, &http_response_code);
 
     if (!is_success(aws::http::response_code(http_response_code))) {
         logging::log_error(

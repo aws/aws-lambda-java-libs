@@ -19,6 +19,7 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.RapidErrorTyp
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.LambdaErrorConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.XRayErrorCauseConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.api.client.util.ConcurrencyConfig;
 import com.amazonaws.services.lambda.runtime.api.client.util.LambdaOutputStream;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
@@ -35,6 +36,8 @@ import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
 import java.security.Security;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
@@ -49,8 +52,8 @@ import java.util.Properties;
  */
 public class AWSLambda {
 
-    protected static URLClassLoader customerClassLoader;
-
+    private static URLClassLoader customerClassLoader;
+    
     private static final String TRUST_STORE_PROPERTY = "javax.net.ssl.trustStore";
 
     private static final String JAVA_SECURITY_PROPERTIES = "java.security.properties";
@@ -68,9 +71,7 @@ public class AWSLambda {
     private static final String INIT_TYPE_SNAP_START = "snap-start";
 
     private static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_INITIALIZATION_TYPE);
-
-    private static LambdaRuntimeApiClient runtimeClient;
-
+    
     static {
         // Override the disabledAlgorithms setting to match configuration for openjdk8-u181.
         // This is to keep DES ciphers around while we deploying security updates.
@@ -137,14 +138,12 @@ public class AWSLambda {
         return requestHandler;
     }
 
-    private static LambdaRequestHandler getLambdaRequestHandlerObject(String handler, LambdaContextLogger lambdaLogger) throws ClassNotFoundException, IOException {
+    private static LambdaRequestHandler getLambdaRequestHandlerObject(String handler, LambdaContextLogger lambdaLogger, LambdaRuntimeApiClient runtimeClient) throws ClassNotFoundException, IOException {
         UnsafeUtil.disableIllegalAccessWarning();
 
         System.setOut(new PrintStream(new LambdaOutputStream(System.out), false, "UTF-8"));
         System.setErr(new PrintStream(new LambdaOutputStream(System.err), false, "UTF-8"));
         setupRuntimeLogger(lambdaLogger);
-
-        runtimeClient = new LambdaRuntimeApiClientImpl(LambdaEnvironment.RUNTIME_API);
 
         String taskRoot = System.getProperty("user.dir");
         String libRoot = "/opt/java";
@@ -167,13 +166,13 @@ public class AWSLambda {
         }
 
         if (INIT_TYPE_SNAP_START.equals(AWS_LAMBDA_INITIALIZATION_TYPE)) {
-            onInitComplete(lambdaLogger);
+            onInitComplete(lambdaLogger, runtimeClient);
         }
 
         return requestHandler;
     }
 
-    public static void setupRuntimeLogger(LambdaLogger lambdaLogger)
+    private static void setupRuntimeLogger(LambdaLogger lambdaLogger)
             throws ClassNotFoundException {
         ReflectUtil.setStaticField(
                 Class.forName("com.amazonaws.services.lambda.runtime.LambdaRuntime"),
@@ -213,10 +212,11 @@ public class AWSLambda {
     }
 
     public static void main(String[] args) throws Throwable {
-        try (LambdaContextLogger logger = initLogger()) {
-            LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], logger);
-            startRuntimeLoop(lambdaRequestHandler, logger);
-
+        try (LambdaContextLogger lambdaLogger = initLogger()) {
+            LambdaRuntimeApiClient runtimeClient = new LambdaRuntimeApiClientImpl(LambdaEnvironment.RUNTIME_API);
+            LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], lambdaLogger, runtimeClient);
+            ConcurrencyConfig concurrencyConfig = new ConcurrencyConfig(lambdaLogger);
+            startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
         } catch (IOException | ClassNotFoundException t) {
             throw new Error(t);
         }
@@ -232,7 +232,38 @@ public class AWSLambda {
         return logger;
     }
 
-    private static void startRuntimeLoop(LambdaRequestHandler requestHandler, LambdaContextLogger lambdaLogger) throws Throwable {
+    private static void startRuntimeLoopWithExecutor(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, ExecutorService executorService, LambdaRuntimeApiClient runtimeClient) {
+        executorService.submit(() -> { 
+            try {
+                startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient);
+            } catch (Exception e) {
+                lambdaLogger.log(String.format("Runtime Loop on Thread ID: %s Failed.\n%s", Thread.currentThread().getName(), UserFault.trace(e)), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+            }
+        });
+    }
+
+    protected static void startRuntimeLoops(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, ConcurrencyConfig concurrencyConfig, LambdaRuntimeApiClient runtimeClient) throws Exception {
+        if (concurrencyConfig.isMultiConcurrent()) {
+            lambdaLogger.log(concurrencyConfig.getConcurrencyConfigMessage(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.INFO : LogLevel.UNDEFINED);
+            ExecutorService platformThreadExecutor = Executors.newFixedThreadPool(concurrencyConfig.getNumberOfPlatformThreads());
+            try {
+                for (int i = 0; i < concurrencyConfig.getNumberOfPlatformThreads(); i++) {
+                    startRuntimeLoopWithExecutor(lambdaRequestHandler, lambdaLogger, platformThreadExecutor, runtimeClient);
+                }
+            } finally {
+                platformThreadExecutor.shutdown();
+                while (true) {
+                    if (platformThreadExecutor.isTerminated()) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient);
+        }
+    }
+
+    private static void startRuntimeLoop(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, LambdaRuntimeApiClient runtimeClient) throws Exception {
         boolean shouldExit = false;
         while (!shouldExit) {
             UserFault userFault = null;
@@ -245,7 +276,7 @@ public class AWSLambda {
 
             ByteArrayOutputStream payload;
             try {
-                payload = requestHandler.call(request);
+                payload = lambdaRequestHandler.call(request);
                 runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
                 // clear interrupted flag in case if it was set by user's code
                 Thread.interrupted();
@@ -275,7 +306,7 @@ public class AWSLambda {
         }
     }
 
-    static void onInitComplete(final LambdaContextLogger lambdaLogger) throws IOException {
+    private static void onInitComplete(final LambdaContextLogger lambdaLogger, LambdaRuntimeApiClient runtimeClient) throws IOException {
         try {
             Core.getGlobalContext().beforeCheckpoint(null);
             runtimeClient.restoreNext();
@@ -302,5 +333,9 @@ public class AWSLambda {
         UserFault.filterStackTrace(exc);
         UserFault userFault = UserFault.makeUserFault(exc, true);
         lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+    }
+
+    protected static URLClassLoader getCustomerClassLoader() {
+        return customerClassLoader;
     }
 }

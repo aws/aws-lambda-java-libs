@@ -19,7 +19,6 @@ public class LambdaContextTest {
     private static final LambdaClientContext CLIENT_CONTEXT = new LambdaClientContext();
     public static final int MEMORY_LIMIT = 128;
     public static final String TENANT_ID = "tenant-id";
-    public static final String X_RAY_TRACE_ID = "x-ray-trace-id";
 
     @Test
     public void getRemainingTimeInMillis() {
@@ -56,6 +55,6 @@ public class LambdaContextTest {
 
     private LambdaContext createContextWithDeadline(long deadlineTimeInMs) {
         return new LambdaContext(MEMORY_LIMIT, deadlineTimeInMs, REQUEST_ID, LOG_GROUP_NAME, LOG_STREAM_NAME,
-                FUNCTION_NAME, IDENTITY, FUNCTION_VERSION, INVOKED_FUNCTION_ARN, TENANT_ID, X_RAY_TRACE_ID, CLIENT_CONTEXT);
+                FUNCTION_NAME, IDENTITY, FUNCTION_VERSION, INVOKED_FUNCTION_ARN, TENANT_ID, CLIENT_CONTEXT);
     }
 }

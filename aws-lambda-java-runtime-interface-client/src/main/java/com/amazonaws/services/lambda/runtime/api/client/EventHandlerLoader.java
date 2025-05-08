@@ -582,7 +582,6 @@ public final class EventHandlerLoader {
                         LambdaEnvironment.FUNCTION_VERSION,
                         request.getInvokedFunctionArn(),
                         request.getTenantId(),
-                        request.getXrayTraceId(),
                         clientContext
                 );
 

@@ -15,7 +15,7 @@ on:
       - '.github/workflows/samples.yml'
 
 jobs:
-  build-kinesis-sample:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +28,9 @@ jobs:
       # Install events module
       - name: Install events with Maven
         run: mvn -B install --file aws-lambda-java-events/pom.xml
+      # Install serialization module
+      - name: Install serialization with Maven
+        run: mvn -B install --file aws-lambda-java-serialization/pom.xml
       # Install tests module
       - name: Install tests with Maven
         run: mvn -B install --file aws-lambda-java-tests/pom.xml

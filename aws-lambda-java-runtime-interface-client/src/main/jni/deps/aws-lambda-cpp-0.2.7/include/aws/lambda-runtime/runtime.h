@@ -62,6 +62,11 @@ struct invocation_request {
     std::chrono::time_point<std::chrono::system_clock> deadline;
 
     /**
+     * Tenant ID of the current invocation.
+     */
+    std::string tenant_id;
+
+    /**
      * The number of milliseconds left before lambda terminates the current execution.
      */
     inline std::chrono::milliseconds get_time_remaining() const;

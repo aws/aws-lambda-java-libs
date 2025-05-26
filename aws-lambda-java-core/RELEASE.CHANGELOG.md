@@ -1,3 +1,7 @@
+### May 26, 2025
+`1.3.0`
+- Adding support for multi tenancy ([#545](https://github.com/aws/aws-lambda-java-libs/pull/545))
+
 ### August 17, 2023
 `1.2.3`:
 - Extended logger interface with level-aware logging backend functions

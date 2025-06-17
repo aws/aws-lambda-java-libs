@@ -43,6 +43,8 @@ public class KafkaEvent {
         private String key;
         private String value;
         private List<Map<String, byte[]>> headers;
+        private SchemaMetadata keySchemaMetadata;
+        private SchemaMetadata valueSchemaMetadata;
     }
 
     @Data
@@ -58,5 +60,14 @@ public class KafkaEvent {
             //Kafka also uses '-' for toString()
             return topic + "-" + partition;
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder(setterPrefix = "with")
+    public static class SchemaMetadata {
+        private String schemaId;
+        private String dataFormat;
     }
 }

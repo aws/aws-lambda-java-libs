@@ -15,6 +15,7 @@ import com.amazonaws.services.lambda.runtime.api.client.logging.StdOutLogSink;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaError;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClient;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeClientMaxRetriesExceededException;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.RapidErrorType;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.LambdaErrorConverter;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.converters.XRayErrorCauseConverter;
@@ -235,7 +236,7 @@ public class AWSLambda {
     private static void startRuntimeLoopWithExecutor(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, ExecutorService executorService, LambdaRuntimeApiClient runtimeClient) {
         executorService.submit(() -> { 
             try {
-                startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient);
+                startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient, false);
             } catch (Exception e) {
                 lambdaLogger.log(String.format("Runtime Loop on Thread ID: %s Failed.\n%s", Thread.currentThread().getName(), UserFault.trace(e)), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
             }
@@ -259,49 +260,73 @@ public class AWSLambda {
                 }
             }
         } else {
-            startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient);
+            startRuntimeLoop(lambdaRequestHandler, lambdaLogger, runtimeClient, true);
         }
     }
 
-    private static void startRuntimeLoop(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, LambdaRuntimeApiClient runtimeClient) throws Exception {
+    private static LambdaError createLambdaErrorFromThrowableOrUserFault(Throwable t) {
+        if (t instanceof UserFault) {
+            return new LambdaError(
+                    LambdaErrorConverter.fromUserFault((UserFault) t),
+                    RapidErrorType.BadFunctionCode);
+        } else {
+            return new LambdaError(
+                    LambdaErrorConverter.fromThrowable(t),
+                    XRayErrorCauseConverter.fromThrowable(t),
+                    RapidErrorType.UserException);
+        }
+    }
+
+    private static void setEnvVarForXrayTraceId(InvocationRequest request) {
+        if (request.getXrayTraceId() != null) {
+            System.setProperty(LAMBDA_TRACE_HEADER_PROP, request.getXrayTraceId());
+        } else {
+            System.clearProperty(LAMBDA_TRACE_HEADER_PROP);
+        }
+    }
+
+    private static void reportNonLoopTerminatingException(LambdaContextLogger lambdaLogger, Throwable t) {
+        lambdaLogger.log(
+                String.format(
+                        "Runtime Loop on Thread ID: %s Faced and Exception. This exception will not stop the runtime loop.\nException:\n%s",
+                        Thread.currentThread().getName(), UserFault.trace(t)),
+                lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+    }
+
+    /*
+     * In multiconcurrent mode (exitLoopOnErrors = false), The Runtime Loop will not exit unless LambdaRuntimeClientMaxRetriesExceededException is thrown when calling nextInvocationWithExponentialBackoff.
+     * In normal/sequential mode (exitLoopOnErrors = true), The Runtime Loop will exit if nextInvocation call fails, when UserFault is fatal, or an Error of type VirtualMachineError or IOError is thrown.
+     */
+    private static void startRuntimeLoop(LambdaRequestHandler lambdaRequestHandler, LambdaContextLogger lambdaLogger, LambdaRuntimeApiClient runtimeClient, boolean exitLoopOnErrors) throws Exception {
         boolean shouldExit = false;
         while (!shouldExit) {
-            UserFault userFault = null;
-            InvocationRequest request = runtimeClient.nextInvocation();
-            if (request.getXrayTraceId() != null) {
-                System.setProperty(LAMBDA_TRACE_HEADER_PROP, request.getXrayTraceId());
-            } else {
-                System.clearProperty(LAMBDA_TRACE_HEADER_PROP);
-            }
-
-            ByteArrayOutputStream payload;
             try {
-                payload = lambdaRequestHandler.call(request);
-                runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
-                // clear interrupted flag in case if it was set by user's code
-                Thread.interrupted();
-            } catch (UserFault f) {
-                shouldExit = f.fatal;
-                userFault = f;
-                UserFault.filterStackTrace(f);
-                LambdaError error = new LambdaError(
-                        LambdaErrorConverter.fromUserFault(f),
-                        RapidErrorType.BadFunctionCode);
-                runtimeClient.reportInvocationError(request.getId(), error);
-            } catch (Throwable t) {
-                shouldExit = t instanceof VirtualMachineError || t instanceof IOError;
-                UserFault.filterStackTrace(t);
-                userFault = UserFault.makeUserFault(t);
+                UserFault userFault = null;
+                InvocationRequest request = exitLoopOnErrors ? runtimeClient.nextInvocation() : runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger);
+                setEnvVarForXrayTraceId(request);
 
-                LambdaError error = new LambdaError(
-                        LambdaErrorConverter.fromThrowable(t),
-                        XRayErrorCauseConverter.fromThrowable(t),
-                        RapidErrorType.UserException);
-                runtimeClient.reportInvocationError(request.getId(), error);
-            } finally {
-                if (userFault != null) {
-                    lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+                try {
+                    ByteArrayOutputStream payload = lambdaRequestHandler.call(request);
+                    runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
+                    // clear interrupted flag in case if it was set by user's code
+                    Thread.interrupted();
+                } catch (Throwable t) {
+                    UserFault.filterStackTrace(t);
+                    userFault = UserFault.makeUserFault(t);
+                    shouldExit = exitLoopOnErrors && (t instanceof VirtualMachineError || t instanceof IOError || userFault.fatal);
+                    LambdaError error = createLambdaErrorFromThrowableOrUserFault(t);
+                    runtimeClient.reportInvocationError(request.getId(), error);
+                } finally {
+                    if (userFault != null) {
+                        lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+                    }
                 }
+            } catch (Throwable t) {
+                if (exitLoopOnErrors || t instanceof LambdaRuntimeClientMaxRetriesExceededException) {
+                    throw t;
+                }
+
+                reportNonLoopTerminatingException(lambdaLogger, t);
             }
         }
     }

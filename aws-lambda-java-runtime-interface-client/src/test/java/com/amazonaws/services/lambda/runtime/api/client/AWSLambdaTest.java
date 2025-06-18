@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOError;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeApiClientImpl;
+import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.LambdaRuntimeClientMaxRetriesExceededException;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.ConcurrencyConfig;
 import com.amazonaws.services.lambda.runtime.api.client.util.EnvReader;
@@ -115,6 +117,8 @@ class AWSLambdaTest {
         return request;
     }
 
+    private static final LambdaRuntimeClientMaxRetriesExceededException fakelambdaRuntimeClientMaxRetriesExceededException = new LambdaRuntimeClientMaxRetriesExceededException("Fake max retries happened");
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -135,7 +139,7 @@ class AWSLambdaTest {
 
         InvocationRequest successfullInvocationRequest = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
 
-        when(runtimeClient.nextInvocation())
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
@@ -143,10 +147,10 @@ class AWSLambdaTest {
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
-        .thenReturn(null)
-        .thenReturn(null)
-        .thenReturn(null)
-        .thenReturn(null);
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
 
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
@@ -171,20 +175,23 @@ class AWSLambdaTest {
         final String UserFaultID = "Injected Fault Request ID";
         when(userFaultRequest.getId()).thenThrow(UserFault.makeUserFault(new Exception("OH NO"), true)).thenReturn(UserFaultID);
 
-        when(runtimeClient.nextInvocation())
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
         .thenReturn(failImmediatelyRequest)
         .thenReturn(userFaultRequest)
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
-        .thenReturn(null)
-        .thenReturn(null)
-        .thenReturn(null);
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
 
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
-        // One for each of failImmediatelyRequest and userFaultRequest in finally block + three from the uncaught null expections.
-        verify(lambdaLogger, times(5)).log(anyString(), eq(LogLevel.ERROR));
-        
+        // One for each of failImmediatelyRequest and userFaultRequest in finally block 
+        // Four for crashing the Four runtime loops in the outermost catch of the runtime loop after the Null responses.
+        // 2 + 4 = 6
+        verify(lambdaLogger, times(6)).log(anyString(), eq(LogLevel.ERROR));
+
         // Failed invokes should be reported.
         verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
@@ -198,24 +205,86 @@ class AWSLambdaTest {
         // Hashmap total count should equal all tasks that ran * number of iterations per task
         assertEquals(2 * SampleHandler.nOfIterations, SampleHandler.globalCounter.get());
     }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testConcurrentModeLoopDoesNotExitExceptForLambdaRuntimeClientMaxRetriesExceededException() throws Throwable {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
+        when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(1);
+
+        InvocationRequest successfullInvocationRequest = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
+        InvocationRequest failImmediatelyRequest = getFakeInvocationRequest(SampleHandler.FAIL_IMMEDIATELY_OP_MODE);
+
+        InvocationRequest userFaultRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
+        final String UserFaultID = "Injected Fault Request ID";
+        when(userFaultRequest.getId()).thenThrow(UserFault.makeUserFault(new Exception("OH NO"), true)).thenReturn(UserFaultID);
+        
+        InvocationRequest virtualMachineErrorRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
+        final String IOErrorID = "ioerr1";
+        when(virtualMachineErrorRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn(IOErrorID);
+
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
+        .thenReturn(failImmediatelyRequest)
+        .thenReturn(userFaultRequest)
+        .thenReturn(virtualMachineErrorRequest)
+        .thenReturn(successfullInvocationRequest)
+        .thenReturn(successfullInvocationRequest)
+        .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException)
+        .thenReturn(successfullInvocationRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+         
+         // One for each of failImmediatelyRequest, userFaultRequest, and virtualMachineErrorRequest + One for the runtime loop thread crashing.
+         verify(lambdaLogger, times(4)).log(anyString(), eq(LogLevel.ERROR));
+         
+         // Failed invokes should be reported.
+         verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
+         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
+         verify(runtimeClient).reportInvocationError(eq(IOErrorID), any());
+         
+         // Success Reports Must Equal number of tasks that ran successfully.
+         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+         
+         // Hashmap keys should equal the minumum between(number of threads (runtime loops) AND number of tasks that ran successfully).
+         assertEquals(1, SampleHandler.hashMap.size());
+         
+         // Hashmap total count should equal all tasks that ran * number of iterations per task
+         assertEquals(2 * SampleHandler.nOfIterations, SampleHandler.globalCounter.get());
+    }
+        
+
+    /*
+     * 
+     * NON-CONCURRENT-MODE TESTS
+     * 
+     */
     
     @Test
     @Timeout(value = 1, unit = TimeUnit.MINUTES)
-    void testSequentialWithFailures() throws Throwable {
+    void testSequentialWithFatalUserFaultErrorStopsLoop() throws Throwable {
         when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
         when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
 
         InvocationRequest successfullInvocationRequest = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
-        InvocationRequest failImmediatelyRequest = getFakeInvocationRequest(SampleHandler.FAIL_IMMEDIATELY_OP_MODE);
-        InvocationRequest userFaultRequest = mock(InvocationRequest.class);
+        InvocationRequest failImmediatelyRequest = getFakeInvocationRequest(SampleHandler.FAIL_IMMEDIATELY_OP_MODE); // recoverable error in all modes.
+        
+        InvocationRequest userFaultRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
         final String UserFaultID = "Injected Fault Request ID";
         when(userFaultRequest.getId()).thenThrow(UserFault.makeUserFault(new Exception("OH NO"), true)).thenReturn(UserFaultID);
+        
+        InvocationRequest virtualMachineErrorRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
+        final String IOErrorID = "ioerr1";
+        when(virtualMachineErrorRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn(IOErrorID);
 
         when(runtimeClient.nextInvocation())
         .thenReturn(successfullInvocationRequest)
         .thenReturn(successfullInvocationRequest)
         .thenReturn(failImmediatelyRequest)
-        .thenReturn(userFaultRequest);
+        .thenReturn(userFaultRequest)
+        // these two should not be even feltched since userFaultRequest is not recoverable.
+        .thenReturn(successfullInvocationRequest)
+        .thenReturn(virtualMachineErrorRequest);
 
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
@@ -226,8 +295,55 @@ class AWSLambdaTest {
         verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
         
-        // Success Reports Must Equal number of tasks that ran successfully.
+        // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and userFaultRequest.
         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+        verify(runtimeClient, times(2)).reportInvocationError(any(), any());
+        
+        // Hashmap keys should equal one as it is not multithreaded.
+        assertEquals(1, SampleHandler.hashMap.size());
+        
+        // Hashmap total count should equal all tasks that ran * number of iterations per task
+        assertEquals(2 * SampleHandler.nOfIterations, SampleHandler.globalCounter.get());
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testSequentialWithVirtualMachineErrorStopsLoop() throws Throwable {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest successfullInvocationRequest = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
+        InvocationRequest failImmediatelyRequest = getFakeInvocationRequest(SampleHandler.FAIL_IMMEDIATELY_OP_MODE); // recoverable error in all modes.
+        
+        InvocationRequest userFaultRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
+        final String UserFaultID = "Injected Fault Request ID";
+        when(userFaultRequest.getId()).thenThrow(UserFault.makeUserFault(new Exception("OH NO"), true)).thenReturn(UserFaultID);
+        
+        InvocationRequest virtualMachineErrorRequest = mock(InvocationRequest.class); // unrecoverable in sequential but recoverable in multiconcurrent mode.
+        final String IOErrorID = "ioerr1";
+        when(virtualMachineErrorRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn(IOErrorID);
+
+        when(runtimeClient.nextInvocation())
+        .thenReturn(successfullInvocationRequest)
+        .thenReturn(successfullInvocationRequest)
+        .thenReturn(failImmediatelyRequest)
+        .thenReturn(virtualMachineErrorRequest)
+        // these two should not be even feltched since userFaultRequest is not recoverable.
+        .thenReturn(successfullInvocationRequest)
+        .thenReturn(userFaultRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        // One for failImmediatelyRequest and userFaultRequest in finally block.
+        verify(lambdaLogger, times(2)).log(anyString(), eq(LogLevel.ERROR));
+        
+        // Failed invokes should be reported.
+        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
+        verify(runtimeClient).reportInvocationError(eq(IOErrorID), any());
+        
+        // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and virtualMachineErrorRequest.
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+        verify(runtimeClient, times(2)).reportInvocationError(any(), any());
         
         // Hashmap keys should equal one as it is not multithreaded.
         assertEquals(1, SampleHandler.hashMap.size());

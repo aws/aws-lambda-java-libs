@@ -67,7 +67,12 @@ public class AbstractLambdaLoggerTest {
         assertEquals("null", new String(sink.getMessages().get(1)));
     }
 
-    // Makes Sure Logging Contexts are thread local.
+    /*
+     * Makes Sure Logging Contexts are thread local. 
+     * We start `setLambdaContext` operations using the **single** shared `logger` object on a fixed thread pool, differentiating them with thread IDs.
+     * We then start concurrent `log` operations which are scheduled using that fixed pool.
+     * It is then verified that a given log operation, which logs the thread ID it is running on, used a context that had the same thread ID. 
+     */
     @Test
     public void testMultiConcurrentLoggingWithoutLogLevelInJSON() {
         TestSink sink = new TestSink();

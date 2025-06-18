@@ -30,18 +30,16 @@ class ConcurrencyConfigTest {
     @Test
     void testDefaultConfiguration() {
         when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("true");
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY)).thenReturn(null);
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn(null);
         
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(Runtime.getRuntime().availableProcessors(), config.getNumberOfPlatformThreads());
-        assertEquals(Runtime.getRuntime().availableProcessors() >= 2, config.isMultiConcurrent());
+        assertEquals(0, config.getNumberOfPlatformThreads());
+        assertEquals(false, config.isMultiConcurrent());
     }
 
     @Test
     void testValidPlatformThreadsConfig() {
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("true");
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY)).thenReturn("4");
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("4");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
         assertEquals(4, config.getNumberOfPlatformThreads());
@@ -51,31 +49,28 @@ class ConcurrencyConfigTest {
     @Test
     void testInvalidPlatformThreadsConfig() {
         when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("true");
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY)).thenReturn("invalid");
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("invalid");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(Runtime.getRuntime().availableProcessors(), config.getNumberOfPlatformThreads());
+        assertEquals(0, config.getNumberOfPlatformThreads());
         verify(lambdaLogger).log(anyString(), eq(LogLevel.WARN));
-        assertEquals(Runtime.getRuntime().availableProcessors() >= 2, config.isMultiConcurrent());
+        assertEquals(false, config.isMultiConcurrent());
     }
 
     @Test
     void testExceedingPlatformThreadsLimit() {
         when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("true");
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY)).thenReturn("1001");
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("1001");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(Runtime.getRuntime().availableProcessors(), config.getNumberOfPlatformThreads());
+        assertEquals(0, config.getNumberOfPlatformThreads());
         verify(lambdaLogger).log(anyString(), eq(LogLevel.WARN));
-        assertEquals(Runtime.getRuntime().availableProcessors() >= 2, config.isMultiConcurrent());
+        assertEquals(false, config.isMultiConcurrent());
     }
 
     @Test
     void testGetConcurrencyConfigMessage() {
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("true");
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_RUNTIME_MAX_CONCURRENCY)).thenReturn("4");
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("4");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
         String expectedMessage = "Starting 4 concurrent function handler threads.";
@@ -85,8 +80,6 @@ class ConcurrencyConfigTest {
 
     @Test
     void testGetConcurrencyConfigWithNoConcurrency() {
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_ENABLE_MULTICONCURRENT_RIC)).thenReturn("false");
-
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
         assertEquals(0, config.getNumberOfPlatformThreads());
         assertEquals(false, config.isMultiConcurrent());

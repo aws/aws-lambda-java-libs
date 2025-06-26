@@ -4,7 +4,6 @@ updates:
     directory: "/aws-lambda-java-runtime-interface"
     schedule:
       interval: "weekly"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

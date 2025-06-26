@@ -1,3 +1,7 @@
+### June 26, 2025
+`2.8.0`
+- Refactoring
+
 ### May 21, 2025
 `2.7.0`
 - Adding support for multi tenancy ([#540](https://github.com/aws/aws-lambda-java-libs/pull/540))

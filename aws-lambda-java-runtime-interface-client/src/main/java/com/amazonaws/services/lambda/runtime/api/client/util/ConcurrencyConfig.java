@@ -22,14 +22,23 @@ public class ConcurrencyConfig {
     public ConcurrencyConfig(LambdaContextLogger logger, EnvReader envReader) {
         int readNumOfPlatformThreads = 0;
         try {
-            readNumOfPlatformThreads = Integer.parseInt(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY));
-            if (readNumOfPlatformThreads <= 0 || readNumOfPlatformThreads > AWS_LAMBDA_MAX_CONCURRENCY_LIMIT) {
-                throw new IllegalArgumentException();
+            String readLambdaMaxConcurrencyEnvVar = envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY);
+
+            // Log only if env var is actually set to an invalid value. Otherwise default to no concurrency silently.
+            if (!(readLambdaMaxConcurrencyEnvVar == null || readLambdaMaxConcurrencyEnvVar.isEmpty())) {
+                readNumOfPlatformThreads = Integer.parseInt(readLambdaMaxConcurrencyEnvVar);
+                if (readNumOfPlatformThreads <= 0 || readNumOfPlatformThreads > AWS_LAMBDA_MAX_CONCURRENCY_LIMIT) {
+                    throw new IllegalArgumentException();
+                }
             }
         } catch (Exception e) {
-            String message = String.format("User configured %s is not valid. Please make sure it is a positive number more than zero and less than or equal %d\n%s\nDefaulting to no concurrency.", ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY, AWS_LAMBDA_MAX_CONCURRENCY_LIMIT, UserFault.trace(e));
-            logger.log(message, logger.getLogFormat() == LogFormat.JSON ? LogLevel.WARN : LogLevel.UNDEFINED);
             readNumOfPlatformThreads = 0;
+            String message = String.format(
+                    "User configured %s is not valid. Please make sure it is a positive number more than zero and less than or equal %d\n%s\nDefaulting to no concurrency.",
+                    ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY,
+                    AWS_LAMBDA_MAX_CONCURRENCY_LIMIT,
+                    UserFault.trace(e));
+            logger.log(message, logger.getLogFormat() == LogFormat.JSON ? LogLevel.WARN : LogLevel.UNDEFINED);
         }
 
         this.numberOfPlatformThreads = readNumOfPlatformThreads;

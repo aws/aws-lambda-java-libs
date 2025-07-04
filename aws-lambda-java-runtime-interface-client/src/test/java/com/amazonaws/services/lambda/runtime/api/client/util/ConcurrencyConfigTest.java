@@ -29,10 +29,10 @@ class ConcurrencyConfigTest {
 
     @Test
     void testDefaultConfiguration() {
-        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
         when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn(null);
         
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
+        verifyNoInteractions(lambdaLogger);
         assertEquals(0, config.getNumberOfPlatformThreads());
         assertEquals(false, config.isMultiConcurrent());
     }

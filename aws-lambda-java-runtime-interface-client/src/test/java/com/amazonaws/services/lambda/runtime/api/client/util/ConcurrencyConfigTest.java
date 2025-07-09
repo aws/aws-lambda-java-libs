@@ -14,8 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -26,6 +27,8 @@ class ConcurrencyConfigTest {
 
     @Mock
     private EnvReader envReader;
+
+    private static final String exitingRuntimeString = String.format("User configured %s is invalid.", ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY);
 
     @Test
     void testDefaultConfiguration() {
@@ -38,23 +41,32 @@ class ConcurrencyConfigTest {
     }
 
     @Test
-    void testValidPlatformThreadsConfig() {
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("4");
+    void testBelowMinPlatformThreadsLimit() {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("0");
+
+        assertThrows(IllegalArgumentException.class, () -> new ConcurrencyConfig(lambdaLogger, envReader));
+        verify(lambdaLogger).log(contains(exitingRuntimeString), eq(LogLevel.ERROR));
+    }
+
+    @Test
+    void testMinValidPlatformThreadsConfig() {
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("1");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(4, config.getNumberOfPlatformThreads());
+        verifyNoInteractions(lambdaLogger);
+        assertEquals(1, config.getNumberOfPlatformThreads());
         assertEquals(true, config.isMultiConcurrent());
     }
 
     @Test
-    void testInvalidPlatformThreadsConfig() {
-        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("invalid");
+    void testValidPlatformThreadsConfig() {
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("4");
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(0, config.getNumberOfPlatformThreads());
-        verify(lambdaLogger).log(anyString(), eq(LogLevel.WARN));
-        assertEquals(false, config.isMultiConcurrent());
+        verifyNoInteractions(lambdaLogger);
+        assertEquals(4, config.getNumberOfPlatformThreads());
+        assertEquals(true, config.isMultiConcurrent());
     }
 
     @Test
@@ -62,10 +74,17 @@ class ConcurrencyConfigTest {
         when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
         when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("1001");
 
-        ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
-        assertEquals(0, config.getNumberOfPlatformThreads());
-        verify(lambdaLogger).log(anyString(), eq(LogLevel.WARN));
-        assertEquals(false, config.isMultiConcurrent());
+        assertThrows(IllegalArgumentException.class, () -> new ConcurrencyConfig(lambdaLogger, envReader));
+        verify(lambdaLogger).log(contains(exitingRuntimeString), eq(LogLevel.ERROR));
+    }
+
+    @Test
+    void testInvalidPlatformThreadsConfig() {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("invalid");
+
+        assertThrows(NumberFormatException.class, () -> new ConcurrencyConfig(lambdaLogger, envReader));
+        verify(lambdaLogger).log(contains(exitingRuntimeString), eq(LogLevel.ERROR));
     }
 
     @Test
@@ -74,6 +93,7 @@ class ConcurrencyConfigTest {
 
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
         String expectedMessage = "Starting 4 concurrent function handler threads.";
+        verifyNoInteractions(lambdaLogger);
         assertEquals(expectedMessage, config.getConcurrencyConfigMessage());
         assertEquals(true, config.isMultiConcurrent());
     }
@@ -81,6 +101,7 @@ class ConcurrencyConfigTest {
     @Test
     void testGetConcurrencyConfigWithNoConcurrency() {
         ConcurrencyConfig config = new ConcurrencyConfig(lambdaLogger, envReader);
+        verifyNoInteractions(lambdaLogger);
         assertEquals(0, config.getNumberOfPlatformThreads());
         assertEquals(false, config.isMultiConcurrent());
     }

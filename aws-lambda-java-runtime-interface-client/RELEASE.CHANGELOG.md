@@ -1,4 +1,8 @@
 ### June 26, 2025
+`2.8.2`
+- Allow AWS_LAMBDA_MAX_CONCURRENCY to be One. Crash the RIC if it is set to an un-parsable string to an integer or an out of bounds value.
+
+### June 26, 2025
 `2.8.1`
 - Refactoring
 

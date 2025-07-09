@@ -108,8 +108,8 @@ public interface ReservedRuntimeEnvironmentVariables {
     String TZ = "TZ";
 
     /*
-     * Used to set the required number of concurrent runtime loops, 
-     * If AWS_LAMBDA_MAX_CONCURRENCY is not set, the default number of concurrent runtime loops is the number of cores.
+     * If set to a string parsable as an integer > 0, It enables multiconcurrency mode. 
+     * Otherwise, if it is set to an invalid value, it will crash the whole RIC process.
      */
     String AWS_LAMBDA_MAX_CONCURRENCY = "AWS_LAMBDA_MAX_CONCURRENCY";
 }

@@ -14,6 +14,8 @@ import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 public class ConcurrencyConfig {
     private static final int AWS_LAMBDA_MAX_CONCURRENCY_LIMIT = 1000;
     private final int numberOfPlatformThreads;
+    private final String INVALID_CONFIG_MESSAGE_PREFIX = String.format("User configured %s is invalid. Please make sure it is a positive number more than zero and less than or equal %d", 
+                                                                        ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY, AWS_LAMBDA_MAX_CONCURRENCY_LIMIT);
 
     public ConcurrencyConfig(LambdaContextLogger logger) {
         this(logger, new EnvReader());
@@ -24,21 +26,16 @@ public class ConcurrencyConfig {
         try {
             String readLambdaMaxConcurrencyEnvVar = envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY);
 
-            // Log only if env var is actually set to an invalid value. Otherwise default to no concurrency silently.
-            if (!(readLambdaMaxConcurrencyEnvVar == null || readLambdaMaxConcurrencyEnvVar.isEmpty())) {
+            if (readLambdaMaxConcurrencyEnvVar != null) {
                 readNumOfPlatformThreads = Integer.parseInt(readLambdaMaxConcurrencyEnvVar);
-                if (readNumOfPlatformThreads <= 0 || readNumOfPlatformThreads > AWS_LAMBDA_MAX_CONCURRENCY_LIMIT) {
+                if (readNumOfPlatformThreads < 1 || readNumOfPlatformThreads > AWS_LAMBDA_MAX_CONCURRENCY_LIMIT) {
                     throw new IllegalArgumentException();
                 }
             }
         } catch (Exception e) {
-            readNumOfPlatformThreads = 0;
-            String message = String.format(
-                    "User configured %s is not valid. Please make sure it is a positive number more than zero and less than or equal %d\n%s\nDefaulting to no concurrency.",
-                    ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY,
-                    AWS_LAMBDA_MAX_CONCURRENCY_LIMIT,
-                    UserFault.trace(e));
-            logger.log(message, logger.getLogFormat() == LogFormat.JSON ? LogLevel.WARN : LogLevel.UNDEFINED);
+            String message = String.format("%s\n%s", INVALID_CONFIG_MESSAGE_PREFIX, UserFault.trace(e));
+            logger.log(message, logger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
+            throw e;
         }
 
         this.numberOfPlatformThreads = readNumOfPlatformThreads;
@@ -49,7 +46,7 @@ public class ConcurrencyConfig {
     }
 
     public boolean isMultiConcurrent() {
-        return this.numberOfPlatformThreads > 1;
+        return this.numberOfPlatformThreads >= 1;
     }
 
     public int getNumberOfPlatformThreads() {

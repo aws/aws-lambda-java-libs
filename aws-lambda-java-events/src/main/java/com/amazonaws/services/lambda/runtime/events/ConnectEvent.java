@@ -78,7 +78,7 @@ public class ConnectEvent implements Serializable, Cloneable {
     @AllArgsConstructor
     public static class Queue implements Serializable, Cloneable {
         private String name;
-        private String arn;
+        private String ARN;
     }
     
     @Data

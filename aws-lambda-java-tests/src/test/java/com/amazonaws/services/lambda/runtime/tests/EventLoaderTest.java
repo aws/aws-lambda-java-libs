@@ -315,7 +315,8 @@ public class EventLoaderTest {
     @Test
     public void testLoadConnectEvent() {
         ConnectEvent event = EventLoader.loadConnectEvent("connect_event.json");
-        assertThat(event).isNotNull();
+        assertThat(event).isNotNull()
+            .returns("ContactFlowEvent", from(ConnectEvent::getName));
 
         ConnectEvent.ContactData contactData = event.getDetails().getContactData();
         assertThat(contactData)
@@ -335,7 +336,8 @@ public class EventLoaderTest {
                 .returns("TELEPHONE_NUMBER",from(ConnectEvent.SystemEndpoint::getType));
 
         assertThat(contactData.getQueue())
-                .returns("arn:aws:connect:eu-central-1:123456789012:instance/9308c2a1-9bc6-4cea-8290-6c0b4a6d38fa/queue/941464de-39b7-4cae-82e9-a44f070ef59e", from(ConnectEvent.Queue::getArn))
+                .isNotNull()
+                .returns("arn:aws:connect:eu-central-1:123456789012:instance/9308c2a1-9bc6-4cea-8290-6c0b4a6d38fa/queue/941464de-39b7-4cae-82e9-a44f070ef59e", from(ConnectEvent.Queue::getARN))
                 .returns("ExampleQueue",from(ConnectEvent.Queue::getName));
     }
 

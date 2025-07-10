@@ -333,6 +333,14 @@ public class EventLoaderTest {
         assertThat(contactData.getSystemEndpoint())
                 .returns("+21234567890",from(ConnectEvent.SystemEndpoint::getAddress))
                 .returns("TELEPHONE_NUMBER",from(ConnectEvent.SystemEndpoint::getType));
+
+        assertThat(contactData.getQueue())
+                .isNotNull()
+                .returns("SampleQueue", from(ConnectEvent.Queue::getName))
+                .returns("arn:aws:connect:eu-central-1:123456789012:instance/9308c2a1-9bc6-4cea-8290-6c0b4a6d38fa", 
+                    from(ConnectEvent.Queue::getARN)
+                );
+
     }
 
     @Test

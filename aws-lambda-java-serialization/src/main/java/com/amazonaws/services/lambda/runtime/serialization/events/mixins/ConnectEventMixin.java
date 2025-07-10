@@ -65,8 +65,8 @@ public abstract class ConnectEventMixin {
         @JsonProperty("PreviousContactId") abstract void setPreviousContactId(String previousContactId);
 
         // needed because Jackson expects "queue" instead of "Queue"
-        @JsonProperty("Queue") abstract String getQueue();
-        @JsonProperty("Queue") abstract void setQueue(String queue);
+        @JsonProperty("Queue") abstract Map<String, String> getQueue();
+        @JsonProperty("Queue") abstract void setQueue(Map<String, String> queue);
 
         // needed because Jackson expects "systemEndpoint" instead of "SystemEndpoint"
         @JsonProperty("SystemEndpoint") abstract Map<String,String>  getSystemEndpoint();
@@ -94,5 +94,10 @@ public abstract class ConnectEventMixin {
         // needed because Jackson expects "type" instead of "Type"
         @JsonProperty("Type") abstract String getType();
         @JsonProperty("Type") abstract void setType(String type);
+    }
+
+    public abstract class QueueMixin {
+        @JsonProperty("Name") abstract String getName();
+        @JsonProperty("Name") abstract void setName(String name);
     }
 }

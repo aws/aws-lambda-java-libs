@@ -7,6 +7,7 @@
     <version>1.1.5</version>
     <packaging>jar</packaging>
 
+
     <name>AWS Lambda Java Runtime Serialization</name>
     <description>Serialization logic for the AWS Lambda Java Runtime</description>
     <url>https://aws.amazon.com/lambda/</url>

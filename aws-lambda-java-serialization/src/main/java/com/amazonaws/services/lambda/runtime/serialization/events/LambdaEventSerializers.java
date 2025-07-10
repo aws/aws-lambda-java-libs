@@ -118,6 +118,7 @@ public class LambdaEventSerializers {
                     ConnectEventMixin.ContactDataMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$CustomerEndpoint",
                     ConnectEventMixin.CustomerEndpointMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Queue", ConnectEventMixin.QueueMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$SystemEndpoint",
                     ConnectEventMixin.SystemEndpointMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbEvent",
@@ -170,6 +171,7 @@ public class LambdaEventSerializers {
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Details"),
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.ConnectEvent$ContactData"),
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.ConnectEvent$CustomerEndpoint"),
+                            new NestedClass("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Queue"),
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.ConnectEvent$SystemEndpoint"))),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.DynamodbEvent",
                     Arrays.asList(
@@ -214,7 +216,10 @@ public class LambdaEventSerializers {
      */
     private static final Map<String, PropertyNamingStrategy> NAMING_STRATEGY_MAP = Stream.of(
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SNSEvent",
-                    new PropertyNamingStrategy.PascalCaseStrategy()))
+                    new PropertyNamingStrategy.PascalCaseStrategy()),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Queue",
+                    new PropertyNamingStrategy.PascalCaseStrategy())
+            )
             .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
 
     /**

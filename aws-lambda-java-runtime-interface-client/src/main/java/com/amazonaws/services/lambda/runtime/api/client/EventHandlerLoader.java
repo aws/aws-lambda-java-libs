@@ -57,10 +57,10 @@ public final class EventHandlerLoader {
         UNKNOWN
     }
 
-    private static volatile PojoSerializer<LambdaClientContext> contextSerializer;
-    private static volatile PojoSerializer<LambdaCognitoIdentity> cognitoSerializer;
+    private static volatile ThreadLocal<PojoSerializer<LambdaClientContext>> contextSerializer = new ThreadLocal<>();
+    private static volatile ThreadLocal<PojoSerializer<LambdaCognitoIdentity>> cognitoSerializer = new ThreadLocal<>();
 
-    private static final EnumMap<Platform, Map<Type, PojoSerializer<Object>>> typeCache = new EnumMap<>(Platform.class);
+    private static final ThreadLocal<EnumMap<Platform, Map<Type, PojoSerializer<Object>>>> typeCache = ThreadLocal.withInitial(() -> new EnumMap<>(Platform.class));
 
     private static final Comparator<Method> methodPriority = new Comparator<Method>() {
         public int compare(Method lhs, Method rhs) {
@@ -127,10 +127,11 @@ public final class EventHandlerLoader {
     }
 
     private static PojoSerializer<Object> getSerializerCached(Platform platform, Type type) {
-        Map<Type, PojoSerializer<Object>> cache = typeCache.get(platform);
+        EnumMap<Platform, Map<Type, PojoSerializer<Object>>> threadTypeCache = typeCache.get();
+        Map<Type, PojoSerializer<Object>> cache = threadTypeCache.get(platform);
         if (cache == null) {
             cache = new HashMap<>();
-            typeCache.put(platform, cache);
+            threadTypeCache.put(platform, cache);
         }
 
         PojoSerializer<Object> serializer = cache.get(type);
@@ -143,17 +144,17 @@ public final class EventHandlerLoader {
     }
 
     private static PojoSerializer<LambdaClientContext> getContextSerializer() {
-        if (contextSerializer == null) {
-            contextSerializer = GsonFactory.getInstance().getSerializer(LambdaClientContext.class);
+        if (contextSerializer.get() == null) {
+            contextSerializer.set(GsonFactory.getInstance().getSerializer(LambdaClientContext.class));
         }
-        return contextSerializer;
+        return contextSerializer.get();
     }
 
     private static PojoSerializer<LambdaCognitoIdentity> getCognitoSerializer() {
-        if (cognitoSerializer == null) {
-            cognitoSerializer = GsonFactory.getInstance().getSerializer(LambdaCognitoIdentity.class);
+        if (cognitoSerializer.get() == null) {
+            cognitoSerializer.set(GsonFactory.getInstance().getSerializer(LambdaCognitoIdentity.class));
         }
-        return cognitoSerializer;
+        return cognitoSerializer.get();
     }
 
 
@@ -527,15 +528,14 @@ public final class EventHandlerLoader {
 
     private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
         return new LambdaRequestHandler() {
-            private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-            private Functions.V2<String, String> log4jContextPutMethod = null;
+            private final ThreadLocal<ByteArrayOutputStream> outputBuffers = ThreadLocal.withInitial(() -> new ByteArrayOutputStream(1024));
+            private ThreadLocal<Functions.V2<String, String>> log4jContextPutMethod = new ThreadLocal<>();
 
-            private void safeAddRequestIdToLog4j(String log4jContextClassName,
-                                                 InvocationRequest request, Class contextMapValueClass) {
+            private void safeAddRequestIdToLog4j(String log4jContextClassName, InvocationRequest request, Class contextMapValueClass) {
                 try {
                     Class<?> log4jContextClass = ReflectUtil.loadClass(AWSLambda.getCustomerClassLoader(), log4jContextClassName);
-                    log4jContextPutMethod = ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass);
-                    log4jContextPutMethod.call("AWSRequestId", request.getId());
+                    log4jContextPutMethod.set(ReflectUtil.loadStaticV2(log4jContextClass, "put", false, String.class, contextMapValueClass));
+                    log4jContextPutMethod.get().call("AWSRequestId", request.getId());
                 } catch (Exception e) {
                     // nothing to do here
                 }
@@ -558,6 +558,7 @@ public final class EventHandlerLoader {
             }
 
             public ByteArrayOutputStream call(InvocationRequest request) throws Error, Exception {
+                ByteArrayOutputStream output = outputBuffers.get();
                 output.reset();
 
                 LambdaCognitoIdentity cognitoIdentity = null;
@@ -591,7 +592,7 @@ public final class EventHandlerLoader {
                     safeAddRequestIdToLog4j("org.apache.log4j.MDC", request, Object.class);
                     safeAddRequestIdToLog4j("org.apache.logging.log4j.ThreadContext", request, String.class);
                     // if put method not assigned in either call to safeAddRequestIdtoLog4j then log4jContextPutMethod = null
-                    if (log4jContextPutMethod == null) {
+                    if (log4jContextPutMethod.get() == null) {
                         System.err.println("Customer using log4j appender but unable to load either " 
                             + "org.apache.log4j.MDC or org.apache.logging.log4j.ThreadContext. " 
                             + "Customer cannot see RequestId in log4j log lines.");

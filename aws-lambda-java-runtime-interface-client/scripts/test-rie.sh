@@ -19,12 +19,12 @@ echo "Starting RIE test setup for Java..."
 # Download required dependencies if not present
 if ! ls "$PROJECT_ROOT"/target/aws-lambda-java-core-*.jar >/dev/null 2>&1; then
   echo "Downloading aws-lambda-java-core..."
-  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-core:1.3.0 -DoutputDirectory=target)
+  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-core:RELEASE -DoutputDirectory=target)
 fi
 
 if ! ls "$PROJECT_ROOT"/target/aws-lambda-java-serialization-*.jar >/dev/null 2>&1; then
   echo "Downloading aws-lambda-java-serialization..."
-  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-serialization:1.1.6 -DoutputDirectory=target)
+  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-serialization:RELEASE -DoutputDirectory=target)
 fi
 
 echo "Compiling EchoHandler..."

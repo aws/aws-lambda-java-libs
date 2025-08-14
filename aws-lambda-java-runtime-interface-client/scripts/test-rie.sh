@@ -40,4 +40,4 @@ echo "In another terminal, invoke with:"
 echo "curl -s -X POST -H 'Content-Type: application/json' \"http://localhost:9000/2015-03-31/functions/function/invocations\" -d '{\"message\":\"test\"}'"
 echo ""
 
-exec docker run -it -p 9000:8080 "$IMAGE_TAG" "$HANDLER"
+exec docker run -it -p 9000:8080 -e _HANDLER="$HANDLER" "$IMAGE_TAG"

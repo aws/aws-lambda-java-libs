@@ -1,22 +1,8 @@
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:11
+FROM public.ecr.aws/lambda/java:11
 
-# Install RIE
-RUN yum update -y && \
-    yum install -y curl && \
-    curl -Lo /usr/local/bin/aws-lambda-rie \
-    https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie && \
-    chmod +x /usr/local/bin/aws-lambda-rie
+COPY target/aws-lambda-java-runtime-interface-client-*.jar ${LAMBDA_TASK_ROOT}/
+COPY target/aws-lambda-java-core-*.jar ${LAMBDA_TASK_ROOT}/
+COPY target/aws-lambda-java-serialization-*.jar ${LAMBDA_TASK_ROOT}/
+COPY test-handlers/EchoHandler.class ${LAMBDA_TASK_ROOT}/
 
-WORKDIR /function
-
-COPY target/aws-lambda-java-runtime-interface-client-*.jar ./
-COPY target/aws-lambda-java-core-*.jar ./
-COPY target/aws-lambda-java-serialization-*.jar ./
-
-COPY test-handlers/EchoHandler.class ./
-
-# Run RIE which will launch the Java RIC
-ENTRYPOINT ["/usr/local/bin/aws-lambda-rie", "/usr/bin/java", "-cp", "./*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda"]
-
-# Default handler can be overridden by passing a new one on `docker run`
 CMD ["EchoHandler::handleRequest"]

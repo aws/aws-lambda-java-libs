@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/java:11
+FROM public.ecr.aws/lambda/java:21
 
 COPY target/aws-lambda-java-runtime-interface-client-*.jar ${LAMBDA_TASK_ROOT}/
 COPY target/aws-lambda-java-core-*.jar ${LAMBDA_TASK_ROOT}/

@@ -31,7 +31,7 @@ if ! ls "$PROJECT_ROOT"/target/aws-lambda-java-serialization-*.jar >/dev/null 2>
 fi
 
 echo "Compiling EchoHandler..."
-javac -source 11 -target 11 -cp "$(ls "$PROJECT_ROOT"/target/aws-lambda-java-runtime-interface-client-*.jar):$(ls "$PROJECT_ROOT"/target/aws-lambda-java-core-*.jar):$(ls "$PROJECT_ROOT"/target/aws-lambda-java-serialization-*.jar)" \
+javac -source 21 -target 21 -cp "$(ls "$PROJECT_ROOT"/target/aws-lambda-java-runtime-interface-client-*.jar):$(ls "$PROJECT_ROOT"/target/aws-lambda-java-core-*.jar):$(ls "$PROJECT_ROOT"/target/aws-lambda-java-serialization-*.jar)" \
   -d "$PROJECT_ROOT/test-handlers/" "$PROJECT_ROOT/test-handlers/EchoHandler.java"
 
 echo "Building test Docker image..."

@@ -16,15 +16,18 @@ HANDLER="${1:-EchoHandler::handleRequest}"
 
 echo "Starting RIE test setup for Java..."
 
-# Download required dependencies if not present
+# Build local dependencies if not present
+CORE_ROOT="$(dirname "$PROJECT_ROOT")/aws-lambda-java-core"
 if ! ls "$PROJECT_ROOT"/target/aws-lambda-java-core-*.jar >/dev/null 2>&1; then
-  echo "Downloading aws-lambda-java-core..."
-  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-core:RELEASE -DoutputDirectory=target)
+  echo "Building local aws-lambda-java-core..."
+  (cd "$CORE_ROOT" && mvn package -DskipTests)
+  cp "$CORE_ROOT"/target/aws-lambda-java-core-*.jar "$PROJECT_ROOT/target/"
 fi
 
 if ! ls "$PROJECT_ROOT"/target/aws-lambda-java-serialization-*.jar >/dev/null 2>&1; then
-  echo "Downloading aws-lambda-java-serialization..."
-  (cd "$PROJECT_ROOT" && mvn dependency:copy -Dartifact=com.amazonaws:aws-lambda-java-serialization:RELEASE -DoutputDirectory=target)
+  echo "Building local aws-lambda-java-serialization..."
+  (cd "$SERIALIZATION_ROOT" && mvn package -DskipTests)
+  cp "$SERIALIZATION_ROOT"/target/aws-lambda-java-serialization-*.jar "$PROJECT_ROOT/target/"
 fi
 
 echo "Compiling EchoHandler..."

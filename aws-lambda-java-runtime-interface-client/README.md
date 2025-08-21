@@ -138,6 +138,49 @@ This command invokes the function running in the container image and returns a r
 
 *Alternately, you can also include RIE as a part of your base image. See the AWS documentation on how to [Build RIE into your base image](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html#images-test-alternative).*
 
+### Automated Local Testing
+
+For developers working on this runtime interface client, we provide an automated testing script that handles RIE setup, dependency management, and Docker orchestration.
+
+*Prerequisites:*
+- Build the project first: `mvn clean install`
+- Docker must be installed and running
+
+*To run automated tests:*
+
+```shell script
+make test-rie
+```
+
+This single command will:
+- Automatically download required dependencies (aws-lambda-java-core, aws-lambda-java-serialization)
+- Build a Docker image with RIE pre-installed
+- Compile and run a test Lambda function (EchoHandler)
+- Execute the function and validate the response
+- Clean up containers automatically
+
+The test uses a simple EchoHandler that returns the input event, making it easy to verify the runtime interface client is working correctly.
+
+## Test Coverage
+
+This project uses JaCoCo for code coverage analysis. To exclude classes from JaCoCo coverage, add them to the `jacoco-maven-plugin` configuration:
+
+```xml
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <configuration>
+        <excludes>
+            <exclude>**/*Exception.class</exclude>
+            <exclude>**/dto/*.class</exclude>
+            <exclude>**/YourClassName.class</exclude>
+        </excludes>
+    </configuration>
+</plugin>
+```
+
+This project excludes by default: exceptions, interfaces, DTOs, constants, and runtime-only classes.
+
 ### Troubleshooting
 
 While running integration tests, you might encounter the Docker Hub rate limit error with the following body:

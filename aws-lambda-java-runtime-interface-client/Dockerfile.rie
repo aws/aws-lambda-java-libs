@@ -1,0 +1,8 @@
+FROM public.ecr.aws/lambda/java:21
+
+COPY target/aws-lambda-java-runtime-interface-client-*.jar ${LAMBDA_TASK_ROOT}/
+COPY target/aws-lambda-java-core-*.jar ${LAMBDA_TASK_ROOT}/
+COPY target/aws-lambda-java-serialization-*.jar ${LAMBDA_TASK_ROOT}/
+COPY test-handlers/EchoHandler.class ${LAMBDA_TASK_ROOT}/
+
+CMD ["EchoHandler::handleRequest"]

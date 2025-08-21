@@ -214,6 +214,24 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.maven.plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude simple exceptions (compiler enforced) -->
+                        <exclude>**/*Exception.class</exclude>
+                        <!-- Exclude interfaces (compiler enforced) -->
+                        <exclude>**/Resource.class</exclude>
+                        <!-- Exclude simple DTOs/POJOs (data containers) -->
+                        <exclude>**/dto/*.class</exclude>
+                        <!-- Exclude constants classes (build-time values) -->
+                        <exclude>**/ReservedRuntimeEnvironmentVariables.class</exclude>
+                        <exclude>**/RapidErrorType.class</exclude>
+                        <!-- Exclude enum-like data holders -->
+                        <exclude>**/FrameType.class</exclude>
+                        <exclude>**/StructuredLogMessage.class</exclude>
+                        <!-- Exclude main entry point (runtime-only) -->
+                        <exclude>**/AWSLambda.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>

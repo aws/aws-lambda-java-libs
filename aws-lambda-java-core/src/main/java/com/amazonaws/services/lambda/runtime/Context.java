@@ -109,4 +109,14 @@ public interface Context {
 	default String getTenantId() {
 		return null;
 	}
+
+	/**
+	 *
+	 * Returns the X-Ray trace ID associated with the request.
+	 *
+	 * @return null by default
+	 */
+	default String getXrayTraceId() {
+		return null;
+	}
 }

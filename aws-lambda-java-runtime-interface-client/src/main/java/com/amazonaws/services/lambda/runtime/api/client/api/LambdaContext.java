@@ -23,6 +23,7 @@ public class LambdaContext implements Context {
     private final CognitoIdentity cognitoIdentity;
     private final ClientContext clientContext;
     private final String tenantId;
+    private final String xrayTraceId;
     private final LambdaLogger logger;
 
     public LambdaContext(
@@ -36,6 +37,7 @@ public class LambdaContext implements Context {
             String functionVersion,
             String invokedFunctionArn,
             String tenantId,
+            String xrayTraceId,
             ClientContext clientContext
     ) {
         this.memoryLimit = memoryLimit;
@@ -49,6 +51,7 @@ public class LambdaContext implements Context {
         this.functionVersion = functionVersion;
         this.invokedFunctionArn = invokedFunctionArn;
         this.tenantId = tenantId;
+        this.xrayTraceId = xrayTraceId;
         this.logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
     }
 
@@ -96,6 +99,10 @@ public class LambdaContext implements Context {
 
     public String getTenantId() {
         return tenantId;
+    }
+
+    public String getXrayTraceId() {
+        return xrayTraceId;
     }
 
     public LambdaLogger getLogger() {

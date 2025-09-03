@@ -84,7 +84,7 @@ public class AbstractLambdaLoggerTest {
         final int nThreads = 5;
         ExecutorService es = Executors.newFixedThreadPool(nThreads);
         for (int i = 0; i < nThreads; i++) {
-            es.submit(() -> logger.setLambdaContext(new LambdaContext(Integer.MAX_VALUE, Long.MAX_VALUE, reqIDPrefix + Thread.currentThread().getName(), "", "", "", null, "", "", "", null)));
+            es.submit(() -> logger.setLambdaContext(new LambdaContext(Integer.MAX_VALUE, Long.MAX_VALUE, reqIDPrefix + Thread.currentThread().getName(), "", "", "", null, "", "", "", null, null)));
         }
 
         final int nMessages = 100_000;

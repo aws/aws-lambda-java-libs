@@ -44,6 +44,7 @@ phases:
       # Install events (dependency of serialization)
       - (cd aws-lambda-java-events && mvn install)
       # Install serialization (dependency of RIC)
+      - (cd aws-lambda-java-core && mvn install)
       - (cd aws-lambda-java-serialization && mvn install)
       - (cd aws-lambda-java-runtime-interface-client && mvn install)
       - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install)

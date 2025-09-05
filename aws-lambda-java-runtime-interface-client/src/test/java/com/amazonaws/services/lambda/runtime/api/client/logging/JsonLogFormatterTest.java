@@ -30,6 +30,7 @@ public class JsonLogFormatterTest {
                 null,
                 "function-arn",
                 null,
+                null,
                 null
         );
         assertFormatsString("test log", LogLevel.WARN, context);
@@ -48,6 +49,7 @@ public class JsonLogFormatterTest {
                 null,
                 "function-arn",
                 "tenant-id",
+                "xray-trace-id",
                 null
         );
         assertFormatsString("test log", LogLevel.WARN, context);

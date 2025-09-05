@@ -22,6 +22,10 @@ jobs:
       with:
         java-version: 8
         distribution: corretto
+    
+    - name: Build and install core dependency locally
+      working-directory: ./aws-lambda-java-core
+      run: mvn clean install
 
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization
@@ -54,6 +58,10 @@ jobs:
 
     - name: Available buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
+    
+    - name: Build and install core dependency locally
+      working-directory: ./aws-lambda-java-core
+      run: mvn clean install
 
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization

@@ -49,7 +49,14 @@ If using maven shade plugin, set the plugin configuration as follows
         <configuration>
           <transformers>
             <transformer
-                    implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+                implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer" />
+            <transformer
+                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+            <transformer
+                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <manifestEntries>
+                    <Multi-Release>true</Multi-Release>
+                </manifestEntries>
             </transformer>
           </transformers>
         </configuration>
@@ -57,9 +64,9 @@ If using maven shade plugin, set the plugin configuration as follows
     </executions>
     <dependencies>
       <dependency>
-        <groupId>com.github.edwgiz</groupId>
-        <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
-        <version>2.8.1</version>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+          <version>0.2.0</version>
       </dependency>
     </dependencies>
   </plugin>

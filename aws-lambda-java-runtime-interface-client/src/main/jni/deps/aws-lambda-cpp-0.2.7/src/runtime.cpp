@@ -370,7 +370,7 @@ runtime::post_outcome runtime::do_post(
 
     if (!is_success(aws::http::response_code(http_response_code))) {
         logging::log_error(
-            LOG_TAG, "Failed to post handler success response. Http response code: %ld.", http_response_code);
+            LOG_TAG, "Failed to post handler success response. Http response code: %ld. %s", http_response_code, resp.get_body().c_str());
         return aws::http::response_code(http_response_code);
     }
 

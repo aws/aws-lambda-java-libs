@@ -39,6 +39,7 @@ import java.security.Security;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
@@ -253,10 +254,10 @@ public class AWSLambda {
                 }
             } finally {
                 platformThreadExecutor.shutdown();
-                while (true) {
-                    if (platformThreadExecutor.isTerminated()) {
-                        break;
-                    }
+                try {
+                    platformThreadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
         } else {

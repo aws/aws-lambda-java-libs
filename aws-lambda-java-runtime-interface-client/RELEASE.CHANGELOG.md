@@ -1,3 +1,7 @@
+### September 22, 2025
+`2.8.6`
+- Set Multiconcurrent Trace ID using utils-lite.
+
 ### September 17, 2025
 `2.8.5`
 - Log errorType and errorMessage from RAPID in C++ Client.

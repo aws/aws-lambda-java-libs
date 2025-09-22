@@ -40,6 +40,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import software.amazon.awssdk.utilslite.SdkInternalThreadLocal;
 
 /**
  * The entrypoint of this class is {@link AWSLambda#startRuntime}. It performs two main tasks:
@@ -73,6 +74,8 @@ public class AWSLambda {
     private static final String INIT_TYPE_SNAP_START = "snap-start";
 
     private static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_INITIALIZATION_TYPE);
+
+    private static final String CONCURRENT_TRACE_ID_KEY = "AWS_LAMBDA_X_TRACE_ID";
     
     static {
         // Override the disabledAlgorithms setting to match configuration for openjdk8-u181.
@@ -304,7 +307,11 @@ public class AWSLambda {
             try {
                 UserFault userFault = null;
                 InvocationRequest request = exitLoopOnErrors ? runtimeClient.nextInvocation() : runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger);
-                setEnvVarForXrayTraceId(request);
+                if (exitLoopOnErrors) {
+                    setEnvVarForXrayTraceId(request);
+                } else {
+                    SdkInternalThreadLocal.put(CONCURRENT_TRACE_ID_KEY, request.getXrayTraceId());
+                }
 
                 try {
                     ByteArrayOutputStream payload = lambdaRequestHandler.call(request);
@@ -321,6 +328,8 @@ public class AWSLambda {
                     if (userFault != null) {
                         lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);
                     }
+
+                    SdkInternalThreadLocal.remove(CONCURRENT_TRACE_ID_KEY);
                 }
             } catch (Throwable t) {
                 if (exitLoopOnErrors || t instanceof LambdaRuntimeClientMaxRetriesExceededException) {

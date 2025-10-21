@@ -10,6 +10,9 @@ on:
       - 'aws-lambda-java-runtime-interface-client/**'
       - '.github/workflows/runtime-interface-client_*.yml'
 
+permissions:
+  contents: read
+
 jobs:
 
   smoke-test:

@@ -14,6 +14,10 @@ on:
       - 'aws-lambda-java-log4j2/**'
       - '.github/workflows/aws-lambda-java-log4j2.yml'
 
+
+permissions:
+  contents: read
+
 jobs:
   build:
 

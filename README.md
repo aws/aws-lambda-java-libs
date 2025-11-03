@@ -43,7 +43,7 @@ public class HandlerStream implements RequestStreamHandler {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-core</artifactId>
- <version>1.2.3</version>
+ <version>1.3.0</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-events</artifactId>
- <version>3.15.0</version>
+ <version>3.16.0</version>
 </dependency>
 ```
 
@@ -139,6 +139,18 @@ See the [README](aws-lambda-java-log4j2/README.md) or the [official documentatio
 </dependency>
 ```
 
+## Lambda Profiler Extension for Java - aws-lambda-java-profiler
+
+<p align="center">
+    <img src="experimental/aws-lambda-java-profiler/docs/example-cold-start-flame-graph-small.png" alt="A flame graph of a Java Lambda function">
+</p>
+
+This project allows you to profile your Java functions invoke by invoke, with high fidelity, and no code changes. It 
+uses the [async-profiler](https://github.com/async-profiler/async-profiler) project to produce profiling data and 
+automatically uploads the data as flame graphs to S3.
+
+Follow our [Quick Start](experimental/aws-lambda-java-profiler#quick-start) to profile your functions.
+
 ## Java implementation of the Runtime Interface Client API - aws-lambda-java-runtime-interface-client
 [![Maven](https://img.shields.io/maven-central/v/com.amazonaws/aws-lambda-java-runtime-interface-client.svg?label=Maven)](https://central.sonatype.com/artifact/com.amazonaws/aws-lambda-java-runtime-interface-client)
 
@@ -151,7 +163,7 @@ The purpose of this package is to allow developers to deploy their applications 
 <dependency>
  <groupId>com.amazonaws</groupId>
  <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
- <version>2.6.0</version>
+ <version>2.7.0</version>
 </dependency>
 ```
 

@@ -7,9 +7,11 @@ package com.amazonaws.services.lambda.runtime.api.client.logging;
 
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import java.io.Closeable;
+import java.io.IOException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class LambdaContextLogger extends AbstractLambdaLogger {
+public class LambdaContextLogger extends AbstractLambdaLogger implements Closeable {
     // If a null string is passed in, replace it with "null",
     // replicating the behavior of System.out.println(null);
     private static final byte[] NULL_BYTES_VALUE = "null".getBytes(UTF_8);
@@ -28,5 +30,11 @@ public class LambdaContextLogger extends AbstractLambdaLogger {
         } else {
             sink.log(logLevel, this.logFormat, message);
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        sink.close();
+        
     }
 }

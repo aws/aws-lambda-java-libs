@@ -581,6 +581,8 @@ public final class EventHandlerLoader {
                         cognitoIdentity,
                         LambdaEnvironment.FUNCTION_VERSION,
                         request.getInvokedFunctionArn(),
+                        request.getTenantId(),
+                        request.getXrayTraceId(),
                         clientContext
                 );
 

@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 21
+targetCompatibility = 21
+
+dependencies {
+    implementation (
+        'com.amazonaws:aws-lambda-java-core:1.2.3',
+        'com.amazonaws:aws-lambda-java-events:3.11.0',
+        'org.slf4j:slf4j-api:2.0.13'
+    )
+}
+
+task buildZip(type: Zip) {
+    archiveBaseName = "code"
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+build.dependsOn buildZip

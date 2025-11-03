@@ -65,6 +65,10 @@ publish:
 test-publish:
 	./ric-dev-environment/test-platform-specific-jar-snapshot.sh
 
+.PHONY: test-rie
+test-rie:
+	./scripts/test-rie.sh "EchoHandler::handleRequest" 
+
 define HELP_MESSAGE
 
 Usage: $ make [TARGETS]
@@ -74,5 +78,5 @@ TARGETS
 	dev         Run all development tests after a change.
 	pr          Perform all checks before submitting a Pull Request.
 	test        Run the Unit tests.
-
+	test-rie    Build and test RIC locally with Lambda Runtime Interface Emulator. (Requires building the project first)
 endef

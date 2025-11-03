@@ -22,6 +22,8 @@ public class LambdaContext implements Context {
     private final long deadlineTimeInMs;
     private final CognitoIdentity cognitoIdentity;
     private final ClientContext clientContext;
+    private final String tenantId;
+    private final String xrayTraceId;
     private final LambdaLogger logger;
 
     public LambdaContext(
@@ -34,6 +36,8 @@ public class LambdaContext implements Context {
             CognitoIdentity identity,
             String functionVersion,
             String invokedFunctionArn,
+            String tenantId,
+            String xrayTraceId,
             ClientContext clientContext
     ) {
         this.memoryLimit = memoryLimit;
@@ -46,6 +50,8 @@ public class LambdaContext implements Context {
         this.clientContext = clientContext;
         this.functionVersion = functionVersion;
         this.invokedFunctionArn = invokedFunctionArn;
+        this.tenantId = tenantId;
+        this.xrayTraceId = xrayTraceId;
         this.logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
     }
 
@@ -89,6 +95,14 @@ public class LambdaContext implements Context {
         long now = System.currentTimeMillis();
         int delta = (int) (this.deadlineTimeInMs - now);
         return delta > 0 ? delta : 0;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public String getXrayTraceId() {
+        return xrayTraceId;
     }
 
     public LambdaLogger getLogger() {

@@ -12,10 +12,8 @@ import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
 public class ConcurrencyConfig {
-    private static final int AWS_LAMBDA_MAX_CONCURRENCY_LIMIT = 1000;
     private final int numberOfPlatformThreads;
-    private final String INVALID_CONFIG_MESSAGE_PREFIX = String.format("User configured %s is invalid. Please make sure it is a positive number more than zero and less than or equal %d", 
-                                                                        ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY, AWS_LAMBDA_MAX_CONCURRENCY_LIMIT);
+    private final String INVALID_CONFIG_MESSAGE_PREFIX = String.format("User configured %s is invalid.", ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY);
 
     public ConcurrencyConfig(LambdaContextLogger logger) {
         this(logger, new EnvReader());

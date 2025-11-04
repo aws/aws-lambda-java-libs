@@ -70,7 +70,7 @@ pom.xml
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-      <version>2.8.6</version>
+      <version>2.8.7</version>
     </dependency>
   </dependencies>
   <build>
@@ -203,7 +203,7 @@ platform-specific JAR by setting the `<classifier>`.
 <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
-    <version>2.8.6</version>
+    <version>2.8.7</version>
     <classifier>linux-x86_64</classifier>
 </dependency>
 ```

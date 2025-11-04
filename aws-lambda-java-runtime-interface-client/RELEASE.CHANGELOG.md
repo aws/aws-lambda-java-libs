@@ -1,4 +1,8 @@
 ### September 22, 2025
+`2.8.7`
+- Remove Minimum and Maximum Limits of AWS_LAMBDA_MAX_CONCURRENCY.
+
+### September 22, 2025
 `2.8.6`
 - Set Multiconcurrent Trace ID using utils-lite.
 

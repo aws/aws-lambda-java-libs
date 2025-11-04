@@ -41,15 +41,6 @@ class ConcurrencyConfigTest {
     }
 
     @Test
-    void testBelowMinPlatformThreadsLimit() {
-        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("0");
-
-        assertThrows(IllegalArgumentException.class, () -> new ConcurrencyConfig(lambdaLogger, envReader));
-        verify(lambdaLogger).log(contains(exitingRuntimeString), eq(LogLevel.ERROR));
-    }
-
-    @Test
     void testMinValidPlatformThreadsConfig() {
         when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("1");
 
@@ -67,15 +58,6 @@ class ConcurrencyConfigTest {
         verifyNoInteractions(lambdaLogger);
         assertEquals(4, config.getNumberOfPlatformThreads());
         assertEquals(true, config.isMultiConcurrent());
-    }
-
-    @Test
-    void testExceedingPlatformThreadsLimit() {
-        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
-        when(envReader.getEnv(ReservedRuntimeEnvironmentVariables.AWS_LAMBDA_MAX_CONCURRENCY)).thenReturn("1001");
-
-        assertThrows(IllegalArgumentException.class, () -> new ConcurrencyConfig(lambdaLogger, envReader));
-        verify(lambdaLogger).log(contains(exitingRuntimeString), eq(LogLevel.ERROR));
     }
 
     @Test

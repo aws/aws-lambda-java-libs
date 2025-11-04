@@ -28,9 +28,6 @@ public class ConcurrencyConfig {
 
             if (readLambdaMaxConcurrencyEnvVar != null) {
                 readNumOfPlatformThreads = Integer.parseInt(readLambdaMaxConcurrencyEnvVar);
-                if (readNumOfPlatformThreads < 1 || readNumOfPlatformThreads > AWS_LAMBDA_MAX_CONCURRENCY_LIMIT) {
-                    throw new IllegalArgumentException();
-                }
             }
         } catch (Exception e) {
             String message = String.format("%s\n%s", INVALID_CONFIG_MESSAGE_PREFIX, UserFault.trace(e));

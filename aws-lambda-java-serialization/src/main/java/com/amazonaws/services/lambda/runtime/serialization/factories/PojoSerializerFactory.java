@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public interface PojoSerializerFactory {
     <T> PojoSerializer<T> getSerializer(Class<T> clazz);
     PojoSerializer<Object> getSerializer(Type type);

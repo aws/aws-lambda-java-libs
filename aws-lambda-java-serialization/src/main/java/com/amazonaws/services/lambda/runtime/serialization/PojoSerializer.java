@@ -5,6 +5,7 @@ package com.amazonaws.services.lambda.runtime.serialization;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+@Deprecated
 public interface PojoSerializer<T> {
     T fromJson(InputStream input);
     T fromJson(String input);

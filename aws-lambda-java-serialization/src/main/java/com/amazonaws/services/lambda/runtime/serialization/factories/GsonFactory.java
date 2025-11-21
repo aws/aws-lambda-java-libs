@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+@Deprecated
 public class GsonFactory implements PojoSerializerFactory {
     private static final Charset utf8 = StandardCharsets.UTF_8;
     private static final Gson gson = new GsonBuilder()

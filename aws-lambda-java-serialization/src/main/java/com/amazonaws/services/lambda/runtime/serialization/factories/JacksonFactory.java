@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
+@Deprecated
 public class JacksonFactory implements PojoSerializerFactory {
 
     private static final ObjectMapper globalMapper = createObjectMapper();

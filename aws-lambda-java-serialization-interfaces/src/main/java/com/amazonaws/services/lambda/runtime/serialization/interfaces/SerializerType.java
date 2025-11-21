@@ -4,7 +4,9 @@ package com.amazonaws.services.lambda.runtime.serialization.interfaces;
  * Enumeration of available serializer types for AWS Lambda functions.
  */
 public enum SerializerType {
-    Custom("Custom");
+    Custom("Custom"),
+    Event("AWSEvent"),
+    Default("Default");
 
     private final String value;
 

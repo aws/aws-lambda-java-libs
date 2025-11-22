@@ -25,8 +25,8 @@ public interface LambdaSerializerFactory {
      * @throws IllegalArgumentException if clazz is null
      * @throws SerializerCreationException if a serializer cannot be created for the type
      */
-    default <T> LambdaSerializer<T> getSerializer(Class<T> clazz) {
-        return getSerializer(clazz, null);
+    default <T> LambdaSerializer<T> getLambdaSerializer(Class<T> clazz) {
+        return getLambdaSerializer(clazz, null);
     }
 
     /**
@@ -42,7 +42,7 @@ public interface LambdaSerializerFactory {
      * @throws IllegalArgumentException if clazz is null
      * @throws SerializerCreationException if a serializer cannot be created for the type
      */
-    <T> LambdaSerializer<T> getSerializer(Class<T> clazz, SerializerCreationContext context);
+    <T> LambdaSerializer<T> getLambdaSerializer(Class<T> clazz, SerializerCreationContext context);
 
     /**
      * Creates or retrieves a serializer for the specified generic type.
@@ -55,8 +55,8 @@ public interface LambdaSerializerFactory {
      * @throws IllegalArgumentException if type is null
      * @throws SerializerCreationException if a serializer cannot be created for the type
      */
-    default <T> LambdaSerializer<T> getSerializer(Type type) {
-        return getSerializer(type, null);
+    default <T> LambdaSerializer<T> getLambdaSerializer(Type type) {
+        return getLambdaSerializer(type, null);
     }
 
     /**
@@ -73,5 +73,5 @@ public interface LambdaSerializerFactory {
      * @throws IllegalArgumentException if type is null
      * @throws SerializerCreationException if a serializer cannot be created for the type
      */
-    <T> LambdaSerializer<T> getSerializer(Type type, SerializerCreationContext context);
+    <T> LambdaSerializer<T> getLambdaSerializer(Type type, SerializerCreationContext context);
 }

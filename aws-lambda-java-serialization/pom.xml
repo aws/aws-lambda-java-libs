@@ -36,10 +36,16 @@
         <gson.version>2.10.1</gson.version>
         <json.version>20231013</json.version>
         <owasp.version>7.3.2</owasp.version>
+        <serialization-interfaces.version>1.0.0</serialization-interfaces.version>
     </properties>
 
     <!-- If you're adding a new dependency, make sure it and its dependencies are relocated in the shade stage below -->
     <dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-serialization-interfaces</artifactId>
+            <version>${serialization-interfaces.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

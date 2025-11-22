@@ -13,13 +13,6 @@ import java.io.OutputStream;
  */
 public interface LambdaSerializer<T> {
     /**
-     * Returns the type identifier for this serializer.
-     *
-     * @return the serializer type as a string
-     */
-    String getSerializerType();
-    
-    /**
      * Deserializes an object from input stream.
      *
      * @param input the input stream

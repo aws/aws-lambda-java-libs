@@ -24,7 +24,11 @@ import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateMo
 import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateTimeModule;
 import com.amazonaws.services.lambda.runtime.serialization.events.serializers.OrgJsonSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.serializers.S3EventSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializerFactory;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.SerializerCreationContext;
 
+import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +53,7 @@ import java.util.stream.Stream;
  * 2. Add serializer (using org.json) to com.amazonaws.services.lambda.runtime.serialization.events.serializers
  * 3. Add class name and serializer to SERIALIZER_MAP
  */
-public class LambdaEventSerializers {
+public class LambdaEventSerializers implements LambdaSerializerFactory {
 
     /**
      * list of supported events
@@ -312,6 +316,48 @@ public class LambdaEventSerializers {
 
         private String getAlternateClassName() {
             return alternateClassName;
+        }
+    }
+
+    @Override
+    public <T> LambdaSerializer<T> getLambdaSerializer(Class<T> clazz, SerializerCreationContext context) {
+        if (isLambdaSupportedEvent(clazz.getName())) {
+            return new PojoSerializerAdapter<>(serializerFor(clazz, Thread.currentThread().getContextClassLoader()));
+        }
+        throw new IllegalArgumentException("Unsupported event type: " + clazz.getName());
+    }
+
+    @Override
+    public <T> LambdaSerializer<T> getLambdaSerializer(Type type, SerializerCreationContext context) {
+        if (type instanceof Class) {
+            Class<T> clazz = (Class<T>) type;
+            if (isLambdaSupportedEvent(clazz.getName())) {
+                return new PojoSerializerAdapter<T>(serializerFor(clazz, Thread.currentThread().getContextClassLoader()));
+            }
+        }
+        throw new IllegalArgumentException("Unsupported event type: " + type);
+    }
+
+    private static class PojoSerializerAdapter<T> implements LambdaSerializer<T> {
+        private final PojoSerializer<T> pojoSerializer;
+
+        public PojoSerializerAdapter(PojoSerializer<T> pojoSerializer) {
+            this.pojoSerializer = pojoSerializer;
+        }
+
+        @Override
+        public T deserialize(java.io.InputStream input) {
+            return pojoSerializer.fromJson(input);
+        }
+
+        @Override
+        public T deserialize(String input) {
+            return pojoSerializer.fromJson(input);
+        }
+
+        @Override
+        public void serialize(T value, java.io.OutputStream output) {
+            pojoSerializer.toJson(value, output);
         }
     }
 }

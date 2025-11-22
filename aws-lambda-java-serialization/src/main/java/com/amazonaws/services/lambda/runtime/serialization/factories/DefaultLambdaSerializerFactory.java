@@ -26,8 +26,8 @@ public class DefaultLambdaSerializerFactory implements LambdaSerializerFactory {
         Optional<Object> platform = context.getAttribute("platform");
         
         if (platform.isPresent() && "android".equalsIgnoreCase(platform.get().toString())) {
-            return GsonFactory.getInstance().getLambdaSerializer(type, context);
+            return GsonFactoryAdapter.getInstance().getLambdaSerializer(type, context);
         }
-        return JacksonFactory.getInstance().getLambdaSerializer(type, context);
+        return JacksonFactoryAdapter.getInstance().getLambdaSerializer(type, context);
     }
 }

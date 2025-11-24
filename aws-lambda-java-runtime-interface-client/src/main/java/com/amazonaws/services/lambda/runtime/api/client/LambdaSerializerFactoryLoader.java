@@ -6,7 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializerFactory;
-
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -24,9 +23,7 @@ public class LambdaSerializerFactoryLoader {
     }
 
     private static LambdaSerializerFactory loadFactory() {
-        Iterator<LambdaSerializerFactory> serializers = ServiceLoader
-                .load(LambdaSerializerFactory.class, AWSLambda.customerClassLoader)
-                .iterator();
+        Iterator<LambdaSerializerFactory> serializers = ServiceLoader.load(LambdaSerializerFactory.class, AWSLambda.customerClassLoader).iterator();
 
         if (!serializers.hasNext()) {
             return null;

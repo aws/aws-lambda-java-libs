@@ -1,16 +1,18 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
-
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 package com.amazonaws.services.lambda.runtime.api.client;
 
 /**
- * Interfaces for reflective function calls
- * R functions return a type R with n number of arguments
- * V functions are void
- * A generics represent arguments for a function handle
- */
- final class Functions {
+  * Interfaces for reflective function calls
+  * R functions return a type R with n number of arguments
+  * V functions are void
+  * A generics represent arguments for a function handle
+  */
+final class Functions {
 
-    private Functions() {}
+    private Functions() { }
 
     public interface R0<R> {
         public R call();

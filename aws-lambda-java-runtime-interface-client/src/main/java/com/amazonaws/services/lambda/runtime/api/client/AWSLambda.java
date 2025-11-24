@@ -23,7 +23,6 @@ import com.amazonaws.services.lambda.runtime.api.client.util.LambdaOutputStream;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.logging.LogFormat;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
-import com.amazonaws.services.lambda.runtime.api.client.ReflectUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;

@@ -7,7 +7,6 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;

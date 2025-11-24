@@ -1,4 +1,7 @@
-/* Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
+/*
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
@@ -24,11 +27,11 @@ final class LambdaByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     public void readAll(InputStream input) throws IOException {
-        while(true) {
+        while (true) {
             int numToRead = Math.max(input.available(), 1024);
             ensureSpaceAvailable(numToRead);
             int rc = input.read(this.buf, this.count, numToRead);
-            if(rc < 0) {
+            if (rc < 0) {
                 break;
             } else {
                 this.count += rc;
@@ -37,13 +40,13 @@ final class LambdaByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     private void ensureSpaceAvailable(int space) {
-        if(space <= 0) {
+        if (space <= 0) {
             return;
         }
         int remaining = count - buf.length;
-        if(remaining < space) {
+        if (remaining < space) {
             int newSize = buf.length * 2;
-            if(newSize < buf.length) {
+            if (newSize < buf.length) {
                 newSize = Integer.MAX_VALUE;
             }
             byte[] newBuf = new byte[newSize];

@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.amazonaws.services.lambda.runtime.api.client.Functions.V2;
 import com.amazonaws.services.lambda.runtime.api.client.LambdaRequestHandler.UserFaultHandler;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaClientContext;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaCognitoIdentity;
@@ -18,12 +19,8 @@ import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
-import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
-import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFactory;
-import com.amazonaws.services.lambda.runtime.serialization.util.Functions;
-import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,10 +54,10 @@ public final class EventHandlerLoader {
         UNKNOWN
     }
 
-    private static volatile PojoSerializer<LambdaClientContext> contextSerializer;
-    private static volatile PojoSerializer<LambdaCognitoIdentity> cognitoSerializer;
+    private static volatile LambdaSerializer<LambdaClientContext> contextSerializer;
+    private static volatile LambdaSerializer<LambdaCognitoIdentity> cognitoSerializer;
 
-    private static final EnumMap<Platform, Map<Type, PojoSerializer<Object>>> typeCache = new EnumMap<>(Platform.class);
+    private static final EnumMap<Platform, Map<Type, LambdaSerializer<Object>>> typeCache = new EnumMap<>(Platform.class);
 
     private static final Comparator<Method> methodPriority = new Comparator<Method>() {
         public int compare(Method lhs, Method rhs) {
@@ -103,37 +100,31 @@ public final class EventHandlerLoader {
      * @param type     Type of object used
      * @return PojoSerializer
      * @see Platform for which platforms are used
-     * @see LambdaEventSerializers for how mixins and modules are added to the serializer
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static PojoSerializer<Object> getSerializer(Platform platform, Type type) {
-        PojoSerializer<Object> customSerializer = PojoSerializerLoader.getCustomerSerializer(type);
+    private static LambdaSerializer<Object> getSerializer(Platform platform, Type type) {
+        LambdaSerializer customSerializer = PojoSerializerLoader.getCustomerSerializer(type);
         if (customSerializer != null) {
             return customSerializer;
         }
 
-        // if serializing a Class that is a Lambda supported event, use Jackson with customizations
-        if (type instanceof Class) {
-            Class<Object> clazz = ((Class) type);
-            if (LambdaEventSerializers.isLambdaSupportedEvent(clazz.getName())) {
-                return LambdaEventSerializers.serializerFor(clazz, AWSLambda.customerClassLoader);
-            }
-        }
-        // else platform dependent (Android uses GSON but all other platforms use Jackson)
+        LambdaSerializerFactory factory = LambdaSerializerFactoryLoader.load();
+
         if (Objects.requireNonNull(platform) == Platform.ANDROID) {
-            return GsonFactory.getInstance().getSerializer(type);
+            return GsonFactory.getInstance().getLambdaSerializer(type);
         }
-        return JacksonFactory.getInstance().getSerializer(type);
+
+        return factory.getLambdaSerializer(type);
     }
 
-    private static PojoSerializer<Object> getSerializerCached(Platform platform, Type type) {
-        Map<Type, PojoSerializer<Object>> cache = typeCache.get(platform);
+    private static LambdaSerializer<Object> getSerializerCached(Platform platform, Type type) {
+        Map<Type, LambdaSerializer<Object>> cache = typeCache.get(platform);
         if (cache == null) {
             cache = new HashMap<>();
             typeCache.put(platform, cache);
         }
 
-        PojoSerializer<Object> serializer = cache.get(type);
+        LambdaSerializer<Object> serializer = cache.get(type);
         if (serializer == null) {
             serializer = getSerializer(platform, type);
             cache.put(type, serializer);
@@ -142,16 +133,18 @@ public final class EventHandlerLoader {
         return serializer;
     }
 
-    private static PojoSerializer<LambdaClientContext> getContextSerializer() {
+    private static LambdaSerializer<LambdaClientContext> getContextSerializer() {
         if (contextSerializer == null) {
-            contextSerializer = GsonFactory.getInstance().getSerializer(LambdaClientContext.class);
+            // Always use Gson for internal Lambda runtime objects for consistency
+            contextSerializer = GsonFactory.getInstance().getLambdaSerializer(LambdaClientContext.class);
         }
         return contextSerializer;
     }
 
-    private static PojoSerializer<LambdaCognitoIdentity> getCognitoSerializer() {
+    private static LambdaSerializer<LambdaCognitoIdentity> getCognitoSerializer() {
         if (cognitoSerializer == null) {
-            cognitoSerializer = GsonFactory.getInstance().getSerializer(LambdaCognitoIdentity.class);
+            // Always use Gson for internal Lambda runtime objects for consistency
+            cognitoSerializer = GsonFactory.getInstance().getLambdaSerializer(LambdaCognitoIdentity.class);
         }
         return cognitoSerializer;
     }
@@ -528,7 +521,8 @@ public final class EventHandlerLoader {
     private static LambdaRequestHandler wrapRequestStreamHandler(final RequestStreamHandler handler) {
         return new LambdaRequestHandler() {
             private final ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-            private Functions.V2<String, String> log4jContextPutMethod = null;
+
+            private V2<String, String> log4jContextPutMethod = null;
 
             private void safeAddRequestIdToLog4j(String log4jContextClassName,
                                                  InvocationRequest request, Class contextMapValueClass) {
@@ -562,13 +556,13 @@ public final class EventHandlerLoader {
 
                 LambdaCognitoIdentity cognitoIdentity = null;
                 if (request.getCognitoIdentity() != null && !request.getCognitoIdentity().isEmpty()) {
-                    cognitoIdentity = getCognitoSerializer().fromJson(request.getCognitoIdentity());
+                    cognitoIdentity = getCognitoSerializer().deserialize(request.getCognitoIdentity());
                 }
 
                 LambdaClientContext clientContext = null;
                 if (request.getClientContext() != null && !request.getClientContext().isEmpty()) {
                     //Use GSON here because it handles immutable types without requiring annotations
-                    clientContext = getContextSerializer().fromJson(request.getClientContext());
+                    clientContext = getContextSerializer().deserialize(request.getClientContext());
                 }
 
                 LambdaContext context = new LambdaContext(
@@ -644,7 +638,7 @@ public final class EventHandlerLoader {
             final Platform platform = getPlatform(context);
             try {
                 if (inputType.isPresent()) {
-                    input = getSerializerCached(platform, inputType.get()).fromJson(inputStream);
+                    input = getSerializerCached(platform, inputType.get()).deserialize(inputStream);
                 } else {
                     input = null;
                 }
@@ -661,8 +655,8 @@ public final class EventHandlerLoader {
 
             try {
                 if (outputType.isPresent()) {
-                    PojoSerializer<Object> serializer = getSerializerCached(platform, outputType.get());
-                    serializer.toJson(output, outputStream);
+                    LambdaSerializer<Object> serializer = getSerializerCached(platform, outputType.get());
+                    serializer.serialize(output, outputStream);
                 } else {
                     outputStream.write(_JsonNull);
                 }

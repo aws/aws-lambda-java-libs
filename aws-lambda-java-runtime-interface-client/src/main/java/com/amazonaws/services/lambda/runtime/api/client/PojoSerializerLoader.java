@@ -6,7 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -48,7 +49,7 @@ public class PojoSerializerLoader {
         return customPojoSerializer;
     }
 
-    public static PojoSerializer<Object> getCustomerSerializer(Type type) {
+    public static LambdaSerializer<Object> getCustomerSerializer(Type type) {
         if (!initialized) {
             customPojoSerializer = loadSerializer();
         }
@@ -57,19 +58,19 @@ public class PojoSerializerLoader {
             return null;
         }
 
-        return new PojoSerializer<Object>() {
+        return new LambdaSerializer<Object>() {
             @Override
-            public Object fromJson(InputStream input) {
+            public Object deserialize(InputStream input) {
                 return customPojoSerializer.fromJson(input, type);
             }
 
             @Override
-            public Object fromJson(String input) {
+            public Object deserialize(String input) {
                 return customPojoSerializer.fromJson(input, type);
             }
 
             @Override
-            public void toJson(Object value, OutputStream output) {
+            public void serialize(Object value, OutputStream output) {
                 customPojoSerializer.toJson(value, output, type);
             }
         };

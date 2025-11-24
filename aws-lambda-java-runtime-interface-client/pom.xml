@@ -40,6 +40,7 @@
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
         <serialization-interfaces.version>1.0.0</serialization-interfaces.version>
+        <gson.version>2.10.1</gson.version>
         <!--
             The test/integration/codebuild/buildspec.*.yml files will set -DmultiArch=false
             as a workaround for executing within Github Actions. At time of writing (2022-04-08) the
@@ -104,6 +105,11 @@
             <artifactId>mockwebserver</artifactId>
             <version>4.12.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 

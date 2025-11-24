@@ -2,7 +2,7 @@
 
 package com.amazonaws.services.lambda.runtime.serialization.events.modules;
 
-import com.amazonaws.services.lambda.runtime.serialization.util.SerializeUtil;
+import com.amazonaws.services.lambda.runtime.api.client.SerializeUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

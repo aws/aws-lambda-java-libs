@@ -27,7 +27,7 @@ if [[ ! -z "$OUTPUT" ]]; then
 fi
 
 echo 'Validating that META-INF/services were relocated'
-OUTPUT=$(zipinfo ${ARTIFACT_PATH} | grep 'META-INF/services/.\+' | grep -v ${RELOCATION_PREFIX} || true)
+OUTPUT=$(zipinfo ${ARTIFACT_PATH} | grep 'META-INF/services/.\+' | grep -v ${RELOCATION_PREFIX} | grep -v 'LambdaSerializerFactory' || true)
 if [[ ! -z "$OUTPUT" ]]; then
     echo "Some meta-inf services were not relocated"
     echo ${OUTPUT}

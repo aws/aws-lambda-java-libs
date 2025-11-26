@@ -212,6 +212,9 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializerFactory</resource>
+                                </transformer>
                             </transformers>
                             <relocations>
                                 <relocation>

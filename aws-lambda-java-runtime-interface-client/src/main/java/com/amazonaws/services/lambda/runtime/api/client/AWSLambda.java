@@ -212,6 +212,7 @@ public class AWSLambda {
     }
 
     public static void main(String[] args) throws Throwable {
+        System.out.print("New RIC");
         try (LambdaContextLogger logger = initLogger()) {
             LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandlerObject(args[0], logger);
             startRuntimeLoop(lambdaRequestHandler, logger);

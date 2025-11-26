@@ -5,10 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
+import com.amazonaws.services.lambda.runtime.api.client.GsonFactory;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class JsonLogFormatter implements LogFormatter {
             DateTimeFormatter.
                 ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").
                 withZone(ZoneId.of("UTC"));
-    private final PojoSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getSerializer(StructuredLogMessage.class);
+    private final LambdaSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getLambdaSerializer(StructuredLogMessage.class);
 
     private LambdaContext lambdaContext;
 
@@ -28,7 +28,7 @@ public class JsonLogFormatter implements LogFormatter {
     public String format(String message, LogLevel logLevel) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         StructuredLogMessage msg = createLogMessage(message, logLevel);
-        serializer.toJson(msg, stream);
+        serializer.serialize(msg, stream);
         stream.write('\n');
         return new String(stream.toByteArray(), StandardCharsets.UTF_8);
     }

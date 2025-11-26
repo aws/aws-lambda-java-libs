@@ -1,14 +1,14 @@
 package com.amazonaws.services.lambda.runtime.api.client.logging;
 
+import com.amazonaws.services.lambda.runtime.api.client.GsonFactory;
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
 
 public class JsonLogFormatterTest {
 
@@ -62,8 +62,8 @@ public class JsonLogFormatterTest {
         }
         String output = logFormatter.format(message, logLevel);
 
-        PojoSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getSerializer(StructuredLogMessage.class);
-        assert_expected_log_message(serializer.fromJson(output), message, logLevel, context);
+        LambdaSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getLambdaSerializer(StructuredLogMessage.class);
+        assert_expected_log_message(serializer.deserialize(output), message, logLevel, context);
     }
 
     void assert_expected_log_message(StructuredLogMessage result, String message, LogLevel logLevel, LambdaContext context) {

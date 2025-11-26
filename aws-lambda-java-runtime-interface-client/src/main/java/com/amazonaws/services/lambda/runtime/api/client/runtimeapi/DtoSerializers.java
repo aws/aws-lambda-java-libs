@@ -4,10 +4,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
+import com.amazonaws.services.lambda.runtime.api.client.GsonFactory;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.ErrorRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -21,9 +21,9 @@ public class DtoSerializers {
         return serialize(xRayErrorCause, SingletonHelper.X_RAY_ERROR_CAUSE_SERIALIZER);
     }
 
-    private static <T> byte[] serialize(T pojo, PojoSerializer<T> serializer) {
+    private static <T> byte[] serialize(T pojo, LambdaSerializer<T> serializer) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            serializer.toJson(pojo, outputStream);
+            serializer.serialize(pojo, outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {
             return null;
@@ -36,7 +36,7 @@ public class DtoSerializers {
      * This way the serializers will be loaded lazily
      */
     private static class SingletonHelper {
-        private static final PojoSerializer<ErrorRequest> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getSerializer(ErrorRequest.class);
-        private static final PojoSerializer<XRayErrorCause> X_RAY_ERROR_CAUSE_SERIALIZER = GsonFactory.getInstance().getSerializer(XRayErrorCause.class);
+        private static final LambdaSerializer<ErrorRequest> LAMBDA_ERROR_SERIALIZER = GsonFactory.getInstance().getLambdaSerializer(ErrorRequest.class);
+        private static final LambdaSerializer<XRayErrorCause> X_RAY_ERROR_CAUSE_SERIALIZER = GsonFactory.getInstance().getLambdaSerializer(XRayErrorCause.class);
     }
 }

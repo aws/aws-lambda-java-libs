@@ -31,6 +31,8 @@ public class LambdaSerializerFactoryLoader {
 
         LambdaSerializerFactory factory = serializers.next();
 
+        System.out.println("Using LambdaSerializerFactory: " + factory.getClass().getName());
+
         if (serializers.hasNext()) {
             throw new TooManyServiceProvidersFoundException(
                     "Too many serializers provided inside the META-INF/services folder, only one is allowed"

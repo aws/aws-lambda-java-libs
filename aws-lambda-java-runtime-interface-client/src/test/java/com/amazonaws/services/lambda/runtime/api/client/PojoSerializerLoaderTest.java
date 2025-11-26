@@ -6,7 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.CustomPojoSerializer;
-import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ class PojoSerializerLoaderTest {
 
     @Test
     void testGetCustomerSerializerNoSerializerAvailable() throws Exception {
-        PojoSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(String.class);
+        LambdaSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(String.class);
         assertNull(serializer);
         Field initializedField = PojoSerializerLoader.class.getDeclaredField("initialized");
         initializedField.setAccessible(true);
@@ -73,7 +74,7 @@ class PojoSerializerLoaderTest {
         when(mockSerializer.fromJson(any(InputStream.class), eq(testType))).thenReturn(testOutput);
         when(mockSerializer.fromJson(eq(testInput), eq(testType))).thenReturn(testOutput);
 
-        PojoSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(testType);
+        LambdaSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(testType);
         assertNotNull(serializer);
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(testInput.getBytes());
@@ -93,15 +94,15 @@ class PojoSerializerLoaderTest {
         setMockSerializer(mockSerializer);
 
         Type testType = String.class;
-        PojoSerializer<Object> serializer1 = PojoSerializerLoader.getCustomerSerializer(testType);
-        PojoSerializer<Object> serializer2 = PojoSerializerLoader.getCustomerSerializer(testType);
+        LambdaSerializer<Object> serializer1 = PojoSerializerLoader.getCustomerSerializer(testType);
+        LambdaSerializer<Object> serializer2 = PojoSerializerLoader.getCustomerSerializer(testType);
 
         assertNotNull(serializer1);
         assertNotNull(serializer2);
         
         String testInput = "test";
-        serializer1.fromJson(testInput);
-        serializer2.fromJson(testInput);
+        serializer1.deserialize(testInput);
+        serializer2.deserialize(testInput);
         
         verify(mockSerializer, times(2)).fromJson(eq(testInput), eq(testType));
     }
@@ -110,8 +111,8 @@ class PojoSerializerLoaderTest {
     void testGetCustomerSerializerDifferentTypes() throws Exception {
         setMockSerializer(mockSerializer);
 
-        PojoSerializer<Object> stringSerializer = PojoSerializerLoader.getCustomerSerializer(String.class);
-        PojoSerializer<Object> integerSerializer = PojoSerializerLoader.getCustomerSerializer(Integer.class);
+        LambdaSerializer<Object> stringSerializer = PojoSerializerLoader.getCustomerSerializer(String.class);
+        LambdaSerializer<Object> integerSerializer = PojoSerializerLoader.getCustomerSerializer(Integer.class);
 
         assertNotNull(stringSerializer);
         assertNotNull(integerSerializer);
@@ -119,8 +120,8 @@ class PojoSerializerLoaderTest {
         String testString = "test";
         Integer testInt = 123;
 
-        stringSerializer.fromJson(testString);
-        integerSerializer.fromJson(testInt.toString());
+        stringSerializer.deserialize(testString);
+        integerSerializer.deserialize(testInt.toString());
 
         verify(mockSerializer).fromJson(eq(testString), eq(String.class));
         verify(mockSerializer).fromJson(eq(testInt.toString()), eq(Integer.class));
@@ -130,11 +131,11 @@ class PojoSerializerLoaderTest {
     void testGetCustomerSerializerNullType() throws Exception {
         setMockSerializer(mockSerializer);
 
-        PojoSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(null);
+        LambdaSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(null);
         assertNotNull(serializer);
 
         String testInput = "test";
-        serializer.fromJson(testInput);
+        serializer.deserialize(testInput);
         verify(mockSerializer).fromJson(eq(testInput), eq(null));
     }
 
@@ -146,8 +147,8 @@ class PojoSerializerLoaderTest {
             .when(mockSerializer)
             .fromJson(any(String.class), any(Type.class));
 
-        PojoSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(String.class);
+        LambdaSerializer<Object> serializer = PojoSerializerLoader.getCustomerSerializer(String.class);
         assertNotNull(serializer);
-        assertThrows(RuntimeException.class, () -> serializer.fromJson("test"));
+        assertThrows(RuntimeException.class, () -> serializer.deserialize("test"));
     }
 }

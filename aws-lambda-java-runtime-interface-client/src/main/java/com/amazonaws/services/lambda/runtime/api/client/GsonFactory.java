@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 
-class GsonFactory implements LambdaSerializerFactory {
+public class GsonFactory implements LambdaSerializerFactory {
     private static final Charset utf8 = StandardCharsets.UTF_8;
     private static final Gson gson = new GsonBuilder().disableHtmlEscaping().serializeSpecialFloatingPointValues().create();
         

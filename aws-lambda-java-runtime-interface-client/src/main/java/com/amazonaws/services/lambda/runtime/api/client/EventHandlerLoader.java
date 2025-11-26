@@ -21,6 +21,7 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.Invocatio
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
 import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.interfaces.LambdaSerializerFactory;
+import com.amazonaws.services.lambda.runtime.serialization.interfaces.SerializerCreationContext;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +40,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.filterStackTrace;
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.makeUserFault;
@@ -93,6 +93,7 @@ public final class EventHandlerLoader {
     private EventHandlerLoader() {
     }
 
+
     /**
      * returns the appropriate serializer for the class based on platform and whether the class is a supported event
      *
@@ -110,11 +111,11 @@ public final class EventHandlerLoader {
 
         LambdaSerializerFactory factory = LambdaSerializerFactoryLoader.load();
 
-        if (Objects.requireNonNull(platform) == Platform.ANDROID) {
-            return GsonFactory.getInstance().getLambdaSerializer(type);
-        }
+        SerializerCreationContext context = new SerializerCreationContext();
+        context.setAttribute("platform", platform.toString());
+        context.setAttribute("classLoader", AWSLambda.customerClassLoader);
 
-        return factory.getLambdaSerializer(type);
+        return factory.getLambdaSerializer(type, context);
     }
 
     private static LambdaSerializer<Object> getSerializerCached(Platform platform, Type type) {

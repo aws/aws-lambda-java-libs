@@ -1,0 +1,19 @@
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{
+    "Records": [{
+        "messageId": "a9b5a442-d524-40fb-b2ea-1f04a22ace11",
+        "receiptHandle": "AQEBJyPe81mQ5mWw0zI666F7Cml41VxuMZZFLn5O+Hd6jjOISYAdKbjfNE37m7si6yQPu4otGyCHC5/kLVYLgqHgzQyQob4QfMXohNVZCBp8Sy2rRTSt18oBsy4J3+Tr8IeW6g3Sg90ezYTXqmzCrjONWx2aaTVgsb5YP/0LyVmVPAdC9IaQDa8l9ejDZUOmC/d24fxyUSIQ1AAj8L7d6NzVQaRpgXSlbd/VhteC1H/V6Qe+q9P+EU9g4O5gFZ1Zu/gvbEtdH2ilrlDSvmCvr+yw4Dn+xTuWaGmiBSq3Qg7D0PbbyYCgThZAeyQIVWoQZ+I/gyNCK6OCU1I4Xc2NfnRfDljrqRdR78VUIO7ykJaPd2oeMcxZ8bGvw9lI45AEH2vCxU6lE8PMpxkNijsI8Jd6ET0XSs078E7FEE/LNcrhUQ/YCXioyFk+qMjslVQEHJCr",
+        "body": "{\"Records\":[{\"eventVersion\":\"2.3\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-west-2\",\"eventTime\":\"2025-11-19T18:11:15.203Z\",\"eventName\":\"ObjectTagging:Put\",\"userIdentity\":{\"principalId\":\"AWS:AROA3CM2N2RWM3VNNNORZ:ScrutinizerProcessScanResult-Beta-us-west-2\"},\"requestParameters\":{\"sourceIPAddress\":\"44.234.9.45\"},\"responseElements\":{\"x-amz-request-id\":\"XS4G2Y3TXAVGWHXA\",\"x-amz-id-2\":\"WdOefYKkS9e63AY4cQE7V1I3KUx89QUHiI/+Pc9XjLxJxDIB0jFtealR1eoblL5mHvrgD4TE48J9O5EhAsQbze27hCOgFqQe\"},\"s3\":{\"s3SchemaVersion\":\"1.0\",\"configurationId\":\"NzIwZjQ3ZTItMWNlOS00ODYyLWI1ZjAtZDY5MjBjMjQzOWM2\",\"bucket\":{\"name\":\"studios-rightsline-staging-alpha-us-west-2\",\"ownerIdentity\":{\"principalId\":\"A3942EJ641BCES\"},\"arn\":\"arn:aws:s3:::studios-rightsline-staging-alpha-us-west-2\"},\"object\":{\"key\":\"TEST-DO-NOT-DELETE_rightsline_to_brandcomply_deal_and_rights_set_refresh_report_delta.csv\",\"eTag\":\"58f86215f2ce2144df4bd68f2520796c\",\"versionId\":\"L2tJyZLPp4MsiESyM_UzfOiNmzL6V3iX\"}}}]}",
+        "attributes": {
+            "ApproximateReceiveCount": 1,
+            "SentTimestamp": 1763582655126,
+            "SenderId": "AROA3CM2N2RWJLYDB5MRZ:ConduitAccountService+Prod+Default+NA+Fleet+P-zhabowe",
+            "ApproximateFirstReceiveTimestamp": 1763582655131
+        },
+        "messageAttributes": {},
+        "md5OfMessageAttributes": null,
+        "md5OfBody": "32e4feac7487597736807e3bdc15e991",
+        "eventSource": "aws:sqs",
+        "eventSourceARN": "arn:aws:sqs:us-west-2:761069950060:RightslineProcessingQueue-alpha-us-west-2",
+        "awsRegion":"us-west-2"
+    }]
+}'

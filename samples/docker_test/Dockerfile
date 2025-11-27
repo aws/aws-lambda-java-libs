@@ -8,7 +8,7 @@ RUN unzip -d /opt/gradle gradle-8.3-bin.zip
 
 COPY src ./src
 COPY build.gradle .
-
+COPY aws-lambda-java-serialization-1.1.6.jar .
 
 RUN JAVA_HOME=/var/lang /opt/gradle/gradle-8.3/bin/gradle :buildZip
 

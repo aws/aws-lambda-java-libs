@@ -5,12 +5,10 @@ repositories {
 }
 
 dependencies {
-    // add core dependency too
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.4'
-    // add jackson dep
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+    // Use serialization jar with relocated jackson for compile-time annotations
+    compileOnly files('aws-lambda-java-serialization-1.1.6.jar')
 }
 
 java {

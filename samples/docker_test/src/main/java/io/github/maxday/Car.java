@@ -1,10 +1,9 @@
 package io.github.maxday;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Car {
     
-    @JsonProperty("color_hex")
     private String color;
     
     private String model;

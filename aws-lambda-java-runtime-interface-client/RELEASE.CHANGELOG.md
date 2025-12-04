@@ -1,3 +1,36 @@
+### September 22, 2025
+`2.8.7`
+- Remove Minimum and Maximum Limits of AWS_LAMBDA_MAX_CONCURRENCY.
+
+### September 22, 2025
+`2.8.6`
+- Set Multiconcurrent Trace ID using utils-lite.
+
+### September 17, 2025
+`2.8.5`
+- Log errorType and errorMessage from RAPID in C++ Client.
+- Performance Upgrade for Multiconcurrency Mode.
+
+### September 9, 2025
+`2.8.4`
+- Make Trace ID Accessible through Context Object.
+
+### July 19, 2025
+`2.8.3`
+- Ensure EventHandlerLoader Thread Safety.
+
+### June 26, 2025
+`2.8.2`
+- Allow AWS_LAMBDA_MAX_CONCURRENCY to be One. Crash the RIC if it is set to an un-parsable string to an integer or an out of bounds value.
+
+### June 26, 2025
+`2.8.1`
+- Refactoring
+
+### June 26, 2025
+`2.8.0`
+- Refactoring
+
 ### May 21, 2025
 `2.7.0`
 - Adding support for multi tenancy ([#540](https://github.com/aws/aws-lambda-java-libs/pull/540))

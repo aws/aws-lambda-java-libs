@@ -2,7 +2,7 @@
 
 # Set variables
 FUNCTION_NAME="aws-lambda-java-profiler-function-${GITHUB_RUN_ID}"
-FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-profiler-options-${GITHUB_RUN_ID}"
+FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-${GITHUB_RUN_ID}"
 ROLE_NAME="aws-lambda-java-profiler-role-${GITHUB_RUN_ID}"
 HANDLER="helloworld.Handler::handleRequest"
 RUNTIME="java21"

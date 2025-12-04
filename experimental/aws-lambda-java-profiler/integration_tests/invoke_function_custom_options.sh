@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set variables
-FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-profiler-options-${GITHUB_RUN_ID}"
+FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-${GITHUB_RUN_ID}"
 PAYLOAD='{"key": "value"}'
 
 # Expected profiler commands (should match create_function.sh)

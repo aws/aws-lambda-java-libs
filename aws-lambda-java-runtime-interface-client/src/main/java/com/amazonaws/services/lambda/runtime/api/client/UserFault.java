@@ -38,7 +38,7 @@ public final class UserFault extends RuntimeException {
      * No more user code should run after a fault.
      */
     public static UserFault makeUserFault(Throwable t) {
-        return makeUserFault(t, false);
+        return t instanceof UserFault ? (UserFault) t : makeUserFault(t, false);
     }
 
     public static UserFault makeUserFault(Throwable t, boolean fatal) {

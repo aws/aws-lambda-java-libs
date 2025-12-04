@@ -28,4 +28,7 @@ task buildZip(type: Zip) {
     }
 }
 
+version = '0.0.1'
+
+
 build.dependsOn buildZip

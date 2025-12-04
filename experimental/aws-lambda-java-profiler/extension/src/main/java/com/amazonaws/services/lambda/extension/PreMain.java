@@ -99,10 +99,7 @@ public class PreMain {
                 fileNameSuffix
             );
             Logger.debug(
-                "stopping the profiler with filename  = " +
-                    fileName +
-                    " with command = " +
-                    PROFILER_STOP_COMMAND
+                "stopping the profiler with filename  = " + fileName
             );
             AsyncProfiler.getInstance().execute(
                 String.format(PROFILER_STOP_COMMAND, fileName)
@@ -125,7 +122,7 @@ public class PreMain {
     }
 
     public static void registerShutdownHook() {
-        Logger.debug("registering shutdown hook");
+        Logger.debug("registering shutdown hook wit command = " + PROFILER_STOP_COMMAND);
         Thread shutdownHook = new Thread(
             new ShutdownHook(PROFILER_STOP_COMMAND)
         );

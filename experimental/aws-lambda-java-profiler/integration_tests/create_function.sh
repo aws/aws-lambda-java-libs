@@ -11,7 +11,7 @@ LAYER_ARN=$(cat /tmp/layer_arn)
 JAVA_TOOL_OPTIONS="-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -javaagent:/opt/profiler-extension.jar"
 AWS_LAMBDA_PROFILER_RESULTS_BUCKET_NAME="aws-lambda-java-profiler-bucket-${GITHUB_RUN_ID}"
 AWS_LAMBDA_PROFILER_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
-AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s"*Issue #, if available:*
+AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s"
 
 # Compile the Hello World project
 cd integration_tests/helloworld

@@ -5,8 +5,8 @@ FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-
 PAYLOAD='{"key": "value"}'
 
 # Expected profiler commands (should match create_function.sh)
-EXPECTED_START_COMMAND="start,event=wall,interval=1us"
-EXPECTED_STOP_COMMAND="stop,file=%s,include=*AWSLambda.main,include=start_thread"
+EXPECTED_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
+EXPECTED_STOP_COMMAND="stop,file=%s"*Issue #, if available:*
 
 echo "Invoking Lambda function with custom profiler options: $FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS"
 
@@ -37,13 +37,14 @@ echo "Function output:"
 cat output.json
 
 # Verify profiler started
-echo "$LOG_RESULT" | base64 --decode | grep "starting the profiler for coldstart" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "starting the profiler for coldstart" || { echo "ERROR: Profiler did not start for coldstart"; exit 1; }
 
 # Verify custom start command is being used
-echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_START_COMMAND" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_START_COMMAND" || { echo "ERROR: Expected start command not found: $EXPECTED_START_COMMAND"; exit 1; }
+echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_STOP_COMMAND" || { echo "ERROR: Expected stop command not found: $EXPECTED_STOP_COMMAND"; exit 1; }
 
 # Verify no upload on cold start
-echo "$LOG_RESULT" | base64 --decode | grep -v "uploading" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep -v "uploading" || { echo "ERROR: Unexpected upload detected on cold start"; exit 1; }
 
 # Clean up the output file
 rm output.json
@@ -79,10 +80,10 @@ echo "Function output:"
 cat output.json
 
 # Verify upload happens on warm start
-echo "$LOG_RESULT" | base64 --decode | grep "uploading" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "uploading" || { echo "ERROR: Upload not detected on warm start"; exit 1; }
 
 # Verify custom stop command is being used
-echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_STOP_COMMAND" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_STOP_COMMAND" || { echo "ERROR: Expected stop command not found on warm start: $EXPECTED_STOP_COMMAND"; exit 1; }
 
 # Clean up the output file
 rm output.json

@@ -6,7 +6,7 @@ PAYLOAD='{"key": "value"}'
 
 # Expected profiler commands (should match create_function.sh)
 EXPECTED_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
-EXPECTED_STOP_COMMAND="stop,file=%s"
+EXPECTED_STOP_COMMAND="stop,file="
 
 echo "Invoking Lambda function with custom profiler options: $FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS"
 

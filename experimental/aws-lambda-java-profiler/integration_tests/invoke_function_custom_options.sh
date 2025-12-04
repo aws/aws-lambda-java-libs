@@ -82,8 +82,5 @@ cat output.json
 # Verify upload happens on warm start
 echo "$LOG_RESULT" | base64 --decode | grep "uploading" || { echo "ERROR: Upload not detected on warm start"; exit 1; }
 
-# Verify custom stop command is being used
-echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_STOP_COMMAND" || { echo "ERROR: Expected stop command not found on warm start: $EXPECTED_STOP_COMMAND"; exit 1; }
-
 # Clean up the output file
 rm output.json

@@ -32,8 +32,8 @@ fi
 echo "Function output:"
 cat output.json
 
-echo "$LOG_RESULT" | base64 --decode | grep "starting the profiler for coldstart" || exit 1
-echo "$LOG_RESULT" | base64 --decode | grep -v "uploading" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "starting the profiler for coldstart" || { echo "ERROR: Profiler did not start for coldstart"; exit 1; }
+echo "$LOG_RESULT" | base64 --decode | grep -v "uploading" || { echo "ERROR: Unexpected upload detected on cold start"; exit 1; }
 
 # Clean up the output file
 rm output.json
@@ -68,7 +68,7 @@ fi
 echo "Function output:"
 cat output.json
 
-echo "$LOG_RESULT" | base64 --decode | grep "uploading" || exit 1
+echo "$LOG_RESULT" | base64 --decode | grep "uploading" || { echo "ERROR: Upload not detected on warm start"; exit 1; }
 
 # Clean up the output file
 rm output.json

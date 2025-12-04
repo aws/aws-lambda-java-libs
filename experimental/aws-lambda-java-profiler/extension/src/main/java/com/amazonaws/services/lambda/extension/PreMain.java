@@ -116,7 +116,7 @@ public class PreMain {
     public static void startProfiler() {
         try {
             Logger.debug(
-                "staring the profiler with command = " + PROFILER_START_COMMAND
+                "starting the profiler with command = " + PROFILER_START_COMMAND
             );
             AsyncProfiler.getInstance().execute(PROFILER_START_COMMAND);
         } catch (IOException e) {

@@ -90,7 +90,7 @@ Users can configure the profiler output by setting environment variables.
 ```
 # Example: Output as JFR format instead of HTML
 AWS_LAMBDA_PROFILER_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
-AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s"*Issue #, if available:*
+AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s"
 ```
 
 Defaults are the following:

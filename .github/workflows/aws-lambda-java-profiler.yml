@@ -58,6 +58,10 @@ jobs:
         working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/invoke_function.sh
 
+      - name: Invoke Java Custom Options function
+        working-directory: ./experimental/aws-lambda-java-profiler
+        run: ./integration_tests/invoke_function_custom_options.sh
+
       - name: Download from s3
         working-directory: ./experimental/aws-lambda-java-profiler
         run: ./integration_tests/download_from_s3.sh

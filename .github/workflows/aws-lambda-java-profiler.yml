@@ -67,7 +67,7 @@ jobs:
         run: ./integration_tests/download_from_s3.sh
 
       - name: Upload profiles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: profiles
           path: /tmp/s3-artifacts 

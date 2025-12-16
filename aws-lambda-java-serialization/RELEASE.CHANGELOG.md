@@ -1,3 +1,7 @@
+### December 16, 2025
+`1.2.0`:
+- Update `jackson-databind` dependency from 2.14.2 to 2.15.4
+
 ### December 1, 2023
 `1.1.5`:
 - Add support for DynamodbEvent.DynamodbStreamRecord serialization

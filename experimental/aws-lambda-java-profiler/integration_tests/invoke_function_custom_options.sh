@@ -1,14 +1,18 @@
 #!/bin/bash
 
 # Set variables
-FUNCTION_NAME="aws-lambda-java-profiler-function-${GITHUB_RUN_ID}"
-PAYLOAD='{"key": "value"}' 
+FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS="aws-lambda-java-profiler-function-custom-${GITHUB_RUN_ID}"
+PAYLOAD='{"key": "value"}'
 
-echo "Invoking Lambda function: $FUNCTION_NAME"
+# Expected profiler commands (should match create_function.sh)
+EXPECTED_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
+EXPECTED_STOP_COMMAND="stop,file=%s"
+
+echo "Invoking Lambda function with custom profiler options: $FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS"
 
 # Invoke the Lambda function synchronously and capture the response
 RESPONSE=$(aws lambda invoke \
-    --function-name "$FUNCTION_NAME" \
+    --function-name "$FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS" \
     --payload "$PAYLOAD" \
     --cli-binary-format raw-in-base64-out \
     --log-type Tail \
@@ -32,7 +36,14 @@ fi
 echo "Function output:"
 cat output.json
 
+# Verify profiler started
 echo "$LOG_RESULT" | base64 --decode | grep "starting the profiler for coldstart" || { echo "ERROR: Profiler did not start for coldstart"; exit 1; }
+
+# Verify custom start command is being used
+echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_START_COMMAND" || { echo "ERROR: Expected start command not found: $EXPECTED_START_COMMAND"; exit 1; }
+echo "$LOG_RESULT" | base64 --decode | grep "$EXPECTED_STOP_COMMAND" || { echo "ERROR: Expected stop command not found: $EXPECTED_STOP_COMMAND"; exit 1; }
+
+# Verify no upload on cold start
 echo "$LOG_RESULT" | base64 --decode | grep -v "uploading" || { echo "ERROR: Unexpected upload detected on cold start"; exit 1; }
 
 # Clean up the output file
@@ -40,11 +51,11 @@ rm output.json
 
 
 # Invoke it a second time for warm start
-echo "Invoking Lambda function: $FUNCTION_NAME"
+echo "Invoking Lambda function (warm start): $FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS"
 
 # Invoke the Lambda function synchronously and capture the response
 RESPONSE=$(aws lambda invoke \
-    --function-name "$FUNCTION_NAME" \
+    --function-name "$FUNCTION_NAME_CUSTOM_PROFILER_OPTIONS" \
     --payload "$PAYLOAD" \
     --cli-binary-format raw-in-base64-out \
     --log-type Tail \
@@ -68,6 +79,7 @@ fi
 echo "Function output:"
 cat output.json
 
+# Verify upload happens on warm start
 echo "$LOG_RESULT" | base64 --decode | grep "uploading" || { echo "ERROR: Upload not detected on warm start"; exit 1; }
 
 # Clean up the output file

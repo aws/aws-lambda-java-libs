@@ -22,7 +22,7 @@ public class JsonLogFormatter implements LogFormatter {
                 withZone(ZoneId.of("UTC"));
     private final PojoSerializer<StructuredLogMessage> serializer = GsonFactory.getInstance().getSerializer(StructuredLogMessage.class);
 
-    private LambdaContext lambdaContext;
+    private ThreadLocal<LambdaContext> lambdaContext = new ThreadLocal<>();
 
     @Override
     public String format(String message, LogLevel logLevel) {
@@ -39,10 +39,12 @@ public class JsonLogFormatter implements LogFormatter {
         msg.message = message;
         msg.level = logLevel;
 
-        if (lambdaContext != null) {
-            msg.AWSRequestId = lambdaContext.getAwsRequestId();
-            msg.tenantId = lambdaContext.getTenantId();
+        LambdaContext lambdaContextForCurrentThread = lambdaContext.get();
+        if (lambdaContextForCurrentThread != null) {
+            msg.AWSRequestId = lambdaContextForCurrentThread.getAwsRequestId();
+            msg.tenantId = lambdaContextForCurrentThread.getTenantId();
         }
+
         return msg;
     }
 
@@ -53,6 +55,10 @@ public class JsonLogFormatter implements LogFormatter {
      */
     @Override
     public void setLambdaContext(LambdaContext context) {
-        this.lambdaContext = context;
+        if (context == null) {
+            lambdaContext.remove();
+        } else {
+            lambdaContext.set(context);
+        }
     }
 }

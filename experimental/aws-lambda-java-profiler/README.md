@@ -83,6 +83,25 @@ When the agent is constructed, it starts the profiler and registers itself as a 
 A new thread is created to handle calling `/next` and uploading the results of the profiler to S3. The bucket to upload
 the result to is configurable using an environment variable.
 
+### Custom Parameters for the Profiler
+
+Users can configure the profiler output by setting environment variables.
+
+```
+# Example: Output as JFR format instead of HTML
+AWS_LAMBDA_PROFILER_START_COMMAND="start,event=wall,interval=1us,file=/tmp/profile.jfr"
+AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s"
+```
+
+Defaults are the following:
+
+```
+AWS_LAMBDA_PROFILER_START_COMMAND="start,event=wall,interval=1us"
+AWS_LAMBDA_PROFILER_STOP_COMMAND="stop,file=%s,include=*AWSLambda.main,include=start_thread"
+```
+
+See [async-profiler's ProfilerOptions](https://github.com/async-profiler/async-profiler/blob/master/docs/ProfilerOptions.md) for all available profiler parameters.
+
 ### Troubleshooting
 
 - Ensure the Lambda function execution role has the necessary permissions to write to the S3 bucket.

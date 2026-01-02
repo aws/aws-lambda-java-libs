@@ -32,7 +32,7 @@ jobs:
 
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization
-      run: mvn clean install -DskipTests
+      run: mvn clean install
 
     - name: Runtime Interface Client smoke tests - Run 'pr' target
       working-directory: ./aws-lambda-java-runtime-interface-client
@@ -68,7 +68,7 @@ jobs:
 
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization
-      run: mvn clean install -DskipTests
+      run: mvn clean install
 
     - name: Test Runtime Interface Client xplatform build - Run 'build' target
       working-directory: ./aws-lambda-java-runtime-interface-client

@@ -4,7 +4,7 @@
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-serialization</artifactId>
-    <version>1.1.6</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Serialization</name>
@@ -32,7 +32,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <relocation.prefix>com.amazonaws.lambda.thirdparty</relocation.prefix>
-        <jackson.version>2.14.2</jackson.version>
+        <jackson.version>2.15.4</jackson.version>
         <gson.version>2.10.1</gson.version>
         <json.version>20231013</json.version>
         <owasp.version>7.3.2</owasp.version>
@@ -196,7 +196,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

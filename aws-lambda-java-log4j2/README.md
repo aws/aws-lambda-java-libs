@@ -39,7 +39,7 @@ If using maven shade plugin, set the plugin configuration as follows
   <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-shade-plugin</artifactId>
-    <version>2.4.3</version>
+    <version>3.6.1</version>
     <executions>
       <execution>
         <phase>package</phase>

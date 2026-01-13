@@ -61,7 +61,7 @@ jobs:
       if: env.ENABLE_SNAPSHOT != null
       env:
         ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v5
       with:
         aws-region: ${{ secrets.AWS_REGION }}
         role-to-assume: ${{ secrets.AWS_ROLE }}

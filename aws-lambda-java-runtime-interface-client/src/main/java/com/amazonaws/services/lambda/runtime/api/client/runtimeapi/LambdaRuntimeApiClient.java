@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
+import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import java.io.IOException;
 
@@ -23,6 +24,11 @@ public interface LambdaRuntimeApiClient {
      * Get next invocation
      */
     InvocationRequest nextInvocation() throws IOException;
+
+    /**
+     * Get next invocation with exponential backoff
+     */
+    InvocationRequest nextInvocationWithExponentialBackoff(LambdaContextLogger lambdaLogger) throws Exception;
 
     /**
      * Report invocation success

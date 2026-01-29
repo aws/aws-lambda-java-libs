@@ -35,3 +35,4 @@ experimental/aws-lambda-java-profiler/extension/build/
 experimental/aws-lambda-java-profiler/integration_tests/helloworld/bin
 !experimental/aws-lambda-java-profiler/extension/gradle/wrapper/*.jar
 /scratch/
+.vscode

@@ -143,6 +143,8 @@ public class LambdaEventSerializers {
                 KinesisTimeWindowEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ScheduledEvent",
                     ScheduledEventMixin.class),
+            new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ScheduledV2Event",
+                    ScheduledEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SecretsManagerRotationEvent",
                     SecretsManagerRotationEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SNSEvent",

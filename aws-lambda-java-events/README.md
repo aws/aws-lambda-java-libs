@@ -23,6 +23,7 @@
 * `CognitoEvent`
 * `CognitoUserPoolCreateAuthChallengeEvent`
 * `CognitoUserPoolCustomMessageEvent`
+* `CognitoUserPoolCustomSMSSenderEvent`
 * `CognitoUserPoolDefineAuthChallengeEvent`
 * `CognitoUserPoolEvent`
 * `CognitoUserPoolMigrateUserEvent`

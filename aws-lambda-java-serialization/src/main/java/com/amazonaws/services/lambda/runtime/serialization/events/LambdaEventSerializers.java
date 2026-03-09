@@ -19,6 +19,7 @@ import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFact
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
 import com.amazonaws.services.lambda.runtime.serialization.util.SerializeUtil;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateModule;
 import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateTimeModule;
@@ -91,7 +92,7 @@ public class LambdaEventSerializers {
             new SimpleEntry<>("com.amazonaws.services.s3.event.S3EventNotification", new S3EventSerializer<>()),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification", new S3EventSerializer<>()),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.S3Event", new S3EventSerializer<>()))
-            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
     /**
      * Maps supported event classes to mixin classes with Jackson annotations.
@@ -153,7 +154,7 @@ public class LambdaEventSerializers {
                     SQSEventMixin.class),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SQSEvent$SQSMessage",
                     SQSEventMixin.SQSMessageMixin.class))
-            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
     /**
      * If mixins are required for inner classes of an event, then those nested classes must be specified here.
@@ -208,7 +209,7 @@ public class LambdaEventSerializers {
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SQSEvent",
                     Arrays.asList(
                             new NestedClass("com.amazonaws.services.lambda.runtime.events.SQSEvent$SQSMessage"))))
-            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
     /**
      * If event requires a naming strategy. For example, when someone names the getter method getSNS and the setter
@@ -216,11 +217,11 @@ public class LambdaEventSerializers {
      */
     private static final Map<String, PropertyNamingStrategy> NAMING_STRATEGY_MAP = Stream.of(
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SNSEvent",
-                    new PropertyNamingStrategy.PascalCaseStrategy()),
+                    new PropertyNamingStrategies.UpperCamelCaseStrategy()),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Queue",
-                    new PropertyNamingStrategy.PascalCaseStrategy())
+                    new PropertyNamingStrategies.UpperCamelCaseStrategy())
             )
-            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
     /**
      * Returns whether the class name is a Lambda supported event model.

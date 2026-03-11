@@ -14,6 +14,9 @@ on:
       - 'aws-lambda-java-core/**'
       - '.github/workflows/aws-lambda-java-core.yml'
 
+permissions:
+  contents: read
+
 jobs:
   build:
 

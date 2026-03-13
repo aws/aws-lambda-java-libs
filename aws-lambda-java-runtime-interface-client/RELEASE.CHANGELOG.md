@@ -1,3 +1,7 @@
+### March 12, 2026
+`2.9.0`
+- Update aws-lambda-java-serialization dependency to 1.3.0
+
 ### September 22, 2025
 `2.8.7`
 - Remove Minimum and Maximum Limits of AWS_LAMBDA_MAX_CONCURRENCY.

@@ -54,6 +54,7 @@
 * `S3BatchResponse`
 * `S3Event`
 * `ScheduledEvent`
+* `ScheduledV2Event`
 * `SecretsManagerRotationEvent`
 * `SimpleIAMPolicyResponse`
 * `SNSEvent`

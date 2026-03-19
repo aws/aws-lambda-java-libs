@@ -1,5 +1,5 @@
 # This workflow will be triggered if there will be changes to aws-lambda-java-core
-# package and it builds the package and the packages that depend on it.
+# package and it builds the package.
 
 name: Java CI aws-lambda-java-core
 
@@ -33,14 +33,3 @@ jobs:
 
     - name: Install core with Maven
       run: mvn -B install --file aws-lambda-java-core/pom.xml
-
-    # Package modules that depend on base module
-    - name: Package log4j2 with Maven
-      run: mvn -B package --file aws-lambda-java-log4j2/pom.xml
-
-    # Test Runtime Interface Client
-    - name: Run 'pr' target
-      working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr
-      env:
-        IS_JAVA_8: true

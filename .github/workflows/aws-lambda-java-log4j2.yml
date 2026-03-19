@@ -1,5 +1,5 @@
-# This workflow will be triggered if there will be changes to 
-# aws-lambda-java-log4j2 package and it builds the package.
+# This workflow will be triggered if there will be changes to
+# aws-lambda-java-log4j2 package or its dependency (core), and it builds the package.
 
 name: Java CI aws-lambda-java-log4j2
 
@@ -8,10 +8,12 @@ on:
     branches: [ main ]
     paths:
       - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
       - '.github/workflows/aws-lambda-java-log4j2.yml'
 
 permissions:
@@ -37,4 +39,3 @@ jobs:
     # Package target module
     - name: Package log4j2 with Maven
       run: mvn -B package --file aws-lambda-java-log4j2/pom.xml
-    

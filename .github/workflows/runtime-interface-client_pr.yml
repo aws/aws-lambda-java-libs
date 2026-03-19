@@ -1,5 +1,6 @@
-# This workflow will be triggered if there will be changes to 
-# aws-lambda-java-runtime-interface-client package and it builds the package.
+# This workflow will be triggered if there will be changes to
+# aws-lambda-java-runtime-interface-client package or its dependencies (core, serialization),
+# and it builds the package.
 
 name: PR to runtime-interface-client
 
@@ -8,6 +9,8 @@ on:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-runtime-interface-client/**'
+      - 'aws-lambda-java-core/**'
+      - 'aws-lambda-java-serialization/**'
       - '.github/workflows/runtime-interface-client_*.yml'
 
 permissions:
@@ -17,13 +20,16 @@ jobs:
 
   smoke-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [8, 11, 17, 21, 25]
     steps:
     - uses: actions/checkout@v5
 
-    - name: Set up JDK 1.8
+    - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v4
       with:
-        java-version: 8
+        java-version: ${{ matrix.java-version }}
         distribution: corretto
         cache: maven
 
@@ -39,8 +45,8 @@ jobs:
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
       env:
-        IS_JAVA_8: true
-    
+        IS_JAVA_8: ${{ matrix.java-version == 8 }}
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -51,6 +57,7 @@ jobs:
       with:
         java-version: 8
         distribution: corretto
+        cache: maven
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -62,7 +69,7 @@ jobs:
 
     - name: Available buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
-    
+
     - name: Build and install core dependency locally
       working-directory: ./aws-lambda-java-core
       run: mvn clean install

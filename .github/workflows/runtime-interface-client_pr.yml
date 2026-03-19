@@ -25,7 +25,8 @@ jobs:
       with:
         java-version: 8
         distribution: corretto
-    
+        cache: maven
+
     - name: Build and install core dependency locally
       working-directory: ./aws-lambda-java-core
       run: mvn clean install

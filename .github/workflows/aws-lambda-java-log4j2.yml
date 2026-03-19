@@ -29,8 +29,9 @@ jobs:
       with:
         java-version: 8
         distribution: corretto
-    
-    # Install base module
+        cache: maven
+
+    # Install dependency
     - name: Install core with Maven
       run: mvn -B install --file aws-lambda-java-core/pom.xml
     # Package target module

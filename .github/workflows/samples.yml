@@ -27,6 +27,7 @@ jobs:
         with:
           java-version: 8
           distribution: corretto
+          cache: maven
 
       # Install events module
       - name: Install events with Maven

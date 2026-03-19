@@ -8,10 +8,16 @@ on:
     branches: [ main ]
     paths:
       - 'aws-lambda-java-tests/**'
+      - 'aws-lambda-java-runtime-interface-client/**'
+      - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-events/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-tests/**'
+      - 'aws-lambda-java-runtime-interface-client/**'
+      - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-events/**'
       - '.github/workflows/aws-lambda-java-tests.yml'
 
 permissions:

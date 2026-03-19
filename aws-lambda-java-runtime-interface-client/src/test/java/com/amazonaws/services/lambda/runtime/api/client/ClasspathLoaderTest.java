@@ -6,16 +6,16 @@ SPDX-License-Identifier: Apache-2.0
 package com.amazonaws.services.lambda.runtime.api.client;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +27,7 @@ class ClasspathLoaderTest {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.clearProperty("java.class.path");
-            ClasspathLoader.main(new String[]{});
+            ClasspathLoader.main(new String[] {});
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -35,13 +35,30 @@ class ClasspathLoaderTest {
         }
     }
 
+    // On JDK 8-24, new File("").exists() returns false → FileNotFoundException.
     @Test
+    @DisabledForJreRange(min = JRE.JAVA_25)
     void testLoadAllClassesWithEmptyClasspath() {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.setProperty("java.class.path", "");
-            assertThrows(FileNotFoundException.class, () -> 
-                ClasspathLoader.main(new String[]{}));
+            assertThrows(FileNotFoundException.class, () -> ClasspathLoader.main(new String[] {}));
+        } finally {
+            if (originalClasspath != null) {
+                System.setProperty("java.class.path", originalClasspath);
+            }
+        }
+    }
+
+    // On JDK 25+, new File("") resolves to cwd (exists=true, isDirectory=true) →
+    // skipped with warning, no exception.
+    @Test
+    @EnabledForJreRange(min = JRE.JAVA_25)
+    void testLoadAllClassesWithEmptyClasspathJdk25Plus() throws IOException {
+        String originalClasspath = System.getProperty("java.class.path");
+        try {
+            System.setProperty("java.class.path", "");
+            ClasspathLoader.main(new String[] {});
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -54,8 +71,7 @@ class ClasspathLoaderTest {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.setProperty("java.class.path", "nonexistent/path");
-            assertThrows(FileNotFoundException.class, () -> 
-                ClasspathLoader.main(new String[]{}));
+            assertThrows(FileNotFoundException.class, () -> ClasspathLoader.main(new String[] {}));
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -69,7 +85,7 @@ class ClasspathLoaderTest {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.setProperty("java.class.path", jarFile.getAbsolutePath());
-            ClasspathLoader.main(new String[]{});
+            ClasspathLoader.main(new String[] {});
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -82,7 +98,7 @@ class ClasspathLoaderTest {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.setProperty("java.class.path", tempDir.toString());
-            ClasspathLoader.main(new String[]{});
+            ClasspathLoader.main(new String[] {});
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -94,14 +110,14 @@ class ClasspathLoaderTest {
     void testLoadAllClassesWithMultipleEntries(@TempDir Path tempDir) throws IOException {
         File jarFile1 = createSimpleJar(tempDir, "test1.jar", "TestClass1");
         File jarFile2 = createSimpleJar(tempDir, "test2.jar", "TestClass2");
-        
+
         String originalClasspath = System.getProperty("java.class.path");
         try {
-            String newClasspath = jarFile1.getAbsolutePath() + 
-                                File.pathSeparator + 
-                                jarFile2.getAbsolutePath();
+            String newClasspath = jarFile1.getAbsolutePath() +
+                    File.pathSeparator +
+                    jarFile2.getAbsolutePath();
             System.setProperty("java.class.path", newClasspath);
-            ClasspathLoader.main(new String[]{});
+            ClasspathLoader.main(new String[] {});
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -112,7 +128,7 @@ class ClasspathLoaderTest {
     @Test
     void testLoadAllClassesWithBlocklistedClass(@TempDir Path tempDir) throws IOException {
         File jarFile = tempDir.resolve("blocklist-test.jar").toFile();
-        
+
         try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile))) {
             JarEntry blockedEntry = new JarEntry("META-INF/versions/9/module-info.class");
             jos.putNextEntry(blockedEntry);
@@ -128,8 +144,9 @@ class ClasspathLoaderTest {
         String originalClasspath = System.getProperty("java.class.path");
         try {
             System.setProperty("java.class.path", jarFile.getAbsolutePath());
-            ClasspathLoader.main(new String[]{});
-            // The test passes if no exception is thrown and the blocklisted class is skipped
+            ClasspathLoader.main(new String[] {});
+            // The test passes if no exception is thrown and the blocklisted class is
+            // skipped
         } finally {
             if (originalClasspath != null) {
                 System.setProperty("java.class.path", originalClasspath);
@@ -139,7 +156,7 @@ class ClasspathLoaderTest {
 
     private File createSimpleJar(Path tempDir, String jarName, String className) throws IOException {
         File jarFile = tempDir.resolve(jarName).toFile();
-        
+
         try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile))) {
             // Add a simple non-class file to make it a valid jar
             JarEntry entry = new JarEntry("com/test/" + className + ".txt");
@@ -147,7 +164,7 @@ class ClasspathLoaderTest {
             jos.write("test content".getBytes());
             jos.closeEntry();
         }
-        
+
         return jarFile;
     }
 }

@@ -3,6 +3,16 @@
 
 set -euo pipefail
 
+# Check if Docker is available and running. This works regardless of how Docker
+# is configured (Unix socket, TCP, Docker Desktop, Colima, Rancher, etc.)
+if ! docker info >/dev/null 2>&1; then
+  echo "WARNING: Docker is not available. Skipping JNI native library build."
+  echo "The native .so libraries will not be included in the build artifacts."
+  echo "This is fine for local development and running unit tests."
+  echo "To build the native libraries, ensure Docker is installed and running."
+  exit 0
+fi
+
 SRC_DIR=$(dirname "$0")
 DST_DIR=${1}
 MULTI_ARCH=${2}

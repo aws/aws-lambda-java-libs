@@ -11,12 +11,12 @@
 name: Publish artifact for aws-lambda-java-runtime-interface-client
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
     - '.github/workflows/runtime-interface-client_*.yml'
-  workflow_dispatch:
 
 jobs:
 

@@ -5,6 +5,7 @@ name: Java CI aws-lambda-java-log4j2
 
 on:
   push:
+    workflow_dispatch:
     branches: [ main ]
     paths:
       - 'aws-lambda-java-log4j2/**'

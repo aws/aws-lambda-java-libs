@@ -5,6 +5,7 @@
 name: PR to runtime-interface-client
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ '*' ]
     paths:

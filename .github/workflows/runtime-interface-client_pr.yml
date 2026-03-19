@@ -21,13 +21,16 @@ jobs:
 
   smoke-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [8, 11, 17, 21, 25]
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - name: Set up JDK 1.8
+    - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
       with:
-        java-version: 8
+        java-version: ${{ matrix.java-version }}
         distribution: corretto
         cache: maven
 
@@ -43,7 +46,11 @@ jobs:
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
       env:
+<<<<<<< HEAD
         IS_JAVA_8: true
+=======
+        IS_JAVA_8: ${{ matrix.java-version == 8 }}
+>>>>>>> c093beb (ci: dependent library test fan out)
 
   build:
     runs-on: ubuntu-latest

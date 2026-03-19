@@ -11,14 +11,15 @@ on:
       - 'aws-lambda-java-tests/**'
       - 'aws-lambda-java-events/**'
       - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-runtime-interface-client/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-tests/**'
       - 'aws-lambda-java-events/**'
       - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-runtime-interface-client/**'
       - '.github/workflows/aws-lambda-java-tests.yml'
-
 permissions:
   contents: read
 

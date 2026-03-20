@@ -38,6 +38,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <sdk.v1.version>1.11.914</sdk.v1.version>
     <sdk.v2.version>2.15.40</sdk.v2.version>
+    <junit-jupiter.version>5.14.3</junit-jupiter.version>
   </properties>
 
   <distributionManagement>
@@ -70,7 +71,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.7.0</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

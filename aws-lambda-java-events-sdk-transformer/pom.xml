@@ -38,8 +38,12 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <sdk.v1.version>1.11.914</sdk.v1.version>
     <sdk.v2.version>2.15.40</sdk.v2.version>
+<<<<<<< HEAD
     <junit-jupiter.version>5.12.2</junit-jupiter.version>
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+=======
+    <junit-jupiter.version>5.14.3</junit-jupiter.version>
+>>>>>>> 7946ec4 (build: upgrading junit-jupiter everywhere)
   </properties>
 
   <distributionManagement>

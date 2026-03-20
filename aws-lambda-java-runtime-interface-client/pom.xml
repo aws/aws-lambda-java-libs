@@ -37,7 +37,11 @@
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <maven-install-plugin.version>2.4</maven-install-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+<<<<<<< HEAD
         <junit-jupiter.version>5.12.2</junit-jupiter.version>
+=======
+        <junit-jupiter.version>5.14.3</junit-jupiter.version>
+>>>>>>> 7946ec4 (build: upgrading junit-jupiter everywhere)
         <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
         <!--

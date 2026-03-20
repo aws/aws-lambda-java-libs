@@ -46,11 +46,7 @@ jobs:
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr
       env:
-<<<<<<< HEAD
-        IS_JAVA_8: true
-=======
         IS_JAVA_8: ${{ matrix.java-version == 8 }}
->>>>>>> c093beb (ci: dependent library test fan out)
 
   build:
     runs-on: ubuntu-latest

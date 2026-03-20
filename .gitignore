@@ -22,6 +22,7 @@ dependency-reduced-pom.xml
 .settings
 .classpath
 .project
+.factorypath
 
 # OSX
 .DS_Store
@@ -38,8 +39,6 @@ experimental/aws-lambda-java-profiler/integration_tests/helloworld/bin
 .vscode
 .kiro
 build
-<<<<<<< HEAD
-=======
 
 # Logs
 *.log
@@ -52,5 +51,4 @@ build
 *.swo
 
 # Tool version manager
->>>>>>> 45b43fe (chore: adding other files to .gitignore)
 mise.toml

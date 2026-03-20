@@ -1,4 +1,0 @@
-<factorypath>
-    <factorypathentry kind="VARJAR" id="M2_REPO/joda-time/joda-time/2.10.8/joda-time-2.10.8.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar" enabled="true" runInBatchMode="false"/>
-</factorypath>

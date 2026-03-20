@@ -15,57 +15,63 @@ endif
 # making it possible to publish resulting artifacts to a codeartifact maven repository
 -include ric-dev-environment/codeartifact-repo.mk
 
-.PHONY: target
+
 target:
 	$(info ${HELP_MESSAGE})
 	@exit 0
 
-.PHONY: test
+
 test:
 	mvn test $(EXTRA_LOAD_ARG)
 
-.PHONY: setup-codebuild-agent
+
 setup-codebuild-agent:
 	docker build -t codebuild-agent \
 	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
 	  - < test/integration/codebuild-local/Dockerfile.agent
 
-.PHONY: test-smoke
+
 test-smoke: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/amd64
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/amd64
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
 
-.PHONY: test-integ
+
 test-integ: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh test/integration/codebuild
 
 # Command to run everytime you make changes to verify everything works
-.PHONY: dev
+
 dev: test
 
 # Verifications to run before sending a pull request
-.PHONY: pr
+
 pr: test test-smoke
 
-.PHONY: build
-build: 
-	mvn clean install $(EXTRA_LOAD_ARG)
-	mvn install -P linux-x86_64 $(EXTRA_LOAD_ARG)
-	mvn install -P linux_musl-x86_64 $(EXTRA_LOAD_ARG)
-	mvn install -P linux-aarch64 $(EXTRA_LOAD_ARG)
-	mvn install -P linux_musl-aarch64 $(EXTRA_LOAD_ARG)
 
-.PHONY: publish
+# The default `mvn clean install` builds all 4 native .so variants (x86_64/aarch64 × glibc/musl)
+# and bundles them into a single jar (see build-jni-lib.sh), runs the tests for the host
+# environment, and updates coverage data. This is sufficient for what we want to do here.
+#
+# Running profile-specific builds (e.g., `mvn install -P linux-aarch64`) does NOT test the
+# cross-compiled .so — JniHelper.load() tries each .so in order and always loads the first
+# one matching the host platform (linux-x86_64 on GitHub Actions runners), so the other
+# variants are never exercised. 
+#
+# Platform-specific tests are run through test-smoke via codebuild containers.
+
+build: 
+	mvn clean install $(EXTRA_LOAD_ARG) 
+
 publish:
 	./ric-dev-environment/publish_snapshot.sh
 
-.PHONY: publish
+
 test-publish:
 	./ric-dev-environment/test-platform-specific-jar-snapshot.sh
 
-.PHONY: test-rie
+
 test-rie:
 	./scripts/test-rie.sh "EchoHandler::handleRequest" 
 
@@ -80,3 +86,5 @@ TARGETS
 	test        Run the Unit tests.
 	test-rie    Build and test RIC locally with Lambda Runtime Interface Emulator. (Requires building the project first)
 endef
+
+.PHONY: target test setup-codebuild-agent test-smoke test-integ dev pr build publish publish test-rie

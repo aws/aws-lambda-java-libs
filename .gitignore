@@ -38,3 +38,16 @@ experimental/aws-lambda-java-profiler/integration_tests/helloworld/bin
 .vscode
 .kiro
 build
+
+# Logs
+*.log
+
+# Maven flatten plugin
+.flattened-pom.xml
+
+# Vim swap files
+*.swp
+*.swo
+
+# Tool version manager
+mise.toml

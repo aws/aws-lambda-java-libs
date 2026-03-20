@@ -1,3 +1,7 @@
+### March 19, 2026
+`2.10.1`
+- Revert aws-lambda-java-serialization dependency to 1.2.0
+
 ### March 12, 2026
 `2.10.0`
 - Update aws-lambda-java-serialization dependency to 1.3.0

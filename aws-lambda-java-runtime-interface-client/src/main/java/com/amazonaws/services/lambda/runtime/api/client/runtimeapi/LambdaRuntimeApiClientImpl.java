@@ -4,7 +4,11 @@ SPDX-License-Identifier: Apache-2.0
 */
 package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 
+import com.amazonaws.services.lambda.runtime.api.client.UserFault;
+import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
+import com.amazonaws.services.lambda.runtime.logging.LogFormat;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +18,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -30,6 +36,11 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     private static final String ERROR_TYPE_HEADER = "Lambda-Runtime-Function-Error-Type";
     // 1MiB
     private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
+    
+    // ~32 Seconds Max Backoff.
+    private static final long MAX_BACKOFF_PERIOD_MS = 1024 * 32;
+    private static final long INITIAL_BACKOFF_PERIOD_MS = 100;
+    private static final int MAX_NUMBER_OF_RETRIALS = 5;
 
     private final String baseUrl;
     private final String invocationEndpoint;
@@ -50,6 +61,65 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     @Override
     public InvocationRequest nextInvocation() {
         return NativeClient.next();
+    }
+
+    /*
+     * Retry immediately then retry with exponential backoff.
+     */
+    public static <T> T getSupplierResultWithExponentialBackoff(LambdaContextLogger lambdaLogger, long initialDelayMS, long maxBackoffPeriodMS, int maxNumOfAttempts, Supplier<T> supplier, Function<Exception, String> exceptionMessageComposer, Exception maxRetriesException) throws Exception {
+        long delayMS = initialDelayMS;
+        for (int attempts = 0; attempts < maxNumOfAttempts; attempts++) {
+            boolean isFirstAttempt = attempts == 0;
+            boolean isLastAttempt = (attempts + 1) == maxNumOfAttempts;
+
+            // Try and log whichever exceptions happened
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                String logMessage = exceptionMessageComposer.apply(e);
+                if (!isLastAttempt) {
+                    logMessage += String.format("\nRetrying%s", isFirstAttempt ? "." : String.format(" in %d ms.", delayMS));
+                }
+
+                lambdaLogger.log(logMessage, lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);   
+            }
+
+            // throw if ran out of attempts.
+            if (isLastAttempt) {
+                throw maxRetriesException;
+            }
+
+            // update the delay duration.
+            if (!isFirstAttempt) {
+                try {
+                    Thread.sleep(delayMS);
+                    delayMS = Math.min(delayMS * 2, maxBackoffPeriodMS);
+                } catch (InterruptedException e) { 
+                    Thread.interrupted();
+                }
+            }
+        }
+
+        // Should Not be reached.
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public InvocationRequest nextInvocationWithExponentialBackoff(LambdaContextLogger lambdaLogger) throws Exception {
+        Supplier<InvocationRequest> nextInvocationSupplier = () -> nextInvocation();
+        Function<Exception, String> exceptionMessageComposer = (e) -> {
+            return String.format("Runtime Loop on Thread ID: %s Failed to fetch next invocation.\n%s", Thread.currentThread().getName(), UserFault.trace(e));
+        };
+
+        return getSupplierResultWithExponentialBackoff(
+            lambdaLogger, 
+            INITIAL_BACKOFF_PERIOD_MS, 
+            MAX_BACKOFF_PERIOD_MS, 
+            MAX_NUMBER_OF_RETRIALS, 
+            nextInvocationSupplier, 
+            exceptionMessageComposer, 
+            new LambdaRuntimeClientMaxRetriesExceededException("Get Next Invocation")
+            );
     }
 
     @Override

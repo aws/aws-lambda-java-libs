@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.ErrorRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.StackElement;
@@ -22,8 +24,18 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayExcep
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import okhttp3.HttpUrl;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -36,6 +48,14 @@ import okhttp3.mockwebserver.RecordedRequest;
 @DisabledOnOs(OS.MAC)
 public class LambdaRuntimeApiClientImplTest {
 
+    @SuppressWarnings("rawtypes")
+    private final Supplier mockSupplier = mock(Supplier.class);
+    @SuppressWarnings("rawtypes")
+    private final Function mockExceptionMessageComposer = mock(Function.class);
+    private final LambdaContextLogger mockLambdaContextLogger = mock(LambdaContextLogger.class);
+    private final LambdaRuntimeClientMaxRetriesExceededException retriesExceededException = new LambdaRuntimeClientMaxRetriesExceededException("Testing Invocations");
+    final String fakeExceptionMessage = "Something bad";
+
     MockWebServer mockWebServer;
     LambdaRuntimeApiClientImpl lambdaRuntimeApiClientImpl;
 
@@ -43,12 +63,73 @@ public class LambdaRuntimeApiClientImplTest {
     ErrorRequest errorRequest = new ErrorRequest("testErrorMessage", "testErrorType", errorStackStrace);
 
     String requestId = "1234";
-
+    
     @BeforeEach
     void setUp() {
         mockWebServer = new MockWebServer();
         String hostnamePort = getHostnamePort();
         lambdaRuntimeApiClientImpl = new LambdaRuntimeApiClientImpl(hostnamePort);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testgetSupplierResultWithExponentialBackoffAllFailing() throws Exception {
+
+        when(mockSupplier.get()).thenThrow(new RuntimeException(new Exception(fakeExceptionMessage)));
+        when(mockExceptionMessageComposer.apply(any())).thenReturn(fakeExceptionMessage);
+
+        try {
+            LambdaRuntimeApiClientImpl.getSupplierResultWithExponentialBackoff(mockLambdaContextLogger, 5, 200, 5, mockSupplier, mockExceptionMessageComposer, retriesExceededException);
+        } catch (LambdaRuntimeClientMaxRetriesExceededException e) { }
+
+        verify(mockSupplier, times(5)).get();
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying in 5 ms."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying in 10 ms."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying in 20 ms."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage), any());
+        verify(mockLambdaContextLogger, times(5)).log(anyString(), any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testgetSupplierResultWithExponentialBackoffTwoFailingThenSuccess() throws Exception {
+        InvocationRequest fakeRequest = new InvocationRequest();
+        
+        when(mockExceptionMessageComposer.apply(any())).thenReturn(fakeExceptionMessage);
+        
+        when(mockSupplier.get())
+        .thenThrow(new RuntimeException(new Exception(fakeExceptionMessage)))
+        .thenThrow(new RuntimeException(new Exception(fakeExceptionMessage)))
+        .thenReturn(fakeRequest);
+
+        InvocationRequest invocationRequest = (InvocationRequest) LambdaRuntimeApiClientImpl.getSupplierResultWithExponentialBackoff(mockLambdaContextLogger, 5, 200, 5, mockSupplier, mockExceptionMessageComposer, retriesExceededException);
+
+        assertEquals(fakeRequest, invocationRequest);
+        verify(mockSupplier, times(3)).get();
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying in 5 ms."), any());
+        verify(mockLambdaContextLogger, times(2)).log(anyString(), any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testgetSupplierResultWithExponentialBackoffDoesntGoAboveMax() throws Exception {
+
+        when(mockSupplier.get()).thenThrow(new RuntimeException(new Exception(fakeExceptionMessage)));
+
+        when(mockExceptionMessageComposer.apply(any())).thenReturn(fakeExceptionMessage);
+
+        try {
+            LambdaRuntimeApiClientImpl.getSupplierResultWithExponentialBackoff(mockLambdaContextLogger, 100, 200, 5, mockSupplier, mockExceptionMessageComposer, retriesExceededException);
+        } catch (LambdaRuntimeClientMaxRetriesExceededException e) { }
+
+        verify(mockSupplier, times(5)).get();
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage + "\nRetrying in 100 ms."), any());
+        verify(mockLambdaContextLogger, times(2)).log(eq(fakeExceptionMessage + "\nRetrying in 200 ms."), any());
+        verify(mockLambdaContextLogger).log(eq(fakeExceptionMessage), any());
+        verify(mockLambdaContextLogger, times(5)).log(anyString(), any());
     }
 
     @Test

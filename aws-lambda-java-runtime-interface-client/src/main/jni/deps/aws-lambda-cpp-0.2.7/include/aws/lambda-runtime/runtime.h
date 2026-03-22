@@ -172,7 +172,6 @@ private:
 private:
     std::string const m_user_agent_header;
     std::array<std::string const, 3> const m_endpoints;
-    CURL* const m_curl_handle;
 };
 
 inline std::chrono::milliseconds invocation_request::get_time_remaining() const

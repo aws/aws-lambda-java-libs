@@ -106,4 +106,10 @@ public interface ReservedRuntimeEnvironmentVariables {
      * The environment's time zone (UTC). The execution environment uses NTP to synchronize the system clock.
      */
     String TZ = "TZ";
+
+    /*
+     * If set to a string parsable as an integer > 0, It enables multiconcurrency mode. 
+     * Otherwise, if it is set to an invalid value, it will crash the whole RIC process.
+     */
+    String AWS_LAMBDA_MAX_CONCURRENCY = "AWS_LAMBDA_MAX_CONCURRENCY";
 }

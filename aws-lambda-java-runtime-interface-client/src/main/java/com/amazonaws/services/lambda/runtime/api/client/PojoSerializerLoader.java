@@ -28,7 +28,7 @@ public class PojoSerializerLoader {
             return customPojoSerializer;
         }
 
-        ServiceLoader<CustomPojoSerializer> loader = ServiceLoader.load(CustomPojoSerializer.class, AWSLambda.customerClassLoader);
+        ServiceLoader<CustomPojoSerializer> loader = ServiceLoader.load(CustomPojoSerializer.class, AWSLambda.getCustomerClassLoader());
         Iterator<CustomPojoSerializer> serializers = loader.iterator();
 
         if (!serializers.hasNext()) {

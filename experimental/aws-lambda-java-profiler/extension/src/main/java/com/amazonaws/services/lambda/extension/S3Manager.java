@@ -4,7 +4,6 @@ package com.amazonaws.services.lambda.extension;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
-import java.time.Instant;
 import java.time.LocalDate;
 
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -39,7 +38,7 @@ public class S3Manager {
                     .bucket(bucketName)
                     .key(key)
                     .build();
-            File file = new File(String.format("/tmp/profiling-data-%s.html", suffix));
+            File file = new File(String.format(Constants.getFilePathFromEnv(), suffix));
             if (file.exists()) {
                 Logger.debug("file size is " + file.length());
                 RequestBody requestBody = RequestBody.fromFile(file);

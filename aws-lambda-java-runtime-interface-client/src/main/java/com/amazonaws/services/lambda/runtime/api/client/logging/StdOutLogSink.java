@@ -15,7 +15,7 @@ public class StdOutLogSink implements LogSink {
         log(LogLevel.UNDEFINED, LogFormat.TEXT, message);
     }
 
-    public void log(LogLevel logLevel, LogFormat logFormat, byte[] message) {
+    public synchronized void log(LogLevel logLevel, LogFormat logFormat, byte[] message) {
         try {
             System.out.write(message);
         } catch (IOException e) {

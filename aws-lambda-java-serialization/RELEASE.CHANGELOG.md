@@ -1,3 +1,17 @@
+### March 19, 2026
+`1.3.1`:
+- Revert `jackson-databind` dependency from 2.18.6 to 2.15.4
+- Revert `PropertyNamingStrategies.UpperCamelCaseStrategy` to `PropertyNamingStrategy.PascalCaseStrategy`
+
+### March 11, 2026
+`1.3.0`:
+- Update `jackson-databind` dependency from 2.15.4 to 2.18.6
+- Replace deprecated `PropertyNamingStrategy.PascalCaseStrategy` with `PropertyNamingStrategies.UpperCamelCaseStrategy`
+
+### December 16, 2025
+`1.2.0`:
+- Update `jackson-databind` dependency from 2.14.2 to 2.15.4
+
 ### December 1, 2023
 `1.1.5`:
 - Add support for DynamodbEvent.DynamodbStreamRecord serialization

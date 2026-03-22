@@ -1,6 +1,9 @@
 version: 2
 updates:
-
+  - package-ecosystem: "maven"
+    directory: "/aws-lambda-java-runtime-interface"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

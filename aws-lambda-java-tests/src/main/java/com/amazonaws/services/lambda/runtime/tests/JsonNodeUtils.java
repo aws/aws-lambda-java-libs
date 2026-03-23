@@ -86,11 +86,9 @@ class JsonNodeUtils {
         if (expected == null || actual == null
                 || !ISO_DATE_REGEX.matcher(expected).matches()
                 || !ISO_DATE_REGEX.matcher(actual).matches()) {
-
-            return DateTime.parse(expected).equals(DateTime.parse(actual));
+            return false;
         }
-        return false;
-
+        return DateTime.parse(expected).equals(DateTime.parse(actual));
     }
 
     private static void diffChild(String path, JsonNode expected, JsonNode actual, List<String> diffs) {

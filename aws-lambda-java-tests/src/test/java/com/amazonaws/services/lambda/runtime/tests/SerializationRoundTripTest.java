@@ -54,6 +54,7 @@ public class SerializationRoundTripTest {
                 args("ScheduledEvent", "cloudwatch_event.json", ScheduledEvent.class),
                 args("SecretsManagerRotationEvent", "secrets_rotation_event.json", SecretsManagerRotationEvent.class),
                 args("SNSEvent", "sns_event.json", SNSEvent.class),
+                args("LexEvent", "lex_event.json", LexEvent.class),
                 args("SQSEvent", "sqs/sqs_event_nobody.json", SQSEvent.class));
     }
 
@@ -65,8 +66,6 @@ public class SerializationRoundTripTest {
                 args("CloudFrontEvent", "cloudfront_event.json", CloudFrontEvent.class),
                 // Dropped fields: MediaStreams lost during deserialization
                 args("ConnectEvent", "connect_event.json", ConnectEvent.class),
-                // Type coercion: numeric slot value 4 becomes string "4"
-                args("LexEvent", "lex_event.json", LexEvent.class),
                 // Extra fields: urlDecodedKey and versionId added by getters
                 args("S3Event", "s3_event.json", S3Event.class),
                 args("S3EventNotification", "s3_event.json", S3EventNotification.class));

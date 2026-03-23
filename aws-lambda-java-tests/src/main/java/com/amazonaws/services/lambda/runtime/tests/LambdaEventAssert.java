@@ -75,6 +75,8 @@ class LambdaEventAssert {
         }
 
         // Two round-trips: original → POJO → JSON → POJO → JSON
+        // We are doing 2 passes so we can check instability problems
+        // like UnstablePojo in LambdaEventAssertTest
         ByteArrayOutputStream firstOutput = roundTrip(new ByteArrayInputStream(originalBytes), serializer);
         ByteArrayOutputStream secondOutput = roundTrip(
                 new ByteArrayInputStream(firstOutput.toByteArray()), serializer);
@@ -90,7 +92,6 @@ class LambdaEventAssert {
             if (!originalTree.equals(finalTree)) {
                 List<String> diffs = new ArrayList<>();
                 JsonNodeUtils.diffNodes("", originalTree, finalTree, diffs);
-
                 StringBuilder msg = new StringBuilder();
                 msg.append("Serialization round-trip failure for ")
                         .append(targetClass.getSimpleName())

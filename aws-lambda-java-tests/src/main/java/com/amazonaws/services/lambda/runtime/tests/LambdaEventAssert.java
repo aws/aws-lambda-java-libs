@@ -92,17 +92,20 @@ class LambdaEventAssert {
             if (!originalTree.equals(finalTree)) {
                 List<String> diffs = new ArrayList<>();
                 JsonNodeUtils.diffNodes("", originalTree, finalTree, diffs);
-                StringBuilder msg = new StringBuilder();
-                msg.append("Serialization round-trip failure for ")
-                        .append(targetClass.getSimpleName())
-                        .append(" (").append(diffs.size()).append(" difference(s)):\n");
-                for (String diff : diffs) {
-                    msg.append("  ").append(diff).append('\n');
-                }
 
-                String expected = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(originalTree);
-                String actual = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(finalTree);
-                throw buildAssertionError(msg.toString(), expected, actual);
+                if (!diffs.isEmpty()) {
+                    StringBuilder msg = new StringBuilder();
+                    msg.append("Serialization round-trip failure for ")
+                            .append(targetClass.getSimpleName())
+                            .append(" (").append(diffs.size()).append(" difference(s)):\n");
+                    for (String diff : diffs) {
+                        msg.append("  ").append(diff).append('\n');
+                    }
+
+                    String expected = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(originalTree);
+                    String actual = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(finalTree);
+                    throw buildAssertionError(msg.toString(), expected, actual);
+                }
             }
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to parse JSON for tree comparison", e);

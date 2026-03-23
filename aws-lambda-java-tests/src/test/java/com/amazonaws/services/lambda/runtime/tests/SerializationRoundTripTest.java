@@ -45,11 +45,13 @@ public class SerializationRoundTripTest {
                 args("CloudFormationCustomResourceEvent", "cloudformation_event.json",
                         CloudFormationCustomResourceEvent.class),
                 args("CloudWatchLogsEvent", "cloudwatchlogs_event.json", CloudWatchLogsEvent.class),
+                args("CodeCommitEvent", "codecommit_event.json", CodeCommitEvent.class),
                 args("ConfigEvent", "config_event.json", ConfigEvent.class),
                 args("DynamodbEvent", "ddb/dynamo_event_roundtrip.json", DynamodbEvent.class),
                 args("KinesisEvent", "kinesis/kinesis_event_roundtrip.json", KinesisEvent.class),
                 args("KinesisFirehoseEvent", "firehose_event.json", KinesisFirehoseEvent.class),
                 args("LambdaDestinationEvent", "lambda_destination_event.json", LambdaDestinationEvent.class),
+                args("ScheduledEvent", "cloudwatch_event.json", ScheduledEvent.class),
                 args("SecretsManagerRotationEvent", "secrets_rotation_event.json", SecretsManagerRotationEvent.class),
                 args("SNSEvent", "sns_event.json", SNSEvent.class),
                 args("SQSEvent", "sqs/sqs_event_nobody.json", SQSEvent.class));
@@ -61,14 +63,10 @@ public class SerializationRoundTripTest {
                 args("APIGatewayProxyRequestEvent", "apigw_rest_event.json", APIGatewayProxyRequestEvent.class),
                 // Dropped fields: querystring lost during deserialization
                 args("CloudFrontEvent", "cloudfront_event.json", CloudFrontEvent.class),
-                // Date format: "+0000" normalized to "Z" by DateTime serializer
-                args("CodeCommitEvent", "codecommit_event.json", CodeCommitEvent.class),
                 // Dropped fields: MediaStreams lost during deserialization
                 args("ConnectEvent", "connect_event.json", ConnectEvent.class),
                 // Type coercion: numeric slot value 4 becomes string "4"
                 args("LexEvent", "lex_event.json", LexEvent.class),
-                // Date format: "Z" normalized to ".000Z" by DateTime serializer
-                args("ScheduledEvent", "cloudwatch_event.json", ScheduledEvent.class),
                 // Extra fields: urlDecodedKey and versionId added by getters
                 args("S3Event", "s3_event.json", S3Event.class),
                 args("S3EventNotification", "s3_event.json", S3EventNotification.class));

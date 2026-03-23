@@ -2,10 +2,12 @@ package com.amazonaws.services.lambda.runtime.tests;
 
 import com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.JsonNode;
 import com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import org.joda.time.DateTime;
 
 /**
  * Utility methods for working with shaded Jackson {@link JsonNode} trees.
@@ -15,6 +17,8 @@ import java.util.TreeSet;
  * </p>
  */
 class JsonNodeUtils {
+
+    private static final Pattern ISO_DATE_REGEX = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T.+");
 
     private JsonNodeUtils() {
     }
@@ -51,6 +55,12 @@ class JsonNodeUtils {
         if (expected.equals(actual))
             return;
 
+        // Compares two datetime strings by parsed instant, because DateTimeModule
+        // normalizes the format on serialization (e.g. "+0000" → "Z", "Z" → ".000Z")
+        if (areSameDateTime(expected.textValue(), actual.textValue())) {
+            return;
+        }
+
         if (expected.isObject() && actual.isObject()) {
             TreeSet<String> allKeys = new TreeSet<>();
             expected.fieldNames().forEachRemaining(allKeys::add);
@@ -65,6 +75,22 @@ class JsonNodeUtils {
         } else {
             diffs.add("CHANGED " + path + " : " + summarize(expected) + " -> " + summarize(actual));
         }
+    }
+
+    /**
+     * Compares two strings by parsed instant when both look like ISO-8601 dates,
+     * because DateTimeModule normalizes format on serialization
+     * (e.g. "+0000" → "Z", "Z" → ".000Z").
+     */
+    private static boolean areSameDateTime(String expected, String actual) {
+        if (expected == null || actual == null
+                || !ISO_DATE_REGEX.matcher(expected).matches()
+                || !ISO_DATE_REGEX.matcher(actual).matches()) {
+
+            return DateTime.parse(expected).equals(DateTime.parse(actual));
+        }
+        return false;
+
     }
 
     private static void diffChild(String path, JsonNode expected, JsonNode actual, List<String> diffs) {

@@ -12,14 +12,23 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Verifies serialization round-trip fidelity for every Lambda-supported event
- * that has a test fixture. Each case feeds the JSON fixture through
+ * Verifies serialization round-trip fidelity for events that are registered in
+ * {@code LambdaEventSerializers.SUPPORTED_EVENTS}.
+ *
+ * <p>Registered events go through the full customized serialization path in the
+ * Runtime Interface Client (RIC): {@code EventHandlerLoader.getSerializer()}
+ * detects them via {@code isLambdaSupportedEvent()} and delegates to
+ * {@code LambdaEventSerializers.serializerFor()}, which applies Jackson mixins,
+ * {@code DateModule}/{@code DateTimeModule}, and naming strategies.</p>
+ *
+ * <p>Each case feeds a JSON fixture through
  * {@link LambdaEventAssert#assertSerializationRoundTrip} which performs two
  * consecutive round-trips and compares the original JSON tree against the
- * final output.
+ * final output.</p>
+ *
+ * @see UnregisteredEventSerializationRoundTripTest for events not in SUPPORTED_EVENTS
  */
 public class SerializationRoundTripTest {
-
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("passingCases")

@@ -37,8 +37,8 @@ class LambdaEventAssert {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
-     * Verifies that the given lambda event class can be deserialized from the named
-     * classpath resource and re-serialized without data loss.
+     * Round-trip using the registered {@link LambdaEventSerializers} path
+     * (Jackson + mixins + DateModule + DateTimeModule + naming strategies).
      *
      * <p>
      * The check performs two consecutive round-trips
@@ -56,13 +56,12 @@ class LambdaEventAssert {
      * @throws AssertionError if the original and final JSON trees differ
      */
     public static <T> void assertSerializationRoundTrip(String fileName, Class<T> targetClass) {
+        PojoSerializer<T> serializer = LambdaEventSerializers.serializerFor(targetClass,
+                ClassLoader.getSystemClassLoader());
 
         if (!fileName.endsWith(".json")) {
             throw new IllegalArgumentException("File " + fileName + " must have json extension");
         }
-
-        PojoSerializer<T> serializer = LambdaEventSerializers.serializerFor(targetClass,
-                ClassLoader.getSystemClassLoader());
 
         byte[] originalBytes;
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {

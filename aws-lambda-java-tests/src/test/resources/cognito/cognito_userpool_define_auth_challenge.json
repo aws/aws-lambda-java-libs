@@ -1,0 +1,32 @@
+{
+    "version": "1",
+    "triggerSource": "DefineAuthChallenge_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        },
+        "session": [
+            {
+                "challengeName": "PASSWORD_VERIFIER",
+                "challengeResult": true,
+                "challengeMetadata": "metadata1"
+            }
+        ],
+        "userNotFound": false
+    },
+    "response": {
+        "challengeName": "CUSTOM_CHALLENGE",
+        "issueTokens": false,
+        "failAuthentication": false
+    }
+}

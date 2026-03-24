@@ -1,0 +1,20 @@
+{
+    "version": "1",
+    "triggerSource": "PreAuthentication_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "validationData": {
+            "key1": "val1"
+        },
+        "userNotFound": false
+    }
+}

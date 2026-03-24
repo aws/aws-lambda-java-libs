@@ -64,7 +64,11 @@ public class SerializationRoundTripTest {
                 args(KafkaEvent.class, "kafka_event_roundtrip.json"),
                 args(MSKFirehoseEvent.class, "msk_firehose_event_roundtrip.json"),
                 args(RabbitMQEvent.class, "rabbitmq_event_roundtrip.json"),
-                args(S3BatchEventV2.class, "s3_batch_event_v2.json"));
+                args(S3BatchEventV2.class, "s3_batch_event_v2.json"),
+                args(IoTButtonEvent.class, "iot_button_event.json"),
+                args(CognitoEvent.class, "cognito_sync_event.json"),
+                args(DynamodbTimeWindowEvent.class, "ddb/dynamo_time_window_event.json"),
+                args(KinesisTimeWindowEvent.class, "kinesis/kinesis_time_window_event.json"));
     }
 
     private static Stream<Arguments> knownFailureCases() {

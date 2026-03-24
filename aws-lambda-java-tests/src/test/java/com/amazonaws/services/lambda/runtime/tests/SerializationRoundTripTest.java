@@ -55,6 +55,7 @@ public class SerializationRoundTripTest {
                 args("SecretsManagerRotationEvent", "secrets_rotation_event.json", SecretsManagerRotationEvent.class),
                 args("SNSEvent", "sns_event.json", SNSEvent.class),
                 args("LexEvent", "lex_event.json", LexEvent.class),
+                args("ConnectEvent", "connect_event.json", ConnectEvent.class),
                 args("SQSEvent", "sqs/sqs_event_nobody.json", SQSEvent.class));
     }
 
@@ -65,7 +66,6 @@ public class SerializationRoundTripTest {
                 // Dropped fields: querystring lost during deserialization
                 args("CloudFrontEvent", "cloudfront_event.json", CloudFrontEvent.class),
                 // Dropped fields: MediaStreams lost during deserialization
-                args("ConnectEvent", "connect_event.json", ConnectEvent.class),
                 // Extra fields: urlDecodedKey and versionId added by getters
                 args("S3Event", "s3_event.json", S3Event.class),
                 args("S3EventNotification", "s3_event.json", S3EventNotification.class));

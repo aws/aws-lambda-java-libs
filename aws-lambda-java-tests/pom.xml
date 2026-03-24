@@ -33,7 +33,12 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.14.3</junit.version>
+        <!--
+            JUnit is a compile-scope transitive dependency for consumers of this module.
+            Upgrading it requires a version bump of aws-lambda-java-tests to avoid
+            breaking customers who don't pin their own JUnit version.
+        -->
+        <junit.version>5.9.2</junit.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
     </properties>
 
@@ -250,6 +255,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

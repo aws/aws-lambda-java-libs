@@ -37,8 +37,9 @@
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <maven-install-plugin.version>2.4</maven-install-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <junit-jupiter.version>5.14.3</junit-jupiter.version>
+        <junit-jupiter.version>5.12.2</junit-jupiter.version>
         <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
         <!--
             The test/integration/codebuild/buildspec.*.yml files will set -DmultiArch=false
             as a workaround for executing within Github Actions. At time of writing (2022-04-08) the
@@ -126,7 +127,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M9</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>${argLineForReflectionTestOnly} ${argLine}</argLine>
                 </configuration>
@@ -135,6 +136,11 @@
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
                         <version>${junit-jupiter.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-launcher</artifactId>
+                        <version>1.12.2</version>
                     </dependency>
                 </dependencies>
             </plugin>

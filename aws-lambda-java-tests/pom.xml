@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.14.3</junit.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -254,18 +254,6 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${junit.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-launcher</artifactId>
-                        <version>1.14.3</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

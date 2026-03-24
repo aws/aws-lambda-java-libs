@@ -39,7 +39,7 @@
     <sdk.v1.version>1.11.914</sdk.v1.version>
     <sdk.v2.version>2.15.40</sdk.v2.version>
     <junit-jupiter.version>5.14.3</junit-jupiter.version>
-    <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
   </properties>
 
   <distributionManagement>
@@ -85,18 +85,6 @@
         <configuration>
           <failIfNoTests>true</failIfNoTests>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.14.3</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>

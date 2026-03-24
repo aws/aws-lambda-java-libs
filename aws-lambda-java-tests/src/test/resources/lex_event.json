@@ -16,7 +16,7 @@
     "slots": {
       "Location": "Chicago",
       "CheckInDate": "2030-11-08",
-      "Nights": "4",
+      "Nights": 4,
       "RoomType": "queen"
     },
     "confirmationStatus": "None"

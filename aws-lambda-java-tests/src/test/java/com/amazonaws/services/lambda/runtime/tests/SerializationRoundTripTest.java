@@ -9,8 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Verifies serialization round-trip fidelity for every Lambda-supported event
  * that has a test fixture. Each case feeds the JSON fixture through
@@ -20,57 +18,36 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class SerializationRoundTripTest {
 
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("passingCases")
     void roundTrip(String displayName, String fixture, Class<?> eventClass) {
         LambdaEventAssert.assertSerializationRoundTrip(fixture, eventClass);
     }
 
-    /**
-     * Documents event classes whose serialization round-trip is currently broken.
-     * Each case is expected to throw {@link AssertionError}. When a fix lands in
-     * the event model or serializer, the corresponding case should be moved to
-     * {@link #passingCases()}.
-     */
-    @ParameterizedTest(name = "{0} (known failure)")
-    @MethodSource("knownFailureCases")
-    void roundTripKnownFailures(String displayName, String fixture, Class<?> eventClass) {
-        assertThrows(AssertionError.class,
-                () -> LambdaEventAssert.assertSerializationRoundTrip(fixture, eventClass),
-                displayName + " was expected to fail but passed — move it to passingCases()");
-    }
-
-    static Stream<Arguments> passingCases() {
+    private static Stream<Arguments> passingCases() {
         return Stream.of(
-                args("CloudFormationCustomResourceEvent", "cloudformation_event.json",
-                        CloudFormationCustomResourceEvent.class),
-                args("CloudWatchLogsEvent", "cloudwatchlogs_event.json", CloudWatchLogsEvent.class),
-                args("CodeCommitEvent", "codecommit_event.json", CodeCommitEvent.class),
-                args("ConfigEvent", "config_event.json", ConfigEvent.class),
-                args("DynamodbEvent", "ddb/dynamo_event_roundtrip.json", DynamodbEvent.class),
-                args("KinesisEvent", "kinesis/kinesis_event_roundtrip.json", KinesisEvent.class),
-                args("KinesisFirehoseEvent", "firehose_event.json", KinesisFirehoseEvent.class),
-                args("LambdaDestinationEvent", "lambda_destination_event.json", LambdaDestinationEvent.class),
-                args("ScheduledEvent", "cloudwatch_event.json", ScheduledEvent.class),
-                args("SecretsManagerRotationEvent", "secrets_rotation_event.json", SecretsManagerRotationEvent.class),
-                args("SNSEvent", "sns_event.json", SNSEvent.class),
-                args("LexEvent", "lex_event.json", LexEvent.class),
-                args("ConnectEvent", "connect_event.json", ConnectEvent.class),
-                args("SQSEvent", "sqs/sqs_event_nobody.json", SQSEvent.class),
-                args("APIGatewayProxyRequestEvent", "apigw_rest_event.json", APIGatewayProxyRequestEvent.class));
+                args(CloudFormationCustomResourceEvent.class, "cloudformation_event.json"),
+                args(CloudWatchLogsEvent.class, "cloudwatchlogs_event.json"),
+                args(CodeCommitEvent.class, "codecommit_event.json"),
+                args(ConfigEvent.class, "config_event.json"),
+                args(DynamodbEvent.class, "ddb/dynamo_event_roundtrip.json"),
+                args(KinesisEvent.class, "kinesis/kinesis_event_roundtrip.json"),
+                args(KinesisFirehoseEvent.class, "firehose_event.json"),
+                args(LambdaDestinationEvent.class, "lambda_destination_event.json"),
+                args(ScheduledEvent.class, "cloudwatch_event.json"),
+                args(SecretsManagerRotationEvent.class, "secrets_rotation_event.json"),
+                args(SNSEvent.class, "sns_event.json"),
+                args(LexEvent.class, "lex_event.json"),
+                args(ConnectEvent.class, "connect_event.json"),
+                args(SQSEvent.class, "sqs/sqs_event_nobody.json"),
+                args(APIGatewayProxyRequestEvent.class, "apigw_rest_event.json"),
+                args(CloudFrontEvent.class, "cloudfront_event.json"),
+                args(S3Event.class, "s3_event.json"),
+                args(S3EventNotification.class, "s3_event.json"));
     }
 
-    static Stream<Arguments> knownFailureCases() {
-        return Stream.of(
-                // Dropped fields: clientCert lost during deserialization
-                // Dropped fields: querystring lost during deserialization
-                args("CloudFrontEvent", "cloudfront_event.json", CloudFrontEvent.class),
-                // Extra fields: urlDecodedKey and versionId added by getters
-                args("S3Event", "s3_event.json", S3Event.class),
-                args("S3EventNotification", "s3_event.json", S3EventNotification.class));
-    }
-
-    private static Arguments args(String name, String fixture, Class<?> clazz) {
-        return Arguments.of(name, fixture, clazz);
+    private static Arguments args(Class<?> clazz, String fixture) {
+        return Arguments.of(clazz.getSimpleName(), fixture, clazz);
     }
 }

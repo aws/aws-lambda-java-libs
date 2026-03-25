@@ -26,10 +26,9 @@ import java.util.List;
  * </p>
  *
  * <p>
- * This class is intentionally package-private. Consider making it public
- * if
- * {@link com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers}
- * becomes a public API that external consumers use directly.
+ * This class is intentionally package-private to support updates to 
+ * the aws-lambda-java-events and aws-lambda-java-serialization packages.
+ * Consider making it public if there's a real request for it.
  * </p>
  */
 class LambdaEventAssert {

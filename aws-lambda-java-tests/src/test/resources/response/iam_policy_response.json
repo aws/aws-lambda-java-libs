@@ -1,0 +1,19 @@
+{
+    "principalId": "user123",
+    "policyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": "execute-api:Invoke",
+                "Effect": "Allow",
+                "Resource": [
+                    "arn:aws:execute-api:us-east-1:123456789012:api-id/stage/GET/resource"
+                ]
+            }
+        ]
+    },
+    "context": {
+        "org": "my-org",
+        "role": "admin"
+    }
+}

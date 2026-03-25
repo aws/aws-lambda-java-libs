@@ -86,12 +86,11 @@ public class SerializationRoundTripTest {
                 // 1. getTime() parses the raw string "12/Mar/2020:19:03:58 +0000" into a
                 //    DateTime via dd/MMM/yyyy formatter. Jackson serializes as ISO-8601, but
                 //    the formatter cannot parse ISO-8601 back on the second round-trip.
-                //    Additionally, getTime() calls fmt.parseDateTime(time) unconditionally —
-                //    when time is null (e.g. omitted from fixture) it throws NPE during
-                //    serialization, so the field cannot simply be removed from the fixture.
+                //    The time field is effectively mandatory (getTime() throws NPE if null),
+                //    and the date format change is inherent to how the serialization works.
                 // 2. getTimeEpoch() converts long to Instant; Jackson serializes as decimal
                 //    seconds (e.g. 1583348638.390000000) instead of the original long.
-                // Both transformations are non-reversible; coercion captured in EventLoaderTest.
+                // Both transformations are lossy; coercion captured in EventLoaderTest.
                 args(APIGatewayV2CustomAuthorizerEvent.class, "apigw_auth_v2.json"),
                 // ActiveMQEvent has one serialization issue:
                 // Destination.physicalName (camelCase) vs JSON "physicalname" (lowercase) —

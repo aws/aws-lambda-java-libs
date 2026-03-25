@@ -1,0 +1,14 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "multiValueHeaders": {
+        "X-Custom": [
+            "val1",
+            "val2"
+        ]
+    },
+    "body": "{\"action\":\"sendmessage\",\"data\":\"hello\"}",
+    "isBase64Encoded": false
+}

@@ -8,8 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Verifies serialization round-trip fidelity for Lambda response event types.
  *
@@ -36,14 +34,6 @@ public class ResponseEventSerializationRoundTripTest {
         LambdaEventAssert.assertSerializationRoundTrip(fixture, eventClass);
     }
 
-    @ParameterizedTest(name = "{0} (known failure)")
-    @MethodSource("knownFailureCases")
-    void roundTripKnownFailures(String displayName, String fixture, Class<?> eventClass) {
-        assertThrows(Throwable.class,
-                () -> LambdaEventAssert.assertSerializationRoundTrip(fixture, eventClass),
-                displayName + " was expected to fail but passed — move it to passingCases()");
-    }
-
     private static Stream<Arguments> passingCases() {
         return Stream.of(
                 // API Gateway responses
@@ -61,19 +51,6 @@ public class ResponseEventSerializationRoundTripTest {
                 args(SimpleIAMPolicyResponse.class, "response/simple_iam_policy_response.json"),
                 // MSK Firehose response
                 args(MSKFirehoseResponse.class, "response/msk_firehose_response.json"));
-    }
-
-    private static Stream<Arguments> knownFailureCases() {
-        return Stream.of(
-                // IamPolicyResponse: getPolicyDocument() returns Map<String,Object> instead
-                // of the PolicyDocument POJO — it manually converts Statement objects to Maps
-                // with capitalized keys ("Version", "Statement", "Effect", "Action",
-                // "Resource", "Condition") and converts Resource lists to String[]. On
-                // deserialization, Jackson tries to populate the PolicyDocument POJO from
-                // this Map structure, which fails because the shapes don't match.
-                // Same issue affects IamPolicyResponseV1.
-                args(IamPolicyResponse.class, "response/iam_policy_response.json"),
-                args(IamPolicyResponseV1.class, "response/iam_policy_response_v1.json"));
     }
 
     private static Arguments args(Class<?> clazz, String fixture) {

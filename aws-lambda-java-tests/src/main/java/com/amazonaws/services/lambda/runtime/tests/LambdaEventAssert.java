@@ -25,13 +25,8 @@ import java.util.List;
  * {@link AssertionError}.
  * </p>
  *
- * <p>
- * This class is intentionally package-private to support updates to 
- * the aws-lambda-java-events and aws-lambda-java-serialization packages.
- * Consider making it public if there's a real request for it.
- * </p>
  */
-class LambdaEventAssert {
+public class LambdaEventAssert {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 

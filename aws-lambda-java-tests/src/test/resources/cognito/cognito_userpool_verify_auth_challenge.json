@@ -1,0 +1,27 @@
+{
+    "version": "1",
+    "triggerSource": "VerifyAuthChallengeResponse_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        },
+        "privateChallengeParameters": {
+            "answer": "5"
+        },
+        "challengeAnswer": "5",
+        "userNotFound": false
+    },
+    "response": {
+        "answerCorrect": true
+    }
+}

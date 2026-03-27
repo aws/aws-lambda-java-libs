@@ -1,0 +1,17 @@
+{
+    "invocationId": "invocationIdExample",
+    "applicationArn": "arn:aws:kinesisanalytics:us-east-1:123456789012:application/my-app",
+    "streamArn": "arn:aws:kinesis:us-east-1:123456789012:stream/my-stream",
+    "records": [
+        {
+            "recordId": "49546986683135544286507457936321625675700192471156785154",
+            "kinesisStreamRecordMetadata": {
+                "sequenceNumber": "49546986683135544286507457936321625675700192471156785154",
+                "partitionKey": "partKey",
+                "shardId": "shardId-000000000000",
+                "approximateArrivalTimestamp": 1583348638390
+            },
+            "data": "SGVsbG8gV29ybGQ="
+        }
+    ]
+}

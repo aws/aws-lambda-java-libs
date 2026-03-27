@@ -1,7 +1,3 @@
-### March 26, 2026
-`1.1.2`:
-- Add serialization round-trip tests covering 66 event classes
-
 ### August 26, 2021
 `1.1.1`:
 - Bumped `aws-lambda-java-events` to version `3.11.0`

@@ -40,7 +40,7 @@ jobs:
 
     # Package and install target module
     - name: Package serialization with Maven
-      run: mvn -B package install --file aws-lambda-java-serialization/pom.xml
+      run: mvn -B install --file aws-lambda-java-serialization/pom.xml
 
     # Run tests
     - name: Run tests from aws-lambda-java-tests

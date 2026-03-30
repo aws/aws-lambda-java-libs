@@ -1,17 +1,24 @@
-# This workflow will be triggered if there will be changes to aws-lambda-java-core
-# package and it builds the package and the packages that depend on it.
+# This workflow will be triggered if there will be changes to samples
+# or their dependencies (events, serialization, tests).
 
 name: Java CI samples
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - 'samples/**'
+      - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-tests/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'samples/**'
+      - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-tests/**'
       - '.github/workflows/samples.yml'
 
 permissions:
@@ -27,14 +34,13 @@ jobs:
         with:
           java-version: 8
           distribution: corretto
+          cache: maven
 
-      # Install events module
+      # Install dependencies
       - name: Install events with Maven
         run: mvn -B install --file aws-lambda-java-events/pom.xml
-      # Install serialization module
       - name: Install serialization with Maven
         run: mvn -B install --file aws-lambda-java-serialization/pom.xml
-      # Install tests module
       - name: Install tests with Maven
         run: mvn -B install --file aws-lambda-java-tests/pom.xml
 
@@ -54,6 +60,7 @@ jobs:
             8
             21
           distribution: corretto
+          cache: maven
 
       # Install events module using Java 8
       - name: Install events with Maven

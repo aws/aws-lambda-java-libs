@@ -1,9 +1,10 @@
 # This workflow will be triggered if there will be changes to aws-lambda-java-events
-# package and it builds the package and the packages that depend on it.
+# package and it builds the package.
 
 name: Java CI aws-lambda-java-events
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
@@ -29,14 +30,7 @@ jobs:
       with:
         java-version: 8
         distribution: corretto
-    
-    # Install base module
+        cache: maven
+
     - name: Install events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
-
-    # Package modules that depend on base module
-    - name: Package serialization with Maven
-      run: mvn -B package --file aws-lambda-java-serialization/pom.xml
-    - name: Package events-sdk-transformer with Maven
-      run: mvn -B package --file aws-lambda-java-events-sdk-transformer/pom.xml
-

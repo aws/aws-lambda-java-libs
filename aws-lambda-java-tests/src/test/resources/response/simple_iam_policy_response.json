@@ -1,0 +1,7 @@
+{
+    "isAuthorized": true,
+    "context": {
+        "userId": "user-123",
+        "scope": "read:all"
+    }
+}

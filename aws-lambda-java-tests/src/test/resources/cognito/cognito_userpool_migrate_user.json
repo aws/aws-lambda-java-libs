@@ -1,0 +1,35 @@
+{
+    "version": "1",
+    "triggerSource": "UserMigration_Authentication",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "validationData": {
+            "key1": "val1"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        },
+        "userName": "testuser",
+        "password": "test-password"
+    },
+    "response": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "finalUserStatus": "CONFIRMED",
+        "messageAction": "SUPPRESS",
+        "desiredDeliveryMediums": [
+            "EMAIL"
+        ],
+        "forceAliasCreation": false
+    }
+}

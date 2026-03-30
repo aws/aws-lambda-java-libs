@@ -1,0 +1,9 @@
+{
+    "records": [
+        {
+            "recordId": "record-1",
+            "result": "Ok",
+            "kafkaRecordValue": "dHJhbnNmb3JtZWQgZGF0YQ=="
+        }
+    ]
+}

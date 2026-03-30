@@ -1,0 +1,15 @@
+{
+    "statusCode": 200,
+    "statusDescription": "200 OK",
+    "headers": {
+        "Content-Type": "text/html"
+    },
+    "multiValueHeaders": {
+        "Set-Cookie": [
+            "cookie1=value1",
+            "cookie2=value2"
+        ]
+    },
+    "body": "<html><body>Hello</body></html>",
+    "isBase64Encoded": false
+}

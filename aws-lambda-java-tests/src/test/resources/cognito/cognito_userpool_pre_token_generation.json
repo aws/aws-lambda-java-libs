@@ -1,0 +1,48 @@
+{
+    "version": "1",
+    "triggerSource": "TokenGeneration_HostedAuth",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        },
+        "groupConfiguration": {
+            "groupsToOverride": [
+                "group1",
+                "group2"
+            ],
+            "iamRolesToOverride": [
+                "arn:aws:iam::123456789012:role/role1"
+            ],
+            "preferredRole": "arn:aws:iam::123456789012:role/role1"
+        }
+    },
+    "response": {
+        "claimsOverrideDetails": {
+            "claimsToAddOrOverride": {
+                "custom:myattr": "myvalue"
+            },
+            "claimsToSuppress": [
+                "email"
+            ],
+            "groupOverrideDetails": {
+                "groupsToOverride": [
+                    "group1"
+                ],
+                "iamRolesToOverride": [
+                    "arn:aws:iam::123456789012:role/role1"
+                ],
+                "preferredRole": "arn:aws:iam::123456789012:role/role1"
+            }
+        }
+    }
+}

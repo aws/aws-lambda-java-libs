@@ -15,10 +15,17 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
- * The AWS API represents a date as a double, which specifies the fractional
- * number of seconds since the epoch. Java's Date, however, represents a date as
- * a long, which specifies the number of milliseconds since the epoch. This
- * class is used to translate between these two formats.
+ * The AWS API represents a date as a double (fractional seconds since epoch).
+ * Java's Date uses a long (milliseconds since epoch). This module translates
+ * between the two formats.
+ *
+ * <p>
+ * <b>Round-trip caveats:</b> The serializer always writes via
+ * {@link JsonGenerator#writeNumber(double)}, so integer epochs
+ * (e.g. {@code 1428537600}) round-trip as decimal ({@code 1.4285376E9}).
+ * Sub-millisecond precision is lost because {@link java.util.Date}
+ * has milliseconds precision.
+ * </p>
  * 
  * This class is copied from LambdaEventBridgeservice
  * com.amazon.aws.lambda.stream.ddb.DateModule

@@ -1,0 +1,20 @@
+{
+    "version": "1",
+    "triggerSource": "PostConfirmation_ConfirmSignUp",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com",
+            "email_verified": "true"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        }
+    }
+}

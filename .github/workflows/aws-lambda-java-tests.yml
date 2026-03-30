@@ -1,5 +1,5 @@
 # This workflow will be triggered if there will be changes to aws-lambda-java-tests
-# package and it builds the package and the packages that depend on it.
+# package or its dependencies (events, serialization), and it builds the package.
 
 name: Java CI aws-lambda-java-tests
 
@@ -9,16 +9,14 @@ on:
     branches: [ main ]
     paths:
       - 'aws-lambda-java-tests/**'
-      - 'aws-lambda-java-runtime-interface-client/**'
-      - 'aws-lambda-java-serialization/**'
       - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-serialization/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-tests/**'
-      - 'aws-lambda-java-runtime-interface-client/**'
-      - 'aws-lambda-java-serialization/**'
       - 'aws-lambda-java-events/**'
+      - 'aws-lambda-java-serialization/**'
       - '.github/workflows/aws-lambda-java-tests.yml'
 
 permissions:
@@ -30,14 +28,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up JDK 1.8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: 8
         distribution: corretto
-    
-    # Install base module
+        cache: maven
+
+    # Install dependencies
     - name: Install events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
     - name: Install serialization with Maven
@@ -46,4 +45,3 @@ jobs:
     # Package target module
     - name: Package tests with Maven
       run: mvn -B package --file aws-lambda-java-tests/pom.xml
-    

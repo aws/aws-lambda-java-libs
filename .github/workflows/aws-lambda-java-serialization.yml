@@ -1,17 +1,20 @@
-# This workflow will be triggered if there will be changes to aws-lambda-java-serialization 
-# package and it builds the package and the packages that depend on it.
+# This workflow will be triggered if there will be changes to aws-lambda-java-serialization
+# package or its dependency (events), and it builds the package.
 
 name: Java CI aws-lambda-java-serialization
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-events/**'
   pull_request:
     branches: [ '*' ]
     paths:
       - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-events/**'
       - '.github/workflows/aws-lambda-java-serialization.yml'
 
 permissions:
@@ -23,14 +26,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up JDK 1.8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: 8
         distribution: corretto
-    
-    # Install base module
+        cache: maven
+
+    # Install dependency
     - name: Install events with Maven
       run: mvn -B install --file aws-lambda-java-events/pom.xml
 

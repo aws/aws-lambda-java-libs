@@ -7,7 +7,6 @@
         },
         "request": {
           "uri": "/test",
-          "querystring": "auth=test&foo=bar",
           "method": "GET",
           "clientIp": "2001:cdba::3257:9652",
           "headers": {

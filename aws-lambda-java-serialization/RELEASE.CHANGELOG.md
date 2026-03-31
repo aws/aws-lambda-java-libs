@@ -1,7 +1,14 @@
+### March 26, 2026
+`1.4.0`:
+- Update `jackson-databind` dependency from 2.15.4 to 2.18.6
+- Replace deprecated `PropertyNamingStrategy.PascalCaseStrategy` with `PropertyNamingStrategies.UpperCamelCaseStrategy`
+- The regression reported in 1.3.1 was a false positive caused by a CI workflow bug (`mvn package install` running the shade plugin twice, corrupting the artifact). Fixed by using `mvn install` instead.
+
 ### March 19, 2026
 `1.3.1`:
 - Revert `jackson-databind` dependency from 2.18.6 to 2.15.4
 - Revert `PropertyNamingStrategies.UpperCamelCaseStrategy` to `PropertyNamingStrategy.PascalCaseStrategy`
+- Note: reverted due to a suspected regression in Joda DateTime deserialization; later confirmed to be a false positive (see 1.4.0)
 
 ### March 11, 2026
 `1.3.0`:

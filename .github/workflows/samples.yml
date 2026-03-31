@@ -73,7 +73,7 @@ jobs:
 
       # Build custom-serialization samples
       - name: install sam
-        uses: aws-actions/setup-sam@v2
+        uses: aws-actions/setup-sam@d78e1a4a9656d3b223e59b80676a797f20093133 # v2
       - name: test fastJson
         run: cd samples/custom-serialization/fastJson && sam build && sam local invoke -e events/event.json | grep 200
       - name: test gson

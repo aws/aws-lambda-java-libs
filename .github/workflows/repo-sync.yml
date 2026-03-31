@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         if: ${{ env.IS_CONFIGURED == 'true' }}
-      - uses: repo-sync/github-sync@v2
+      - uses: repo-sync/github-sync@3832fe8e2be32372e1b3970bbae8e7079edeec88 # v2.3.0
         name: Sync repo to branch
         if: ${{ env.IS_CONFIGURED == 'true' }}
         with:
@@ -30,7 +30,7 @@ jobs:
           source_branch: main
           destination_branch: ${{ secrets.INTERMEDIATE_BRANCH }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: repo-sync/pull-request@v2
+      - uses: repo-sync/pull-request@7e79a9f5dc3ad0ce53138f01df2fad14a04831c5 # v2.12.1
         name: Create pull request
         if: ${{ env.IS_CONFIGURED == 'true' }}
         with:

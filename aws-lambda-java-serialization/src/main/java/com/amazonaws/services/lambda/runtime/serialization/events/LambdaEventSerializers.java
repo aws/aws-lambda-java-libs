@@ -19,6 +19,7 @@ import com.amazonaws.services.lambda.runtime.serialization.factories.JacksonFact
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.util.ReflectUtil;
 import com.amazonaws.services.lambda.runtime.serialization.util.SerializeUtil;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateModule;
 import com.amazonaws.services.lambda.runtime.serialization.events.modules.DateTimeModule;
@@ -39,47 +40,52 @@ import java.util.stream.Stream;
  *
  * Option 1 (Preferred):
  * 1. Add Class name to SUPPORTED_EVENTS
- * 2. Add Mixin Class to com.amazonaws.services.lambda.runtime.serialization.events.mixins package (if needed)
+ * 2. Add Mixin Class to
+ * com.amazonaws.services.lambda.runtime.serialization.events.mixins package (if
+ * needed)
  * 3. Add entries to MIXIN_MAP for event class and sub classes (if needed)
- * 4. Add entries to NESTED_CLASS_MAP for event class and sub classes (if needed)
- * 5. Add entry to NAMING_STRATEGY_MAP (if needed i.e. Could be used in place of a mixin)
+ * 4. Add entries to NESTED_CLASS_MAP for event class and sub classes (if
+ * needed)
+ * 5. Add entry to NAMING_STRATEGY_MAP (if needed i.e. Could be used in place of
+ * a mixin)
  *
  * Option 2 (longer - for event models that do not work with Jackson or GSON):
  * 1. Add Class name to SUPPORTED_EVENTS
- * 2. Add serializer (using org.json) to com.amazonaws.services.lambda.runtime.serialization.events.serializers
+ * 2. Add serializer (using org.json) to
+ * com.amazonaws.services.lambda.runtime.serialization.events.serializers
  * 3. Add class name and serializer to SERIALIZER_MAP
  */
 public class LambdaEventSerializers {
 
-    /**
-     * list of supported events
-     */
-    private static final List<String> SUPPORTED_EVENTS = Stream.of(
-            "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent",
-            "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent",
-            "com.amazonaws.services.lambda.runtime.events.CloudFormationCustomResourceEvent",
-            "com.amazonaws.services.lambda.runtime.events.CloudFrontEvent",
-            "com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent",
-            "com.amazonaws.services.lambda.runtime.events.CodeCommitEvent",
-            "com.amazonaws.services.lambda.runtime.events.CognitoEvent",
-            "com.amazonaws.services.lambda.runtime.events.ConfigEvent",
-            "com.amazonaws.services.lambda.runtime.events.ConnectEvent",
-            "com.amazonaws.services.lambda.runtime.events.DynamodbEvent",
-            "com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
-            "com.amazonaws.services.lambda.runtime.events.IoTButtonEvent",
-            "com.amazonaws.services.lambda.runtime.events.KinesisEvent",
-            "com.amazonaws.services.lambda.runtime.events.KinesisTimeWindowEvent",
-            "com.amazonaws.services.lambda.runtime.events.KinesisFirehoseEvent",
-            "com.amazonaws.services.lambda.runtime.events.LambdaDestinationEvent",
-            "com.amazonaws.services.lambda.runtime.events.LexEvent",
-            "com.amazonaws.services.lambda.runtime.events.ScheduledEvent",
-            "com.amazonaws.services.lambda.runtime.events.SecretsManagerRotationEvent",
-            "com.amazonaws.services.s3.event.S3EventNotification",
-            "com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification",
-            "com.amazonaws.services.lambda.runtime.events.S3Event",
-            "com.amazonaws.services.lambda.runtime.events.SNSEvent",
-            "com.amazonaws.services.lambda.runtime.events.SQSEvent")
-            .collect(Collectors.toList());
+        /**
+         * list of supported events
+         */
+        private static final List<String> SUPPORTED_EVENTS = Stream.of(
+                        "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent",
+                        "com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent",
+                        "com.amazonaws.services.lambda.runtime.events.CloudFormationCustomResourceEvent",
+                        "com.amazonaws.services.lambda.runtime.events.CloudFrontEvent",
+                        "com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent",
+                        "com.amazonaws.services.lambda.runtime.events.CodeCommitEvent",
+                        "com.amazonaws.services.lambda.runtime.events.CognitoEvent",
+                        "com.amazonaws.services.lambda.runtime.events.ConfigEvent",
+                        "com.amazonaws.services.lambda.runtime.events.ConnectEvent",
+                        "com.amazonaws.services.lambda.runtime.events.DynamodbEvent",
+                        "com.amazonaws.services.lambda.runtime.events.DynamodbTimeWindowEvent",
+                        "com.amazonaws.services.lambda.runtime.events.IoTButtonEvent",
+                        "com.amazonaws.services.lambda.runtime.events.KinesisEvent",
+                        "com.amazonaws.services.lambda.runtime.events.KinesisTimeWindowEvent",
+                        "com.amazonaws.services.lambda.runtime.events.KinesisFirehoseEvent",
+                        "com.amazonaws.services.lambda.runtime.events.LambdaDestinationEvent",
+                        "com.amazonaws.services.lambda.runtime.events.LexEvent",
+                        "com.amazonaws.services.lambda.runtime.events.ScheduledEvent",
+                        "com.amazonaws.services.lambda.runtime.events.SecretsManagerRotationEvent",
+                        "com.amazonaws.services.s3.event.S3EventNotification",
+                        "com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification",
+                        "com.amazonaws.services.lambda.runtime.events.S3Event",
+                        "com.amazonaws.services.lambda.runtime.events.SNSEvent",
+                        "com.amazonaws.services.lambda.runtime.events.SQSEvent")
+                        .collect(Collectors.toList());
 
     /**
      * list of events incompatible with Jackson, with serializers explicitly defined
@@ -216,102 +222,112 @@ public class LambdaEventSerializers {
      */
     private static final Map<String, PropertyNamingStrategy> NAMING_STRATEGY_MAP = Stream.of(
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.SNSEvent",
-                    new PropertyNamingStrategy.PascalCaseStrategy()),
+                    new PropertyNamingStrategies.UpperCamelCaseStrategy()),
             new SimpleEntry<>("com.amazonaws.services.lambda.runtime.events.ConnectEvent$Queue",
-                    new PropertyNamingStrategy.PascalCaseStrategy())
+                    new PropertyNamingStrategies.UpperCamelCaseStrategy())
             )
             .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
 
-    /**
-     * Returns whether the class name is a Lambda supported event model.
-     * @param className class name as string
-     * @return whether the event model is supported
-     */
-    public static boolean isLambdaSupportedEvent(String className) {
-        return SUPPORTED_EVENTS.contains(className);
-    }
+        /**
+         * Returns whether the class name is a Lambda supported event model.
+         * 
+         * @param className class name as string
+         * @return whether the event model is supported
+         */
+        public static boolean isLambdaSupportedEvent(String className) {
+                return SUPPORTED_EVENTS.contains(className);
+        }
 
-    /**
-     * Return a serializer for the event class
-     * @return a specific PojoSerializer or modified JacksonFactory instance with mixins and modules added in
-     */
-    @SuppressWarnings({"unchecked"})
-    public static <T> PojoSerializer<T> serializerFor(Class<T> eventClass, ClassLoader classLoader) {
-        // if serializer specifically defined for event then use that
-        if (SERIALIZER_MAP.containsKey(eventClass.getName())) {
-            return SERIALIZER_MAP.get(eventClass.getName()).withClass(eventClass).withClassLoader(classLoader);
-        }
-        // else use a Jackson ObjectMapper instance
-        JacksonFactory factory = JacksonFactory.getInstance();
-        // if mixins required for class, then apply
-        if (MIXIN_MAP.containsKey(eventClass.getName())) {
-            factory = factory.withMixin(eventClass, MIXIN_MAP.get(eventClass.getName()));
-        }
-        // if event model has nested classes then load those classes and check if mixins apply
-        if (NESTED_CLASS_MAP.containsKey(eventClass.getName())) {
-            List<? extends NestedClass> nestedClasses = NESTED_CLASS_MAP.get(eventClass.getName());
-            for (NestedClass nestedClass: nestedClasses) {
-                // if mixin exists for nested class then apply
-                if (MIXIN_MAP.containsKey(nestedClass.className)) {
-                    factory = tryLoadingNestedClass(classLoader, factory, nestedClass);
+        /**
+         * Return a serializer for the event class
+         * 
+         * @return a specific PojoSerializer or modified JacksonFactory instance with
+         *         mixins and modules added in
+         */
+        @SuppressWarnings({ "unchecked" })
+        public static <T> PojoSerializer<T> serializerFor(Class<T> eventClass, ClassLoader classLoader) {
+                // if serializer specifically defined for event then use that
+                if (SERIALIZER_MAP.containsKey(eventClass.getName())) {
+                        return SERIALIZER_MAP.get(eventClass.getName()).withClass(eventClass)
+                                        .withClassLoader(classLoader);
                 }
-            }
-        }
-        // load DateModules
-        factory.getMapper().registerModules(new DateModule(), new DateTimeModule(classLoader));
-        // load naming strategy if needed
-        if (NAMING_STRATEGY_MAP.containsKey(eventClass.getName())) {
-            factory = factory.withNamingStrategy(NAMING_STRATEGY_MAP.get(eventClass.getName()));
-        }
-        return factory.getSerializer(eventClass);
-    }
-
-    /**
-     * Tries to load a nested class with its defined mixin from {@link #MIXIN_MAP} into the {@link JacksonFactory} object.
-     * Will allow initial failure for {@link AlternateNestedClass} objects and try again with their alternate class name
-     * @return a modified JacksonFactory instance with mixins added in
-     */
-    private static JacksonFactory tryLoadingNestedClass(ClassLoader classLoader, JacksonFactory factory, NestedClass nestedClass) {
-        Class<?> eventClazz;
-        Class<?> mixinClazz;
-        try {
-            eventClazz = SerializeUtil.loadCustomerClass(nestedClass.getClassName(), classLoader);
-            mixinClazz = MIXIN_MAP.get(nestedClass.getClassName());
-        } catch (ReflectUtil.ReflectException e) {
-            if (nestedClass instanceof AlternateNestedClass) {
-                AlternateNestedClass alternateNestedClass = (AlternateNestedClass) nestedClass;
-                eventClazz = SerializeUtil.loadCustomerClass(alternateNestedClass.getAlternateClassName(), classLoader);
-                mixinClazz = MIXIN_MAP.get(alternateNestedClass.getAlternateClassName());
-            } else {
-                throw e;
-            }
+                // else use a Jackson ObjectMapper instance
+                JacksonFactory factory = JacksonFactory.getInstance();
+                // if mixins required for class, then apply
+                if (MIXIN_MAP.containsKey(eventClass.getName())) {
+                        factory = factory.withMixin(eventClass, MIXIN_MAP.get(eventClass.getName()));
+                }
+                // if event model has nested classes then load those classes and check if mixins
+                // apply
+                if (NESTED_CLASS_MAP.containsKey(eventClass.getName())) {
+                        List<? extends NestedClass> nestedClasses = NESTED_CLASS_MAP.get(eventClass.getName());
+                        for (NestedClass nestedClass : nestedClasses) {
+                                // if mixin exists for nested class then apply
+                                if (MIXIN_MAP.containsKey(nestedClass.className)) {
+                                        factory = tryLoadingNestedClass(classLoader, factory, nestedClass);
+                                }
+                        }
+                }
+                // load DateModules
+                factory.getMapper().registerModules(new DateModule(), new DateTimeModule(classLoader));
+                // load naming strategy if needed
+                if (NAMING_STRATEGY_MAP.containsKey(eventClass.getName())) {
+                        factory = factory.withNamingStrategy(NAMING_STRATEGY_MAP.get(eventClass.getName()));
+                }
+                return factory.getSerializer(eventClass);
         }
 
-        return factory.withMixin(eventClazz, mixinClazz);
-    }
+        /**
+         * Tries to load a nested class with its defined mixin from {@link #MIXIN_MAP}
+         * into the {@link JacksonFactory} object.
+         * Will allow initial failure for {@link AlternateNestedClass} objects and try
+         * again with their alternate class name
+         * 
+         * @return a modified JacksonFactory instance with mixins added in
+         */
+        private static JacksonFactory tryLoadingNestedClass(ClassLoader classLoader, JacksonFactory factory,
+                        NestedClass nestedClass) {
+                Class<?> eventClazz;
+                Class<?> mixinClazz;
+                try {
+                        eventClazz = SerializeUtil.loadCustomerClass(nestedClass.getClassName(), classLoader);
+                        mixinClazz = MIXIN_MAP.get(nestedClass.getClassName());
+                } catch (ReflectUtil.ReflectException e) {
+                        if (nestedClass instanceof AlternateNestedClass) {
+                                AlternateNestedClass alternateNestedClass = (AlternateNestedClass) nestedClass;
+                                eventClazz = SerializeUtil.loadCustomerClass(
+                                                alternateNestedClass.getAlternateClassName(), classLoader);
+                                mixinClazz = MIXIN_MAP.get(alternateNestedClass.getAlternateClassName());
+                        } else {
+                                throw e;
+                        }
+                }
 
-    private static class NestedClass {
-        private final String className;
-
-        protected NestedClass(String className) {
-            this.className = className;
+                return factory.withMixin(eventClazz, mixinClazz);
         }
 
-        protected String getClassName() {
-            return className;
-        }
-    }
+        private static class NestedClass {
+                private final String className;
 
-    private static class AlternateNestedClass extends NestedClass {
-        private final String alternateClassName;
+                protected NestedClass(String className) {
+                        this.className = className;
+                }
 
-        private AlternateNestedClass(String className, String alternateClassName) {
-            super(className);
-            this.alternateClassName = alternateClassName;
+                protected String getClassName() {
+                        return className;
+                }
         }
 
-        private String getAlternateClassName() {
-            return alternateClassName;
+        private static class AlternateNestedClass extends NestedClass {
+                private final String alternateClassName;
+
+                private AlternateNestedClass(String className, String alternateClassName) {
+                        super(className);
+                        this.alternateClassName = alternateClassName;
+                }
+
+                private String getAlternateClassName() {
+                        return alternateClassName;
+                }
         }
-    }
 }

@@ -14,19 +14,22 @@
     "Header2": [
       "value1",
       "value2"
+    ],
+    "Header3": [
+      "value1,value2"
     ]
   },
   "queryStringParameters": {
     "parameter1": "value1",
-    "parameter2": "value"
+    "parameter2": "value2"
   },
   "multiValueQueryStringParameters": {
     "parameter1": [
-      "value1",
-      "value2"
+      "value1"
     ],
     "parameter2": [
-      "value"
+      "value1",
+      "value2"
     ]
   },
   "requestContext": {
@@ -52,17 +55,7 @@
       "sourceIp": "IP",
       "user": null,
       "userAgent": "user-agent",
-      "userArn": null,
-      "clientCert": {
-        "clientCertPem": "CERT_CONTENT",
-        "subjectDN": "www.example.com",
-        "issuerDN": "Example issuer",
-        "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
-        "validity": {
-          "notBefore": "May 28 12:30:02 2019 GMT",
-          "notAfter": "Aug  5 09:36:04 2021 GMT"
-        }
-      }
+      "userArn": null
     },
     "path": "/my/path",
     "protocol": "HTTP/1.1",
@@ -76,5 +69,5 @@
   "pathParameters": null,
   "stageVariables": null,
   "body": "Hello from Lambda!",
-  "isBase64Encoded": true
+  "isBase64Encoded": false
 }

@@ -81,6 +81,12 @@ public class EventLoaderTest {
 
         assertThat(event).isNotNull();
         assertThat(event.getRequestContext().getHttp().getMethod()).isEqualTo("POST");
+        // getTime() converts the raw string "12/Mar/2020:19:03:58 +0000" into a DateTime object;
+        // Jackson then serializes it as ISO-8601 "2020-03-12T19:03:58.000Z"
+        assertThat(event.getRequestContext().getTime().toInstant().getMillis())
+                .isEqualTo(DateTime.parse("2020-03-12T19:03:58.000Z").toInstant().getMillis());
+        // getTimeEpoch() converts the raw long into an Instant;
+        // Jackson then serializes it as a decimal seconds value
         assertThat(event.getRequestContext().getTimeEpoch()).isEqualTo(Instant.ofEpochMilli(1583348638390L));
     }
 
@@ -136,6 +142,9 @@ public class EventLoaderTest {
         assertThat(event.getCurrentIntent().getName()).isEqualTo("BookHotel");
         assertThat(event.getCurrentIntent().getSlots()).hasSize(4);
         assertThat(event.getBot().getName()).isEqualTo("BookTrip");
+        // Jackson leniently coerces the JSON number for "Nights" into a String
+        // because slots is typed as Map<String, String>
+        assertThat(event.getCurrentIntent().getSlots().get("Nights")).isInstanceOf(String.class);
     }
 
     @Test
@@ -159,6 +168,10 @@ public class EventLoaderTest {
         assertThat(event.getRecords().get(0).getKafkaRecordValue().array()).asString().isEqualTo("{\"Name\":\"Hello World\"}");
         assertThat(event.getRecords().get(0).getApproximateArrivalTimestamp()).asString().isEqualTo("1716369573887");
         assertThat(event.getRecords().get(0).getMskRecordMetadata()).asString().isEqualTo("{offset=0, partitionId=1, approximateArrivalTimestamp=1716369573887}");
+        // Jackson leniently coerces the JSON number in mskRecordMetadata into a String
+        // because the map is typed as Map<String, String>
+        Map<String, String> metadata = event.getRecords().get(0).getMskRecordMetadata();
+        assertThat(metadata.get("approximateArrivalTimestamp")).isInstanceOf(String.class);
     }
 
     @Test
@@ -408,6 +421,8 @@ public class EventLoaderTest {
                 .returns("AIDACKCEVSQ6C2EXAMPLE", from(RabbitMQEvent.BasicProperties::getUserId))
                 .returns(80, from(RabbitMQEvent.BasicProperties::getBodySize))
                 .returns("Jan 1, 1970, 12:33:41 AM", from(RabbitMQEvent.BasicProperties::getTimestamp));
+        // Jackson leniently coerces the JSON string "60000" for expiration into int
+        // because the model field is typed as int
 
         Map<String, Object> headers = basicProperties.getHeaders();
         assertThat(headers).hasSize(3);

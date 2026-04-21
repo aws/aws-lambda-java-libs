@@ -28,8 +28,10 @@
         },
         "object": {
           "key": "test/key",
+          "urlDecodedKey": "test/key",
           "size": 1024,
           "eTag": "0123456789abcdef0123456789abcdef",
+          "versionId": "",
           "sequencer": "0A1B2C3D4E5F678901"
         }
       }

@@ -1,0 +1,28 @@
+{
+    "version": "1",
+    "triggerSource": "CustomMessage_SignUp",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com",
+            "phone_number_verified": "true",
+            "email_verified": "true"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        },
+        "codeParameter": "####",
+        "usernameParameter": "testuser"
+    },
+    "response": {
+        "smsMessage": "Your code is ####",
+        "emailMessage": "Your code is ####",
+        "emailSubject": "Welcome"
+    }
+}

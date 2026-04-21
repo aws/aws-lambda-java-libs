@@ -1,0 +1,10 @@
+{
+    "state": {
+        "totalAmount": "500"
+    },
+    "batchItemFailures": [
+        {
+            "itemIdentifier": "49590338271490256608559692538361571095921575989136588898"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "invocationId": "invocationIdExample",
+    "applicationArn": "arn:aws:kinesisanalytics:us-east-1:123456789012:application/my-app",
+    "streamArn": "arn:aws:firehose:us-east-1:123456789012:deliverystream/my-stream",
+    "records": [
+        {
+            "recordId": "49546986683135544286507457936321625675700192471156785154",
+            "kinesisFirehoseRecordMetadata": {
+                "approximateArrivalTimestamp": 1583348638390
+            },
+            "data": "SGVsbG8gV29ybGQ="
+        }
+    ]
+}

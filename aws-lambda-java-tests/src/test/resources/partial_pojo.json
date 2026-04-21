@@ -1,0 +1,4 @@
+{
+    "name": "test",
+    "unknownField": "this will be dropped"
+}

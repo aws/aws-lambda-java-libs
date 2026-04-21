@@ -1,0 +1,16 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "multiValueHeaders": {
+        "Set-Cookie": [
+            "cookie1=value1"
+        ]
+    },
+    "cookies": [
+        "session=abc123; Secure; HttpOnly"
+    ],
+    "body": "{\"message\":\"OK\"}",
+    "isBase64Encoded": false
+}

@@ -1,0 +1,15 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "X-Custom-Header": "custom-value"
+    },
+    "multiValueHeaders": {
+        "Set-Cookie": [
+            "cookie1=value1",
+            "cookie2=value2"
+        ]
+    },
+    "body": "{\"message\":\"Hello from Lambda\"}",
+    "isBase64Encoded": false
+}

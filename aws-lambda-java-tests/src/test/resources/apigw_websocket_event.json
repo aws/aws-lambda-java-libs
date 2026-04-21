@@ -1,0 +1,88 @@
+{
+    "resource": "/",
+    "path": "/",
+    "httpMethod": "GET",
+    "headers": {
+        "Host": "abcdef1234.execute-api.us-east-1.amazonaws.com",
+        "Sec-WebSocket-Extensions": "permessage-deflate",
+        "Sec-WebSocket-Key": "dGhlIHNhbXBsZSBub25jZQ==",
+        "Sec-WebSocket-Version": "13",
+        "X-Forwarded-For": "192.0.2.1",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Host": [
+            "abcdef1234.execute-api.us-east-1.amazonaws.com"
+        ],
+        "Sec-WebSocket-Extensions": [
+            "permessage-deflate"
+        ],
+        "Sec-WebSocket-Key": [
+            "dGhlIHNhbXBsZSBub25jZQ=="
+        ],
+        "Sec-WebSocket-Version": [
+            "13"
+        ],
+        "X-Forwarded-For": [
+            "192.0.2.1"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": {
+        "param1": "value1"
+    },
+    "multiValueQueryStringParameters": {
+        "param1": [
+            "value1"
+        ]
+    },
+    "pathParameters": {
+        "proxy": "path/to/resource"
+    },
+    "stageVariables": {
+        "stageVar1": "value1"
+    },
+    "requestContext": {
+        "accountId": "123456789012",
+        "resourceId": "abcdef",
+        "stage": "prod",
+        "requestId": "abc-def-ghi",
+        "identity": {
+            "cognitoIdentityPoolId": "us-east-1:id-pool",
+            "accountId": "123456789012",
+            "cognitoIdentityId": "us-east-1:identity-id",
+            "caller": "caller-id",
+            "apiKey": "api-key-id",
+            "sourceIp": "192.0.2.1",
+            "cognitoAuthenticationType": "authenticated",
+            "cognitoAuthenticationProvider": "provider",
+            "userArn": "arn:aws:iam::123456789012:user/testuser",
+            "userAgent": "Mozilla/5.0",
+            "user": "testuser",
+            "accessKey": "AKIAIOSFODNN7EXAMPLE"
+        },
+        "resourcePath": "/",
+        "httpMethod": "GET",
+        "apiId": "abcdef1234",
+        "connectedAt": 1583348638390,
+        "connectionId": "abc123=",
+        "domainName": "abcdef1234.execute-api.us-east-1.amazonaws.com",
+        "eventType": "CONNECT",
+        "extendedRequestId": "abc123=",
+        "integrationLatency": "100",
+        "messageDirection": "IN",
+        "messageId": "msg-001",
+        "requestTime": "09/Apr/2020:18:03:58 +0000",
+        "requestTimeEpoch": 1583348638390,
+        "routeKey": "$connect",
+        "status": "200"
+    },
+    "body": "request body",
+    "isBase64Encoded": false
+}

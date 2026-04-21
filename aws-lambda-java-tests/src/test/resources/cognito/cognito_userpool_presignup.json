@@ -1,0 +1,27 @@
+{
+    "version": "1",
+    "triggerSource": "PreSignUp_SignUp",
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_uPoolId",
+    "userName": "testuser",
+    "callerContext": {
+        "awsSdkVersion": "2.0.0",
+        "clientId": "abcdefg1234567"
+    },
+    "request": {
+        "userAttributes": {
+            "email": "user@example.com"
+        },
+        "validationData": {
+            "key1": "val1"
+        },
+        "clientMetadata": {
+            "meta1": "value1"
+        }
+    },
+    "response": {
+        "autoConfirmUser": false,
+        "autoVerifyPhone": false,
+        "autoVerifyEmail": false
+    }
+}

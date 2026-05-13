@@ -1,3 +1,11 @@
+### May 13, 2026
+`1.6.3`:
+- Updated `log4j-core` and `log4j-api` dependencies to `2.25.4`
+
+### February 2026
+`1.6.2`:
+- Updated `log4j-core` and `log4j-api` dependencies to `2.25.3`
+
 ### October 24, 2023
 `1.6.0`:
 - Log level and log format support

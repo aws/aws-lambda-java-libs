@@ -12,6 +12,81 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 5695319264103347099L;
 
+  /**
+   * Represents the API Gateway-managed WebSocket connection for a single client.
+   * This is not a native server-side socket session.
+   */
+  public static class WebSocketConnectionContext implements Serializable {
+
+    private static final long serialVersionUID = 9166276112534784030L;
+
+    private final String connectionId;
+    private final String domainName;
+    private final String stage;
+
+    public WebSocketConnectionContext(String connectionId, String domainName, String stage) {
+      this.connectionId = connectionId;
+      this.domainName = domainName;
+      this.stage = stage;
+    }
+
+    public String getConnectionId() {
+      return connectionId;
+    }
+
+    public String getDomainName() {
+      return domainName;
+    }
+
+    public String getStage() {
+      return stage;
+    }
+
+    /**
+     * Builds the API Gateway Management API endpoint used for postToConnection calls.
+     */
+    public String getManagementApiEndpoint() {
+      if (isNullOrEmpty(domainName) || isNullOrEmpty(stage)) {
+        return null;
+      }
+      return "https://" + domainName + "/" + stage;
+    }
+
+    private static boolean isNullOrEmpty(String value) {
+      return value == null || value.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      WebSocketConnectionContext that = (WebSocketConnectionContext) o;
+
+      if (!Objects.equals(connectionId, that.connectionId)) return false;
+      if (!Objects.equals(domainName, that.domainName)) return false;
+      return Objects.equals(stage, that.stage);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = connectionId != null ? connectionId.hashCode() : 0;
+      result = 31 * result + (domainName != null ? domainName.hashCode() : 0);
+      result = 31 * result + (stage != null ? stage.hashCode() : 0);
+      return result;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("WebSocketConnectionContext{");
+      sb.append("connectionId='").append(connectionId).append('\'');
+      sb.append(", domainName='").append(domainName).append('\'');
+      sb.append(", stage='").append(stage).append('\'');
+      sb.append('}');
+      return sb.toString();
+    }
+  }
+
   public static class RequestIdentity implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -3276649362684921217L;
@@ -415,6 +490,13 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
       this.status = status;
     }
 
+    public WebSocketConnectionContext getConnectionContext() {
+      if (connectionId == null) {
+        return null;
+      }
+      return new WebSocketConnectionContext(connectionId, domainName, stage);
+    }
+
     @Override
     public int hashCode() {
       int hash = 3;
@@ -644,6 +726,13 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
 
   public void setRequestContext(RequestContext requestContext) {
     this.requestContext = requestContext;
+  }
+
+  public WebSocketConnectionContext getConnectionContext() {
+    if (requestContext == null) {
+      return null;
+    }
+    return requestContext.getConnectionContext();
   }
 
   public String getBody() {

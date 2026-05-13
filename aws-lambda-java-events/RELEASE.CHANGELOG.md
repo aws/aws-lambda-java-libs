@@ -1,3 +1,6 @@
+### Unreleased
+- Add `WebSocketConnectionContext` helper accessors on `APIGatewayV2WebSocketEvent` to expose connection metadata as a session-like object
+
 ### June 17, 2025
 `3.16.0`:
 - Add Schema metadata related attributes in KafkaEvent ([#548](https://github.com/aws/aws-lambda-java-libs/pull/548))

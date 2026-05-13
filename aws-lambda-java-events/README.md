@@ -60,6 +60,23 @@
 * `SQSBatchResponse`
 * `SQSEvent`
 
+### API Gateway WebSocket connection context
+
+API Gateway manages the WebSocket connection. Lambda receives event payloads instead of a native Java WebSocket session.
+
+For `APIGatewayV2WebSocketEvent`, use the request context's connection metadata:
+
+```java
+APIGatewayV2WebSocketEvent.WebSocketConnectionContext connection = event.getConnectionContext();
+if (connection != null) {
+    String connectionId = connection.getConnectionId();
+    String endpoint = connection.getManagementApiEndpoint(); // https://{domainName}/{stage}
+    // endpoint is null when domainName/stage is missing or empty
+}
+```
+
+You can pass this object through your handlers as a lightweight session-like context and use it with the API Gateway Management API to send messages.
+
 
 ### Usage
 

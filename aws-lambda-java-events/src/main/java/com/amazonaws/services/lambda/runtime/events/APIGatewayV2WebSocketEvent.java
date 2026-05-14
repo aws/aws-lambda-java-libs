@@ -1,6 +1,7 @@
 package com.amazonaws.services.lambda.runtime.events;
 
 import java.io.Serializable;
+import java.beans.Transient;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -490,6 +491,7 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
       this.status = status;
     }
 
+    @Transient
     public WebSocketConnectionContext getConnectionContext() {
       if (connectionId == null) {
         return null;
@@ -728,6 +730,7 @@ public class APIGatewayV2WebSocketEvent implements Serializable, Cloneable {
     this.requestContext = requestContext;
   }
 
+  @Transient
   public WebSocketConnectionContext getConnectionContext() {
     if (requestContext == null) {
       return null;

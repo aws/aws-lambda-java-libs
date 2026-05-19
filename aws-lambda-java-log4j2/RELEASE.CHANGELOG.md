@@ -1,3 +1,7 @@
+### May 19, 2026
+`1.6.4`:
+- Fix regression in `1.6.3`
+
 ### May 13, 2026
 `1.6.3`:
 - Updated `log4j-core` and `log4j-api` dependencies to `2.25.4`

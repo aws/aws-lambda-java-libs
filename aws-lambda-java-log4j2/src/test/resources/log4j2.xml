@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Lambda name="LambdaText" format="TEXT">
+      <LambdaTextFormat>
+        <PatternLayout>
+          <pattern>%-5p %c{1} - %m%n</pattern>
+        </PatternLayout>
+      </LambdaTextFormat>
+    </Lambda>
+    <Lambda name="LambdaJson" format="JSON">
+      <LambdaJsonFormat>
+        <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json" />
+      </LambdaJsonFormat>
+    </Lambda>
+  </Appenders>
+  <Loggers>
+    <Logger name="json-test" level="DEBUG" additivity="false">
+      <AppenderRef ref="LambdaJson" />
+    </Logger>
+    <Root level="DEBUG">
+      <AppenderRef ref="LambdaText" />
+    </Root>
+  </Loggers>
+</Configuration>

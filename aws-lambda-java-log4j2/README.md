@@ -1,5 +1,7 @@
 # Using log4j2 with AWS Lambda
 
+**IMPORTANT: The v1.6.3 release contained a regression (see [#612](https://github.com/aws/aws-lambda-java-libs/issues/612)) resulting in missing logs. Please upgrade to v1.6.4 or later. We apologize for the inconvenience.**
+
 ### 1. Pull in log4j2 dependencies
 
 Example for Maven pom.xml

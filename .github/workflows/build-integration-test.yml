@@ -1,0 +1,56 @@
+# this workflow verifies that the integration test Lambda function builds successfully.
+# it does NOT deploy or run the tests (that requires AWS credentials and is done in
+# run-integration-test.yml).
+
+name: Build integration tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
+      - 'lambda-integration-tests/**'
+  pull_request:
+    branches: [ '*' ]
+    paths:
+      - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
+      - 'lambda-integration-tests/**'
+      - '.github/workflows/build-integration-test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: |
+            8
+            21
+          distribution: corretto
+          cache: maven
+
+      - name: Install core with Maven
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          mvn -B install --file aws-lambda-java-core/pom.xml
+
+      - name: Install log4j2 with Maven
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          mvn -B install --file aws-lambda-java-log4j2/pom.xml
+
+      # build the integration test function
+      # this verifies that the function compiles and packages correctly.
+      # the tests will run in run-integration-test.yml which deploys to AWS.
+      - name: Package integration test function
+        run: |
+          export JAVA_HOME=$JAVA_HOME_21_X64
+          mvn -B package --file lambda-integration-tests/log4j2-test-function/pom.xml

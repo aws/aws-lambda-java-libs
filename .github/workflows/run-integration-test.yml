@@ -98,7 +98,7 @@ jobs:
             --parameter-overrides "ParameterKey=LambdaRole,ParameterValue=${{ secrets.AWS_LAMBDA_ROLE }} ParameterKey=Architecture,ParameterValue=${{ matrix.arch.sam_arch }}" \
             --no-confirm-changeset \
             --no-progressbar \
-            --resolve-s3 \
+            --s3-bucket "${{ secrets.S3_BUCKET }}" \
             --capabilities CAPABILITY_IAM \
             2>&1 | tee /tmp/sam-deploy.log | tail -n 20
           LOG4J2_TEST_FUNCTION=$(sam list stack-outputs --stack-name "${stackName}" --output json | jq -r '.[] | select(.OutputKey=="Log4j2TestFunction") | .OutputValue')

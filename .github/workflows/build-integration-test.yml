@@ -36,7 +36,7 @@ jobs:
           MATRIX=$(jq -c '.' .github/test-matrix.json)
           echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
 
-  build:
+  build-arch:
     needs: load-matrix
     runs-on: ${{ matrix.arch.runner }}
     strategy:
@@ -72,3 +72,15 @@ jobs:
         run: |
           export JAVA_HOME=$JAVA_HOME_21_X64
           mvn -B package --file lambda-integration-tests/log4j2-test-function/pom.xml
+
+  build:
+    needs: build-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build results
+        run: |
+          if [ "${{ needs.build-arch.result }}" != "success" ]; then
+            echo "Build failed on one or more architectures"
+            exit 1
+          fi

@@ -1,0 +1,14 @@
+{
+  "arch": [
+    {
+      "runner": "ubuntu-latest",
+      "label": "x64",
+      "sam_arch": "x86_64"
+    },
+    {
+      "runner": "ubuntu-24.04-arm",
+      "label": "arm64",
+      "sam_arch": "arm64"
+    }
+  ]
+}

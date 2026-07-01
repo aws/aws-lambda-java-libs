@@ -5,6 +5,12 @@ Description: aws-lambda-java-log4j2 integration tests
 Parameters:
   LambdaRole:
     Type: String
+  Architecture:
+    Type: String
+    Default: x86_64
+    AllowedValues:
+      - x86_64
+      - arm64
 
 Globals:
   Function:
@@ -20,6 +26,8 @@ Resources:
       CodeUri: log4j2-test-function/
       Handler: integ.Log4j2TestHandler::handleRequest
       Runtime: java21
+      Architectures:
+        - !Ref Architecture
       Role: !Ref LambdaRole
       Environment:
         Variables:

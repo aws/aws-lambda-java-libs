@@ -62,9 +62,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6.0.0
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: ${{ secrets.ROLE_SESSION_NAME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_LOG4J2_INTEG_TEST }}
+          role-session-name: GitHubActionsLog4j2IntegTest
+          aws-region: ${{ secrets.AWS_REGION_LOG4J2_INTEG_TEST }}
 
       - name: Install core with Maven
         run: |
@@ -87,7 +87,7 @@ jobs:
       - name: Deploy stack
         id: deploy_stack
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ secrets.AWS_REGION_LOG4J2_INTEG_TEST }}
         run: |
           cd lambda-integration-tests
           stackName="aws-lambda-java-log4j2-integ-test-${{ matrix.arch.label }}-$GITHUB_RUN_ID"
@@ -95,10 +95,10 @@ jobs:
           echo "Stack name = $stackName"
           sam deploy \
             --stack-name "${stackName}" \
-            --parameter-overrides "ParameterKey=LambdaRole,ParameterValue=${{ secrets.AWS_LAMBDA_ROLE }} ParameterKey=Architecture,ParameterValue=${{ matrix.arch.sam_arch }}" \
+            --parameter-overrides "ParameterKey=LambdaRole,ParameterValue=${{ secrets.AWS_LAMBDA_ROLE_LOG4J2_INTEG_TEST }} ParameterKey=Architecture,ParameterValue=${{ matrix.arch.sam_arch }}" \
             --no-confirm-changeset \
             --no-progressbar \
-            --s3-bucket "${{ secrets.S3_BUCKET }}" \
+            --s3-bucket "${{ secrets.S3_BUCKET_LOG4J2_INTEG_TEST }}" \
             --capabilities CAPABILITY_IAM \
             2>&1 | tee /tmp/sam-deploy.log | tail -n 20
           LOG4J2_TEST_FUNCTION=$(sam list stack-outputs --stack-name "${stackName}" --output json | jq -r '.[] | select(.OutputKey=="Log4j2TestFunction") | .OutputValue')
@@ -108,13 +108,13 @@ jobs:
       - name: Run integration test
         env:
           LOG4J2_TEST_FUNCTION: ${{ steps.deploy_stack.outputs.LOG4J2_TEST_FUNCTION }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ secrets.AWS_REGION_LOG4J2_INTEG_TEST }}
         run: ./lambda-integration-tests/run-tests.sh
 
       - name: Cleanup
         if: always() && steps.deploy_stack.outputs.STACK_NAME
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ secrets.AWS_REGION_LOG4J2_INTEG_TEST }}
           STACK_NAME: ${{ steps.deploy_stack.outputs.STACK_NAME }}
         run: |
           sam delete --stack-name "${STACK_NAME}" --no-prompts --region "${AWS_REGION}"

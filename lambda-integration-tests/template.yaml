@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: aws-lambda-java-log4j2 integration tests
+
+Parameters:
+  LambdaRole:
+    Type: String
+  Architecture:
+    Type: String
+    Default: x86_64
+    AllowedValues:
+      - x86_64
+      - arm64
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  Log4j2TestFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: java21
+    Properties:
+      CodeUri: log4j2-test-function/
+      Handler: integ.Log4j2TestHandler::handleRequest
+      Runtime: java21
+      Architectures:
+        - !Ref Architecture
+      Role: !Ref LambdaRole
+      Environment:
+        Variables:
+          AWS_LAMBDA_LOG_FORMAT: TEXT
+
+Outputs:
+  Log4j2TestFunction:
+    Description: "Log4j2 integration test function name"
+    Value: !Ref Log4j2TestFunction
+  Log4j2TestFunctionArn:
+    Description: "Log4j2 integration test function ARN"
+    Value: !GetAtt Log4j2TestFunction.Arn

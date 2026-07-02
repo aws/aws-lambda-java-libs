@@ -68,17 +68,17 @@ jobs:
 
       - name: Install core with Maven
         run: |
-          export JAVA_HOME=$JAVA_HOME_8_X64
+          export JAVA_HOME=$JAVA_HOME_8_${{ matrix.arch.java_suffix }}
           mvn -B install --file aws-lambda-java-core/pom.xml
 
       - name: Install log4j2 with Maven
         run: |
-          export JAVA_HOME=$JAVA_HOME_8_X64
+          export JAVA_HOME=$JAVA_HOME_8_${{ matrix.arch.java_suffix }}
           mvn -B install --file aws-lambda-java-log4j2/pom.xml
 
       - name: Build SAM stack
         run: |
-          export JAVA_HOME=$JAVA_HOME_21_X64
+          export JAVA_HOME=$JAVA_HOME_21_${{ matrix.arch.java_suffix }}
           cd lambda-integration-tests && sam build
 
       - name: Validate SAM stack

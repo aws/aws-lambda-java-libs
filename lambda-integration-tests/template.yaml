@@ -23,6 +23,7 @@ Resources:
     Metadata:
       BuildMethod: java21
     Properties:
+      FunctionName: !Sub "${AWS::StackName}-fn"
       CodeUri: log4j2-test-function/
       Handler: integ.Log4j2TestHandler::handleRequest
       Runtime: java21

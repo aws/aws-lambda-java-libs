@@ -101,6 +101,24 @@ jobs:
             --s3-bucket "${{ secrets.S3_BUCKET_LOG4J2_INTEG_TEST }}" \
             --capabilities CAPABILITY_IAM \
             2>&1 | tee /tmp/sam-deploy.log | tail -n 20
+
+          # Verify stack is in a healthy state
+          STACK_STATUS=$(aws cloudformation describe-stacks \
+            --stack-name "${stackName}" \
+            --region "${AWS_REGION}" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>&1)
+          echo "Stack status: $STACK_STATUS"
+          if [ "$STACK_STATUS" != "CREATE_COMPLETE" ] && [ "$STACK_STATUS" != "UPDATE_COMPLETE" ]; then
+            echo "FAIL: Stack is not in a healthy state (status: $STACK_STATUS)"
+            aws cloudformation describe-stack-events \
+              --stack-name "${stackName}" \
+              --region "${AWS_REGION}" \
+              --query 'StackEvents[?ResourceStatus==`CREATE_FAILED` || ResourceStatus==`UPDATE_FAILED`].[LogicalResourceId,ResourceStatusReason]' \
+              --output table 2>&1 || true
+            exit 1
+          fi
+
           LOG4J2_TEST_FUNCTION=$(sam list stack-outputs --stack-name "${stackName}" --output json | jq -r '.[] | select(.OutputKey=="Log4j2TestFunction") | .OutputValue')
           echo "LOG4J2_TEST_FUNCTION=$LOG4J2_TEST_FUNCTION" >> "$GITHUB_OUTPUT"
           echo "Function name: $LOG4J2_TEST_FUNCTION"

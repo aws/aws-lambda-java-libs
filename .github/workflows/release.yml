@@ -1,0 +1,187 @@
+name: Release to Maven Central
+
+# Automated release pipeline: builds, tests, and publishes a module to Maven
+# Central in one controlled environment. Signing/publishing secrets are still
+# to be handled; until then use skip_publish (dry-run), which needs none.
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Module to release (directory name, e.g. aws-lambda-java-log4j2)'
+        required: true
+        type: choice
+        options:
+          - aws-lambda-java-core
+          - aws-lambda-java-events
+          - aws-lambda-java-events-sdk-transformer
+          - aws-lambda-java-log4j2
+          - aws-lambda-java-runtime-interface-client
+          - aws-lambda-java-serialization
+          - aws-lambda-java-tests
+      releaseVersion:
+        description: 'Release version override (optional; defaults to the POM version without -SNAPSHOT)'
+        required: false
+        type: string
+      developmentVersion:
+        description: 'Next development version override (optional, must end with -SNAPSHOT)'
+        required: false
+        type: string
+      skip_publish:
+        description: 'Skip publish (dry-run validation)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # push release commits and tag
+  id-token: write   # reserved for future secrets handling
+
+# Serialize all releases repo-wide to avoid concurrent pushes racing on the
+# default branch. Never cancel in-flight: it could leave a half-published state.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  MODULE: ${{ github.event.inputs.module }}
+  RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
+  DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  # Batch mode + no transfer-progress spam for every Maven call (Maven 3.9+).
+  MAVEN_ARGS: "-B --no-transfer-progress"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: Release
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0   # full history for tagging/pushing
+
+      # Pinned JDK 8: building on a newer JDK can silently break the artifact.
+      - name: Set up JDK 8
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          java-version: 8
+          distribution: corretto
+          cache: maven
+
+      - name: Validate inputs and resolve versions
+        run: |
+          if [[ ! -d "$MODULE" ]]; then
+            echo "::error::Module directory '$MODULE' does not exist"
+            exit 1
+          fi
+          if [[ ! -f "$MODULE/pom.xml" ]]; then
+            echo "::error::No pom.xml found in '$MODULE'"
+            exit 1
+          fi
+
+          # The POM version is the source of truth and must be a SNAPSHOT.
+          CURRENT_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file "$MODULE/pom.xml")
+          CURRENT_VERSION="${CURRENT_VERSION//[$'\r\n']/}"
+          if [[ "$CURRENT_VERSION" != *-SNAPSHOT ]]; then
+            echo "::error::POM version '$CURRENT_VERSION' is not a SNAPSHOT"
+            exit 1
+          fi
+
+          # releaseVersion input is an optional override; default strips -SNAPSHOT.
+          EFFECTIVE_RELEASE_VERSION="${RELEASE_VERSION_INPUT:-${CURRENT_VERSION%-SNAPSHOT}}"
+
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" && "$DEVELOPMENT_VERSION_INPUT" != *-SNAPSHOT ]]; then
+            echo "::error::developmentVersion '$DEVELOPMENT_VERSION_INPUT' must end with -SNAPSHOT"
+            exit 1
+          fi
+
+          # Build the release plugin version args once; reused by both paths.
+          RELEASE_ARGS="-DreleaseVersion=$EFFECTIVE_RELEASE_VERSION"
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" ]]; then
+            RELEASE_ARGS="$RELEASE_ARGS -DdevelopmentVersion=$DEVELOPMENT_VERSION_INPUT"
+          fi
+
+          echo "EFFECTIVE_RELEASE_VERSION=$EFFECTIVE_RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "RELEASE_ARGS=$RELEASE_ARGS" >> "$GITHUB_ENV"
+          echo "::notice::Releasing $MODULE $EFFECTIVE_RELEASE_VERSION (POM currently $CURRENT_VERSION)"
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # TODO(secrets): signing/publishing credentials are still to be handled.
+      # Until then, only skip_publish=true (dry-run) works, as it needs none.
+
+      - name: Install intra-repo dependencies
+        run: |
+          # Modules that must be installed locally before the target builds.
+          declare -A DEPS
+          DEPS[aws-lambda-java-core]=""
+          DEPS[aws-lambda-java-events]=""
+          DEPS[aws-lambda-java-serialization]=""
+          DEPS[aws-lambda-java-log4j2]="aws-lambda-java-core"
+          DEPS[aws-lambda-java-events-sdk-transformer]="aws-lambda-java-events"
+          DEPS[aws-lambda-java-runtime-interface-client]="aws-lambda-java-core aws-lambda-java-serialization"
+          DEPS[aws-lambda-java-tests]="aws-lambda-java-core aws-lambda-java-serialization aws-lambda-java-events"
+
+          DEP_LIST="${DEPS[$MODULE]}"
+          if [[ -n "$DEP_LIST" ]]; then
+            for dep in $DEP_LIST; do
+              echo "::group::Installing dependency: $dep"
+              mvn install -DskipTests --file "$dep/pom.xml"
+              echo "::endgroup::"
+            done
+          else
+            echo "::notice::No intra-repo dependencies for $MODULE"
+          fi
+
+      # No skip-tests option: never release an unverified artifact.
+      - name: Run tests
+        run: mvn verify --file "$MODULE/pom.xml"
+
+      # prepare/perform aren't atomic. Prepare locally (no push), publish, then
+      # push only after the artifact is live, so a failed publish never leaves an
+      # orphan tag on the remote. On failure, the rollback step cleans the runner.
+      - name: Release (prepare locally, publish, then push)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          # 1. Prepare locally (no push): create the release commits + tag.
+          mvn release:prepare -DpushChanges=false $RELEASE_ARGS --file "$MODULE/pom.xml"
+
+          # 2. Publish to Maven Central from the local tag.
+          mvn release:perform -DlocalCheckout=true --file "$MODULE/pom.xml"
+
+          # 3. Push commits and tag atomically (both or neither).
+          git push --atomic origin \
+            "HEAD:${GITHUB_REF_NAME}" \
+            "refs/tags/${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+
+      - name: Dry-run release (prepare only, no publish)
+        if: ${{ github.event.inputs.skip_publish == 'true' }}
+        run: |
+          mvn release:prepare -DdryRun=true $RELEASE_ARGS --file "$MODULE/pom.xml"
+          mvn release:clean --file "$MODULE/pom.xml" || true
+
+      # Nothing was pushed, so this only cleans the runner for a retry.
+      - name: Roll back release on failure
+        if: ${{ failure() && github.event.inputs.skip_publish != 'true' }}
+        run: |
+          mvn release:rollback --file "$MODULE/pom.xml" || true
+          mvn release:clean --file "$MODULE/pom.xml" || true
+          git tag -d "${MODULE}-${EFFECTIVE_RELEASE_VERSION}" 2>/dev/null || true
+          echo "::warning::Release failed before publish completed. The remote was not modified; the runner state has been rolled back. Safe to retry."
+
+      - name: Summary
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          TAG_NAME="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Module | \`$MODULE\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`$EFFECTIVE_RELEASE_VERSION\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | \`$TAG_NAME\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Maven Central | [com.amazonaws:$MODULE:$EFFECTIVE_RELEASE_VERSION](https://central.sonatype.com/artifact/com.amazonaws/$MODULE/$EFFECTIVE_RELEASE_VERSION) |" >> $GITHUB_STEP_SUMMARY

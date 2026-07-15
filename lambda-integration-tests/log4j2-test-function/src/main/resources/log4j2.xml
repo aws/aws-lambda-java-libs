@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
+      <LambdaTextFormat>
+        <PatternLayout>
+          <pattern>%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1}:%L - %m%n</pattern>
+        </PatternLayout>
+      </LambdaTextFormat>
+    </Lambda>
+  </Appenders>
+  <Loggers>
+    <Root level="DEBUG">
+      <AppenderRef ref="Lambda" />
+    </Root>
+  </Loggers>
+</Configuration>

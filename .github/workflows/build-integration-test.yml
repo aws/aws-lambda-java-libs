@@ -1,0 +1,86 @@
+# this workflow verifies that the integration test Lambda function builds successfully.
+# it does NOT deploy or run the tests (that requires AWS credentials and is done in
+# run-integration-test.yml).
+
+name: Build integration tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
+      - 'lambda-integration-tests/**'
+  pull_request:
+    branches: [ '*' ]
+    paths:
+      - 'aws-lambda-java-log4j2/**'
+      - 'aws-lambda-java-core/**'
+      - 'lambda-integration-tests/**'
+      - '.github/workflows/build-integration-test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  load-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Load test matrix
+        id: set
+        run: |
+          MATRIX=$(jq -c '.' .github/test-matrix.json)
+          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+
+  build-arch:
+    needs: load-matrix
+    runs-on: ${{ matrix.arch.runner }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.load-matrix.outputs.matrix) }}
+    name: "build (${{ matrix.arch.label }})"
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Set up JDK
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          java-version: |
+            8
+            21
+          distribution: corretto
+          cache: maven
+
+      - name: Install core with Maven
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_${{ matrix.arch.java_suffix }}
+          mvn -B install --file aws-lambda-java-core/pom.xml
+
+      - name: Install log4j2 with Maven
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_${{ matrix.arch.java_suffix }}
+          mvn -B install --file aws-lambda-java-log4j2/pom.xml
+
+      # build the integration test function
+      # this verifies that the function compiles and packages correctly.
+      # the tests will run in run-integration-test.yml which deploys to AWS.
+      - name: Package integration test function
+        run: |
+          export JAVA_HOME=$JAVA_HOME_21_${{ matrix.arch.java_suffix }}
+          mvn -B package --file lambda-integration-tests/log4j2-test-function/pom.xml
+
+  build:
+    needs: build-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build results
+        run: |
+          if [ "${{ needs.build-arch.result }}" != "success" ]; then
+            echo "Build failed on one or more architectures"
+            exit 1
+          fi

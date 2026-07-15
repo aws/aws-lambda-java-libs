@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven Toolchains configuration for aws-lambda-java-libs.
+
+  This file tells Maven where to find JDK 8, which is required by the
+  maven-toolchains-plugin configured in each module's pom.xml.
+
+  To use: copy this file to ~/.m2/toolchains.xml and set the jdkHome
+  path to match your local JDK 8 installation.
+-->
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>8</version>
+    </provides>
+    <configuration>
+      <jdkHome>/path/to/your/jdk8</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>

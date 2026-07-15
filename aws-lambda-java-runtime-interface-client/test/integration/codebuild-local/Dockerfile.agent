@@ -12,3 +12,20 @@ ENV PATH="$PATH:/apache-maven/bin"
 RUN mkdir /apache-maven && \
     curl https://archive.apache.org/dist/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz | \
     tar -xz -C /apache-maven --strip-components 1
+
+# Declare JDK 8 in toolchains.xml so maven-toolchains-plugin can resolve it
+RUN mkdir -p /root/.m2 && \
+    cat > /root/.m2/toolchains.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>8</version>
+    </provides>
+    <configuration>
+      <jdkHome>${JAVA_HOME}</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>
+EOF

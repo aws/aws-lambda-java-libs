@@ -36,6 +36,25 @@ To send us a pull request, please:
 5. Send us a pull request, answering any default questions in the pull request interface.
 6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
 
+
+## Build Prerequisites
+
+This project uses the Maven Toolchains Plugin to pin compilation to JDK 8. If you don't have a `~/.m2/toolchains.xml` configured, builds will fail with:
+
+```
+No toolchain found for type jdk [ version='[1.8,9)' ]
+```
+
+To fix this, copy the example file to your Maven config directory and update the path:
+
+```bash
+cp toolchains.xml.example ~/.m2/toolchains.xml
+```
+
+Then edit `~/.m2/toolchains.xml` and set `<jdkHome>` to your local JDK 8 installation path.
+
+Note: if you use `actions/setup-java` in CI (as our GitHub Actions workflows do), this file is generated automatically.
+
 GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and 
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 

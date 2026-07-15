@@ -15,4 +15,17 @@ RUN mkdir /apache-maven && \
 
 # Declare JDK 8 in toolchains.xml so maven-toolchains-plugin can resolve it
 RUN mkdir -p /root/.m2 && \
-    printf '<?xml version="1.0" encoding="UTF-8"?>\n<toolchains>\n  <toolchain>\n    <type>jdk</type>\n    <provides>\n      <version>8</version>\n    </provides>\n    <configuration>\n      <jdkHome>/usr/lib/jvm/java-1.8.0-amazon-corretto</jdkHome>\n    </configuration>\n  </toolchain>\n</toolchains>\n' > /root/.m2/toolchains.xml
+    cat > /root/.m2/toolchains.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>8</version>
+    </provides>
+    <configuration>
+      <jdkHome>${JAVA_HOME}</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>
+EOF

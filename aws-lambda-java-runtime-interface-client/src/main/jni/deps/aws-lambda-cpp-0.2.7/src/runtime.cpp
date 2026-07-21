@@ -41,6 +41,7 @@ static constexpr auto COGNITO_IDENTITY_HEADER = "lambda-runtime-cognito-identity
 static constexpr auto DEADLINE_MS_HEADER = "lambda-runtime-deadline-ms";
 static constexpr auto FUNCTION_ARN_HEADER = "lambda-runtime-invoked-function-arn";
 static constexpr auto TENANT_ID_HEADER = "lambda-runtime-aws-tenant-id";
+static constexpr auto INVOCATION_ID_HEADER = "lambda-runtime-invocation-id";
 thread_local static CURL* m_curl_handle = curl_easy_init();
 
 enum Endpoints {
@@ -306,25 +307,40 @@ runtime::next_outcome runtime::get_next()
     if (resp.has_header(TENANT_ID_HEADER)) {
         req.tenant_id = resp.get_header(TENANT_ID_HEADER);
     }
+
+    if (resp.has_header(INVOCATION_ID_HEADER)) {
+        req.invocation_id = resp.get_header(INVOCATION_ID_HEADER);
+    }
     return next_outcome(req);
+}
+
+runtime::post_outcome runtime::post_success(std::string const& request_id, invocation_response const& handler_response, std::string const& invocation_id)
+{
+    std::string const url = m_endpoints[Endpoints::RESULT] + request_id + "/response";
+    return do_post(url, request_id, handler_response, invocation_id);
 }
 
 runtime::post_outcome runtime::post_success(std::string const& request_id, invocation_response const& handler_response)
 {
-    std::string const url = m_endpoints[Endpoints::RESULT] + request_id + "/response";
-    return do_post(url, request_id, handler_response);
+    return post_success(request_id, handler_response, "");
+}
+
+runtime::post_outcome runtime::post_failure(std::string const& request_id, invocation_response const& handler_response, std::string const& invocation_id)
+{
+    std::string const url = m_endpoints[Endpoints::RESULT] + request_id + "/error";
+    return do_post(url, request_id, handler_response, invocation_id);
 }
 
 runtime::post_outcome runtime::post_failure(std::string const& request_id, invocation_response const& handler_response)
 {
-    std::string const url = m_endpoints[Endpoints::RESULT] + request_id + "/error";
-    return do_post(url, request_id, handler_response);
+    return post_failure(request_id, handler_response, "");
 }
 
 runtime::post_outcome runtime::do_post(
     std::string const& url,
     std::string const& request_id,
-    invocation_response const& handler_response)
+    invocation_response const& handler_response,
+    std::string const& invocation_id)
 {
     set_curl_post_result_options();
     curl_easy_setopt(lambda_runtime::m_curl_handle, CURLOPT_URL, url.c_str());
@@ -341,6 +357,9 @@ runtime::post_outcome runtime::do_post(
     headers = curl_slist_append(headers, "Expect:");
     headers = curl_slist_append(headers, "transfer-encoding:");
     headers = curl_slist_append(headers, m_user_agent_header.c_str());
+    if (!invocation_id.empty()) {
+        headers = curl_slist_append(headers, (std::string(INVOCATION_ID_HEADER) + ": " + invocation_id).c_str());
+    }
     auto const& payload = handler_response.get_payload();
     logging::log_debug(
         LOG_TAG, "calculating content length... %s", ("content-length: " + std::to_string(payload.length())).c_str());
@@ -436,13 +455,13 @@ void run_handler(std::function<invocation_response(invocation_request const&)> c
         logging::log_info(LOG_TAG, "Invoking user handler completed.");
 
         if (res.is_success()) {
-            const auto post_outcome = rt.post_success(req.request_id, res);
+            const auto post_outcome = rt.post_success(req.request_id, res, req.invocation_id);
             if (!handle_post_outcome(post_outcome, req.request_id)) {
                 return; // TODO: implement a better retry strategy
             }
         }
         else {
-            const auto post_outcome = rt.post_failure(req.request_id, res);
+            const auto post_outcome = rt.post_failure(req.request_id, res, req.invocation_id);
             if (!handle_post_outcome(post_outcome, req.request_id)) {
                 return; // TODO: implement a better retry strategy
             }

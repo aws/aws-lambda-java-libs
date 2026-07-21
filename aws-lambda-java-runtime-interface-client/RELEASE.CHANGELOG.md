@@ -1,3 +1,7 @@
+### July 17, 2026
+`2.12.0`
+- Add `Lambda-Runtime-Invocation-Id` header support for cross-wiring protection. The RIC now echoes the invocation ID received from RAPID on `/next` back on `/response` and `/error`, enabling RAPID to detect and reject stale responses from timed-out invocations.
+
 ### May 13, 2026
 `2.11.0`
 - Update aws-lambda-java-serialization dependency to 1.4.1

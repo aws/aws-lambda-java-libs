@@ -45,6 +45,11 @@ public class InvocationRequest {
      */
     private String tenantId;
 
+    /**
+     * The invocation ID for cross-wiring protection.
+     */
+    private String invocationId;
+
     private byte[] content;
 
     public String getId() {
@@ -105,6 +110,14 @@ public class InvocationRequest {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public String getInvocationId() {
+        return invocationId;
+    }
+
+    public void setInvocationId(String invocationId) {
+        this.invocationId = invocationId;
     }
 
     public byte[] getContent() {

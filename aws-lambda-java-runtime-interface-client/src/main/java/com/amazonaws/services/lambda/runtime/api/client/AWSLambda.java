@@ -315,7 +315,7 @@ public class AWSLambda {
 
                 try {
                     ByteArrayOutputStream payload = lambdaRequestHandler.call(request);
-                    runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray());
+                    runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray(), request.getInvocationId());
                     // clear interrupted flag in case if it was set by user's code
                     Thread.interrupted();
                 } catch (Throwable t) {
@@ -323,7 +323,7 @@ public class AWSLambda {
                     userFault = UserFault.makeUserFault(t);
                     shouldExit = exitLoopOnErrors && (t instanceof VirtualMachineError || t instanceof IOError || userFault.fatal);
                     LambdaError error = createLambdaErrorFromThrowableOrUserFault(t);
-                    runtimeClient.reportInvocationError(request.getId(), error);
+                    runtimeClient.reportInvocationError(request.getId(), error, request.getInvocationId());
                 } finally {
                     if (userFault != null) {
                         lambdaLogger.log(userFault.reportableError(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.ERROR : LogLevel.UNDEFINED);

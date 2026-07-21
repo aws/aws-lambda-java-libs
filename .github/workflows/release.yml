@@ -1,8 +1,6 @@
 name: Release to Maven Central
 
-# Automated release pipeline: builds, tests, and publishes a module to Maven
-# Central in one controlled environment. Signing/publishing secrets are still
-# to be handled; until then use skip_publish (dry-run), which needs none.
+# Builds, tests, and publishes a module to Maven Central in one environment.
 
 on:
   workflow_dispatch:
@@ -11,12 +9,14 @@ on:
         description: 'Module to release (directory name, e.g. aws-lambda-java-log4j2)'
         required: true
         type: choice
+        # aws-lambda-java-runtime-interface-client is intentionally excluded: it
+        # ships a cross-compiled JNI native library and has its own dedicated
+        # pipeline, .github/workflows/release-runtime-interface-client.yml.
         options:
           - aws-lambda-java-core
           - aws-lambda-java-events
           - aws-lambda-java-events-sdk-transformer
           - aws-lambda-java-log4j2
-          - aws-lambda-java-runtime-interface-client
           - aws-lambda-java-serialization
           - aws-lambda-java-tests
       releaseVersion:
@@ -34,8 +34,8 @@ on:
         default: false
 
 permissions:
-  contents: write   # push release commits and tag
-  id-token: write   # reserved for future secrets handling
+  contents: write   
+  id-token: write   
 
 # Serialize all releases repo-wide to avoid concurrent pushes racing on the
 # default branch. Never cancel in-flight: it could leave a half-published state.
@@ -49,6 +49,8 @@ env:
   DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
   # Batch mode + no transfer-progress spam for every Maven call (Maven 3.9+).
   MAVEN_ARGS: "-B --no-transfer-progress"
+  AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
 
 jobs:
   release:
@@ -111,19 +113,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # TODO(secrets): signing/publishing credentials are still to be handled.
-      # Until then, only skip_publish=true (dry-run) works, as it needs none.
-
       - name: Install intra-repo dependencies
         run: |
-          # Modules that must be installed locally before the target builds.
+          # Installed so the target compiles. -DskipTests: not released here,
+          # only the target module gets the full verify gate below.
           declare -A DEPS
           DEPS[aws-lambda-java-core]=""
           DEPS[aws-lambda-java-events]=""
           DEPS[aws-lambda-java-serialization]=""
           DEPS[aws-lambda-java-log4j2]="aws-lambda-java-core"
           DEPS[aws-lambda-java-events-sdk-transformer]="aws-lambda-java-events"
-          DEPS[aws-lambda-java-runtime-interface-client]="aws-lambda-java-core aws-lambda-java-serialization"
           DEPS[aws-lambda-java-tests]="aws-lambda-java-core aws-lambda-java-serialization aws-lambda-java-events"
 
           DEP_LIST="${DEPS[$MODULE]}"
@@ -137,23 +136,72 @@ jobs:
             echo "::notice::No intra-repo dependencies for $MODULE"
           fi
 
-      # No skip-tests option: never release an unverified artifact.
       - name: Run tests
         run: mvn verify --file "$MODULE/pom.xml"
 
-      # prepare/perform aren't atomic. Prepare locally (no push), publish, then
-      # push only after the artifact is live, so a failed publish never leaves an
-      # orphan tag on the remote. On failure, the rollback step cleans the runner.
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          role-session-name: GitHubActionsMavenCentralRelease
+          role-duration-seconds: 3600
+
+      - name: Fetch signing key and Sonatype credentials
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          # Shared secrets from LambdaMavenDeploy; nothing stored in GitHub.
+          GPG_JSON=$(aws secretsmanager get-secret-value --secret-id maven.gpg.keys --query SecretString --output text)
+          CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id maven.sonatype.creds --query SecretString --output text)
+
+          GPG_PRIVATE_KEY=$(jq -r '.private' <<< "$GPG_JSON")
+          GPG_PASSPHRASE=$(jq -r '.passphrase' <<< "$GPG_JSON")
+          SONATYPE_USERNAME=$(jq -r '."maven-central-login"' <<< "$CREDS_JSON")
+          SONATYPE_PASSWORD=$(jq -r '."maven-central-password"' <<< "$CREDS_JSON")
+          echo "::add-mask::$GPG_PASSPHRASE"
+          echo "::add-mask::$SONATYPE_USERNAME"
+          echo "::add-mask::$SONATYPE_PASSWORD"
+
+          # Import the key with loopback pinentry so Maven can sign non-interactively.
+          GNUPGHOME=$(mktemp -d)
+          chmod 700 "$GNUPGHOME"
+          echo "allow-loopback-pinentry" > "$GNUPGHOME/gpg-agent.conf"
+          echo "pinentry-mode loopback" > "$GNUPGHOME/gpg.conf"
+          export GNUPGHOME
+          gpgconf --kill gpg-agent || true
+          gpg --batch --import <<< "$GPG_PRIVATE_KEY"
+          GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+
+          # settings.xml with the Sonatype token (server id "central").
+          SETTINGS="$RUNNER_TEMP/settings.xml"
+          {
+            echo '<settings><servers><server>'
+            echo "<id>central</id>"
+            echo "<username>${SONATYPE_USERNAME}</username>"
+            echo "<password>${SONATYPE_PASSWORD}</password>"
+            echo '</server></servers></settings>'
+          } > "$SETTINGS"
+
+          # Pass to later steps (values already masked).
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          echo "GPG_KEYNAME=$GPG_KEYNAME" >> "$GITHUB_ENV"
+          echo "GPG_PASSPHRASE=$GPG_PASSPHRASE" >> "$GITHUB_ENV"
+          echo "MAVEN_SETTINGS=$SETTINGS" >> "$GITHUB_ENV"
+
+      # prepare/perform aren't atomic: prepare locally, publish, push only after.
       - name: Release (prepare locally, publish, then push)
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         run: |
-          # 1. Prepare locally (no push): create the release commits + tag.
+          # Prepare locally (no push): release commits + tag.
           mvn release:prepare -DpushChanges=false $RELEASE_ARGS --file "$MODULE/pom.xml"
 
-          # 2. Publish to Maven Central from the local tag.
-          mvn release:perform -DlocalCheckout=true --file "$MODULE/pom.xml"
+          # perform forks a fresh build, so pass settings/gpg via -Darguments.
+          mvn release:perform -DlocalCheckout=true \
+            -Darguments="-s $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
+            --file "$MODULE/pom.xml"
 
-          # 3. Push commits and tag atomically (both or neither).
+          # Push commits + tag atomically, only after publish succeeded.
           git push --atomic origin \
             "HEAD:${GITHUB_REF_NAME}" \
             "refs/tags/${MODULE}-${EFFECTIVE_RELEASE_VERSION}"

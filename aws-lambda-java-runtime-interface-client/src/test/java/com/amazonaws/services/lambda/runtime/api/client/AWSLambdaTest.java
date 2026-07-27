@@ -242,7 +242,7 @@ class AWSLambdaTest {
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
         // Success Reports Must Equal number of tasks that ran successfully.
-        verify(runtimeClient, times(7)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+        verify(runtimeClient, times(7)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
         // Hashmap keys should equal the number of threads (runtime loops).
         assertEquals(4, SampleHandler.hashMap.size());
         // Hashmap total count should equal all tasks that ran * number of iterations per task
@@ -280,11 +280,11 @@ class AWSLambdaTest {
         verify(lambdaLogger, times(6)).log(anyString(), eq(LogLevel.ERROR));
 
         // Failed invokes should be reported.
-        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
-        verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
+        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any(), any());
+        verify(runtimeClient).reportInvocationError(eq(UserFaultID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
         
         // Hashmap keys should equal the minumum between(number of threads (runtime loops) AND number of tasks that ran successfully).
         assertEquals(2, SampleHandler.hashMap.size());
@@ -326,12 +326,12 @@ class AWSLambdaTest {
          verify(lambdaLogger, times(4)).log(anyString(), eq(LogLevel.ERROR));
          
          // Failed invokes should be reported.
-         verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
-         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
-         verify(runtimeClient).reportInvocationError(eq(IOErrorID), any());
+         verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any(), any());
+         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any(), any());
+         verify(runtimeClient).reportInvocationError(eq(IOErrorID), any(), any());
          
          // Success Reports Must Equal number of tasks that ran successfully.
-         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
+         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
          
          // Hashmap keys should equal the minumum between(number of threads (runtime loops) AND number of tasks that ran successfully).
          assertEquals(1, SampleHandler.hashMap.size());
@@ -516,12 +516,12 @@ class AWSLambdaTest {
         verify(lambdaLogger, times(2)).log(anyString(), eq(LogLevel.ERROR));
         
         // Failed invokes should be reported.
-        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
-        verify(runtimeClient).reportInvocationError(eq(UserFaultID), any());
+        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any(), any());
+        verify(runtimeClient).reportInvocationError(eq(UserFaultID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and userFaultRequest.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
-        verify(runtimeClient, times(2)).reportInvocationError(any(), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(2)).reportInvocationError(any(), any(), any());
         
         // Hashmap keys should equal one as it is not multithreaded.
         assertEquals(1, SampleHandler.hashMap.size());
@@ -562,17 +562,62 @@ class AWSLambdaTest {
         verify(lambdaLogger, times(2)).log(anyString(), eq(LogLevel.ERROR));
         
         // Failed invokes should be reported.
-        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any());
-        verify(runtimeClient).reportInvocationError(eq(IOErrorID), any());
+        verify(runtimeClient).reportInvocationError(eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any(), any());
+        verify(runtimeClient).reportInvocationError(eq(IOErrorID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and virtualMachineErrorRequest.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any());
-        verify(runtimeClient, times(2)).reportInvocationError(any(), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(2)).reportInvocationError(any(), any(), any());
         
         // Hashmap keys should equal one as it is not multithreaded.
         assertEquals(1, SampleHandler.hashMap.size());
         
         // Hashmap total count should equal all tasks that ran * number of iterations per task
         assertEquals(2 * SampleHandler.nOfIterations, SampleHandler.globalCounter.get());
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testInvocationIdIsPassedToReportSuccess() throws Throwable {
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest requestWithInvId = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
+        requestWithInvId.setInvocationId("test-inv-uuid-1234");
+
+        // Fatal error to stop the loop after one successful invocation
+        InvocationRequest fatalRequest = mock(InvocationRequest.class);
+        when(fatalRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn("fatal");
+
+        when(runtimeClient.nextInvocation())
+                .thenReturn(requestWithInvId)
+                .thenReturn(fatalRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(runtimeClient).reportInvocationSuccess(
+                eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), eq("test-inv-uuid-1234"));
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testInvocationIdIsPassedToReportError() throws Throwable {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest requestWithInvId = getFakeInvocationRequest(SampleHandler.FAIL_IMMEDIATELY_OP_MODE);
+        requestWithInvId.setInvocationId("test-inv-uuid-5678");
+
+        // Fatal error to stop the loop after one error invocation
+        InvocationRequest fatalRequest = mock(InvocationRequest.class);
+        when(fatalRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn("fatal");
+
+        when(runtimeClient.nextInvocation())
+                .thenReturn(requestWithInvId)
+                .thenReturn(fatalRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(runtimeClient).reportInvocationError(
+                eq(SampleHandler.FAIL_IMMEDIATELY_OP_MODE), any(), eq("test-inv-uuid-5678"));
     }
 }

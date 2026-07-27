@@ -1,9 +1,7 @@
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 
 # Install docker and buildx extension
-RUN amazon-linux-extras enable docker && \
-    yum clean metadata && \
-    yum install -y docker tar gzip unzip file
+RUN yum install -y docker tar gzip unzip file findutils
 
 COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 

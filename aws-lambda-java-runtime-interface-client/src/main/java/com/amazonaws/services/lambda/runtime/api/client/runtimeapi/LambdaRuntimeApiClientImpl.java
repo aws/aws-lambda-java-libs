@@ -34,6 +34,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     private static final String DEFAULT_CONTENT_TYPE = "application/json";
     private static final String XRAY_ERROR_CAUSE_HEADER = "Lambda-Runtime-Function-XRay-Error-Cause";
     private static final String ERROR_TYPE_HEADER = "Lambda-Runtime-Function-Error-Type";
+    private static final String INVOCATION_ID_HEADER = "Lambda-Runtime-Invocation-Id";
     // 1MiB
     private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
     
@@ -55,7 +56,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     @Override
     public void reportInitError(LambdaError error) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/init/error";
-        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE, null);
     }
 
     @Override
@@ -123,14 +124,15 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     @Override
-    public void reportInvocationSuccess(String requestId, byte[] response) {
-        NativeClient.postInvocationResponse(requestId.getBytes(UTF_8), response);
+    public void reportInvocationSuccess(String requestId, byte[] response, String invocationId) {
+        byte[] invocationIdBytes = invocationId != null ? invocationId.getBytes(UTF_8) : null;
+        NativeClient.postInvocationResponse(requestId.getBytes(UTF_8), response, invocationIdBytes);
     }
 
     @Override
-    public void reportInvocationError(String requestId, LambdaError error) throws IOException {
+    public void reportInvocationError(String requestId, LambdaError error, String invocationId) throws IOException {
         String endpoint = invocationEndpoint + requestId + "/error";
-        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE, invocationId);
     }
 
     @Override
@@ -145,12 +147,16 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     @Override
     public void reportRestoreError(LambdaError error) throws IOException {
         String endpoint = this.baseUrl + "/2018-06-01/runtime/restore/error";
-        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE);
+        reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE, null);
     }
 
-    void reportLambdaError(String endpoint, LambdaError error, int maxXrayHeaderSize) throws IOException {
+    void reportLambdaError(String endpoint, LambdaError error, int maxXrayHeaderSize, String invocationId) throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put(ERROR_TYPE_HEADER, error.errorType.getRapidError());
+
+        if (invocationId != null) {
+            headers.put(INVOCATION_ID_HEADER, invocationId);
+        }
 
         if (error.xRayErrorCause != null) {
             byte[] xRayErrorCauseJson = DtoSerializers.serialize(error.xRayErrorCause);

@@ -1,0 +1,54 @@
+name: "Resolve and validate release version"
+description: >
+  Reads the module POM version (the source of truth), verifies it is a
+  -SNAPSHOT, and derives the effective release version (the optional override,
+  or the POM version with -SNAPSHOT stripped). Exports CURRENT_VERSION and
+  EFFECTIVE_RELEASE_VERSION to the job environment for subsequent steps.
+
+inputs:
+  module:
+    description: "Module directory containing the pom.xml to release."
+    required: true
+  release-version-override:
+    description: "Optional release version; defaults to the POM version without -SNAPSHOT."
+    required: false
+    default: ""
+  validate-module-dir:
+    description: "Fail if the module directory or its pom.xml is missing (use for the choice-driven workflow)."
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve and validate release version
+      shell: bash
+      env:
+        MODULE: ${{ inputs.module }}
+        RELEASE_VERSION_OVERRIDE: ${{ inputs.release-version-override }}
+        VALIDATE_MODULE_DIR: ${{ inputs.validate-module-dir }}
+      run: |
+        if [[ "$VALIDATE_MODULE_DIR" == "true" ]]; then
+          if [[ ! -d "$MODULE" ]]; then
+            echo "::error::Module directory '$MODULE' does not exist"
+            exit 1
+          fi
+          if [[ ! -f "$MODULE/pom.xml" ]]; then
+            echo "::error::No pom.xml found in '$MODULE'"
+            exit 1
+          fi
+        fi
+
+        # The POM version is the source of truth and must be a SNAPSHOT.
+        CURRENT_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file "$MODULE/pom.xml")
+        CURRENT_VERSION="${CURRENT_VERSION//[$'\r\n']/}"
+        if [[ "$CURRENT_VERSION" != *-SNAPSHOT ]]; then
+          echo "::error::POM version '$CURRENT_VERSION' is not a SNAPSHOT"
+          exit 1
+        fi
+
+        # Optional override; default strips -SNAPSHOT.
+        EFFECTIVE_RELEASE_VERSION="${RELEASE_VERSION_OVERRIDE:-${CURRENT_VERSION%-SNAPSHOT}}"
+
+        echo "CURRENT_VERSION=$CURRENT_VERSION" >> "$GITHUB_ENV"
+        echo "EFFECTIVE_RELEASE_VERSION=$EFFECTIVE_RELEASE_VERSION" >> "$GITHUB_ENV"

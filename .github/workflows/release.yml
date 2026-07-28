@@ -53,7 +53,20 @@ env:
   OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
 
 jobs:
+  # Pre-publish gate for log4j2: deploy a real Lambda, invoke it,
+  # and assert the log line reaches CloudWatch. Binds the end-to-end validation
+  # to the publish event itself. Skipped for every other module, which are
+  # covered by their own tests (or the cross-module gate below).
+  integration-test:
+    if: ${{ github.event.inputs.module == 'aws-lambda-java-log4j2' }}
+    uses: ./.github/workflows/run-integration-test.yml
+    secrets: inherit
+
   release:
+    needs: [integration-test]
+    # Publish when the gate passed, or when it was skipped for a non-log4j2
+    # module. A failed or cancelled gate blocks the release.
+    if: ${{ always() && (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') }}
     runs-on: ubuntu-latest
     environment: Release
     timeout-minutes: 30
@@ -125,6 +138,28 @@ jobs:
 
       - name: Run tests
         run: mvn verify --file "$MODULE/pom.xml"
+
+      # Cross-module gate: serialization has no tests in its own build, so the
+      # `mvn verify` above exercises nothing. Its behavioral coverage lives in
+      # aws-lambda-java-tests, which depends on serialization via a version
+      # property. Install the just-built serialization and run that suite
+      # against it, so we never publish serialization the suite hasn't exercised.
+      - name: Run cross-module test gate
+        run: |
+          case "$MODULE" in
+            aws-lambda-java-serialization)
+              MOD_VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file "$MODULE/pom.xml")
+              MOD_VER="${MOD_VER//[$'\r\n']/}"
+              echo "::group::Installing $MODULE $MOD_VER for the gate"
+              mvn install -DskipTests --file "$MODULE/pom.xml"
+              echo "::endgroup::"
+              echo "::notice::Gating $MODULE on aws-lambda-java-tests (aws-lambda-java-serialization.version=$MOD_VER)"
+              mvn verify -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
+              ;;
+            *)
+              echo "::notice::No cross-module test gate for $MODULE"
+              ;;
+          esac
 
       - name: Configure AWS credentials (OIDC)
         if: ${{ github.event.inputs.skip_publish != 'true' }}

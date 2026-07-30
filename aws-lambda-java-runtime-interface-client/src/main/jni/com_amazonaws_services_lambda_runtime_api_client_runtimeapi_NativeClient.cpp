@@ -21,6 +21,7 @@ static jfieldID clientContextField;
 static jfieldID cognitoIdentityField;
 static jfieldID xrayTraceIdField;
 static jfieldID tenantIdField;
+static jfieldID invocationIdField;
 
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -43,6 +44,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     clientContextField = env->GetFieldID(invocationRequestClass , "clientContext", "Ljava/lang/String;");
     cognitoIdentityField = env->GetFieldID(invocationRequestClass , "cognitoIdentity", "Ljava/lang/String;");
     tenantIdField = env->GetFieldID(invocationRequestClass, "tenantId", "Ljava/lang/String;");
+    invocationIdField = env->GetFieldID(invocationRequestClass, "invocationId", "Ljava/lang/String;");
 
     return JNI_VERSION;
 }
@@ -112,6 +114,10 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
     CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, tenantIdField, env->NewStringUTF(response.tenant_id.c_str())));
   }
 
+  if(response.invocation_id != ""){
+    CHECK_EXCEPTION(env, env->SetObjectField(invocationRequest, invocationIdField, env->NewStringUTF(response.invocation_id.c_str())));
+  }
+
   bytes = reinterpret_cast<const jbyte*>(response.payload.c_str());
   CHECK_EXCEPTION(env, jArray = env->NewByteArray(response.payload.length()));
   CHECK_EXCEPTION(env, env->SetByteArrayRegion(jArray, 0, response.payload.length(), bytes));
@@ -124,7 +130,7 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
 }
 
 JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponse
-  (JNIEnv *env, jobject thisObject, jbyteArray jrequestId, jbyteArray jresponseArray) {
+  (JNIEnv *env, jobject thisObject, jbyteArray jrequestId, jbyteArray jresponseArray, jbyteArray jinvocationId) {
   std::string payload = toNativeString(env, jresponseArray);
   if ((env)->ExceptionOccurred()){
     return;
@@ -134,8 +140,16 @@ JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_run
     return;
   }
 
+  std::string invocationId;
+  if (jinvocationId != nullptr) {
+    invocationId = toNativeString(env, jinvocationId);
+    if ((env)->ExceptionOccurred()){
+      return;
+    }
+  }
+
   auto response = aws::lambda_runtime::invocation_response::success(payload, "application/json");
-  auto outcome = CLIENT->post_success(requestId, response);
+  auto outcome = CLIENT->post_success(requestId, response, invocationId);
   if (!outcome.is_success()) {
     std::string errorMessage("Failed to post invocation response.");
     throwLambdaRuntimeClientException(env, errorMessage, outcome.get_failure());

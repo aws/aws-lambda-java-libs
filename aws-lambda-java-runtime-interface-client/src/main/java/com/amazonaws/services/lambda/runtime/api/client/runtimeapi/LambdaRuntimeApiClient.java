@@ -34,15 +34,17 @@ public interface LambdaRuntimeApiClient {
      * Report invocation success
      * @param requestId request id
      * @param response byte array representing response
+     * @param invocationId invocation id for cross-wiring protection (may be null)
      */
-    void reportInvocationSuccess(String requestId, byte[] response) throws IOException;
+    void reportInvocationSuccess(String requestId, byte[] response, String invocationId) throws IOException;
 
     /**
      * Report invocation error
      * @param requestId request id
      * @param error error to report
+     * @param invocationId invocation id for cross-wiring protection (may be null)
      */
-    void reportInvocationError(String requestId, LambdaError error) throws IOException;
+    void reportInvocationError(String requestId, LambdaError error, String invocationId) throws IOException;
 
     /**
      * SnapStart endpoint to report that beforeCheckoint hooks were executed

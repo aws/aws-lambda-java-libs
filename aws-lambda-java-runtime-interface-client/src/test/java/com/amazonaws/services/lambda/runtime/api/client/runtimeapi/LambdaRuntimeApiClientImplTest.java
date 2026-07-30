@@ -244,7 +244,7 @@ public class LambdaRuntimeApiClientImplTest {
             mockWebServer.enqueue(mockResponse);
 
             LambdaError lambdaError = new LambdaError(errorRequest, rapidErrorType);
-            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError);
+            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError, null);
             RecordedRequest recordedRequest = mockWebServer.takeRequest();
             HttpUrl actualUrl = recordedRequest.getRequestUrl();
             String expectedUrl = "http://" + getHostnamePort() + "/2018-06-01/runtime/invocation/1234/error";
@@ -274,7 +274,7 @@ public class LambdaRuntimeApiClientImplTest {
             mockWebServer.enqueue(mockResponse);
 
             LambdaError lambdaError = new LambdaError(errorRequest, rapidErrorType);
-            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError);
+            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError, null);
             fail();
         } catch(LambdaRuntimeClientException e) {
             String expectedUrl = "http://" + getHostnamePort() + "/2018-06-01/runtime/invocation/1234/error";
@@ -318,7 +318,7 @@ public class LambdaRuntimeApiClientImplTest {
 
             XRayErrorCause xRayErrorCause = new XRayErrorCause(workingDirectory, exceptions, paths);
             LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause, rapidErrorType);
-            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError);
+            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError, null);
             RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
             String xrayErrorCauseHeader = recordedRequest.getHeader("Lambda-Runtime-Function-XRay-Error-Cause");
@@ -339,7 +339,7 @@ public class LambdaRuntimeApiClientImplTest {
             mockWebServer.enqueue(mockResponse);
 
             String response = "{\"msg\":\"test\"}";
-            lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, response.getBytes());
+            lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, response.getBytes(), null);
             RecordedRequest recordedRequest = mockWebServer.takeRequest();
             HttpUrl actualUrl = recordedRequest.getRequestUrl();
             String expectedUrl = "http://" + getHostnamePort() + "/2018-06-01/runtime/invocation/1234/response";
@@ -456,7 +456,7 @@ public class LambdaRuntimeApiClientImplTest {
         RapidErrorType rapidErrorType = RapidErrorType.AfterRestoreError;
         LambdaError lambdaError = new LambdaError(errorRequest, rapidErrorType);
         RuntimeException thrown = assertThrows(RuntimeException.class, ()->{
-            lambdaRuntimeApiClientImpl.reportLambdaError("invalidurl", lambdaError, 100);
+            lambdaRuntimeApiClientImpl.reportLambdaError("invalidurl", lambdaError, 100, null);
         });
         assertTrue(thrown.getLocalizedMessage().contains("java.net.MalformedURLException"));
     }
@@ -483,7 +483,7 @@ public class LambdaRuntimeApiClientImplTest {
 
             XRayErrorCause xRayErrorCause = new XRayErrorCause(workingDirectory, exceptions, paths);
             LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause, rapidErrorType);
-            lambdaRuntimeApiClientImpl.reportLambdaError("http://" + getHostnamePort(), lambdaError, 10);
+            lambdaRuntimeApiClientImpl.reportLambdaError("http://" + getHostnamePort(), lambdaError, 10, null);
             RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
             String xrayErrorCauseHeader = recordedRequest.getHeader("Lambda-Runtime-Function-XRay-Error-Cause");
@@ -509,6 +509,28 @@ public class LambdaRuntimeApiClientImplTest {
 
         String actualBody = recordedRequest.getBody().readUtf8();
         assertEquals("", actualBody);
+    }
+
+    @Test
+    public void reportInvocationErrorWithInvocationIdTest() {
+        try {
+            RapidErrorType rapidErrorType = RapidErrorType.AfterRestoreError;
+
+            MockResponse mockResponse = new MockResponse();
+            mockResponse.setResponseCode(HTTP_ACCEPTED);
+            mockWebServer.enqueue(mockResponse);
+
+            String invocationId = "test-invocation-uuid-1234";
+            LambdaError lambdaError = new LambdaError(errorRequest, rapidErrorType);
+            lambdaRuntimeApiClientImpl.reportInvocationError(requestId, lambdaError, invocationId);
+            RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+            String invocationIdHeader = recordedRequest.getHeader("Lambda-Runtime-Invocation-Id");
+            assertEquals(invocationId, invocationIdHeader);
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     private String getHostnamePort() {

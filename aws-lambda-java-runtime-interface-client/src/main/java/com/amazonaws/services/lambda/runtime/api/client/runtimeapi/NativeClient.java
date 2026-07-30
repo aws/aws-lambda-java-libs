@@ -21,6 +21,6 @@ class NativeClient {
 
     static native InvocationRequest next();
 
-    static native void postInvocationResponse(byte[] requestId, byte[] response);
+    static native void postInvocationResponse(byte[] requestId, byte[] response, byte[] invocationId);
 
 }

@@ -49,10 +49,10 @@ jobs:
       matrix:
         include:
           - arch: x86_64
-            runner: ubuntu-latest
+            runner: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
             profiles: linux-x86_64 linux_musl-x86_64
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: codebuild-aws-lambda-java-libs-test-trigger-arm64-${{ github.run_id }}-${{ github.run_attempt }}
             profiles: linux-aarch64 linux_musl-aarch64
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
@@ -216,7 +216,7 @@ jobs:
           trap 'rm -rf "$MAVEN_SETTINGS" "$GNUPGHOME"' EXIT
 
           # --- Signing key + Sonatype token (shared secrets from LambdaMavenDeploy) ---
-          GPG_JSON=$(aws secretsmanager get-secret-value --secret-id maven.gpg.keys --query SecretString --output text)
+          GPG_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/gpg-signing-key --query SecretString --output text)
           CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id maven.sonatype.creds --query SecretString --output text)
           GPG_PRIVATE_KEY=$(jq -r '.private' <<< "$GPG_JSON")
           GPG_PASSPHRASE=$(jq -r '.passphrase' <<< "$GPG_JSON")

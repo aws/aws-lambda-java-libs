@@ -184,7 +184,7 @@ jobs:
 
           # --- Signing key + Sonatype token (shared secrets from LambdaMavenDeploy) ---
           GPG_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/gpg-signing-key --query SecretString --output text)
-          CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id maven.sonatype.creds --query SecretString --output text)
+          CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/maven-sonatype-creds --query SecretString --output text)
           GPG_PRIVATE_KEY=$(jq -r '.private' <<< "$GPG_JSON")
           GPG_PASSPHRASE=$(jq -r '.passphrase' <<< "$GPG_JSON")
           SONATYPE_USERNAME=$(jq -r '."maven-central-login"' <<< "$CREDS_JSON")

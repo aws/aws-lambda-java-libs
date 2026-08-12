@@ -1,9 +1,9 @@
 name: Release RIC to Maven Central
 
 # RIC ships a native JNI lib for 4 targets + a main JAR (5 artifacts). Each
-# native lib is built on its own architecture (x86_64 on ubuntu-latest,
-# aarch_64 on ubuntu-24.04-arm) instead of emulating with QEMU. A build matrix
-# produces the classifier JARs, then one job assembles and publishes them.
+# native lib is built on its own architecture (x86_64 and aarch64 CodeBuild
+# runners) instead of emulating with QEMU. A build matrix produces the
+# classifier JARs, then one job assembles and publishes them.
 
 on:
   workflow_dispatch:
@@ -115,7 +115,7 @@ jobs:
   # Assemble all native builds and publish.
   release:
     needs: build-natives
-    runs-on: ubuntu-latest
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
     environment: Release
     timeout-minutes: 30
     steps:
@@ -283,5 +283,5 @@ jobs:
           echo "| Version | \`$EFFECTIVE_RELEASE_VERSION\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Tag | \`$TAG_NAME\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Artifacts | main JAR + linux/linux_musl x x86_64/aarch_64 classifier JARs |" >> $GITHUB_STEP_SUMMARY
-          echo "| Built natively | x86_64 on ubuntu-latest, aarch_64 on ubuntu-24.04-arm (no QEMU) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Built natively | x86_64 and aarch_64 on CodeBuild runners (no QEMU) |" >> $GITHUB_STEP_SUMMARY
           echo "| Maven Central | [com.amazonaws:$MODULE:$EFFECTIVE_RELEASE_VERSION](https://central.sonatype.com/artifact/com.amazonaws/$MODULE/$EFFECTIVE_RELEASE_VERSION) |" >> $GITHUB_STEP_SUMMARY

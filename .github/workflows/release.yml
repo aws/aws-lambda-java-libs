@@ -67,7 +67,7 @@ jobs:
     # Publish when the gate passed, or when it was skipped for a non-log4j2
     # module. A failed or cancelled gate blocks the release.
     if: ${{ always() && (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') }}
-    runs-on: ubuntu-latest
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
     environment: Release
     timeout-minutes: 30
 

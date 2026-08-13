@@ -69,12 +69,22 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version: 8
-          distribution: corretto
-          cache: maven
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+
+      # Route all mvn resolution through the CodeArtifact mirror. Must precede
+      # resolve-release-version, which invokes `mvn help:evaluate`. Ambient
+      # CodeBuild runner-role creds supply the token; no OIDC step in this job.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
 
       - name: Resolve and validate release version
         uses: ./.github/actions/resolve-release-version
@@ -112,6 +122,12 @@ jobs:
             ${{ env.MODULE }}/target/*-linux*.jar
             ${{ env.MODULE }}/target/classes/jni/*.so
 
+      # Remove the user settings holding the CodeArtifact mirror token once the
+      # build is done. Ephemeral runner, so defence-in-depth, not load-bearing.
+      - name: Scrub Maven settings
+        if: always()
+        run: rm -f "$HOME/.m2/settings.xml"
+
   # Assemble all native builds and publish.
   release:
     needs: build-natives
@@ -123,12 +139,23 @@ jobs:
         with:
           fetch-depth: 0   # full history for tagging/pushing
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version: 8
-          distribution: corretto
-          cache: maven
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+
+      # Route all mvn resolution through the CodeArtifact mirror. Must precede
+      # resolve-release-version (which invokes `mvn help:evaluate`) and the OIDC
+      # step (which would shadow the runner-role creds this needs). Runs on every
+      # path, since dependency resolution happens on dry-runs too.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
 
       - name: Resolve and validate release version
         uses: ./.github/actions/resolve-release-version
@@ -234,7 +261,11 @@ jobs:
           gpg --batch --import <<< "$GPG_PRIVATE_KEY"
           GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
 
-          # settings.xml with the Sonatype token (server id "central").
+          # Global settings holding only the Sonatype "central" server for upload.
+          # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
+          # mirror in ~/.m2/settings.xml (user) that the mirror step wrote: deps
+          # resolve through the mirror, upload goes to central, and the mirror
+          # token stays in that user file instead of being re-passed here.
           {
             echo '<settings><servers><server>'
             echo "<id>central</id>"
@@ -243,9 +274,9 @@ jobs:
             echo '</server></servers></settings>'
           } > "$MAVEN_SETTINGS"
 
-          # --- Publish ---
+          # --- Publish --- (-gs: merge Sonatype creds with the ~/.m2 mirror)
           mvn deploy -Prelease -DskipTests -DmultiArch=false \
-            -s "$MAVEN_SETTINGS" \
+            -gs "$MAVEN_SETTINGS" \
             -Dgpg.keyname="$GPG_KEYNAME" -Dgpg.passphrase="$GPG_PASSPHRASE" \
             --file "$MODULE/pom.xml"
 

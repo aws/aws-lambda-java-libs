@@ -85,13 +85,22 @@ jobs:
         with:
           fetch-depth: 0   # full history for tagging/pushing
 
-      # Pinned JDK 8: building on a newer JDK can silently break the artifact.
-      - name: Set up JDK 8
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version: 8
-          distribution: corretto
-          cache: maven
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+
+      # Route all mvn resolution through the CodeArtifact mirror. Runs before the
+      # OIDC step (which would shadow the runner-role creds this needs) and on
+      # every path, since dependency resolution happens on dry-runs too.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
 
       - name: Resolve and validate release version
         uses: ./.github/actions/resolve-release-version
@@ -201,7 +210,11 @@ jobs:
           gpg --batch --import <<< "$GPG_PRIVATE_KEY"
           GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
 
-          # settings.xml with the Sonatype token (server id "central").
+          # Global settings holding only the Sonatype "central" server for upload.
+          # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
+          # mirror in ~/.m2/settings.xml (user) that the mirror step wrote: deps
+          # resolve through the mirror, upload goes to central, and the mirror
+          # token stays in that user file instead of being re-passed here.
           {
             echo '<settings><servers><server>'
             echo "<id>central</id>"
@@ -220,9 +233,11 @@ jobs:
           # Prepare locally (no push): release commits + tag.
           mvn release:prepare -DpushChanges=false "${RELEASE_ARGS[@]}" --file "$MODULE/pom.xml"
 
-          # perform forks a fresh build, so pass settings/gpg via -Darguments.
+          # perform forks a fresh build. Pass the Sonatype creds as GLOBAL
+          # settings (-gs) so the fork still auto-reads ~/.m2/settings.xml (the
+          # mirror) and merges the two.
           mvn release:perform -DlocalCheckout=true \
-            -Darguments="-s $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
+            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
             --file "$MODULE/pom.xml"
 
           # Push commits + tag atomically, only after publish succeeded.
@@ -261,3 +276,11 @@ jobs:
           echo "| Version | \`$EFFECTIVE_RELEASE_VERSION\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Tag | \`$TAG_NAME\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Maven Central | [com.amazonaws:$MODULE:$EFFECTIVE_RELEASE_VERSION](https://central.sonatype.com/artifact/com.amazonaws/$MODULE/$EFFECTIVE_RELEASE_VERSION) |" >> $GITHUB_STEP_SUMMARY
+
+      # Symmetry with the publish step's in-shell scrub: remove the user settings
+      # holding the CodeArtifact mirror token. Last step, after the mvn-using
+      # rollback path, so nothing still needs it. The runner is ephemeral, so
+      # this is defence-in-depth, not load-bearing.
+      - name: Scrub Maven settings
+        if: always()
+        run: rm -f "$HOME/.m2/settings.xml"

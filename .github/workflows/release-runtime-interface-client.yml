@@ -79,6 +79,17 @@ jobs:
           echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
           echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
           "$JAVA_8_HOME/bin/java" -version
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/toolchains.xml" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides><version>8</version></provides>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+            </toolchain>
+          </toolchains>
+          EOF
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version, which invokes `mvn help:evaluate`. Ambient
@@ -149,6 +160,17 @@ jobs:
           echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
           echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
           "$JAVA_8_HOME/bin/java" -version
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/toolchains.xml" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides><version>8</version></provides>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+            </toolchain>
+          </toolchains>
+          EOF
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version (which invokes `mvn help:evaluate`) and the OIDC

@@ -2,6 +2,9 @@ ARG BASE_REGISTRY=public.ecr.aws
 FROM ${BASE_REGISTRY}/amazonlinux/amazonlinux:2
 
 ARG CURL_VERSION
+ARG AWS_REGION
+
+RUN if [ -n "${AWS_REGION}" ]; then echo "${AWS_REGION}" > /etc/yum/vars/awsregion; fi
 
 RUN yum install -y \
         cmake3 \

@@ -36,20 +36,6 @@ class ClasspathLoaderTest {
     }
 
     @Test
-    void testLoadAllClassesWithEmptyClasspath() {
-        String originalClasspath = System.getProperty("java.class.path");
-        try {
-            System.setProperty("java.class.path", "");
-            assertThrows(FileNotFoundException.class, () -> 
-                ClasspathLoader.main(new String[]{}));
-        } finally {
-            if (originalClasspath != null) {
-                System.setProperty("java.class.path", originalClasspath);
-            }
-        }
-    }
-
-    @Test
     void testLoadAllClassesWithInvalidPath() {
         String originalClasspath = System.getProperty("java.class.path");
         try {

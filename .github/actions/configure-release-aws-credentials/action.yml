@@ -23,5 +23,6 @@ runs:
         aws-region: ${{ inputs.aws-region }}
         role-to-assume: ${{ inputs.role-to-assume }}
         role-session-name: ${{ inputs.role-session-name }}
-        # Short-lived: the job only needs the role briefly to read two secrets.
-        role-duration-seconds: 300
+        # Kept short: the job only needs the role briefly to read two secrets.
+        # 900s is STS's minimum for assume-role; anything lower is rejected.
+        role-duration-seconds: 900

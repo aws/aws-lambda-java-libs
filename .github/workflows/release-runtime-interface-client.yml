@@ -243,7 +243,7 @@ jobs:
       - name: Run tests
         env:
           IS_JAVA_8: true
-        run: mvn test --file "$MODULE/pom.xml"
+        run: mvn test -DargLineForReflectionTestOnly="" --file "$MODULE/pom.xml"
 
       # JARs to attach + .so files for the fat main JAR.
       - name: Download native artifacts

@@ -1,4 +1,5 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2
+ARG BASE_REGISTRY=public.ecr.aws
+FROM ${BASE_REGISTRY}/amazonlinux/amazonlinux:2
 
 ARG CURL_VERSION
 

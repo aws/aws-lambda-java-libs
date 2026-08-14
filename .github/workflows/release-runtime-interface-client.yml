@@ -40,6 +40,11 @@ env:
   MAVEN_ARGS: "-B --no-transfer-progress"
   AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
   OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
+  # ECR pull-through cache used for the native JNI base images. ECR_REGISTRY is
+  # the login target; BASE_REGISTRY (with the /ecr-public prefix) is passed to
+  # the Dockerfiles as a build-arg.
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
+  BASE_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com/ecr-public
 
 jobs:
   # Build each architecture's native libs (glibc + musl) on a native runner.
@@ -102,6 +107,14 @@ jobs:
         with:
           module: ${{ env.MODULE }}
           release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      # The native JNI build shells out to `docker build` against the ECR
+      # pull-through cache (see src/main/jni/Dockerfile.*). Authenticate first so
+      # the base-image pulls don't hit public.ecr.aws. Uses ambient runner creds.
+      - name: Log in to Amazon ECR (pull-through cache)
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       # -DskipTests: only installed so the module compiles, not released here.
       - name: Install intra-repo dependencies
@@ -184,6 +197,14 @@ jobs:
         with:
           module: ${{ env.MODULE }}
           release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      # The native JNI build shells out to `docker build` against the ECR
+      # pull-through cache (see src/main/jni/Dockerfile.*). Authenticate first so
+      # the base-image pulls don't hit public.ecr.aws. Uses ambient runner creds.
+      - name: Log in to Amazon ECR (pull-through cache)
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       - name: Resolve next development version and tag
         run: |

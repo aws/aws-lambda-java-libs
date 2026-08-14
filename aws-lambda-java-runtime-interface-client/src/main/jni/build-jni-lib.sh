@@ -9,6 +9,10 @@ MULTI_ARCH=${2}
 BUILD_OS=${3}
 BUILD_ARCH=${4}
 CURL_VERSION=7.83.1
+# Registry hosting the base images. Defaults to public.ecr.aws for local and
+# GitHub-hosted builds; the release workflow overrides it with the ECR
+# pull-through cache so egress-locked runners don't hit public.ecr.aws.
+BASE_REGISTRY="${BASE_REGISTRY:-public.ecr.aws}"
 
 function get_docker_platform() {
   arch=$1
@@ -45,7 +49,7 @@ function build_for_libc_arch() {
 
   if [[ "${MULTI_ARCH}" == "true" ]]; then
       docker build --platform="${docker_platform}" -f "${SRC_DIR}/Dockerfile.${libc_impl}" \
-            --build-arg CURL_VERSION=${CURL_VERSION} "${SRC_DIR}" -o - \
+            --build-arg CURL_VERSION=${CURL_VERSION} --build-arg BASE_REGISTRY=${BASE_REGISTRY} "${SRC_DIR}" -o - \
       | tar -xOf - src/aws-lambda-runtime-interface-client.so > "${artifact}"
   else
       echo "multi-arch not requested, assuming this is a workaround to goofyness when docker buildx is enabled on Linux CI environments."
@@ -63,7 +67,7 @@ function build_for_libc_arch() {
       docker build --platform="${docker_platform}" \
             -t "${image_name}" \
             -f "${SRC_DIR}/Dockerfile.${libc_impl}" \
-            --build-arg CURL_VERSION=${CURL_VERSION} "${SRC_DIR}" ${EXTRA_LOAD_ARG}
+            --build-arg CURL_VERSION=${CURL_VERSION} --build-arg BASE_REGISTRY=${BASE_REGISTRY} "${SRC_DIR}" ${EXTRA_LOAD_ARG}
 
       echo "Docker image has been successfully built"
 

@@ -116,7 +116,9 @@ if [ -n "$BUILD_OS" ] && [ -n "$BUILD_ARCH" ]; then
 else
   # build for all architectures and libc implementations
   declare -a ARCHITECTURES=("x86_64" "aarch_64")
-  declare -a LIBC_IMPLS=("glibc" "musl")
+  # musl (Alpine) temporarily disabled for testing: the egress-locked release
+  # runner can't reach the Alpine apk mirrors. Re-add "musl" once that's solved.
+  declare -a LIBC_IMPLS=("glibc")
 
   for arch in "${ARCHITECTURES[@]}"; do
 

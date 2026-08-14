@@ -442,16 +442,9 @@
                                             <type>jar</type>
                                             <classifier>linux-aarch_64</classifier>
                                         </artifact>
-                                        <artifact>
-                                            <file>${project.build.directory}/${project.build.finalName}-linux_musl-x86_64.jar</file>
-                                            <type>jar</type>
-                                            <classifier>linux_musl-x86_64</classifier>
-                                        </artifact>
-                                        <artifact>
-                                            <file>${project.build.directory}/${project.build.finalName}-linux_musl-aarch_64.jar</file>
-                                            <type>jar</type>
-                                            <classifier>linux_musl-aarch_64</classifier>
-                                        </artifact>
+                                        <!-- linux_musl (Alpine) classifiers temporarily disabled for
+                                             testing: the egress-locked release runner can't reach the
+                                             Alpine apk mirrors to build the musl .so. -->
                                     </artifacts>
                                 </configuration>
                             </execution>

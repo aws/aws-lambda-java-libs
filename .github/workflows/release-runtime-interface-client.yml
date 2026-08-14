@@ -55,10 +55,10 @@ jobs:
         include:
           - arch: x86_64
             runner: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
-            profiles: linux-x86_64 linux_musl-x86_64
+            profiles: linux-x86_64
           - arch: aarch64
             runner: codebuild-aws-lambda-java-libs-test-trigger-arm64-${{ github.run_id }}-${{ github.run_attempt }}
-            profiles: linux-aarch64 linux_musl-aarch64
+            profiles: linux-aarch64
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     steps:

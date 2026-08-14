@@ -91,7 +91,7 @@ jobs:
             <toolchain>
               <type>jdk</type>
               <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_HOME</jdkHome></configuration>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
             </toolchain>
           </toolchains>
           EOF
@@ -180,7 +180,7 @@ jobs:
             <toolchain>
               <type>jdk</type>
               <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_HOME</jdkHome></configuration>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
             </toolchain>
           </toolchains>
           EOF

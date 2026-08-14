@@ -74,12 +74,12 @@ jobs:
     steps:
       # Manual (workflow_dispatch) releases must only run from main, never from
       # an arbitrary branch that could carry unreviewed release logic.
-      # - name: Verify release branch
-      #   run: |
-      #     if [[ "$GITHUB_REF_NAME" != "main" ]]; then
-      #       echo "::error::Releases must run from the main branch, got '$GITHUB_REF_NAME'"
-      #       exit 1
-      #     fi
+      - name: Verify release branch
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            echo "::error::Releases must run from the main branch, got '$GITHUB_REF_NAME'"
+            exit 1
+          fi
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:

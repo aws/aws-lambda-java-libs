@@ -1,0 +1,318 @@
+name: Release RIC to Maven Central
+
+# RIC ships a native JNI lib for 4 targets + a main JAR (5 artifacts). Each
+# native lib is built on its own architecture (x86_64 and aarch64 CodeBuild
+# runners) instead of emulating with QEMU. A build matrix produces the
+# classifier JARs, then one job assembles and publishes them.
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release version override (optional; defaults to the POM version without -SNAPSHOT)'
+        required: false
+        type: string
+      developmentVersion:
+        description: 'Next development version override (optional, must end with -SNAPSHOT)'
+        required: false
+        type: string
+      skip_publish:
+        description: 'Skip publish (dry-run validation)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # push release commit and tag
+  id-token: write   # assume the OIDC role for secret retrieval
+
+# Share the repo-wide "release" group with release.yml so RIC and the pure-Java
+# modules can never publish concurrently. Never cancel in-flight: it could leave
+# a half-published state.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  MODULE: aws-lambda-java-runtime-interface-client
+  RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
+  DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  MAVEN_ARGS: "-B --no-transfer-progress"
+  AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
+
+jobs:
+  # Build each architecture's native libs (glibc + musl) on a native runner.
+  build-natives:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
+            profiles: linux-x86_64 linux_musl-x86_64
+          - arch: aarch64
+            runner: codebuild-aws-lambda-java-libs-test-trigger-arm64-${{ github.run_id }}-${{ github.run_attempt }}
+            profiles: linux-aarch64 linux_musl-aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      # Manual (workflow_dispatch) releases must only run from main, never from
+      # an arbitrary branch that could carry unreviewed release logic. Guarding
+      # the first job blocks the whole pipeline (release needs build-natives).
+      - name: Verify release branch
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            echo "::error::Releases must run from the main branch, got '$GITHUB_REF_NAME'"
+            exit 1
+          fi
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+
+      # Route all mvn resolution through the CodeArtifact mirror. Must precede
+      # resolve-release-version, which invokes `mvn help:evaluate`. Ambient
+      # CodeBuild runner-role creds supply the token; no OIDC step in this job.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
+
+      - name: Resolve and validate release version
+        uses: ./.github/actions/resolve-release-version
+        with:
+          module: ${{ env.MODULE }}
+          release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      # -DskipTests: only installed so the module compiles, not released here.
+      - name: Install intra-repo dependencies
+        run: |
+          for dep in aws-lambda-java-core aws-lambda-java-serialization; do
+            mvn install -DskipTests --file "$dep/pom.xml"
+          done
+
+      # Build at the release version (matches the JAR names the release job
+      # attaches).
+      - name: Build native classifier JARs (${{ matrix.arch }})
+        env:
+          IS_JAVA_8: true
+        run: |
+          mvn versions:set -DnewVersion="$EFFECTIVE_RELEASE_VERSION" -DgenerateBackupPoms=false --file "$MODULE/pom.xml"
+          for profile in ${{ matrix.profiles }}; do
+            echo "::group::Building $profile"
+            mvn package -P "$profile" -DmultiArch=false -DskipTests --file "$MODULE/pom.xml"
+            echo "::endgroup::"
+          done
+
+      # JARs to attach + .so files to assemble the fat main JAR.
+      - name: Upload native artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ric-natives-${{ matrix.arch }}
+          if-no-files-found: error
+          path: |
+            ${{ env.MODULE }}/target/*-linux*.jar
+            ${{ env.MODULE }}/target/classes/jni/*.so
+
+      # Remove the user settings holding the CodeArtifact mirror token once the
+      # build is done. Ephemeral runner, so defence-in-depth, not load-bearing.
+      - name: Scrub Maven settings
+        if: always()
+        run: rm -f "$HOME/.m2/settings.xml"
+
+  # Assemble all native builds and publish.
+  release:
+    needs: build-natives
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
+    environment: Release
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0   # full history for tagging/pushing
+
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+
+      # Route all mvn resolution through the CodeArtifact mirror. Must precede
+      # resolve-release-version (which invokes `mvn help:evaluate`) and the OIDC
+      # step (which would shadow the runner-role creds this needs). Runs on every
+      # path, since dependency resolution happens on dry-runs too.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
+
+      - name: Resolve and validate release version
+        uses: ./.github/actions/resolve-release-version
+        with:
+          module: ${{ env.MODULE }}
+          release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      - name: Resolve next development version and tag
+        run: |
+          # Next development version: use the override, or bump the patch.
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" ]]; then
+            if [[ "$DEVELOPMENT_VERSION_INPUT" != *-SNAPSHOT ]]; then
+              echo "::error::developmentVersion '$DEVELOPMENT_VERSION_INPUT' must end with -SNAPSHOT"
+              exit 1
+            fi
+            NEXT_DEV_VERSION="$DEVELOPMENT_VERSION_INPUT"
+          else
+            IFS='.' read -r MA MI PA <<< "$EFFECTIVE_RELEASE_VERSION"
+            NEXT_DEV_VERSION="${MA}.${MI}.$((PA + 1))-SNAPSHOT"
+          fi
+
+          echo "NEXT_DEV_VERSION=$NEXT_DEV_VERSION" >> "$GITHUB_ENV"
+          echo "TAG_NAME=${MODULE}-${EFFECTIVE_RELEASE_VERSION}" >> "$GITHUB_ENV"
+          echo "::notice::Releasing $MODULE $EFFECTIVE_RELEASE_VERSION (next dev $NEXT_DEV_VERSION)"
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # -DskipTests: only installed so the module compiles, not released here.
+      - name: Install intra-repo dependencies
+        run: |
+          for dep in aws-lambda-java-core aws-lambda-java-serialization; do
+            mvn install -DskipTests --file "$dep/pom.xml"
+          done
+
+      - name: Set release version
+        run: mvn versions:set -DnewVersion="$EFFECTIVE_RELEASE_VERSION" -DgenerateBackupPoms=false --file "$MODULE/pom.xml"
+
+      # Test gate before publish.
+      - name: Run tests
+        env:
+          IS_JAVA_8: true
+        run: mvn test --file "$MODULE/pom.xml"
+
+      # JARs to attach + .so files for the fat main JAR.
+      - name: Download native artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          pattern: ric-natives-*
+          path: ric-natives
+
+      - name: Stage native artifacts
+        run: |
+          mkdir -p "$MODULE/target/classes/jni"
+          find ric-natives -name '*.jar' -exec cp {} "$MODULE/target/" \;
+          find ric-natives -name '*.so' -exec cp {} "$MODULE/target/classes/jni/" \;
+          echo "Staged native artifacts:"
+          ls -1 "$MODULE/target/"*-linux*.jar "$MODULE/target/classes/jni/"*.so
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: ./.github/actions/configure-release-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          role-session-name: GitHubActionsRicMavenCentralRelease
+
+      # Fetch signing material and publish in a single step so the GPG passphrase
+      # and Sonatype token stay in this shell and never cross a $GITHUB_ENV
+      # boundary, where a later (possibly compromised) step could read them.
+      # -DmultiArch=false builds only the host .so; the aarch_64 .so is already
+      # staged, so the main JAR still bundles all four. build-helper attaches
+      # the staged classifier JARs. Gate already ran, so -DskipTests.
+      - name: Publish to Maven Central
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        env:
+          IS_JAVA_8: true
+        run: |
+          # Scrub the settings.xml (contains the Sonatype token) and the keyring
+          # on exit, so no sensitive file is left on the runner even on failure.
+          MAVEN_SETTINGS="$RUNNER_TEMP/settings.xml"
+          export GNUPGHOME=$(mktemp -d)
+          trap 'rm -rf "$MAVEN_SETTINGS" "$GNUPGHOME"' EXIT
+
+          # --- Signing key + Sonatype token (shared secrets from LambdaMavenDeploy) ---
+          GPG_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/gpg-signing-key --query SecretString --output text)
+          CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/maven-sonatype-creds --query SecretString --output text)
+          GPG_PRIVATE_KEY=$(jq -r '.private' <<< "$GPG_JSON")
+          GPG_PASSPHRASE=$(jq -r '.passphrase' <<< "$GPG_JSON")
+          SONATYPE_USERNAME=$(jq -r '."maven-central-login"' <<< "$CREDS_JSON")
+          SONATYPE_PASSWORD=$(jq -r '."maven-central-password"' <<< "$CREDS_JSON")
+          echo "::add-mask::$GPG_PASSPHRASE"
+          echo "::add-mask::$SONATYPE_USERNAME"
+          echo "::add-mask::$SONATYPE_PASSWORD"
+
+          # Import the key with loopback pinentry so Maven can sign non-interactively.
+          chmod 700 "$GNUPGHOME"
+          echo "allow-loopback-pinentry" > "$GNUPGHOME/gpg-agent.conf"
+          echo "pinentry-mode loopback" > "$GNUPGHOME/gpg.conf"
+          gpgconf --kill gpg-agent || true
+          gpg --batch --import <<< "$GPG_PRIVATE_KEY"
+          GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+
+          # Global settings holding only the Sonatype "central" server for upload.
+          # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
+          # mirror in ~/.m2/settings.xml (user) that the mirror step wrote: deps
+          # resolve through the mirror, upload goes to central, and the mirror
+          # token stays in that user file instead of being re-passed here.
+          {
+            echo '<settings><servers><server>'
+            echo "<id>central</id>"
+            echo "<username>${SONATYPE_USERNAME}</username>"
+            echo "<password>${SONATYPE_PASSWORD}</password>"
+            echo '</server></servers></settings>'
+          } > "$MAVEN_SETTINGS"
+
+          # --- Publish --- (-gs: merge Sonatype creds with the ~/.m2 mirror)
+          mvn deploy -Prelease -DskipTests -DmultiArch=false \
+            -gs "$MAVEN_SETTINGS" \
+            -Dgpg.keyname="$GPG_KEYNAME" -Dgpg.passphrase="$GPG_PASSPHRASE" \
+            --file "$MODULE/pom.xml"
+
+      - name: Tag and push (only after publish succeeds)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          git commit -am "chore(ric): release ${EFFECTIVE_RELEASE_VERSION}"
+          git tag "$TAG_NAME"
+          mvn versions:set -DnewVersion="$NEXT_DEV_VERSION" -DgenerateBackupPoms=false --file "$MODULE/pom.xml"
+          git commit -am "chore(ric): prepare next development ${NEXT_DEV_VERSION}"
+          git push --atomic origin "HEAD:${GITHUB_REF_NAME}" "refs/tags/${TAG_NAME}"
+
+      # Dry-run: validate assembly, no publish/push.
+      - name: Dry-run assemble (no publish)
+        if: ${{ github.event.inputs.skip_publish == 'true' }}
+        env:
+          IS_JAVA_8: true
+        run: mvn package -DskipTests -DmultiArch=false --file "$MODULE/pom.xml"
+
+      # Nothing was pushed, so this only cleans the runner.
+      - name: Roll back local tag on failure
+        if: ${{ failure() && github.event.inputs.skip_publish != 'true' }}
+        run: |
+          git tag -d "$TAG_NAME" 2>/dev/null || true
+          echo "::warning::Release failed. The remote was not modified; safe to retry."
+
+      - name: Summary
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Module | \`$MODULE\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`$EFFECTIVE_RELEASE_VERSION\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | \`$TAG_NAME\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifacts | main JAR + linux/linux_musl x x86_64/aarch_64 classifier JARs |" >> $GITHUB_STEP_SUMMARY
+          echo "| Built natively | x86_64 and aarch_64 on CodeBuild runners (no QEMU) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Maven Central | [com.amazonaws:$MODULE:$EFFECTIVE_RELEASE_VERSION](https://central.sonatype.com/artifact/com.amazonaws/$MODULE/$EFFECTIVE_RELEASE_VERSION) |" >> $GITHUB_STEP_SUMMARY

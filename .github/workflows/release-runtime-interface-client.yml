@@ -40,6 +40,11 @@ env:
   MAVEN_ARGS: "-B --no-transfer-progress"
   AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
   OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
+  # ECR pull-through cache used for the native JNI base images. ECR_REGISTRY is
+  # the login target; BASE_REGISTRY (with the /ecr-public prefix) is passed to
+  # the Dockerfiles as a build-arg.
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
+  BASE_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com/ecr-public
 
 jobs:
   # Build each architecture's native libs (glibc + musl) on a native runner.
@@ -79,6 +84,17 @@ jobs:
           echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
           echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
           "$JAVA_8_HOME/bin/java" -version
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/toolchains.xml" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides><version>8</version></provides>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+            </toolchain>
+          </toolchains>
+          EOF
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version, which invokes `mvn help:evaluate`. Ambient
@@ -91,6 +107,14 @@ jobs:
         with:
           module: ${{ env.MODULE }}
           release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      # The native JNI build shells out to `docker build` against the ECR
+      # pull-through cache (see src/main/jni/Dockerfile.*). Authenticate first so
+      # the base-image pulls don't hit public.ecr.aws. Uses ambient runner creds.
+      - name: Log in to Amazon ECR (pull-through cache)
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       # -DskipTests: only installed so the module compiles, not released here.
       - name: Install intra-repo dependencies
@@ -149,6 +173,17 @@ jobs:
           echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
           echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
           "$JAVA_8_HOME/bin/java" -version
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/toolchains.xml" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides><version>8</version></provides>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+            </toolchain>
+          </toolchains>
+          EOF
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version (which invokes `mvn help:evaluate`) and the OIDC
@@ -162,6 +197,14 @@ jobs:
         with:
           module: ${{ env.MODULE }}
           release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+
+      # The native JNI build shells out to `docker build` against the ECR
+      # pull-through cache (see src/main/jni/Dockerfile.*). Authenticate first so
+      # the base-image pulls don't hit public.ecr.aws. Uses ambient runner creds.
+      - name: Log in to Amazon ECR (pull-through cache)
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       - name: Resolve next development version and tag
         run: |
@@ -200,7 +243,7 @@ jobs:
       - name: Run tests
         env:
           IS_JAVA_8: true
-        run: mvn test --file "$MODULE/pom.xml"
+        run: mvn test -DargLineForReflectionTestOnly="" --file "$MODULE/pom.xml"
 
       # JARs to attach + .so files for the fat main JAR.
       - name: Download native artifacts

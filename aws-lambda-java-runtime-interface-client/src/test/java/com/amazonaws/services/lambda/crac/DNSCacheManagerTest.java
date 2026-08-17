@@ -69,7 +69,7 @@ public class DNSCacheManagerTest {
         StatefulResource resource = new StatefulResource();
         Core.getGlobalContext().register(resource);
 
-        String[] hosts = {"www.stackoverflow.com", "www.amazon.com", "www.yahoo.com"};
+        String[] hosts = {"github.com", "amazonaws.com"};
         for(String singleHost : hosts) {
             InetAddress address = InetAddress.getByName(singleHost);
         } 

@@ -20,7 +20,15 @@ permissions:
 jobs:
 
   smoke-test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -39,9 +47,9 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
-    - name: Runtime Interface Client smoke tests - Run 'pr' target
+    - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr
+      run: make pr-${{ matrix.arch }}
       env:
         IS_JAVA_8: true
 

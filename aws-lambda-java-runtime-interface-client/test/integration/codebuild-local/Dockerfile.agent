@@ -1,7 +1,8 @@
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 
-# Install docker and buildx extension
-RUN yum install -y docker tar gzip unzip file findutils
+# Install docker and buildx extension.
+# gnupg2 provides gpg/gpgv/gpg-agent so build-jni-lib.sh can GPG-verify the prebuilt assets.
+RUN yum install -y --allowerasing docker tar gzip unzip file findutils gnupg2
 
 COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 

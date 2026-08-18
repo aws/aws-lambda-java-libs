@@ -48,12 +48,12 @@ function fetch_aws_lambda_cpp() {
   curl -fsSL -o "${workdir}/SHA256SUMS.asc"   "${ALC_RELEASE_URL}/SHA256SUMS.asc"
   curl -fsSL -o "${workdir}/signing-key.asc"  "${ALC_SIGNING_KEY_URL}"
 
-  local keyring
-  keyring=$(mktemp)
-  gpg --dearmor < "${workdir}/signing-key.asc" > "${keyring}"
-  gpgv --keyring "${keyring}" "${workdir}/${lib_asset}.asc" "${workdir}/${lib_asset}"
-  gpgv --keyring "${keyring}" "${workdir}/SHA256SUMS.asc"   "${workdir}/SHA256SUMS"
-  rm -f "${keyring}"
+  local gnupghome
+  gnupghome=$(mktemp -d)
+  gpg --homedir "${gnupghome}" --batch --quiet --import "${workdir}/signing-key.asc"
+  gpg --homedir "${gnupghome}" --batch --verify "${workdir}/${lib_asset}.asc" "${workdir}/${lib_asset}"
+  gpg --homedir "${gnupghome}" --batch --verify "${workdir}/SHA256SUMS.asc"   "${workdir}/SHA256SUMS"
+  rm -rf "${gnupghome}"
 
   # Cross-check the checksum too (defence in depth; SHA256SUMS is itself signed).
   ( cd "${workdir}" && grep "${lib_asset}\$" SHA256SUMS | sha256sum -c - )

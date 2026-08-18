@@ -6,7 +6,6 @@ ARG CURL_VERSION
 RUN apk update && \
     apk add \
         openjdk11 \
-        cmake \
         file \
         g++ \
         gcc \
@@ -31,17 +30,8 @@ RUN ./configure \
     make && \
     make install
 
-# Install aws-lambda-cpp dependency
-ADD ./deps/aws-lambda-cpp-* /src/deps/aws-lambda-cpp
-RUN mkdir -p /src/deps/aws-lambda-cpp/build
-WORKDIR /src/deps/aws-lambda-cpp/build
-RUN cmake .. \
-        -DCMAKE_CXX_FLAGS="-fPIC -DBACKWARD_SYSTEM_UNKNOWN" \
-        -DCMAKE_CXX_STANDARD=11 \
-        -DCMAKE_INSTALL_PREFIX=$(pwd)/../../artifacts\
-        -DCMAKE_MODULE_PATH=$(pwd)/../../artifacts/lib/pkgconfig && \
-    make && \
-    make install
+COPY ./deps/aws-lambda-cpp/include /src/deps/artifacts/include
+COPY ./deps/aws-lambda-cpp/lib/libaws-lambda-runtime.a /src/deps/artifacts/lib/
 
 # Build native client
 ADD *.cpp *.h /src/

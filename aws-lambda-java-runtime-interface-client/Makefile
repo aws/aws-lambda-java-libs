@@ -50,10 +50,17 @@ dev: test
 pr: test test-smoke
 
 .PHONY: build
-build: 
-	mvn clean install $(EXTRA_LOAD_ARG)
+build: build-x86_64 build-aarch64
+
+.PHONY: build-x86_64
+build-x86_64:
+	mvn clean install -DmultiArch=false $(EXTRA_LOAD_ARG)
 	mvn install -P linux-x86_64 $(EXTRA_LOAD_ARG)
 	mvn install -P linux_musl-x86_64 $(EXTRA_LOAD_ARG)
+
+.PHONY: build-aarch64
+build-aarch64:
+	mvn clean install -DmultiArch=false $(EXTRA_LOAD_ARG)
 	mvn install -P linux-aarch64 $(EXTRA_LOAD_ARG)
 	mvn install -P linux_musl-aarch64 $(EXTRA_LOAD_ARG)
 

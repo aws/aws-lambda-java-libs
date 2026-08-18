@@ -46,7 +46,15 @@ jobs:
         IS_JAVA_8: true
 
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -57,16 +65,10 @@ jobs:
         distribution: corretto
         cache: maven
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       with:
         install: true
-
-    - name: Available buildx platforms
-      run: echo ${{ steps.buildx.outputs.platforms }}
 
     - name: Build and install core dependency locally
       working-directory: ./aws-lambda-java-core
@@ -76,16 +78,16 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
-    - name: Test Runtime Interface Client xplatform build - Run 'build' target
+    - name: Test Runtime Interface Client build - Run 'build-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make build
+      run: make build-${{ matrix.arch }}
       env:
         IS_JAVA_8: true
 
     - name: Save the built jar
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
-        name: aws-lambda-java-runtime-interface-client
+        name: aws-lambda-java-runtime-interface-client-${{ matrix.arch }}
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 
     - name: Upload coverage to Codecov

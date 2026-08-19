@@ -43,7 +43,7 @@
         -->
         <junit.version>5.9.2</junit.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <aws-lambda-java-serialization.version>1.4.1</aws-lambda-java-serialization.version>
+        <aws-lambda-java-serialization.version>1.4.2</aws-lambda-java-serialization.version>
         <aws-lambda-java-events.version>3.16.1</aws-lambda-java-events.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <assertj-core.version>3.27.7</assertj-core.version>

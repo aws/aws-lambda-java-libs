@@ -1,3 +1,7 @@
+### Aug 20, 2026
+`1.4.2`:
+- Update `jackson-databind` dependency from 2.18.6 to 2.18.9
+
 ### May 20, 2026
 `1.4.1`:
 - Fix build issue

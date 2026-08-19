@@ -19,7 +19,7 @@ permissions:
 
 jobs:
 
-  smoke-test:
+  smoke-test-arch:
     strategy:
       fail-fast: true
       matrix:
@@ -29,6 +29,7 @@ jobs:
           - arch: aarch64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    name: "smoke-test (${{ matrix.arch }})"
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -53,7 +54,7 @@ jobs:
       env:
         IS_JAVA_8: true
 
-  build:
+  build-arch:
     strategy:
       fail-fast: true
       matrix:
@@ -63,6 +64,7 @@ jobs:
           - arch: aarch64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    name: "build (${{ matrix.arch }})"
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -103,3 +105,27 @@ jobs:
       uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  smoke-test:
+    needs: smoke-test-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check smoke-test results
+        run: |
+          if [ "${{ needs.smoke-test-arch.result }}" != "success" ]; then
+            echo "Smoke tests failed on one or more architectures"
+            exit 1
+          fi
+
+  build:
+    needs: build-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build results
+        run: |
+          if [ "${{ needs.build-arch.result }}" != "success" ]; then
+            echo "Build failed on one or more architectures"
+            exit 1
+          fi

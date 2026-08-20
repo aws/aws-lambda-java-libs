@@ -26,9 +26,10 @@ test:
 
 .PHONY: setup-codebuild-agent
 setup-codebuild-agent:
-	docker build -t codebuild-agent \
+	test/integration/codebuild-local/docker-retry.sh docker build --load -t codebuild-agent \
 	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
-	  - < test/integration/codebuild-local/Dockerfile.agent
+	 -f test/integration/codebuild-local/Dockerfile.agent \
+	 test/integration/codebuild-local
 
 .PHONY: test-smoke
 test-smoke: setup-codebuild-agent

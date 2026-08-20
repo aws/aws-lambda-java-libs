@@ -71,7 +71,7 @@ phases:
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - echo "Building image ${IMAGE_TAG}"
       - >
-        docker build . \
+        aws-lambda-java-runtime-interface-client/test/integration/codebuild-local/docker-retry.sh docker build . \
           -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
           -t "${IMAGE_TAG}" \
           --platform="${PLATFORM}" \

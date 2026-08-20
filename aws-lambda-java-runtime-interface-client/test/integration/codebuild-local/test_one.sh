@@ -60,6 +60,10 @@ main() {
 
     ARTIFACTS_DIR="$CODEBUILD_TEMP_DIR/artifacts"
     mkdir -p "$ARTIFACTS_DIR"
+
+    LOCAL_AGENT_IMAGE="$(get_local_agent_image)"
+    "$(dirname "$0")"/docker-retry.sh docker pull "$LOCAL_AGENT_IMAGE" || true
+
     # Run CodeBuild local agent.
     "$(dirname "$0")"/codebuild_build.sh \
         -i "$CODEBUILD_IMAGE_TAG" \
@@ -67,7 +71,7 @@ main() {
         -e "$ENVFILE" \
         -b "$BUILDSPEC_YML" \
         -s "$(dirname $PWD)" \
-        -l "$(get_local_agent_image)"
+        -l "$LOCAL_AGENT_IMAGE"
 }
 
 main "$@"

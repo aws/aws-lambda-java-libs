@@ -1,2 +1,5 @@
 compile-flags.txt
 ric-dev-environment/codeartifact-properties.mk
+
+# aws-lambda-cpp prebuilt lib + headers, fetched and staged at build time
+src/main/jni/deps/aws-lambda-cpp/

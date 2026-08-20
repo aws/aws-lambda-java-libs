@@ -106,6 +106,61 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  integration-test-matrix:
+    runs-on: ${{ matrix.arch.runner }}
+    strategy:
+      # Run every OS/arch combination to completion so one failure doesn't mask the others.
+      fail-fast: false
+      matrix:
+        buildspec:
+          - buildspec.os.alpine.yml
+          - buildspec.os.amazoncorretto.yml
+          - buildspec.os.amazonlinux.1.yml
+          - buildspec.os.amazonlinux.2.yml
+          - buildspec.os.debian.yml
+          - buildspec.os.ubuntu.yml
+        arch:
+          - label: x64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - label: arm64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64/v8
+        exclude:
+          # Amazon Linux 1 was never published for ARM64 (x86_64 only), so
+          # public.ecr.aws/amazonlinux/amazonlinux:1 has no arm64 manifest.
+          - buildspec: buildspec.os.amazonlinux.1.yml
+            arch:
+              label: arm64
+              runner: ubuntu-24.04-arm
+              platform: linux/arm64/v8
+    name: "integration-test (${{ matrix.buildspec }} / ${{ matrix.arch.label }})"
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      with:
+        install: true
+
+    - name: Run OS integration test - 'test-integ' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make test-integ BUILDSPEC=test/integration/codebuild/${{ matrix.buildspec }}
+      env:
+        PLATFORM_FILTER: ${{ matrix.arch.platform }}
+
+  integration-test:
+    needs: integration-test-matrix
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check integration-test results
+        run: |
+          if [ "${{ needs.integration-test-matrix.result }}" != "success" ]; then
+            echo "Integration tests failed on one or more OS/arch combinations"
+            exit 1
+          fi
+
   smoke-test:
     needs: smoke-test-arch
     if: always()

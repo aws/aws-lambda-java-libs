@@ -26,9 +26,10 @@ test:
 
 .PHONY: setup-codebuild-agent
 setup-codebuild-agent:
-	docker build -t codebuild-agent \
+	test/integration/codebuild-local/docker-retry.sh docker build --load -t codebuild-agent \
 	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
-	  - < test/integration/codebuild-local/Dockerfile.agent
+	 -f test/integration/codebuild-local/Dockerfile.agent \
+	 test/integration/codebuild-local
 
 # Smoke tests are split per-architecture so CI can run each set on a native
 # runner. Running the linux/arm64/v8 combos under QEMU on an x86_64 host makes
@@ -46,9 +47,13 @@ test-smoke-aarch64: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
 
+# BUILDSPEC can point to the buildspec directory (default, runs every OS) or to a
+# single buildspec file, which is how CI parallelizes the run across OSes.
+BUILDSPEC ?= test/integration/codebuild
+
 .PHONY: test-integ
 test-integ: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh test/integration/codebuild
+	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh $(BUILDSPEC)
 
 # Command to run everytime you make changes to verify everything works
 .PHONY: dev

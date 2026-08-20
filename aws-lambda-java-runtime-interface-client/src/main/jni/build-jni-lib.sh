@@ -9,11 +9,66 @@ MULTI_ARCH=${2}
 BUILD_OS=${3}
 BUILD_ARCH=${4}
 CURL_VERSION=7.83.1
-# Registry hosting the base images. Defaults to public.ecr.aws for local and
-# GitHub-hosted builds; the release workflow overrides it with the ECR
-# pull-through cache so egress-locked runners don't hit public.ecr.aws.
+
 BASE_REGISTRY="${BASE_REGISTRY:-public.ecr.aws}"
 AWS_REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-}}"
+
+# aws-lambda-cpp is consumed as the prebuilt static library published on the
+# upstream GitHub release rather than being compiled from a vendored source
+# tree. We fetch and GPG-verify it
+ALC_VERSION="1.0.1"
+ALC_TAG="v${ALC_VERSION}"
+ALC_REPO_URL="https://github.com/awslabs/aws-lambda-cpp"
+ALC_RELEASE_URL="${ALC_REPO_URL}/releases/download/${ALC_TAG}"
+ALC_SIGNING_KEY_URL="https://raw.githubusercontent.com/awslabs/aws-lambda-cpp/${ALC_TAG}/signing-public-key.asc"
+ALC_STAGE_DIR="${SRC_DIR}/deps/aws-lambda-cpp"
+
+function fetch_aws_lambda_cpp() {
+  arch=$1
+
+  release_arch="${arch/aarch_64/aarch64}"
+
+  if [ -f "${ALC_STAGE_DIR}/.staged-arch" ] && \
+     [ "$(cat "${ALC_STAGE_DIR}/.staged-arch")" == "${release_arch}" ]; then
+    echo "aws-lambda-cpp ${ALC_VERSION} (${release_arch}) already staged, skipping fetch"
+    return
+  fi
+
+  echo "Fetching prebuilt aws-lambda-cpp ${ALC_VERSION} for ${release_arch}"
+  rm -rf "${ALC_STAGE_DIR}"
+  mkdir -p "${ALC_STAGE_DIR}/lib" "${ALC_STAGE_DIR}/include"
+
+  local workdir
+  workdir=$(mktemp -d)
+  local lib_asset="libaws-lambda-runtime-${release_arch}.a"
+
+  curl -fsSL -o "${workdir}/${lib_asset}"     "${ALC_RELEASE_URL}/${lib_asset}"
+  curl -fsSL -o "${workdir}/${lib_asset}.asc" "${ALC_RELEASE_URL}/${lib_asset}.asc"
+  curl -fsSL -o "${workdir}/SHA256SUMS"       "${ALC_RELEASE_URL}/SHA256SUMS"
+  curl -fsSL -o "${workdir}/SHA256SUMS.asc"   "${ALC_RELEASE_URL}/SHA256SUMS.asc"
+  curl -fsSL -o "${workdir}/signing-key.asc"  "${ALC_SIGNING_KEY_URL}"
+
+  local gnupghome
+  gnupghome=$(mktemp -d)
+  gpg --homedir "${gnupghome}" --batch --quiet --import "${workdir}/signing-key.asc"
+  gpg --homedir "${gnupghome}" --batch --verify "${workdir}/${lib_asset}.asc" "${workdir}/${lib_asset}"
+  gpg --homedir "${gnupghome}" --batch --verify "${workdir}/SHA256SUMS.asc"   "${workdir}/SHA256SUMS"
+  rm -rf "${gnupghome}"
+
+  # Cross-check the checksum too (defence in depth; SHA256SUMS is itself signed).
+  ( cd "${workdir}" && grep "${lib_asset}\$" SHA256SUMS | sha256sum -c - )
+
+  cp "${workdir}/${lib_asset}" "${ALC_STAGE_DIR}/lib/libaws-lambda-runtime.a"
+
+  # Headers aren't a release asset, so take them from the source at the same
+  # tag. They are declarations only -- every symbol lives in the prebuilt lib.
+  curl -fsSL -o "${workdir}/src.tar.gz" "${ALC_REPO_URL}/archive/refs/tags/${ALC_TAG}.tar.gz"
+  tar -xzf "${workdir}/src.tar.gz" -C "${workdir}" "aws-lambda-cpp-${ALC_VERSION}/include"
+  cp -R "${workdir}/aws-lambda-cpp-${ALC_VERSION}/include/." "${ALC_STAGE_DIR}/include/"
+
+  echo "${release_arch}" > "${ALC_STAGE_DIR}/.staged-arch"
+  rm -rf "${workdir}"
+}
 
 function get_docker_platform() {
   arch=$1
@@ -43,6 +98,8 @@ function build_for_libc_arch() {
   libc_impl=$1
   arch=$2
   artifact=$3
+
+  fetch_aws_lambda_cpp "${arch}"
 
   docker_platform=$(get_docker_platform ${arch})
 
@@ -118,12 +175,10 @@ else
   declare -a ARCHITECTURES=("x86_64" "aarch_64")
   declare -a LIBC_IMPLS=("glibc" "musl")
 
-  # `arch` reports the host as `aarch64`, but we use Maven's classifier
-  # spelling `aarch_64` in ARCHITECTURES, so normalize before comparing.
-  host_arch=$(arch)
-  if [ "${host_arch}" == "aarch64" ]; then
-      host_arch="aarch_64"
-  fi
+  host_arch="$(arch)"
+  case "${host_arch}" in
+    aarch64|arm64) host_arch="aarch_64" ;;
+  esac
 
   for arch in "${ARCHITECTURES[@]}"; do
 

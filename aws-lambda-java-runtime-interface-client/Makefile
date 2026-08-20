@@ -37,9 +37,13 @@ test-smoke: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/amd64
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
 
+# BUILDSPEC can point to the buildspec directory (default, runs every OS) or to a
+# single buildspec file, which is how CI parallelizes the run across OSes.
+BUILDSPEC ?= test/integration/codebuild
+
 .PHONY: test-integ
 test-integ: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh test/integration/codebuild
+	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh $(BUILDSPEC)
 
 # Command to run everytime you make changes to verify everything works
 .PHONY: dev

@@ -31,11 +31,20 @@ setup-codebuild-agent:
 	 -f test/integration/codebuild-local/Dockerfile.agent \
 	 test/integration/codebuild-local
 
+# Smoke tests are split per-architecture so CI can run each set on a native
+# runner. Running the linux/arm64/v8 combos under QEMU on an x86_64 host makes
+# `mvn install` recompile curl for aarch64 emulated, which takes ~30 minutes.
 .PHONY: test-smoke
-test-smoke: setup-codebuild-agent
+test-smoke: test-smoke-x86_64 test-smoke-aarch64
+
+.PHONY: test-smoke-x86_64
+test-smoke-x86_64: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/amd64
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/amd64
+
+.PHONY: test-smoke-aarch64
+test-smoke-aarch64: setup-codebuild-agent
+	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
 
 # BUILDSPEC can point to the buildspec directory (default, runs every OS) or to a
@@ -54,11 +63,25 @@ dev: test
 .PHONY: pr
 pr: test test-smoke
 
+# Per-architecture PR checks so CI can run each on a native runner (no QEMU).
+.PHONY: pr-x86_64
+pr-x86_64: test test-smoke-x86_64
+
+.PHONY: pr-aarch64
+pr-aarch64: test test-smoke-aarch64
+
 .PHONY: build
-build: 
-	mvn clean install $(EXTRA_LOAD_ARG)
+build: build-x86_64 build-aarch64
+
+.PHONY: build-x86_64
+build-x86_64:
+	mvn clean install -DmultiArch=false $(EXTRA_LOAD_ARG)
 	mvn install -P linux-x86_64 $(EXTRA_LOAD_ARG)
 	mvn install -P linux_musl-x86_64 $(EXTRA_LOAD_ARG)
+
+.PHONY: build-aarch64
+build-aarch64:
+	mvn clean install -DmultiArch=false $(EXTRA_LOAD_ARG)
 	mvn install -P linux-aarch64 $(EXTRA_LOAD_ARG)
 	mvn install -P linux_musl-aarch64 $(EXTRA_LOAD_ARG)
 

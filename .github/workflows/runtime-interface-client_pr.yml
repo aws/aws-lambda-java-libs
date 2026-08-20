@@ -19,8 +19,17 @@ permissions:
 
 jobs:
 
-  smoke-test:
-    runs-on: ubuntu-latest
+  smoke-test-arch:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    name: "smoke-test (${{ matrix.arch }})"
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -39,14 +48,23 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
-    - name: Runtime Interface Client smoke tests - Run 'pr' target
+    - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr
+      run: make pr-${{ matrix.arch }}
       env:
         IS_JAVA_8: true
 
-  build:
-    runs-on: ubuntu-latest
+  build-arch:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    name: "build (${{ matrix.arch }})"
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -56,18 +74,12 @@ jobs:
         java-version: 8
         distribution: corretto
         cache: maven
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       with:
         install: true
 
-    - name: Available buildx platforms
-      run: echo ${{ steps.buildx.outputs.platforms }}
-
     - name: Build and install core dependency locally
       working-directory: ./aws-lambda-java-core
       run: mvn clean install
@@ -76,16 +88,16 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
-    - name: Test Runtime Interface Client xplatform build - Run 'build' target
+    - name: Test Runtime Interface Client build - Run 'build-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make build
+      run: make build-${{ matrix.arch }}
       env:
         IS_JAVA_8: true
 
     - name: Save the built jar
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
-        name: aws-lambda-java-runtime-interface-client
+        name: aws-lambda-java-runtime-interface-client-${{ matrix.arch }}
         path: ./aws-lambda-java-runtime-interface-client/target/aws-lambda-java-runtime-interface-client-*.jar
 
     - name: Upload coverage to Codecov
@@ -136,3 +148,26 @@ jobs:
       run: make test-integ BUILDSPEC=test/integration/codebuild/${{ matrix.buildspec }}
       env:
         PLATFORM_FILTER: ${{ matrix.arch.platform }}
+  smoke-test:
+    needs: smoke-test-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check smoke-test results
+        run: |
+          if [ "${{ needs.smoke-test-arch.result }}" != "success" ]; then
+            echo "Smoke tests failed on one or more architectures"
+            exit 1
+          fi
+
+  build:
+    needs: build-arch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build results
+        run: |
+          if [ "${{ needs.build-arch.result }}" != "success" ]; then
+            echo "Build failed on one or more architectures"
+            exit 1
+          fi

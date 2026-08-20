@@ -175,10 +175,15 @@ else
   declare -a ARCHITECTURES=("x86_64" "aarch_64")
   declare -a LIBC_IMPLS=("glibc" "musl")
 
+  host_arch="$(arch)"
+  case "${host_arch}" in
+    aarch64|arm64) host_arch="aarch_64" ;;
+  esac
+
   for arch in "${ARCHITECTURES[@]}"; do
 
-      if [[ "${MULTI_ARCH}" != "true" ]] && [[ "$(arch)" != "${arch}" ]]; then
-          echo "multi arch build not requested and host arch is $(arch), so skipping ${arch}..."
+      if [[ "${MULTI_ARCH}" != "true" ]] && [[ "${host_arch}" != "${arch}" ]]; then
+          echo "multi arch build not requested and host arch is ${host_arch}, so skipping ${arch}..."
           continue
       fi
 

@@ -1,0 +1,297 @@
+name: Release to Maven Central
+
+# Builds, tests, and publishes a module to Maven Central in one environment.
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Module to release (directory name, e.g. aws-lambda-java-log4j2)'
+        required: true
+        type: choice
+        # aws-lambda-java-runtime-interface-client is intentionally excluded: it
+        # ships a cross-compiled JNI native library and has its own dedicated
+        # pipeline, .github/workflows/release-runtime-interface-client.yml.
+        options:
+          - aws-lambda-java-core
+          - aws-lambda-java-events
+          - aws-lambda-java-events-sdk-transformer
+          - aws-lambda-java-log4j2
+          - aws-lambda-java-serialization
+          - aws-lambda-java-tests
+      releaseVersion:
+        description: 'Release version override (optional; defaults to the POM version without -SNAPSHOT)'
+        required: false
+        type: string
+      developmentVersion:
+        description: 'Next development version override (optional, must end with -SNAPSHOT)'
+        required: false
+        type: string
+      skip_publish:
+        description: 'Skip publish (dry-run validation)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   
+  id-token: write   
+
+# Serialize all releases repo-wide to avoid concurrent pushes racing on the
+# default branch. Never cancel in-flight: it could leave a half-published state.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  MODULE: ${{ github.event.inputs.module }}
+  RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
+  DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  # Batch mode + no transfer-progress spam for every Maven call (Maven 3.9+).
+  MAVEN_ARGS: "-B --no-transfer-progress"
+  AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
+
+jobs:
+  # Pre-publish gate for log4j2: deploy a real Lambda, invoke it,
+  # and assert the log line reaches CloudWatch. Binds the end-to-end validation
+  # to the publish event itself. Skipped for every other module, which are
+  # covered by their own tests (or the cross-module gate below).
+  integration-test:
+    if: ${{ github.event.inputs.module == 'aws-lambda-java-log4j2' }}
+    uses: ./.github/workflows/run-integration-test.yml
+    secrets: inherit
+
+  release:
+    needs: [integration-test]
+    # Publish when the gate passed, or when it was skipped for a non-log4j2
+    # module. A failed or cancelled gate blocks the release.
+    if: ${{ always() && (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') }}
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-x86-${{ github.run_id }}-${{ github.run_attempt }}
+    environment: Release
+    timeout-minutes: 30
+
+    steps:
+      # Manual (workflow_dispatch) releases must only run from main, never from
+      # an arbitrary branch that could carry unreviewed release logic.
+      - name: Verify release branch
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            echo "::error::Releases must run from the main branch, got '$GITHUB_REF_NAME'"
+            exit 1
+          fi
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0   # full history for tagging/pushing
+
+      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
+      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
+      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
+      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
+      # resolves per-arch (x86_64/aarch64).
+      - name: Use the runner image's preinstalled Corretto 8
+        run: |
+          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+          "$JAVA_8_HOME/bin/java" -version
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/toolchains.xml" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides><version>8</version></provides>
+              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      # Route all mvn resolution through the CodeArtifact mirror. Runs before the
+      # OIDC step (which would shadow the runner-role creds this needs) and on
+      # every path, since dependency resolution happens on dry-runs too.
+      - name: Configure Maven CodeArtifact mirror
+        uses: ./.github/actions/configure-maven-mirror
+
+      - name: Resolve and validate release version
+        uses: ./.github/actions/resolve-release-version
+        with:
+          module: ${{ env.MODULE }}
+          release-version-override: ${{ env.RELEASE_VERSION_INPUT }}
+          validate-module-dir: "true"
+
+      - name: Validate development version override
+        run: |
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" && "$DEVELOPMENT_VERSION_INPUT" != *-SNAPSHOT ]]; then
+            echo "::error::developmentVersion '$DEVELOPMENT_VERSION_INPUT' must end with -SNAPSHOT"
+            exit 1
+          fi
+          echo "::notice::Releasing $MODULE $EFFECTIVE_RELEASE_VERSION (POM currently $CURRENT_VERSION)"
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install intra-repo dependencies
+        run: |
+          # Installed so the target compiles. -DskipTests: not released here,
+          # only the target module gets the full verify gate below.
+          declare -A DEPS
+          DEPS[aws-lambda-java-core]=""
+          DEPS[aws-lambda-java-events]=""
+          DEPS[aws-lambda-java-serialization]=""
+          DEPS[aws-lambda-java-log4j2]="aws-lambda-java-core"
+          DEPS[aws-lambda-java-events-sdk-transformer]="aws-lambda-java-events"
+          DEPS[aws-lambda-java-tests]="aws-lambda-java-core aws-lambda-java-serialization aws-lambda-java-events"
+
+          DEP_LIST="${DEPS[$MODULE]}"
+          if [[ -n "$DEP_LIST" ]]; then
+            for dep in $DEP_LIST; do
+              echo "::group::Installing dependency: $dep"
+              mvn install -DskipTests --file "$dep/pom.xml"
+              echo "::endgroup::"
+            done
+          else
+            echo "::notice::No intra-repo dependencies for $MODULE"
+          fi
+
+      - name: Run tests
+        run: mvn verify --file "$MODULE/pom.xml"
+
+      # Cross-module gate: serialization has no tests in its own build, so the
+      # `mvn verify` above exercises nothing. Its behavioral coverage lives in
+      # aws-lambda-java-tests, which depends on serialization via a version
+      # property. Install the just-built serialization and run that suite
+      # against it, so we never publish serialization the suite hasn't exercised.
+      - name: Run cross-module test gate
+        run: |
+          case "$MODULE" in
+            aws-lambda-java-serialization)
+              MOD_VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file "$MODULE/pom.xml")
+              MOD_VER="${MOD_VER//[$'\r\n']/}"
+              echo "::group::Installing $MODULE $MOD_VER for the gate"
+              mvn install -DskipTests --file "$MODULE/pom.xml"
+              echo "::endgroup::"
+              echo "::notice::Gating $MODULE on aws-lambda-java-tests (aws-lambda-java-serialization.version=$MOD_VER)"
+              mvn verify -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
+              ;;
+            *)
+              echo "::notice::No cross-module test gate for $MODULE"
+              ;;
+          esac
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: ./.github/actions/configure-release-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          role-session-name: GitHubActionsMavenCentralRelease
+
+      # Fetch signing material and publish in a single step so the GPG passphrase
+      # and Sonatype token stay in this shell and never cross a $GITHUB_ENV
+      # boundary, where a later (possibly compromised) step could read them.
+      # prepare/perform aren't atomic: prepare locally, publish, push only after.
+      - name: Release (prepare locally, publish, then push)
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          # Scrub the settings.xml (contains the Sonatype token) and the keyring
+          # on exit, so no sensitive file is left on the runner even on failure.
+          MAVEN_SETTINGS="$RUNNER_TEMP/settings.xml"
+          export GNUPGHOME=$(mktemp -d)
+          trap 'rm -rf "$MAVEN_SETTINGS" "$GNUPGHOME"' EXIT
+
+          # --- Signing key + Sonatype token (shared secrets from LambdaMavenDeploy) ---
+          GPG_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/gpg-signing-key --query SecretString --output text)
+          CREDS_JSON=$(aws secretsmanager get-secret-value --secret-id lambda-runtimes/java/maven-sonatype-creds --query SecretString --output text)
+          GPG_PRIVATE_KEY=$(jq -r '.private' <<< "$GPG_JSON")
+          GPG_PASSPHRASE=$(jq -r '.passphrase' <<< "$GPG_JSON")
+          SONATYPE_USERNAME=$(jq -r '."maven-central-login"' <<< "$CREDS_JSON")
+          SONATYPE_PASSWORD=$(jq -r '."maven-central-password"' <<< "$CREDS_JSON")
+          echo "::add-mask::$GPG_PASSPHRASE"
+          echo "::add-mask::$SONATYPE_USERNAME"
+          echo "::add-mask::$SONATYPE_PASSWORD"
+
+          # Import the key with loopback pinentry so Maven can sign non-interactively.
+          chmod 700 "$GNUPGHOME"
+          echo "allow-loopback-pinentry" > "$GNUPGHOME/gpg-agent.conf"
+          echo "pinentry-mode loopback" > "$GNUPGHOME/gpg.conf"
+          gpgconf --kill gpg-agent || true
+          gpg --batch --import <<< "$GPG_PRIVATE_KEY"
+          GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+
+          # Global settings holding only the Sonatype "central" server for upload.
+          # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
+          # mirror in ~/.m2/settings.xml (user) that the mirror step wrote: deps
+          # resolve through the mirror, upload goes to central, and the mirror
+          # token stays in that user file instead of being re-passed here.
+          {
+            echo '<settings><servers><server>'
+            echo "<id>central</id>"
+            echo "<username>${SONATYPE_USERNAME}</username>"
+            echo "<password>${SONATYPE_PASSWORD}</password>"
+            echo '</server></servers></settings>'
+          } > "$MAVEN_SETTINGS"
+
+          # --- Release: build args as an array so each value is a single,
+          # properly quoted argument (no word-splitting of untrusted input). ---
+          RELEASE_ARGS=(-DreleaseVersion="$EFFECTIVE_RELEASE_VERSION")
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" ]]; then
+            RELEASE_ARGS+=(-DdevelopmentVersion="$DEVELOPMENT_VERSION_INPUT")
+          fi
+
+          # Prepare locally (no push): release commits + tag.
+          mvn release:prepare -DpushChanges=false "${RELEASE_ARGS[@]}" --file "$MODULE/pom.xml"
+
+          # perform forks a fresh build. Pass the Sonatype creds as GLOBAL
+          # settings (-gs) so the fork still auto-reads ~/.m2/settings.xml (the
+          # mirror) and merges the two.
+          mvn release:perform -DlocalCheckout=true \
+            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
+            --file "$MODULE/pom.xml"
+
+          # Push commits + tag atomically, only after publish succeeded.
+          git push --atomic origin \
+            "HEAD:${GITHUB_REF_NAME}" \
+            "refs/tags/${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+
+      - name: Dry-run release (prepare only, no publish)
+        if: ${{ github.event.inputs.skip_publish == 'true' }}
+        run: |
+          RELEASE_ARGS=(-DreleaseVersion="$EFFECTIVE_RELEASE_VERSION")
+          if [[ -n "$DEVELOPMENT_VERSION_INPUT" ]]; then
+            RELEASE_ARGS+=(-DdevelopmentVersion="$DEVELOPMENT_VERSION_INPUT")
+          fi
+          mvn release:prepare -DdryRun=true "${RELEASE_ARGS[@]}" --file "$MODULE/pom.xml"
+          mvn release:clean --file "$MODULE/pom.xml" || true
+
+      # Nothing was pushed, so this only cleans the runner for a retry.
+      - name: Roll back release on failure
+        if: ${{ failure() && github.event.inputs.skip_publish != 'true' }}
+        run: |
+          mvn release:rollback --file "$MODULE/pom.xml" || true
+          mvn release:clean --file "$MODULE/pom.xml" || true
+          git tag -d "${MODULE}-${EFFECTIVE_RELEASE_VERSION}" 2>/dev/null || true
+          echo "::warning::Release failed before publish completed. The remote was not modified; the runner state has been rolled back. Safe to retry."
+
+      - name: Summary
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          TAG_NAME="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Module | \`$MODULE\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`$EFFECTIVE_RELEASE_VERSION\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | \`$TAG_NAME\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Maven Central | [com.amazonaws:$MODULE:$EFFECTIVE_RELEASE_VERSION](https://central.sonatype.com/artifact/com.amazonaws/$MODULE/$EFFECTIVE_RELEASE_VERSION) |" >> $GITHUB_STEP_SUMMARY
+
+      # Symmetry with the publish step's in-shell scrub: remove the user settings
+      # holding the CodeArtifact mirror token. Last step, after the mvn-using
+      # rollback path, so nothing still needs it. The runner is ephemeral, so
+      # this is defence-in-depth, not load-bearing.
+      - name: Scrub Maven settings
+        if: always()
+        run: rm -f "$HOME/.m2/settings.xml"

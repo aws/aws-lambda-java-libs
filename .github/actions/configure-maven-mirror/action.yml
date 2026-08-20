@@ -1,0 +1,42 @@
+name: Configure Maven CodeArtifact mirror
+description: Configure Maven to resolve dependencies through the release CodeArtifact repository.
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        CA_DOMAIN=aws-lambda
+        CA_REPO=maven-central-store
+
+        # Uses the ambient region and caller account.
+        TOKEN=$(aws codeartifact get-authorization-token \
+          --domain "$CA_DOMAIN" --query authorizationToken --output text)
+        echo "::add-mask::$TOKEN"
+
+        CA_URL=$(aws codeartifact get-repository-endpoint \
+          --domain "$CA_DOMAIN" --repository "$CA_REPO" --format maven \
+          --query repositoryEndpoint --output text)
+
+        # <mirrorOf>*</mirrorOf> routes all resolution through the mirror;
+        # deployment uses distributionManagement and is unaffected.
+        mkdir -p "$HOME/.m2"
+        cat > "$HOME/.m2/settings.xml" <<EOF
+        <settings>
+          <servers>
+            <server>
+              <id>codeartifact-mirror</id>
+              <username>aws</username>
+              <password>${TOKEN}</password>
+            </server>
+          </servers>
+          <mirrors>
+            <mirror>
+              <id>codeartifact-mirror</id>
+              <name>release CodeArtifact Maven Central proxy</name>
+              <url>${CA_URL}</url>
+              <mirrorOf>*</mirrorOf>
+            </mirror>
+          </mirrors>
+        </settings>
+        EOF

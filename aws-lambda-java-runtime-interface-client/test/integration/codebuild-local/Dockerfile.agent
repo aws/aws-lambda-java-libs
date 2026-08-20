@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
 
 # Install docker and buildx extension.

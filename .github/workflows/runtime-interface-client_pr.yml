@@ -106,7 +106,7 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  integration-test:
+  integration-test-matrix:
     runs-on: ${{ matrix.arch.runner }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
@@ -148,6 +148,19 @@ jobs:
       run: make test-integ BUILDSPEC=test/integration/codebuild/${{ matrix.buildspec }}
       env:
         PLATFORM_FILTER: ${{ matrix.arch.platform }}
+
+  integration-test:
+    needs: integration-test-matrix
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check integration-test results
+        run: |
+          if [ "${{ needs.integration-test-matrix.result }}" != "success" ]; then
+            echo "Integration tests failed on one or more OS/arch combinations"
+            exit 1
+          fi
+
   smoke-test:
     needs: smoke-test-arch
     if: always()

@@ -118,10 +118,17 @@ else
   declare -a ARCHITECTURES=("x86_64" "aarch_64")
   declare -a LIBC_IMPLS=("glibc" "musl")
 
+  # `arch` reports the host as `aarch64`, but we use Maven's classifier
+  # spelling `aarch_64` in ARCHITECTURES, so normalize before comparing.
+  host_arch=$(arch)
+  if [ "${host_arch}" == "aarch64" ]; then
+      host_arch="aarch_64"
+  fi
+
   for arch in "${ARCHITECTURES[@]}"; do
 
-      if [[ "${MULTI_ARCH}" != "true" ]] && [[ "$(arch)" != "${arch}" ]]; then
-          echo "multi arch build not requested and host arch is $(arch), so skipping ${arch}..."
+      if [[ "${MULTI_ARCH}" != "true" ]] && [[ "${host_arch}" != "${arch}" ]]; then
+          echo "multi arch build not requested and host arch is ${host_arch}, so skipping ${arch}..."
           continue
       fi
 

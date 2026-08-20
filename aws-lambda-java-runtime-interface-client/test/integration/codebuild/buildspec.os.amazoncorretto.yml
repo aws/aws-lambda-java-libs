@@ -44,7 +44,7 @@ phases:
       # Install serialization (dependency of RIC)
       - (cd aws-lambda-java-core && mvn install)
       - (cd aws-lambda-java-serialization && mvn install)
-      - (cd aws-lambda-java-runtime-interface-client && mvn install -DargLineForReflectionTestOnly="")
+      - (cd aws-lambda-java-runtime-interface-client && mvn install -DmultiArch=false -DargLineForReflectionTestOnly="")
       - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install)
       - export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
       - echo "Extracting and including Runtime Interface Emulator"

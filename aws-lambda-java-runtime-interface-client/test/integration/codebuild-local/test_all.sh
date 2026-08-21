@@ -5,12 +5,16 @@ set -euo pipefail
 
 CODEBUILD_IMAGE_TAG="${CODEBUILD_IMAGE_TAG:-al2/x86_64/standard/3.0}"
 DRYRUN="${DRYRUN-0}"
+# When set, only the matching platform from each buildspec is run. Used by CI to
+# run each architecture on its own native runner instead of emulating via QEMU.
+PLATFORM_FILTER="${PLATFORM_FILTER-}"
 
 function usage {
-    echo "usage: test_all.sh buildspec_yml_dir"
+    echo "usage: test_all.sh buildspec_yml_dir_or_file"
     echo "Runs all buildspec build-matrix combinations via test_one.sh."
     echo "Required:"
-    echo "  buildspec_yml_dir      Used to specify the CodeBuild buildspec template file."
+    echo "  buildspec_yml_dir_or_file   A directory of buildspec templates (runs every *.yml),"
+    echo "                              or a single buildspec .yml file."
 }
 
 do_one_yaml() {
@@ -20,6 +24,10 @@ do_one_yaml() {
     DISTRO_VERSIONS=$(sed '1,/DISTRO_VERSION/d;/RUNTIME_VERSION/,$d' "$YML" | tr -d '\-" ')
     RUNTIME_VERSIONS=$(sed '1,/RUNTIME_VERSION/d;/PLATFORM/,$d' "$YML" | sed '/#.*$/d' |  tr -d '\-" ')
     PLATFORMS=$(sed '1,/PLATFORM/d;/phases/,$d' "$YML" |  tr -d '\-" ')
+
+    if [ -n "$PLATFORM_FILTER" ]; then
+        PLATFORMS="$PLATFORM_FILTER"
+    fi
 
     for DISTRO_VERSION in $DISTRO_VERSIONS; do
       for RUNTIME_VERSION in $RUNTIME_VERSIONS; do
@@ -56,9 +64,16 @@ main() {
         usage
         exit 1
     fi
-    BUILDSPEC_YML_DIR="$1"
+    BUILDSPEC_YML_PATH="$1"
+
+    # Allow passing a single buildspec file so CI can parallelize per OS.
+    if [ -f "$BUILDSPEC_YML_PATH" ]; then
+        do_one_yaml "$BUILDSPEC_YML_PATH"
+        return
+    fi
+
     HAS_YML=0
-    for f in "$BUILDSPEC_YML_DIR"/*.yml ; do
+    for f in "$BUILDSPEC_YML_PATH"/*.yml ; do
         [ -f "$f" ] || continue;
         do_one_yaml "$f"
         HAS_YML=1

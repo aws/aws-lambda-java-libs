@@ -11,7 +11,7 @@ You can include this package in your preferred base image to make that base imag
 
 ### Creating a Docker Image for Lambda with the Runtime Interface Client
 
-Choose a preferred base image. The Runtime Interface Client is tested on Amazon Linux, Alpine, Ubuntu, Debian, and CentOS. The requirements are that the image is:
+Choose a preferred base image. The Runtime Interface Client is tested on Amazon Linux, Alpine, Ubuntu, and Debian. The requirements are that the image is:
 
 * built for x86_64 and ARM64
 * contains Java >= 8

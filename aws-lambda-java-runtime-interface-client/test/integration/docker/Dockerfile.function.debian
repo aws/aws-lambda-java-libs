@@ -3,9 +3,9 @@ ARG DISTRO_VERSION
 FROM public.ecr.aws/debian/debian:${DISTRO_VERSION} as build-image
 
 RUN apt-get update && \
-    apt-get install -y wget gpg software-properties-common && \
-    wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
-    add-apt-repository 'deb https://apt.corretto.aws stable main' && \
+    apt-get install -y wget gnupg ca-certificates && \
+    wget -O- https://apt.corretto.aws/corretto.key | gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main" > /etc/apt/sources.list.d/corretto.list && \
     apt-get update && \
     apt-get install -y java-11-amazon-corretto-jdk
 

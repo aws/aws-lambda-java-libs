@@ -16,8 +16,8 @@ batch:
       env:
         variables:
           DISTRO_VERSION:
-            - "buster"
-            - "bullseye"
+            - "bookworm"
+            - "trixie"
           RUNTIME_VERSION:
             - "corretto11"
           PLATFORM:
@@ -44,7 +44,7 @@ phases:
       # Install serialization (dependency of RIC)
       - (cd aws-lambda-java-core && mvn install)
       - (cd aws-lambda-java-serialization && mvn install)
-      - (cd aws-lambda-java-runtime-interface-client && mvn install)
+      - (cd aws-lambda-java-runtime-interface-client && mvn install -DargLineForReflectionTestOnly="")
       - (cd aws-lambda-java-runtime-interface-client/test/integration/test-handler && mvn install)
       - export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
       - echo "Extracting and including Runtime Interface Emulator"
@@ -71,7 +71,7 @@ phases:
           "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
       - echo "Building image ${IMAGE_TAG}"
       - >
-        docker build . \
+        aws-lambda-java-runtime-interface-client/test/integration/codebuild-local/docker-retry.sh docker build . \
           -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
           -t "${IMAGE_TAG}" \
           --platform="${PLATFORM}" \

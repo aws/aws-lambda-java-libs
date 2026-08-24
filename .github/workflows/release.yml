@@ -34,8 +34,9 @@ on:
         default: false
 
 permissions:
-  contents: write   
-  id-token: write   
+  contents: write        # push the release tag and the version-bump branch
+  id-token: write        # OIDC for the Maven Central release role
+  pull-requests: write   # open the post-release version-bump PR into main
 
 # Serialize all releases repo-wide to avoid concurrent pushes racing on the
 # default branch. Never cancel in-flight: it could leave a half-published state.
@@ -251,10 +252,26 @@ jobs:
             -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
             --file "$MODULE/pom.xml"
 
-          # Push commits + tag atomically, only after publish succeeded.
-          git push --atomic origin \
-            "HEAD:${GITHUB_REF_NAME}" \
-            "refs/tags/${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+      # main is protected (no direct push), so push the tag and open a PR for
+      # the version-bump commits instead. Skipping this would leave the POM on
+      # the just-released -SNAPSHOT.
+      - name: Push release tag and open version-bump PR
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+          RELEASE_BRANCH="release/${TAG}"
+
+          # Tag push isn't gated by branch protection; commits go via a PR.
+          git push origin "refs/tags/${TAG}"
+          git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
+
+          gh pr create \
+            --base "${GITHUB_REF_NAME}" \
+            --head "${RELEASE_BRANCH}" \
+            --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
+            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG} pushed)."
 
       - name: Dry-run release (prepare only, no publish)
         if: ${{ github.event.inputs.skip_publish == 'true' }}

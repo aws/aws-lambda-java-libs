@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
-    <version>1.6.5-SNAPSHOT</version>
+    <version>1.6.5</version>
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Log4j 2.x Libraries</name>
@@ -24,7 +22,7 @@
         <url>https://github.com/aws/aws-lambda-java-libs.git</url>
         <connection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>aws-lambda-java-log4j2-1.6.5</tag>
     </scm>
     <developers>
         <developer>

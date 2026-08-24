@@ -27,6 +27,10 @@ on:
         description: 'Next development version override (optional, must end with -SNAPSHOT)'
         required: false
         type: string
+      changelogEntry:
+        description: 'Changelog entry (Markdown bullets, e.g. "- Fix X"). Prepended to the module RELEASE.CHANGELOG.md in the version-bump PR and used as the GitHub Release notes. Required.'
+        required: true
+        type: string
       skip_publish:
         description: 'Skip publish (dry-run validation)'
         required: false
@@ -48,6 +52,7 @@ env:
   MODULE: ${{ github.event.inputs.module }}
   RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
   DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  CHANGELOG_ENTRY_INPUT: ${{ github.event.inputs.changelogEntry }}
   # Batch mode + no transfer-progress spam for every Maven call (Maven 3.9+).
   MAVEN_ARGS: "-B --no-transfer-progress"
   AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
@@ -252,6 +257,34 @@ jobs:
             -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
             --file "$MODULE/pom.xml"
 
+      # Bump the lastPublished comment under <version>; rides in the bump PR.
+      - name: Record last published version in POM
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          if ! grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
+            echo "::notice::$MODULE has no lastPublished comment; skipping"
+            exit 0
+          fi
+          sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release.yml) -->|" "$MODULE/pom.xml"
+          git commit -am "chore(release): record ${MODULE} lastPublished=${EFFECTIVE_RELEASE_VERSION}"
+
+      # Prepend the changelog entry so it ships in the version-bump PR. Passed
+      # via env, never interpolated into the script, so it can't inject shell.
+      - name: Prepend changelog entry
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          CHANGELOG="$MODULE/RELEASE.CHANGELOG.md"
+          TMP="$(mktemp)"
+          {
+            echo "### $(date +'%B %d, %Y')"
+            echo "\`${EFFECTIVE_RELEASE_VERSION}\`:"
+            printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
+            [ -f "$CHANGELOG" ] && cat "$CHANGELOG"
+          } > "$TMP"
+          mv "$TMP" "$CHANGELOG"
+          git add "$CHANGELOG"
+          git commit -m "docs(release): add ${MODULE} ${EFFECTIVE_RELEASE_VERSION} changelog entry"
+
       # main is protected (no direct push), so push the tag and open a PR for
       # the version-bump commits instead. Skipping this would leave the POM on
       # the just-released -SNAPSHOT.
@@ -272,6 +305,22 @@ jobs:
             --head "${RELEASE_BRANCH}" \
             --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
             --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG} pushed)."
+
+      # GitHub Release on the pushed tag: changelog entry + Central link.
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
+          NOTES="$(mktemp)"
+          {
+            printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
+            echo "Published to Maven Central: https://central.sonatype.com/artifact/com.amazonaws/${MODULE}/${EFFECTIVE_RELEASE_VERSION}"
+          } > "$NOTES"
+          gh release create "$TAG" \
+            --title "${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
+            --notes-file "$NOTES"
 
       - name: Dry-run release (prepare only, no publish)
         if: ${{ github.event.inputs.skip_publish == 'true' }}

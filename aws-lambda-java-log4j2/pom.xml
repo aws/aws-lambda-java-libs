@@ -6,6 +6,7 @@
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-log4j2</artifactId>
     <version>1.6.5-SNAPSHOT</version>
+    <!-- lastPublished: 1.6.4 (auto-updated by release.yml) -->
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Log4j 2.x Libraries</name>

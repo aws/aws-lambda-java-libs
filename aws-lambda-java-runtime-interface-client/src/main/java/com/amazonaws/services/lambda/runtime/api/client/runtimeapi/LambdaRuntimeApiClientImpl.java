@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,8 +176,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     private int doPost(String endpoint,
                        Map<String, String> headers,
                        byte[] payload) throws IOException {
-        URL url = createUrl(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = createConnection(endpoint);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", DEFAULT_CONTENT_TYPE);
         conn.setRequestProperty("User-Agent", USER_AGENT);
@@ -201,8 +201,7 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     private int doGet(String endpoint) throws IOException {
-        URL url = createUrl(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = createConnection(endpoint);
         conn.setRequestMethod("GET");
         conn.setRequestProperty("User-Agent", USER_AGENT);
 
@@ -210,6 +209,15 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
         closeInputStreamQuietly(conn);
 
         return responseCode;
+    }
+
+    /**
+     * Opens a direct connection to the given endpoint, bypassing any
+     * customer-configured proxy.
+     */
+    private HttpURLConnection createConnection(String endpoint) throws IOException {
+        URL url = createUrl(endpoint);
+        return (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
     }
 
     private URL createUrl(String endpoint) {

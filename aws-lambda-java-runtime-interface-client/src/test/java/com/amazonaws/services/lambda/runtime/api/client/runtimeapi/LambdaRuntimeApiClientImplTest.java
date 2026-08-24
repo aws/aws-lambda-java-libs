@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -22,12 +24,17 @@ import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.StackElem
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayErrorCause;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.XRayException;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -531,6 +538,75 @@ public class LambdaRuntimeApiClientImplTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    @ResourceLock(Resources.SYSTEM_PROPERTIES)
+    public void connectionBypassesConfiguredProxy() throws Exception {
+        // Bind RAPID mock to a non-loopback IPv4 so Java's ProxySelector doesn't
+        // auto-exempt it. On loopback (127.0.0.1), the JVM skips proxy regardless.
+        InetAddress nonLoopback = findNonLoopbackIPv4();
+        assumeTrue(nonLoopback != null, "No non-loopback IPv4 address available for proxy-bypass test");
+
+        MockWebServer nonLoopbackServer = new MockWebServer();
+        nonLoopbackServer.start(nonLoopback, 0);
+
+        MockWebServer fakeProxy = new MockWebServer();
+        fakeProxy.start();
+        // Enqueue a response so if proxy is used, the test fails fast instead of hanging indefinitely.
+        fakeProxy.enqueue(new MockResponse().setResponseCode(HTTP_ACCEPTED));
+
+        String previousProxyHost = System.getProperty("http.proxyHost");
+        String previousProxyPort = System.getProperty("http.proxyPort");
+
+        System.setProperty("http.proxyHost", fakeProxy.getHostName());
+        System.setProperty("http.proxyPort", String.valueOf(fakeProxy.getPort()));
+
+        try {
+            MockResponse mockResponse = new MockResponse();
+            mockResponse.setResponseCode(HTTP_ACCEPTED);
+            nonLoopbackServer.enqueue(mockResponse);
+
+            String endpoint = "http://" + nonLoopback.getHostAddress() + ":" + nonLoopbackServer.getPort();
+            LambdaError lambdaError = new LambdaError(errorRequest, RapidErrorType.AfterRestoreError);
+            lambdaRuntimeApiClientImpl.reportLambdaError(endpoint, lambdaError, 1024 * 1024, null);
+
+            // Request arrived at RAPID mock directly
+            assertEquals(1, nonLoopbackServer.getRequestCount());
+            // Nothing went to the fake proxy
+            assertEquals(0, fakeProxy.getRequestCount());
+        } finally {
+            if (previousProxyHost != null) {
+                System.setProperty("http.proxyHost", previousProxyHost);
+            } else {
+                System.clearProperty("http.proxyHost");
+            }
+            if (previousProxyPort != null) {
+                System.setProperty("http.proxyPort", previousProxyPort);
+            } else {
+                System.clearProperty("http.proxyPort");
+            }
+            nonLoopbackServer.shutdown();
+            fakeProxy.shutdown();
+        }
+    }
+
+    private InetAddress findNonLoopbackIPv4() throws Exception {
+        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = ifaces.nextElement();
+            if (!iface.isUp() || iface.isLoopback() || iface.isVirtual()) {
+                continue;
+            }
+            Enumeration<InetAddress> addrs = iface.getInetAddresses();
+            while (addrs.hasMoreElements()) {
+                InetAddress addr = addrs.nextElement();
+                if (addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress()) {
+                    return addr;
+                }
+            }
+        }
+        return null;
     }
 
     private String getHostnamePort() {

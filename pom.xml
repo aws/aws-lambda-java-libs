@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-libs-parent</artifactId>
+    <!-- Non-SNAPSHOT so release:prepare accepts it; never published. -->
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>AWS Lambda Java Libs Parent</name>
+    <description>
+        Build-time-only parent that centralizes internal module versions.
+    </description>
+    <url>https://aws.amazon.com/lambda/</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://aws.amazon.com/apache2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/aws/aws-lambda-java-libs.git</url>
+        <connection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <name>AWS Lambda team</name>
+            <organization>Amazon Web Services</organization>
+            <organizationUrl>https://aws.amazon.com/</organizationUrl>
+        </developer>
+    </developers>
+
+    <!-- Version map: one version per artifact. -->
+    <properties>
+        <lambda.core.version>1.4.0</lambda.core.version>
+        <lambda.events.version>3.16.1</lambda.events.version>
+        <lambda.serialization.version>1.4.1</lambda.serialization.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-lambda-java-core</artifactId>
+                <version>${lambda.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-lambda-java-events</artifactId>
+                <version>${lambda.events.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-lambda-java-serialization</artifactId>
+                <version>${lambda.serialization.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- Flatten each child's POM: strip the parent and inline versions, so this
+         parent never needs publishing. -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

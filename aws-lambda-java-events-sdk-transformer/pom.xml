@@ -3,7 +3,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.amazonaws</groupId>
+  <parent>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-libs-parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
   <version>3.1.2-SNAPSHOT</version>
   <!-- lastPublished: 3.1.1 (auto-updated by release.yml) -->
@@ -69,7 +75,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.16.1</version>
+      <!-- version managed by parent -->
       <scope>provided</scope>
     </dependency>
 

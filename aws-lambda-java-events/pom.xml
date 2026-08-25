@@ -3,6 +3,13 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-libs-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-events</artifactId>
     <version>3.16.2-SNAPSHOT</version>

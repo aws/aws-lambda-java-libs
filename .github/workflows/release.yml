@@ -167,9 +167,9 @@ jobs:
 
       # Cross-module gate: serialization has no tests in its own build, so the
       # `mvn verify` above exercises nothing. Its behavioral coverage lives in
-      # aws-lambda-java-tests, which depends on serialization via a version
-      # property. Install the just-built serialization and run that suite
-      # against it, so we never publish serialization the suite hasn't exercised.
+      # aws-lambda-java-tests, which depends on it via the parent version map.
+      # Install the just-built serialization and run that suite against it, so
+      # we never publish serialization the suite hasn't exercised.
       - name: Run cross-module test gate
         run: |
           case "$MODULE" in
@@ -179,8 +179,10 @@ jobs:
               echo "::group::Installing $MODULE $MOD_VER for the gate"
               mvn install -DskipTests --file "$MODULE/pom.xml"
               echo "::endgroup::"
-              echo "::notice::Gating $MODULE on aws-lambda-java-tests (aws-lambda-java-serialization.version=$MOD_VER)"
-              mvn verify -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
+              echo "::notice::Gating $MODULE on aws-lambda-java-tests (lambda.serialization.version=$MOD_VER)"
+              # Override the map property so the suite runs against the
+              # just-built serialization, not the version pinned in the map.
+              mvn verify -Dlambda.serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
               ;;
             *)
               echo "::notice::No cross-module test gate for $MODULE"
@@ -257,16 +259,44 @@ jobs:
             -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
             --file "$MODULE/pom.xml"
 
-      # Bump the lastPublished comment under <version>; rides in the bump PR.
-      - name: Record last published version in POM
+      # Record the published version in the two places that track it, from the
+      # same EFFECTIVE_RELEASE_VERSION in one commit so they can't drift:
+      # (1) the module's lastPublished comment (informational, every module) and
+      # (2) the parent version map (functional, only for modules others depend
+      # on). Rides in the version-bump PR below (main is protected).
+      - name: Record released version (POM lastPublished + parent version map)
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         run: |
-          if ! grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
-            echo "::notice::$MODULE has no lastPublished comment; skipping"
-            exit 0
+          # (1) Module's lastPublished annotation.
+          if grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
+            sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release.yml) -->|" "$MODULE/pom.xml"
+            git add "$MODULE/pom.xml"
+          else
+            echo "::notice::$MODULE has no lastPublished comment; skipping annotation"
           fi
-          sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release.yml) -->|" "$MODULE/pom.xml"
-          git commit -am "chore(release): record ${MODULE} lastPublished=${EFFECTIVE_RELEASE_VERSION}"
+
+          # (2) Parent version map — keyed only for modules other modules depend on.
+          case "$MODULE" in
+            aws-lambda-java-core)          PROP=lambda.core.version ;;
+            aws-lambda-java-events)        PROP=lambda.events.version ;;
+            aws-lambda-java-serialization) PROP=lambda.serialization.version ;;
+            *)                             PROP="" ;;
+          esac
+          if [ -n "$PROP" ]; then
+            PROP_RE="${PROP//./\\.}"
+            sed -i.bak -E "s|(<${PROP_RE}>)[^<]*(</${PROP_RE}>)|\1${EFFECTIVE_RELEASE_VERSION}\2|" pom.xml
+            rm -f pom.xml.bak
+            git add pom.xml
+          else
+            echo "::notice::$MODULE has no internal consumers; version map unchanged"
+          fi
+
+          # One commit for both records, or nothing if neither changed.
+          if git diff --cached --quiet; then
+            echo "::notice::$MODULE already recorded at ${EFFECTIVE_RELEASE_VERSION}; nothing to commit"
+          else
+            git commit -m "chore(release): record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (lastPublished + version map)"
+          fi
 
       # Prepend the changelog entry so it ships in the version-bump PR. Passed
       # via env, never interpolated into the script, so it can't inject shell.

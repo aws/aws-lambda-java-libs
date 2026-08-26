@@ -89,8 +89,57 @@ jobs:
         ENABLE_SNAPSHOT: ${{ secrets.ENABLE_SNAPSHOT }}
       run: make publish
 
+  # Coverage is measured on both native architectures (x86_64 and aarch64) so
+  # the coverage recorded for a merge to main matches what the PR build recorded
+  # (the union of both archs). Uploading a single x86_64 report here previously
+  # made every merge commit look ~0.4% lower than its own PR base, failing the
+  # codecov/project status on identical code.
+  coverage:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    name: "coverage (${{ matrix.arch }})"
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+      with:
+        java-version: 8
+        distribution: corretto
+        cache: maven
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      with:
+        install: true
+
+    - name: Build and install core dependency locally
+      working-directory: ./aws-lambda-java-core
+      run: mvn clean install
+
+    - name: Build and install serialization dependency locally
+      working-directory: ./aws-lambda-java-serialization
+      run: mvn clean install
+
+    - name: Build Runtime Interface Client - Run 'build-${{ matrix.arch }}' target
+      working-directory: ./aws-lambda-java-runtime-interface-client
+      run: make build-${{ matrix.arch }}
+      env:
+        IS_JAVA_8: true
+
     - name: Upload coverage to Codecov
       if: env.CODECOV_TOKEN != null
       uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5
+      with:
+        files: ./aws-lambda-java-runtime-interface-client/target/site/jacoco/jacoco.xml
+        flags: ${{ matrix.arch }}
+        disable_search: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

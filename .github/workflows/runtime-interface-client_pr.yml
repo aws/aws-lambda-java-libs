@@ -1,6 +1,7 @@
-# This workflow will be triggered if there will be changes to
-# aws-lambda-java-runtime-interface-client package or its dependencies (core, serialization),
-# and it builds the package.
+# This workflow builds and tests the aws-lambda-java-runtime-interface-client package.
+# It runs on every pull request (no path filter) so that the smoke-test and
+# integration-test required status checks always report a result and never get
+# stuck "pending" on PRs that don't touch the RIC/core/serialization paths.
 
 name: PR to runtime-interface-client
 
@@ -8,11 +9,6 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [ '*' ]
-    paths:
-      - 'aws-lambda-java-runtime-interface-client/**'
-      - 'aws-lambda-java-core/**'
-      - 'aws-lambda-java-serialization/**'
-      - '.github/workflows/runtime-interface-client_*.yml'
 
 permissions:
   contents: read

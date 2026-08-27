@@ -99,6 +99,10 @@ jobs:
     - name: Upload coverage to Codecov
       if: env.CODECOV_TOKEN != null
       uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5
+      with:
+        files: ./aws-lambda-java-runtime-interface-client/target/site/jacoco/jacoco.xml
+        flags: ${{ matrix.arch }}
+        disable_search: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

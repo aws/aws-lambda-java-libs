@@ -1,0 +1,17 @@
+# Codecov config. Coverage comes from the RIC package (JaCoCo), measured on x86_64 and aarch64.
+#
+# threshold 1%: PRs upload the union of both archs while merges to main can land a
+# single-arch report, so identical code can differ <1%. The tolerance avoids failing
+# merges on that measurement noise. patch is off; project coverage is the gate.
+# carryforward keeps a flag's last value when a commit doesn't re-upload it.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch: off
+
+flag_management:
+  default_rules:
+    carryforward: true

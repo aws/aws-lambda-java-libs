@@ -275,8 +275,7 @@ jobs:
             echo "::notice::$MODULE has no lastPublished comment; skipping annotation"
           fi
 
-          # (2) Parent version map. Update the module's entry only if the parent
-          # declares one; its presence is what opts a module in. No list here.
+          # (2) Parent version map. Update the module's entry only if the parent declares one
           PROP="lambda.${MODULE#aws-lambda-java-}.version"
           if grep -qF "<${PROP}>" pom.xml; then
             PROP_RE="${PROP//./\\.}"

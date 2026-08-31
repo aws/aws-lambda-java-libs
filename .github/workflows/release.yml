@@ -275,20 +275,16 @@ jobs:
             echo "::notice::$MODULE has no lastPublished comment; skipping annotation"
           fi
 
-          # (2) Parent version map — keyed only for modules other modules depend on.
-          case "$MODULE" in
-            aws-lambda-java-core)          PROP=lambda.core.version ;;
-            aws-lambda-java-events)        PROP=lambda.events.version ;;
-            aws-lambda-java-serialization) PROP=lambda.serialization.version ;;
-            *)                             PROP="" ;;
-          esac
-          if [ -n "$PROP" ]; then
+          # (2) Parent version map. Update the module's entry only if the parent
+          # declares one; its presence is what opts a module in. No list here.
+          PROP="lambda.${MODULE#aws-lambda-java-}.version"
+          if grep -qF "<${PROP}>" pom.xml; then
             PROP_RE="${PROP//./\\.}"
             sed -i.bak -E "s|(<${PROP_RE}>)[^<]*(</${PROP_RE}>)|\1${EFFECTIVE_RELEASE_VERSION}\2|" pom.xml
             rm -f pom.xml.bak
             git add pom.xml
           else
-            echo "::notice::$MODULE has no internal consumers; version map unchanged"
+            echo "::notice::$MODULE is not consumed by other modules (no ${PROP} in parent POM); version map unchanged"
           fi
 
           # One commit for both records, or nothing if neither changed.

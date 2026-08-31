@@ -5,7 +5,7 @@
 
   <parent>
     <groupId>com.amazonaws</groupId>
-    <artifactId>aws-lambda-java-libs-parent</artifactId>
+    <artifactId>aws-lambda-java-libs</artifactId>
     <version>1.0.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -48,7 +48,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <sdk.v1.version>1.11.914</sdk.v1.version>
     <sdk.v2.version>2.15.40</sdk.v2.version>
-    <junit-jupiter.version>5.12.2</junit-jupiter.version>
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
   </properties>
 
@@ -82,7 +81,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit-jupiter.version}</version>
+      <!-- version managed by parent -->
       <scope>test</scope>
     </dependency>
   </dependencies>

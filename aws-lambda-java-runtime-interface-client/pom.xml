@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-libs-parent</artifactId>
+        <artifactId>aws-lambda-java-libs</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -47,7 +47,9 @@
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
         <maven-install-plugin.version>2.4</maven-install-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <junit-jupiter.version>5.12.2</junit-jupiter.version>
+        <!-- junit-jupiter.version inherited from parent; still referenced by the
+             surefire plugin dependency below, which dependencyManagement can't
+             manage (it only governs project dependencies, not plugin ones). -->
         <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
         <!--
@@ -87,13 +89,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
+            <!-- version managed by parent -->
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
+            <!-- version managed by parent -->
             <scope>test</scope>
         </dependency>
         <dependency>

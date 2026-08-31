@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.amazonaws</groupId>
-    <artifactId>aws-lambda-java-libs-parent</artifactId>
+    <artifactId>aws-lambda-java-libs</artifactId>
     <!-- Non-SNAPSHOT so release:prepare accepts it; never published. -->
     <version>1.0.0</version>
     <packaging>pom</packaging>
@@ -36,11 +36,11 @@
         </developer>
     </developers>
 
-    <!-- Version map: one version per artifact. -->
     <properties>
         <lambda.core.version>1.4.0</lambda.core.version>
         <lambda.events.version>3.16.1</lambda.events.version>
         <lambda.serialization.version>1.4.1</lambda.serialization.version>
+        <junit-jupiter.version>5.12.2</junit-jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -59,6 +59,16 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-lambda-java-serialization</artifactId>
                 <version>${lambda.serialization.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit-jupiter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

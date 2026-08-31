@@ -3,7 +3,7 @@
 
     <parent>
         <groupId>com.amazonaws</groupId>
-        <artifactId>aws-lambda-java-libs-parent</artifactId>
+        <artifactId>aws-lambda-java-libs</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -43,7 +43,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <log4j.version>2.25.5</log4j.version>
-        <junit-jupiter.version>5.12.2</junit-jupiter.version>
     </properties>
 
     <distributionManagement>
@@ -78,7 +77,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
+            <!-- version managed by parent -->
             <scope>test</scope>
         </dependency>
     </dependencies>

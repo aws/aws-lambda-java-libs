@@ -1,0 +1,94 @@
+name: "Create GitHub Release with signed assets"
+description: >
+  Creates a GitHub Release on an already-pushed tag. Builds the release notes
+  from the changelog entry, a Maven Central link, and GPG verification
+  instructions, then attaches the signed jars and their detached .asc
+  signatures (byte-for-byte the same signatures uploaded to Maven Central). The
+  attachment set is derived from the .asc files, so only signed, published
+  artifacts are attached (unsigned intermediates like shade's original-*.jar are
+  skipped). No re-signing happens here.
+
+inputs:
+  tag:
+    description: "Git tag the release is created on (already pushed)."
+    required: true
+  title:
+    description: "Release title."
+    required: true
+  module:
+    description: "Module artifactId (used for the Central link and verify example)."
+    required: true
+  version:
+    description: "Released version."
+    required: true
+  changelog-entry:
+    description: "Markdown changelog entry used as the lead of the release notes."
+    required: true
+  fingerprint:
+    description: "Public GPG key fingerprint, shown in the verification instructions."
+    required: true
+  artifact-dir:
+    description: >
+      Directory (searched non-recursively) holding the signed jars and their
+      .asc siblings. For release:perform this is <module>/target/checkout/target;
+      for an in-place deploy it is <module>/target.
+    required: true
+  extra-notes:
+    description: "Optional Markdown inserted between the changelog and the Central link (e.g. an artifact inventory)."
+    required: false
+    default: ""
+  github-token:
+    description: "Token for the gh CLI (typically github.token)."
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Create GitHub Release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ inputs.tag }}
+        RELEASE_TITLE: ${{ inputs.title }}
+        REL_MODULE: ${{ inputs.module }}
+        REL_VERSION: ${{ inputs.version }}
+        CHANGELOG_ENTRY: ${{ inputs.changelog-entry }}
+        GPG_FINGERPRINT: ${{ inputs.fingerprint }}
+        ARTIFACT_DIR: ${{ inputs.artifact-dir }}
+        EXTRA_NOTES: ${{ inputs.extra-notes }}
+      run: |
+        NOTES="$(mktemp)"
+        {
+          printf '%s\n\n' "$CHANGELOG_ENTRY"
+          if [ -n "$EXTRA_NOTES" ]; then
+            printf '%s\n\n' "$EXTRA_NOTES"
+          fi
+          echo "Published to Maven Central: https://central.sonatype.com/artifact/com.amazonaws/${REL_MODULE}/${REL_VERSION}"
+          echo
+          echo "## Verifying the signatures"
+          echo
+          echo "The attached \`.jar.asc\` files are the same GPG signatures published to Maven Central, made with the AWS Lambda Java release signing key."
+          echo
+          echo '```sh'
+          echo "# Import the public signing key"
+          echo "gpg --keyserver keys.openpgp.org --recv-keys ${GPG_FINGERPRINT}"
+          echo "# Verify a downloaded jar against its signature"
+          echo "gpg --verify ${REL_MODULE}-${REL_VERSION}.jar.asc ${REL_MODULE}-${REL_VERSION}.jar"
+          echo '```'
+        } > "$NOTES"
+
+        # Attach the signed jars + their detached GPG signatures. Deriving the
+        # list from the .asc set means only signed, published artifacts are
+        # attached (skips unsigned intermediates like shade's original-*.jar).
+        ASSETS=()
+        while IFS= read -r sig; do
+          ASSETS+=("${sig%.asc}" "$sig")
+        done < <(find "$ARTIFACT_DIR" -maxdepth 1 -type f -name '*.jar.asc' 2>/dev/null | sort)
+        if [ ${#ASSETS[@]} -eq 0 ]; then
+          echo "::warning::No signed jars found under $ARTIFACT_DIR; creating the release without attachments"
+        fi
+
+        gh release create "$TAG" \
+          --title "$RELEASE_TITLE" \
+          --notes-file "$NOTES" \
+          "${ASSETS[@]}"

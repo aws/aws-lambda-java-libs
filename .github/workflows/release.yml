@@ -91,27 +91,8 @@ jobs:
         with:
           fetch-depth: 0   # full history for tagging/pushing
 
-      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
-      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
-      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
-      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
-      # resolves per-arch (x86_64/aarch64).
       - name: Use the runner image's preinstalled Corretto 8
-        run: |
-          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
-          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
-          "$JAVA_8_HOME/bin/java" -version
-          mkdir -p "$HOME/.m2"
-          cat > "$HOME/.m2/toolchains.xml" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <toolchains>
-            <toolchain>
-              <type>jdk</type>
-              <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
-            </toolchain>
-          </toolchains>
-          EOF
+        uses: ./.github/actions/setup-corretto8
 
       # Route all mvn resolution through the CodeArtifact mirror. Runs before the
       # OIDC step (which would shadow the runner-role creds this needs) and on
@@ -320,47 +301,22 @@ jobs:
             --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
             --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG} pushed)."
 
-      # GitHub Release on the pushed tag: changelog entry + Central link.
+      # GitHub Release on the pushed tag: changelog + Central link + GPG verify
+      # instructions, with the signed jars and their .asc signatures attached.
+      # release:perform builds in a fresh checkout, so the signed artifacts live
+      # under <module>/target/checkout/target.
       - name: Create GitHub Release
         if: ${{ github.event.inputs.skip_publish != 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
-          NOTES="$(mktemp)"
-          {
-            printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
-            echo "Published to Maven Central: https://central.sonatype.com/artifact/com.amazonaws/${MODULE}/${EFFECTIVE_RELEASE_VERSION}"
-            echo
-            echo "## Verifying the signatures"
-            echo
-            echo "The attached \`.jar.asc\` files are the same PGP signatures published to Maven Central, made with the AWS Lambda Java release signing key."
-            echo
-            echo '```'
-            echo "# 1. Import the public signing key"
-            echo "gpg --keyserver keys.openpgp.org --recv-keys ${GPG_FINGERPRINT}"
-            echo "# 2. Verify a downloaded jar against its signature"
-            echo "gpg --verify ${MODULE}-${EFFECTIVE_RELEASE_VERSION}.jar.asc ${MODULE}-${EFFECTIVE_RELEASE_VERSION}.jar"
-            echo '```'
-          } > "$NOTES"
-
-          # Attach the signed jars and their detached PGP signatures produced by
-          # release:perform (byte-for-byte the same artifacts and .asc files
-          # Maven Central received). They live in the perform checkout's target/
-          # dir and persist past the Release step, so no re-signing is needed.
-          ARTIFACT_DIR="$MODULE/target/checkout/target"
-          ASSETS=()
-          while IFS= read -r f; do ASSETS+=("$f"); done < <(
-            find "$ARTIFACT_DIR" -maxdepth 1 -type f \( -name '*.jar' -o -name '*.jar.asc' \) 2>/dev/null | sort
-          )
-          if [ ${#ASSETS[@]} -eq 0 ]; then
-            echo "::warning::No signed jars found under $ARTIFACT_DIR; creating the release without attachments"
-          fi
-
-          gh release create "$TAG" \
-            --title "${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --notes-file "$NOTES" \
-            "${ASSETS[@]}"
+        uses: ./.github/actions/create-github-release
+        with:
+          tag: ${{ env.MODULE }}-${{ env.EFFECTIVE_RELEASE_VERSION }}
+          title: ${{ env.MODULE }} ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          module: ${{ env.MODULE }}
+          version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          changelog-entry: ${{ env.CHANGELOG_ENTRY_INPUT }}
+          fingerprint: ${{ env.GPG_FINGERPRINT }}
+          artifact-dir: ${{ env.MODULE }}/target/checkout/target
+          github-token: ${{ github.token }}
 
       - name: Dry-run release (prepare only, no publish)
         if: ${{ github.event.inputs.skip_publish == 'true' }}

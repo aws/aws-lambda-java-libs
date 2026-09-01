@@ -16,6 +16,10 @@ on:
         description: 'Next development version override (optional, must end with -SNAPSHOT)'
         required: false
         type: string
+      changelogEntry:
+        description: 'Changelog entry (Markdown bullets, e.g. "- Fix X"). Prepended to the module RELEASE.CHANGELOG.md in the version-bump PR and used as the GitHub Release notes. Required.'
+        required: true
+        type: string
       skip_publish:
         description: 'Skip publish (dry-run validation)'
         required: false
@@ -38,6 +42,7 @@ env:
   MODULE: aws-lambda-java-runtime-interface-client
   RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
   DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  CHANGELOG_ENTRY_INPUT: ${{ github.event.inputs.changelogEntry }}
   MAVEN_ARGS: "-B --no-transfer-progress"
   AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
   OIDC_ROLE_ARN: ${{ secrets.AWS_ROLE_MAVEN_RELEASE }}
@@ -75,27 +80,8 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
-      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
-      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
-      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
-      # resolves per-arch (x86_64/aarch64).
       - name: Use the runner image's preinstalled Corretto 8
-        run: |
-          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
-          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
-          "$JAVA_8_HOME/bin/java" -version
-          mkdir -p "$HOME/.m2"
-          cat > "$HOME/.m2/toolchains.xml" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <toolchains>
-            <toolchain>
-              <type>jdk</type>
-              <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
-            </toolchain>
-          </toolchains>
-          EOF
+        uses: ./.github/actions/setup-corretto8
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version, which invokes `mvn help:evaluate`. Ambient
@@ -164,27 +150,8 @@ jobs:
         with:
           fetch-depth: 0   # full history for tagging/pushing
 
-      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
-      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
-      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
-      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
-      # resolves per-arch (x86_64/aarch64).
       - name: Use the runner image's preinstalled Corretto 8
-        run: |
-          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
-          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
-          "$JAVA_8_HOME/bin/java" -version
-          mkdir -p "$HOME/.m2"
-          cat > "$HOME/.m2/toolchains.xml" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <toolchains>
-            <toolchain>
-              <type>jdk</type>
-              <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
-            </toolchain>
-          </toolchains>
-          EOF
+        uses: ./.github/actions/setup-corretto8
 
       # Route all mvn resolution through the CodeArtifact mirror. Must precede
       # resolve-release-version (which invokes `mvn help:evaluate`) and the OIDC
@@ -304,6 +271,10 @@ jobs:
           gpgconf --kill gpg-agent || true
           gpg --batch --import <<< "$GPG_PRIVATE_KEY"
           GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+          # Publish the primary key fingerprint (NOT secret) for the GitHub
+          # Release verification instructions. Only the public fingerprint
+          # crosses $GITHUB_ENV here; the passphrase and token never do.
+          echo "GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" >> "$GITHUB_ENV"
 
           # Global settings holding only the Sonatype "central" server for upload.
           # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
@@ -339,9 +310,30 @@ jobs:
           git commit -am "chore(ric): release ${EFFECTIVE_RELEASE_VERSION}"
           git tag "$TAG_NAME"
 
-          # Next development version commit.
+          # Next development version commit. Also refresh the informational
+          # lastPublished marker to the version just published (rides in the
+          # post-release commit, so the tagged release commit is untouched).
           mvn versions:set -DnewVersion="$NEXT_DEV_VERSION" -DgenerateBackupPoms=false --file "$MODULE/pom.xml"
+          if grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
+            sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release-runtime-interface-client.yml) -->|" "$MODULE/pom.xml"
+          fi
           git commit -am "chore(ric): prepare next development ${NEXT_DEV_VERSION}"
+
+          # Prepend the changelog entry so it ships in the version-bump PR (on
+          # top of the dev-version commit, after the tag, so the tag itself is
+          # unchanged). Passed via env, never interpolated into the script, so
+          # it can't inject shell.
+          CHANGELOG="$MODULE/RELEASE.CHANGELOG.md"
+          TMP="$(mktemp)"
+          {
+            echo "### $(date +'%B %d, %Y')"
+            echo "\`${EFFECTIVE_RELEASE_VERSION}\`:"
+            printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
+            [ -f "$CHANGELOG" ] && cat "$CHANGELOG"
+          } > "$TMP"
+          mv "$TMP" "$CHANGELOG"
+          git add "$CHANGELOG"
+          git commit -m "docs(release): add ${MODULE} ${EFFECTIVE_RELEASE_VERSION} changelog entry"
 
           # Tag push isn't gated by branch protection; the version-bump commits
           # go to a release branch and land on main via PR.
@@ -353,6 +345,24 @@ jobs:
             --head "${RELEASE_BRANCH}" \
             --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
             --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG_NAME} pushed)."
+
+      # GitHub Release on the pushed tag: the signed artifacts (byte-for-byte the
+      # same detached GPG signatures uploaded to Maven Central) + verification
+      # instructions. `mvn deploy` signed in place, so the jars and their .asc
+      # siblings are in the module target dir and need no re-signing.
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: ./.github/actions/create-github-release
+        with:
+          tag: ${{ env.TAG_NAME }}
+          title: ${{ env.MODULE }} ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          module: ${{ env.MODULE }}
+          version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          changelog-entry: ${{ env.CHANGELOG_ENTRY_INPUT }}
+          fingerprint: ${{ env.GPG_FINGERPRINT }}
+          artifact-dir: ${{ env.MODULE }}/target
+          extra-notes: "Artifacts: main JAR + linux/linux_musl x x86_64/aarch_64 native classifier JARs."
+          github-token: ${{ github.token }}
 
       # Dry-run: validate assembly, no publish/push.
       - name: Dry-run assemble (no publish)

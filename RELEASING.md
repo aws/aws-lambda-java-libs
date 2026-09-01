@@ -32,8 +32,7 @@ Releasable modules: `aws-lambda-java-core`, `aws-lambda-java-events`,
 2. Builds and tests the module.
 3. Publishes to Maven Central and pushes the tag `<module>-<version>`.
 4. Opens a **version-bump PR** into `main` with the next `-SNAPSHOT`, the updated
-   `lastPublished` comment, the parent POM's version-map entry (for modules other
-   modules depend on: core, events, serialization), and your changelog entry.
+   `lastPublished` comment, and your changelog entry.
 5. Creates a GitHub Release on the tag from your changelog entry.
 
 Merge the version-bump PR to return `main` to a clean `-SNAPSHOT` state.

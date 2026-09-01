@@ -39,7 +39,3 @@ experimental/aws-lambda-java-profiler/integration_tests/helloworld/bin
 .kiro
 build
 mise.toml
-
-# flatten-maven-plugin generates this self-contained POM at build time; it is
-# published in place of the raw module POM and must never be committed.
-.flattened-pom.xml

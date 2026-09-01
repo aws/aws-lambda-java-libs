@@ -228,6 +228,10 @@ jobs:
           gpgconf --kill gpg-agent || true
           gpg --batch --import <<< "$GPG_PRIVATE_KEY"
           GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+          # Publish the primary key fingerprint (NOT secret) for the GitHub
+          # Release verification instructions. Only the public fingerprint
+          # crosses $GITHUB_ENV here; the passphrase and token never do.
+          echo "GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" >> "$GITHUB_ENV"
 
           # Global settings holding only the Sonatype "central" server for upload.
           # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
@@ -342,10 +346,36 @@ jobs:
           {
             printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
             echo "Published to Maven Central: https://central.sonatype.com/artifact/com.amazonaws/${MODULE}/${EFFECTIVE_RELEASE_VERSION}"
+            echo
+            echo "## Verifying the signatures"
+            echo
+            echo "The attached \`.jar.asc\` files are the same PGP signatures published to Maven Central, made with the AWS Lambda Java release signing key."
+            echo
+            echo '```'
+            echo "# 1. Import the public signing key"
+            echo "gpg --keyserver keys.openpgp.org --recv-keys ${GPG_FINGERPRINT}"
+            echo "# 2. Verify a downloaded jar against its signature"
+            echo "gpg --verify ${MODULE}-${EFFECTIVE_RELEASE_VERSION}.jar.asc ${MODULE}-${EFFECTIVE_RELEASE_VERSION}.jar"
+            echo '```'
           } > "$NOTES"
+
+          # Attach the signed jars and their detached PGP signatures produced by
+          # release:perform (byte-for-byte the same artifacts and .asc files
+          # Maven Central received). They live in the perform checkout's target/
+          # dir and persist past the Release step, so no re-signing is needed.
+          ARTIFACT_DIR="$MODULE/target/checkout/target"
+          ASSETS=()
+          while IFS= read -r f; do ASSETS+=("$f"); done < <(
+            find "$ARTIFACT_DIR" -maxdepth 1 -type f \( -name '*.jar' -o -name '*.jar.asc' \) 2>/dev/null | sort
+          )
+          if [ ${#ASSETS[@]} -eq 0 ]; then
+            echo "::warning::No signed jars found under $ARTIFACT_DIR; creating the release without attachments"
+          fi
+
           gh release create "$TAG" \
             --title "${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --notes-file "$NOTES"
+            --notes-file "$NOTES" \
+            "${ASSETS[@]}"
 
       - name: Dry-run release (prepare only, no publish)
         if: ${{ github.event.inputs.skip_publish == 'true' }}

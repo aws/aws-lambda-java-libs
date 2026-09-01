@@ -3,7 +3,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.amazonaws</groupId>
+  <parent>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-lambda-java-libs</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
   <version>3.1.2-SNAPSHOT</version>
   <!-- lastPublished: 3.1.1 (auto-updated by release.yml) -->
@@ -42,7 +48,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <sdk.v1.version>1.11.914</sdk.v1.version>
     <sdk.v2.version>2.15.40</sdk.v2.version>
-    <junit-jupiter.version>5.12.2</junit-jupiter.version>
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
   </properties>
 
@@ -69,14 +74,14 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.16.1</version>
+      <!-- version managed by parent -->
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit-jupiter.version}</version>
+      <!-- version managed by parent -->
       <scope>test</scope>
     </dependency>
   </dependencies>

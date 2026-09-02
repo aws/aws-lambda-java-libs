@@ -27,6 +27,10 @@ on:
         description: 'Next development version override (optional, must end with -SNAPSHOT)'
         required: false
         type: string
+      changelogEntry:
+        description: 'Changelog entry (Markdown bullets, e.g. "- Fix X"). Prepended to the module RELEASE.CHANGELOG.md in the version-bump PR and used as the GitHub Release notes. Required.'
+        required: true
+        type: string
       skip_publish:
         description: 'Skip publish (dry-run validation)'
         required: false
@@ -48,6 +52,7 @@ env:
   MODULE: ${{ github.event.inputs.module }}
   RELEASE_VERSION_INPUT: ${{ github.event.inputs.releaseVersion }}
   DEVELOPMENT_VERSION_INPUT: ${{ github.event.inputs.developmentVersion }}
+  CHANGELOG_ENTRY_INPUT: ${{ github.event.inputs.changelogEntry }}
   # Batch mode + no transfer-progress spam for every Maven call (Maven 3.9+).
   MAVEN_ARGS: "-B --no-transfer-progress"
   AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
@@ -86,27 +91,8 @@ jobs:
         with:
           fetch-depth: 0   # full history for tagging/pushing
 
-      # Use the CodeBuild image's preinstalled Corretto 8. The image ships it at
-      # $JAVA_8_HOME but defaults JAVA_HOME to Java 25, so point JAVA_HOME/PATH at
-      # 8. Avoids actions/setup-java, which fetches from corretto.github.io +
-      # corretto.aws, both blocked by the runner egress lock. $JAVA_8_HOME
-      # resolves per-arch (x86_64/aarch64).
       - name: Use the runner image's preinstalled Corretto 8
-        run: |
-          echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
-          echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
-          "$JAVA_8_HOME/bin/java" -version
-          mkdir -p "$HOME/.m2"
-          cat > "$HOME/.m2/toolchains.xml" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <toolchains>
-            <toolchain>
-              <type>jdk</type>
-              <provides><version>8</version></provides>
-              <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
-            </toolchain>
-          </toolchains>
-          EOF
+        uses: ./.github/actions/setup-corretto8
 
       # Route all mvn resolution through the CodeArtifact mirror. Runs before the
       # OIDC step (which would shadow the runner-role creds this needs) and on
@@ -128,6 +114,9 @@ jobs:
             exit 1
           fi
           echo "::notice::Releasing $MODULE $EFFECTIVE_RELEASE_VERSION (POM currently $CURRENT_VERSION)"
+          # Single source of truth for the tag, reused by the push, GitHub
+          # Release, rollback, and summary steps.
+          echo "TAG_NAME=${MODULE}-${EFFECTIVE_RELEASE_VERSION}" >> "$GITHUB_ENV"
 
       - name: Configure git user
         run: |
@@ -221,6 +210,10 @@ jobs:
           gpgconf --kill gpg-agent || true
           gpg --batch --import <<< "$GPG_PRIVATE_KEY"
           GPG_KEYNAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
+          # Publish the primary key fingerprint (NOT secret) for the GitHub
+          # Release verification instructions. Only the public fingerprint
+          # crosses $GITHUB_ENV here; the passphrase and token never do.
+          echo "GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" >> "$GITHUB_ENV"
 
           # Global settings holding only the Sonatype "central" server for upload.
           # Passed to Maven as -gs (global) so it MERGES with the CodeArtifact
@@ -247,10 +240,47 @@ jobs:
 
           # perform forks a fresh build. Pass the Sonatype creds as GLOBAL
           # settings (-gs) so the fork still auto-reads ~/.m2/settings.xml (the
-          # mirror) and merges the two.
+          # mirror) and merges the two. The GPG passphrase is exported as
+          # MAVEN_GPG_PASSPHRASE (read natively by maven-gpg-plugin and inherited
+          # by the forked build) instead of being placed in -Darguments: it keeps
+          # the passphrase out of the process argument list and avoids the release
+          # plugin's space-splitting of -Darguments mangling a passphrase.
+          export MAVEN_GPG_PASSPHRASE="$GPG_PASSPHRASE"
           mvn release:perform -DlocalCheckout=true \
-            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
+            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME" \
             --file "$MODULE/pom.xml"
+
+      # Fold the lastPublished marker and changelog entry into the single
+      # next-development commit that release:prepare created (local, unpushed),
+      # so the whole post-release bump is ONE commit in the version-bump PR
+      # below (main is protected). The tag points at the prior release commit,
+      # so amending here leaves the tag untouched. The changelog entry is passed
+      # via env, never interpolated into the script, so it can't inject shell.
+      - name: Record next dev, lastPublished and changelog
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        run: |
+          # Refresh the module's lastPublished marker to what was just published.
+          if grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
+            sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release.yml) -->|" "$MODULE/pom.xml"
+            git add "$MODULE/pom.xml"
+          else
+            echo "::notice::$MODULE has no lastPublished comment; skipping annotation"
+          fi
+
+          # Prepend the changelog entry.
+          CHANGELOG="$MODULE/RELEASE.CHANGELOG.md"
+          TMP="$(mktemp)"
+          {
+            echo "### $(date +'%B %d, %Y')"
+            echo "\`${EFFECTIVE_RELEASE_VERSION}\`:"
+            printf '%s\n\n' "$CHANGELOG_ENTRY_INPUT"
+            [ -f "$CHANGELOG" ] && cat "$CHANGELOG"
+          } > "$TMP"
+          mv "$TMP" "$CHANGELOG"
+          git add "$CHANGELOG"
+
+          # Fold into release:prepare's next-dev commit -> one post-release commit.
+          git commit --amend -m "chore(release): prepare next development, record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} lastPublished and changelog"
 
       # main is protected (no direct push), so push the tag and open a PR for
       # the version-bump commits instead. Skipping this would leave the POM on
@@ -260,18 +290,34 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
-          RELEASE_BRANCH="release/${TAG}"
+          RELEASE_BRANCH="release/${TAG_NAME}"
 
           # Tag push isn't gated by branch protection; commits go via a PR.
-          git push origin "refs/tags/${TAG}"
+          git push origin "refs/tags/${TAG_NAME}"
           git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
 
           gh pr create \
             --base "${GITHUB_REF_NAME}" \
             --head "${RELEASE_BRANCH}" \
             --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG} pushed)."
+            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG_NAME} pushed)."
+
+      # GitHub Release on the pushed tag: changelog + Central link + GPG verify
+      # instructions, with the signed jars and their .asc signatures attached.
+      # release:perform builds in a fresh checkout, so the signed artifacts live
+      # under <module>/target/checkout/target.
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: ./.github/actions/create-github-release
+        with:
+          tag: ${{ env.TAG_NAME }}
+          title: ${{ env.MODULE }} ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          module: ${{ env.MODULE }}
+          version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          changelog-entry: ${{ env.CHANGELOG_ENTRY_INPUT }}
+          fingerprint: ${{ env.GPG_FINGERPRINT }}
+          artifact-dir: ${{ env.MODULE }}/target/checkout/target
+          github-token: ${{ github.token }}
 
       - name: Dry-run release (prepare only, no publish)
         if: ${{ github.event.inputs.skip_publish == 'true' }}
@@ -289,13 +335,12 @@ jobs:
         run: |
           mvn release:rollback --file "$MODULE/pom.xml" || true
           mvn release:clean --file "$MODULE/pom.xml" || true
-          git tag -d "${MODULE}-${EFFECTIVE_RELEASE_VERSION}" 2>/dev/null || true
+          git tag -d "$TAG_NAME" 2>/dev/null || true
           echo "::warning::Release failed before publish completed. The remote was not modified; the runner state has been rolled back. Safe to retry."
 
       - name: Summary
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         run: |
-          TAG_NAME="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
           echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY

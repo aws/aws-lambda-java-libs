@@ -6,6 +6,7 @@
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-events-sdk-transformer</artifactId>
   <version>3.1.2-SNAPSHOT</version>
+  <!-- lastPublished: 3.1.1 (auto-updated by release.yml) -->
   <packaging>jar</packaging>
 
   <name>AWS Lambda Java Events SDK Transformer Library</name>
@@ -207,6 +208,7 @@
             <configuration>
               <publishingServerId>central</publishingServerId>
               <autoPublish>false</autoPublish>
+              <deploymentName>${project.groupId}:${project.artifactId}:${project.version}</deploymentName>
             </configuration>
           </plugin>
         </plugins>

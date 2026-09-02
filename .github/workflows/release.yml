@@ -247,13 +247,16 @@ jobs:
             -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME" \
             --file "$MODULE/pom.xml"
 
-      # Record the published version in the module's lastPublished comment so
-      # the POM reflects what's on Central. Rides in the version-bump PR below
-      # (main is protected).
-      - name: Record released version (POM lastPublished)
+      # Fold the lastPublished marker and changelog entry into the single
+      # next-development commit that release:prepare created (local, unpushed),
+      # so the whole post-release bump is ONE commit in the version-bump PR
+      # below (main is protected). The tag points at the prior release commit,
+      # so amending here leaves the tag untouched. The changelog entry is passed
+      # via env, never interpolated into the script, so it can't inject shell.
+      - name: Record next dev, lastPublished and changelog
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         run: |
-          # Module's lastPublished annotation.
+          # Refresh the module's lastPublished marker to what was just published.
           if grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
             sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release.yml) -->|" "$MODULE/pom.xml"
             git add "$MODULE/pom.xml"
@@ -261,18 +264,7 @@ jobs:
             echo "::notice::$MODULE has no lastPublished comment; skipping annotation"
           fi
 
-          # Commit the record, or nothing if it didn't change.
-          if git diff --cached --quiet; then
-            echo "::notice::$MODULE already recorded at ${EFFECTIVE_RELEASE_VERSION}; nothing to commit"
-          else
-            git commit -m "chore(release): record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} lastPublished"
-          fi
-
-      # Prepend the changelog entry so it ships in the version-bump PR. Passed
-      # via env, never interpolated into the script, so it can't inject shell.
-      - name: Prepend changelog entry
-        if: ${{ github.event.inputs.skip_publish != 'true' }}
-        run: |
+          # Prepend the changelog entry.
           CHANGELOG="$MODULE/RELEASE.CHANGELOG.md"
           TMP="$(mktemp)"
           {
@@ -283,7 +275,9 @@ jobs:
           } > "$TMP"
           mv "$TMP" "$CHANGELOG"
           git add "$CHANGELOG"
-          git commit -m "docs(release): add ${MODULE} ${EFFECTIVE_RELEASE_VERSION} changelog entry"
+
+          # Fold into release:prepare's next-dev commit -> one post-release commit.
+          git commit --amend -m "chore(release): prepare next development, record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} lastPublished and changelog"
 
       # main is protected (no direct push), so push the tag and open a PR for
       # the version-bump commits instead. Skipping this would leave the POM on

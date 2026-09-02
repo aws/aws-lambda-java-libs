@@ -323,19 +323,15 @@ jobs:
           git commit -am "chore(ric): release ${EFFECTIVE_RELEASE_VERSION}"
           git tag "$TAG_NAME"
 
-          # Next development version commit. Also refresh the informational
-          # lastPublished marker to the version just published (rides in the
-          # post-release commit, so the tagged release commit is untouched).
+          # Single post-release commit: next development version bump, the
+          # lastPublished marker, and the changelog entry. Sits on top of the
+          # tag, so the tagged release commit is untouched. The changelog entry
+          # is passed via env, never interpolated into the script, so it can't
+          # inject shell.
           mvn versions:set -DnewVersion="$NEXT_DEV_VERSION" -DgenerateBackupPoms=false --file "$MODULE/pom.xml"
           if grep -q "<!-- lastPublished:" "$MODULE/pom.xml"; then
             sed -i "s|<!-- lastPublished:.*-->|<!-- lastPublished: ${EFFECTIVE_RELEASE_VERSION} (auto-updated by release-runtime-interface-client.yml) -->|" "$MODULE/pom.xml"
           fi
-          git commit -am "chore(ric): prepare next development ${NEXT_DEV_VERSION}"
-
-          # Prepend the changelog entry so it ships in the version-bump PR (on
-          # top of the dev-version commit, after the tag, so the tag itself is
-          # unchanged). Passed via env, never interpolated into the script, so
-          # it can't inject shell.
           CHANGELOG="$MODULE/RELEASE.CHANGELOG.md"
           TMP="$(mktemp)"
           {
@@ -346,7 +342,7 @@ jobs:
           } > "$TMP"
           mv "$TMP" "$CHANGELOG"
           git add "$CHANGELOG"
-          git commit -m "docs(release): add ${MODULE} ${EFFECTIVE_RELEASE_VERSION} changelog entry"
+          git commit -am "chore(release): prepare next development, record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} lastPublished and changelog"
 
           # Tag push isn't gated by branch protection; the version-bump commits
           # go to a release branch and land on main via PR.

@@ -114,6 +114,9 @@ jobs:
             exit 1
           fi
           echo "::notice::Releasing $MODULE $EFFECTIVE_RELEASE_VERSION (POM currently $CURRENT_VERSION)"
+          # Single source of truth for the tag, reused by the push, GitHub
+          # Release, rollback, and summary steps.
+          echo "TAG_NAME=${MODULE}-${EFFECTIVE_RELEASE_VERSION}" >> "$GITHUB_ENV"
 
       - name: Configure git user
         run: |
@@ -287,18 +290,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
-          RELEASE_BRANCH="release/${TAG}"
+          RELEASE_BRANCH="release/${TAG_NAME}"
 
           # Tag push isn't gated by branch protection; commits go via a PR.
-          git push origin "refs/tags/${TAG}"
+          git push origin "refs/tags/${TAG_NAME}"
           git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
 
           gh pr create \
             --base "${GITHUB_REF_NAME}" \
             --head "${RELEASE_BRANCH}" \
             --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG} pushed)."
+            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG_NAME} pushed)."
 
       # GitHub Release on the pushed tag: changelog + Central link + GPG verify
       # instructions, with the signed jars and their .asc signatures attached.
@@ -308,7 +310,7 @@ jobs:
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         uses: ./.github/actions/create-github-release
         with:
-          tag: ${{ env.MODULE }}-${{ env.EFFECTIVE_RELEASE_VERSION }}
+          tag: ${{ env.TAG_NAME }}
           title: ${{ env.MODULE }} ${{ env.EFFECTIVE_RELEASE_VERSION }}
           module: ${{ env.MODULE }}
           version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
@@ -333,13 +335,12 @@ jobs:
         run: |
           mvn release:rollback --file "$MODULE/pom.xml" || true
           mvn release:clean --file "$MODULE/pom.xml" || true
-          git tag -d "${MODULE}-${EFFECTIVE_RELEASE_VERSION}" 2>/dev/null || true
+          git tag -d "$TAG_NAME" 2>/dev/null || true
           echo "::warning::Release failed before publish completed. The remote was not modified; the runner state has been rolled back. Safe to retry."
 
       - name: Summary
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         run: |
-          TAG_NAME="${MODULE}-${EFFECTIVE_RELEASE_VERSION}"
           echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY

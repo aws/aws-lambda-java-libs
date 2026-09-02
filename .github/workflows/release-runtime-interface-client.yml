@@ -146,6 +146,15 @@ jobs:
     environment: Release
     timeout-minutes: 30
     steps:
+      # Defence-in-depth: build-natives already gates on main, but this job does
+      # the actual publish/tag/push on a separate runner, so re-verify here too.
+      - name: Verify release branch
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            echo "::error::Releases must run from the main branch, got '$GITHUB_REF_NAME'"
+            exit 1
+          fi
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0   # full history for tagging/pushing
@@ -290,9 +299,13 @@ jobs:
           } > "$MAVEN_SETTINGS"
 
           # --- Publish --- (-gs: merge Sonatype creds with the ~/.m2 mirror)
+          # Pass the passphrase via MAVEN_GPG_PASSPHRASE (read natively by
+          # maven-gpg-plugin) rather than -Dgpg.passphrase, so it never lands in
+          # the process argument list.
+          export MAVEN_GPG_PASSPHRASE="$GPG_PASSPHRASE"
           mvn deploy -Prelease -DskipTests -DmultiArch=false \
             -gs "$MAVEN_SETTINGS" \
-            -Dgpg.keyname="$GPG_KEYNAME" -Dgpg.passphrase="$GPG_PASSPHRASE" \
+            -Dgpg.keyname="$GPG_KEYNAME" \
             --file "$MODULE/pom.xml"
 
       # main is protected (no direct push), so push the tag (tag pushes aren't

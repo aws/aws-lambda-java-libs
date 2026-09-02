@@ -237,9 +237,14 @@ jobs:
 
           # perform forks a fresh build. Pass the Sonatype creds as GLOBAL
           # settings (-gs) so the fork still auto-reads ~/.m2/settings.xml (the
-          # mirror) and merges the two.
+          # mirror) and merges the two. The GPG passphrase is exported as
+          # MAVEN_GPG_PASSPHRASE (read natively by maven-gpg-plugin and inherited
+          # by the forked build) instead of being placed in -Darguments: it keeps
+          # the passphrase out of the process argument list and avoids the release
+          # plugin's space-splitting of -Darguments mangling a passphrase.
+          export MAVEN_GPG_PASSPHRASE="$GPG_PASSPHRASE"
           mvn release:perform -DlocalCheckout=true \
-            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME -Dgpg.passphrase=$GPG_PASSPHRASE" \
+            -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME" \
             --file "$MODULE/pom.xml"
 
       # Record the published version in the module's lastPublished comment so

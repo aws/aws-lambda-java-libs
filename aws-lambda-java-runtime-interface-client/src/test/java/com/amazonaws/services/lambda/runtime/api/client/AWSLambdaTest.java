@@ -578,6 +578,40 @@ class AWSLambdaTest {
 
     @Test
     @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventEmittedOnceInMultiConcurrentMode() throws Throwable {
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
+        when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(4);
+
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
+                .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        org.mockito.ArgumentCaptor<Object> eventCaptor = org.mockito.ArgumentCaptor.forClass(Object.class);
+        verify(lambdaLogger, times(1)).logStructuredEvent(eventCaptor.capture(), eq(LogLevel.DEBUG));
+
+        AWSLambda.WorkerPoolInitializedEvent event = (AWSLambda.WorkerPoolInitializedEvent) eventCaptor.getValue();
+        assertEquals("runtime_worker_pool_initializing", event.event);
+        assertEquals(4, event.workerCount);
+        assertEquals(4, event.executionEnvironmentMaxConcurrency);
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventNotEmittedInSequentialMode() throws Throwable {
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest fatalRequest = mock(InvocationRequest.class);
+        when(fatalRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn("fatal");
+        when(runtimeClient.nextInvocation()).thenReturn(fatalRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(lambdaLogger, never()).logStructuredEvent(any(), any());
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
     void testInvocationIdIsPassedToReportSuccess() throws Throwable {
         when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
 

@@ -251,6 +251,11 @@ public class AWSLambda {
         if (concurrencyConfig.isMultiConcurrent()) {
             lambdaLogger.log(concurrencyConfig.getConcurrencyConfigMessage(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.INFO : LogLevel.UNDEFINED);
             ExecutorService platformThreadExecutor = Executors.newFixedThreadPool(concurrencyConfig.getNumberOfPlatformThreads());
+            lambdaLogger.logStructuredEvent(
+                    new WorkerPoolInitializedEvent(
+                            concurrencyConfig.getNumberOfPlatformThreads(),
+                            concurrencyConfig.getNumberOfPlatformThreads()),
+                    LogLevel.DEBUG);
             try {
                 for (int i = 0; i < concurrencyConfig.getNumberOfPlatformThreads(); i++) {
                     startRuntimeLoopWithExecutor(lambdaRequestHandler, lambdaLogger, platformThreadExecutor, runtimeClient);
@@ -372,5 +377,16 @@ public class AWSLambda {
 
     protected static URLClassLoader getCustomerClassLoader() {
         return customerClassLoader;
+    }
+
+    static class WorkerPoolInitializedEvent {
+        final String event = "runtime_worker_pool_initializing";
+        final int workerCount;
+        final int executionEnvironmentMaxConcurrency;
+
+        WorkerPoolInitializedEvent(int workerCount, int executionEnvironmentMaxConcurrency) {
+            this.workerCount = workerCount;
+            this.executionEnvironmentMaxConcurrency = executionEnvironmentMaxConcurrency;
+        }
     }
 }

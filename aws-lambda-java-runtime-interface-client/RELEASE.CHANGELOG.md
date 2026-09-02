@@ -1,3 +1,7 @@
+### September 2, 2026
+`2.12.1`
+- Emit a structured `runtime_worker_pool_initializing` DEBUG log event once during INIT in multi-concurrent (Lambda Managed Instances) mode, reporting the worker pool size (`workerCount`) and the maximum concurrency the execution environment supports (`executionEnvironmentMaxConcurrency`). Only visible when the function log level is DEBUG or lower; not emitted for standard on-demand functions.
+
 ### July 17, 2026
 `2.12.0`
 - Add `Lambda-Runtime-Invocation-Id` header support for cross-wiring protection. The RIC now echoes the invocation ID received from RAPID on `/next` back on `/response` and `/error`, enabling RAPID to detect and reject stale responses from timed-out invocations.

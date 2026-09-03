@@ -610,6 +610,29 @@ class AWSLambdaTest {
         verify(lambdaLogger, never()).logStructuredEvent(any(), any());
     }
 
+    /*
+     * Pins the exact wire format of the event through the real JSON formatter (Gson),
+     * proving the Object-typed StructuredLogMessage.message serializes the event as a
+     * nested JSON object with exactly the documented schema.
+     */
+    @Test
+    void testWorkerPoolInitializedEventJsonWireFormat() {
+        com.amazonaws.services.lambda.runtime.api.client.logging.JsonLogFormatter formatter =
+                new com.amazonaws.services.lambda.runtime.api.client.logging.JsonLogFormatter();
+        String output = formatter.format(new AWSLambda.WorkerPoolInitializedEvent(16, 16), LogLevel.DEBUG);
+
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject parsed =
+                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(output);
+        assertEquals("DEBUG", parsed.getString("level"));
+        org.junit.jupiter.api.Assertions.assertNotNull(parsed.getString("timestamp"));
+
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject message = parsed.getJSONObject("message");
+        assertEquals("runtime_worker_pool_initializing", message.getString("event"));
+        assertEquals(16, message.getInt("workerCount"));
+        assertEquals(16, message.getInt("executionEnvironmentMaxConcurrency"));
+        assertEquals(3, message.length());
+    }
+
     @Test
     @Timeout(value = 1, unit = TimeUnit.MINUTES)
     void testInvocationIdIsPassedToReportSuccess() throws Throwable {

@@ -9,7 +9,7 @@ import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
 class StructuredLogMessage {
     public String timestamp;
-    public String message;
+    public Object message;
     public LogLevel level;
     public String AWSRequestId;
     public String tenantId;

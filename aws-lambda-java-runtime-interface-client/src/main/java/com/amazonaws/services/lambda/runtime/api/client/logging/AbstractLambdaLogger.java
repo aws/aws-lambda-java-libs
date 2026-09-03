@@ -64,6 +64,12 @@ public abstract class AbstractLambdaLogger implements LambdaLogger {
         this.log(message, LogLevel.UNDEFINED);
     }
 
+    public void logStructuredEvent(Object event, LogLevel logLevel) {
+        if (logFiltering.isEnabled(logLevel)) {
+            this.logMessage(logFormatter.format(event, logLevel), logLevel);
+        }
+    }
+
     public void setLambdaContext(LambdaContext lambdaContext) {
         this.logFormatter.setLambdaContext(lambdaContext);
     }

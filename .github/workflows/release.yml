@@ -250,6 +250,21 @@ jobs:
             -Darguments="-gs $MAVEN_SETTINGS -Prelease -Dgpg.keyname=$GPG_KEYNAME" \
             --file "$MODULE/pom.xml"
 
+          # release:perform builds in a fresh SCM checkout under
+          # <module>/target/checkout. Because the whole repo is one git repo, the
+          # checkout re-nests the module, so the signed jars land under
+          # <module>/target/checkout/<module>/target, not .../checkout/target.
+          # Locate them by their detached signatures right after the build, pin
+          # the directory into the env for the GitHub Release step, and fail loudly
+          # if the publish produced no signed artifact.
+          SIGNED_JAR=$(find "$MODULE/target/checkout" -type f -name '*.jar.asc' -print -quit)
+          if [[ -z "$SIGNED_JAR" ]]; then
+            echo "::error::No signed artifacts (*.jar.asc) found under $MODULE/target/checkout after release:perform"
+            exit 1
+          fi
+          echo "ARTIFACT_DIR=$(dirname "$SIGNED_JAR")" >> "$GITHUB_ENV"
+          echo "::notice::Signed release artifacts at $(dirname "$SIGNED_JAR")"
+
       # Fold the lastPublished marker and changelog entry into the single
       # next-development commit that release:prepare created (local, unpushed),
       # so the whole post-release bump is ONE commit in the version-bump PR
@@ -287,25 +302,17 @@ jobs:
       # the just-released -SNAPSHOT.
       - name: Push release tag and open version-bump PR
         if: ${{ github.event.inputs.skip_publish != 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          RELEASE_BRANCH="release/${TAG_NAME}"
-
-          # Tag push isn't gated by branch protection; commits go via a PR.
-          git push origin "refs/tags/${TAG_NAME}"
-          git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
-
-          gh pr create \
-            --base "${GITHUB_REF_NAME}" \
-            --head "${RELEASE_BRANCH}" \
-            --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG_NAME} pushed)."
+        uses: ./.github/actions/push-tag-and-open-pr
+        with:
+          tag: ${{ env.TAG_NAME }}
+          module: ${{ env.MODULE }}
+          version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          base-branch: ${{ github.ref_name }}
+          github-token: ${{ github.token }}
 
       # GitHub Release on the pushed tag: changelog + Central link + GPG verify
       # instructions, with the signed jars and their .asc signatures attached.
-      # release:perform builds in a fresh checkout, so the signed artifacts live
-      # under <module>/target/checkout/target.
+      # ARTIFACT_DIR was pinned to the checkout's build output by the publish step.
       - name: Create GitHub Release
         if: ${{ github.event.inputs.skip_publish != 'true' }}
         uses: ./.github/actions/create-github-release
@@ -316,7 +323,7 @@ jobs:
           version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
           changelog-entry: ${{ env.CHANGELOG_ENTRY_INPUT }}
           fingerprint: ${{ env.GPG_FINGERPRINT }}
-          artifact-dir: ${{ env.MODULE }}/target/checkout/target
+          artifact-dir: ${{ env.ARTIFACT_DIR }}
           github-token: ${{ github.token }}
 
       - name: Dry-run release (prepare only, no publish)

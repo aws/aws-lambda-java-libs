@@ -30,8 +30,10 @@ inputs:
   artifact-dir:
     description: >
       Directory (searched non-recursively) holding the signed jars and their
-      .asc siblings. For release:perform this is <module>/target/checkout/target;
-      for an in-place deploy it is <module>/target.
+      .asc siblings. For release:perform the caller should discover this at
+      runtime (the SCM checkout re-nests the module under
+      <module>/target/checkout/<module>/target); for an in-place deploy it is
+      <module>/target.
     required: true
   extra-notes:
     description: "Optional Markdown inserted between the changelog and the Central link (e.g. an artifact inventory)."

@@ -312,13 +312,9 @@ jobs:
       # gated by branch protection) and route the release + next-development
       # version-bump commits through a PR, mirroring release.yml. A direct
       # `git push ... HEAD:main` here is rejected with GH006 (protected branch).
-      - name: Tag and push (only after publish succeeds)
+      - name: Create release commit, tag, and version-bump commit
         if: ${{ github.event.inputs.skip_publish != 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          RELEASE_BRANCH="release/${TAG_NAME}"
-
           # Release commit + tag (the tag points at the release version).
           git commit -am "chore(ric): release ${EFFECTIVE_RELEASE_VERSION}"
           git tag "$TAG_NAME"
@@ -344,16 +340,17 @@ jobs:
           git add "$CHANGELOG"
           git commit -am "chore(release): prepare next development, record ${MODULE} ${EFFECTIVE_RELEASE_VERSION} lastPublished and changelog"
 
-          # Tag push isn't gated by branch protection; the version-bump commits
-          # go to a release branch and land on main via PR.
-          git push origin "refs/tags/${TAG_NAME}"
-          git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
-
-          gh pr create \
-            --base "${GITHUB_REF_NAME}" \
-            --head "${RELEASE_BRANCH}" \
-            --title "chore(release): ${MODULE} ${EFFECTIVE_RELEASE_VERSION}" \
-            --body "Post-release version bump for ${MODULE} ${EFFECTIVE_RELEASE_VERSION} (already on Maven Central, tag ${TAG_NAME} pushed)."
+      # Shared with release.yml: push the tag and route the version-bump commits
+      # to main via PR (main is protected, so no direct push).
+      - name: Push release tag and open version-bump PR
+        if: ${{ github.event.inputs.skip_publish != 'true' }}
+        uses: ./.github/actions/push-tag-and-open-pr
+        with:
+          tag: ${{ env.TAG_NAME }}
+          module: ${{ env.MODULE }}
+          version: ${{ env.EFFECTIVE_RELEASE_VERSION }}
+          base-branch: ${{ github.ref_name }}
+          github-token: ${{ github.token }}
 
       # GitHub Release on the pushed tag: the signed artifacts (byte-for-byte the
       # same detached GPG signatures uploaded to Maven Central) + verification

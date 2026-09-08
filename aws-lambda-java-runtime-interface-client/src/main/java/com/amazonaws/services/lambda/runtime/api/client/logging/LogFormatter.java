@@ -11,10 +11,6 @@ import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 public interface LogFormatter {
     String format(String message, LogLevel logLevel);
 
-    default String format(Object message, LogLevel logLevel) {
-        return format(String.valueOf(message), logLevel);
-    }
-
     default void setLambdaContext(LambdaContext context) {
     }
 }

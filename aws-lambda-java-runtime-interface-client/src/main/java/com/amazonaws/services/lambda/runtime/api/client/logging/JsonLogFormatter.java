@@ -26,22 +26,14 @@ public class JsonLogFormatter implements LogFormatter {
 
     @Override
     public String format(String message, LogLevel logLevel) {
-        return serialize(createLogMessage(message, logLevel));
-    }
-
-    @Override
-    public String format(Object message, LogLevel logLevel) {
-        return serialize(createLogMessage(message, logLevel));
-    }
-
-    private String serialize(StructuredLogMessage msg) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        StructuredLogMessage msg = createLogMessage(message, logLevel);
         serializer.toJson(msg, stream);
         stream.write('\n');
         return new String(stream.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    private StructuredLogMessage createLogMessage(Object message, LogLevel logLevel) {
+    private StructuredLogMessage createLogMessage(String message, LogLevel logLevel) {
         StructuredLogMessage msg = new StructuredLogMessage();
         msg.timestamp = dateFormatter.format(LocalDateTime.now());
         msg.message = message;

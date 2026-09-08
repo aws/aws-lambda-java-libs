@@ -579,6 +579,7 @@ class AWSLambdaTest {
     @Test
     @Timeout(value = 1, unit = TimeUnit.MINUTES)
     void testWorkerPoolInitializedEventEmittedOnceInMultiConcurrentMode() throws Throwable {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
         when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
         when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(4);
 
@@ -587,13 +588,32 @@ class AWSLambdaTest {
 
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
-        org.mockito.ArgumentCaptor<Object> eventCaptor = org.mockito.ArgumentCaptor.forClass(Object.class);
-        verify(lambdaLogger, times(1)).logStructuredEvent(eventCaptor.capture(), eq(LogLevel.DEBUG));
+        org.mockito.ArgumentCaptor<byte[]> lineCaptor = org.mockito.ArgumentCaptor.forClass(byte[].class);
+        verify(lambdaLogger, times(1)).log(lineCaptor.capture(), eq(LogLevel.DEBUG));
 
-        AWSLambda.WorkerPoolInitializedEvent event = (AWSLambda.WorkerPoolInitializedEvent) eventCaptor.getValue();
-        assertEquals("runtime_worker_pool_initializing", event.event);
-        assertEquals(4, event.workerCount);
-        assertEquals(4, event.executionEnvironmentMaxConcurrency);
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject parsed =
+                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(
+                        new String(lineCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8));
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject message = parsed.getJSONObject("message");
+        assertEquals("runtime_worker_pool_initializing", message.getString("event"));
+        assertEquals(4, message.getInt("workerCount"));
+        assertEquals(4, message.getInt("executionEnvironmentMaxConcurrency"));
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventNotEmittedInNonJsonLogFormat() throws Throwable {
+        // Guard: no emission when the log format is not JSON, even in multi-concurrent mode
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.TEXT);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
+        when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(2);
+
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
+                .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(lambdaLogger, never()).log(any(byte[].class), any(LogLevel.class));
     }
 
     @Test
@@ -607,24 +627,23 @@ class AWSLambdaTest {
 
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
-        verify(lambdaLogger, never()).logStructuredEvent(any(), any());
+        verify(lambdaLogger, never()).log(any(byte[].class), any(LogLevel.class));
     }
 
     /*
-     * Pins the exact wire format of the event through the real JSON formatter (Gson),
-     * proving the Object-typed StructuredLogMessage.message serializes the event as a
-     * nested JSON object with exactly the documented schema.
+     * Pins the exact wire format of the hand-built log line: "message" must be a nested
+     * JSON object with exactly the documented schema, inside a valid envelope.
      */
     @Test
     void testWorkerPoolInitializedEventJsonWireFormat() {
-        com.amazonaws.services.lambda.runtime.api.client.logging.JsonLogFormatter formatter =
-                new com.amazonaws.services.lambda.runtime.api.client.logging.JsonLogFormatter();
-        String output = formatter.format(new AWSLambda.WorkerPoolInitializedEvent(16, 16), LogLevel.DEBUG);
+        String line = new AWSLambda.WorkerPoolInitializedEvent(16, 16).toJsonLogLine();
+        org.junit.jupiter.api.Assertions.assertTrue(line.endsWith("\n"));
 
         com.amazonaws.lambda.thirdparty.org.json.JSONObject parsed =
-                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(output);
+                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(line);
         assertEquals("DEBUG", parsed.getString("level"));
         org.junit.jupiter.api.Assertions.assertNotNull(parsed.getString("timestamp"));
+        assertEquals(3, parsed.length());
 
         com.amazonaws.lambda.thirdparty.org.json.JSONObject message = parsed.getJSONObject("message");
         assertEquals("runtime_worker_pool_initializing", message.getString("event"));

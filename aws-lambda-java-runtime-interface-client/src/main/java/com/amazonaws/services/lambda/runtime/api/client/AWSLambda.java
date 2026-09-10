@@ -35,7 +35,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -251,6 +255,14 @@ public class AWSLambda {
         if (concurrencyConfig.isMultiConcurrent()) {
             lambdaLogger.log(concurrencyConfig.getConcurrencyConfigMessage(), lambdaLogger.getLogFormat() == LogFormat.JSON ? LogLevel.INFO : LogLevel.UNDEFINED);
             ExecutorService platformThreadExecutor = Executors.newFixedThreadPool(concurrencyConfig.getNumberOfPlatformThreads());
+            // Emitted once during INIT. The byte[] log path applies level filtering but no
+            // formatting, so the hand-built line keeps "message" as a nested JSON object.
+            if (lambdaLogger.getLogFormat() == LogFormat.JSON) {
+                WorkerPoolInitializedEvent event = new WorkerPoolInitializedEvent(
+                        concurrencyConfig.getNumberOfPlatformThreads(),
+                        concurrencyConfig.getNumberOfPlatformThreads());
+                lambdaLogger.log(event.toJsonLogLine().getBytes(StandardCharsets.UTF_8), LogLevel.DEBUG);
+            }
             try {
                 for (int i = 0; i < concurrencyConfig.getNumberOfPlatformThreads(); i++) {
                     startRuntimeLoopWithExecutor(lambdaRequestHandler, lambdaLogger, platformThreadExecutor, runtimeClient);
@@ -372,5 +384,31 @@ public class AWSLambda {
 
     protected static URLClassLoader getCustomerClassLoader() {
         return customerClassLoader;
+    }
+
+    static class WorkerPoolInitializedEvent {
+        static final String EVENT_NAME = "runtime_worker_pool_initializing";
+        private static final DateTimeFormatter TIMESTAMP_FORMAT =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"));
+
+        final int workerCount;
+        final int executionEnvironmentMaxConcurrency;
+
+        WorkerPoolInitializedEvent(int workerCount, int executionEnvironmentMaxConcurrency) {
+            this.workerCount = workerCount;
+            this.executionEnvironmentMaxConcurrency = executionEnvironmentMaxConcurrency;
+        }
+
+        /**
+         * Complete JSON log line with "message" as a nested object (queryable in CloudWatch
+         * Logs Insights). Hand-built safely: all values are constants or ints, no escaping needed.
+         */
+        String toJsonLogLine() {
+            return "{\"timestamp\":\"" + TIMESTAMP_FORMAT.format(Instant.now())
+                    + "\",\"message\":{\"event\":\"" + EVENT_NAME
+                    + "\",\"workerCount\":" + workerCount
+                    + ",\"executionEnvironmentMaxConcurrency\":" + executionEnvironmentMaxConcurrency
+                    + "},\"level\":\"DEBUG\"}\n";
+        }
     }
 }

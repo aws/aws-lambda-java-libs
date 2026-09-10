@@ -1,0 +1,29 @@
+name: "Use the runner image's preinstalled Corretto 8"
+description: >
+  Points JAVA_HOME/PATH at the CodeBuild image's preinstalled Corretto 8
+  ($JAVA_8_HOME) and writes a Maven toolchains.xml for JDK 8. The image defaults
+  JAVA_HOME to Java 25, so this is required before any Maven call. Avoids
+  actions/setup-java, which fetches from corretto.github.io + corretto.aws, both
+  blocked by the runner egress lock. $JAVA_8_HOME resolves per-arch
+  (x86_64/aarch64).
+
+runs:
+  using: composite
+  steps:
+    - name: Use the runner image's preinstalled Corretto 8
+      shell: bash
+      run: |
+        echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+        echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+        "$JAVA_8_HOME/bin/java" -version
+        mkdir -p "$HOME/.m2"
+        cat > "$HOME/.m2/toolchains.xml" <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <toolchains>
+          <toolchain>
+            <type>jdk</type>
+            <provides><version>8</version></provides>
+            <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+          </toolchain>
+        </toolchains>
+        EOF

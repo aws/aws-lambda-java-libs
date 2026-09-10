@@ -5,6 +5,7 @@
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
     <version>2.12.1-SNAPSHOT</version>
+    <!-- lastPublished: 2.12.0 (auto-updated by release-runtime-interface-client.yml) -->
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Runtime Interface Client</name>
@@ -398,7 +399,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -417,6 +418,7 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>false</autoPublish>
+                            <deploymentName>${project.groupId}:${project.artifactId}:${project.version}</deploymentName>
                         </configuration>
                     </plugin>
                     <plugin>

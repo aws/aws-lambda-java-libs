@@ -1,0 +1,13 @@
+{
+  "version": "0",
+  "id": "4e6638b7-b892-4482-9762-8c58d4e71ecc",
+  "detail-type": "Scheduled Event",
+  "source": "aws.scheduler",
+  "account": "123456789012",
+  "time": "2024-05-07T15:58:34Z",
+  "region": "eu-central-1",
+  "resources": [
+    "arn:aws:scheduler:eu-central-1:123456789012:schedule/default/demoschedule"
+  ],
+  "detail": "{}"
+}

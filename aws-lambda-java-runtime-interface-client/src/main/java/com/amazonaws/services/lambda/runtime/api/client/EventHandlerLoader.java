@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package com.amazonaws.services.lambda.runtime.api.client;
 
-import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
@@ -38,11 +37,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.filterStackTrace;
 import static com.amazonaws.services.lambda.runtime.api.client.UserFault.makeUserFault;
@@ -51,16 +48,10 @@ import static com.amazonaws.services.lambda.runtime.api.client.UserFault.trace;
 public final class EventHandlerLoader {
     private static final byte[] _JsonNull = new byte[]{'n', 'u', 'l', 'l'};
 
-    private enum Platform {
-        ANDROID,
-        IOS,
-        UNKNOWN
-    }
-
     private static volatile ThreadLocal<PojoSerializer<LambdaClientContext>> contextSerializer = new ThreadLocal<>();
     private static volatile ThreadLocal<PojoSerializer<LambdaCognitoIdentity>> cognitoSerializer = new ThreadLocal<>();
 
-    private static final ThreadLocal<EnumMap<Platform, Map<Type, PojoSerializer<Object>>>> typeCache = ThreadLocal.withInitial(() -> new EnumMap<>(Platform.class));
+    private static final ThreadLocal<Map<Type, PojoSerializer<Object>>> typeCache = ThreadLocal.withInitial(HashMap::new);
 
     private static final Comparator<Method> methodPriority = new Comparator<Method>() {
         public int compare(Method lhs, Method rhs) {
@@ -97,16 +88,14 @@ public final class EventHandlerLoader {
     }
 
     /**
-     * returns the appropriate serializer for the class based on platform and whether the class is a supported event
+     * returns the appropriate serializer for the class based on whether the class is a supported event
      *
-     * @param platform enum platform
-     * @param type     Type of object used
+     * @param type Type of object used
      * @return PojoSerializer
-     * @see Platform for which platforms are used
      * @see LambdaEventSerializers for how mixins and modules are added to the serializer
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static PojoSerializer<Object> getSerializer(Platform platform, Type type) {
+    private static PojoSerializer<Object> getSerializer(Type type) {
         PojoSerializer<Object> customSerializer = PojoSerializerLoader.getCustomerSerializer(type);
         if (customSerializer != null) {
             return customSerializer;
@@ -119,24 +108,15 @@ public final class EventHandlerLoader {
                 return LambdaEventSerializers.serializerFor(clazz, AWSLambda.getCustomerClassLoader());
             }
         }
-        // else platform dependent (Android uses GSON but all other platforms use Jackson)
-        if (Objects.requireNonNull(platform) == Platform.ANDROID) {
-            return GsonFactory.getInstance().getSerializer(type);
-        }
         return JacksonFactory.getInstance().getSerializer(type);
     }
 
-    private static PojoSerializer<Object> getSerializerCached(Platform platform, Type type) {
-        EnumMap<Platform, Map<Type, PojoSerializer<Object>>> threadTypeCache = typeCache.get();
-        Map<Type, PojoSerializer<Object>> cache = threadTypeCache.get(platform);
-        if (cache == null) {
-            cache = new HashMap<>();
-            threadTypeCache.put(platform, cache);
-        }
+    private static PojoSerializer<Object> getSerializerCached(Type type) {
+        Map<Type, PojoSerializer<Object>> cache = typeCache.get();
 
         PojoSerializer<Object> serializer = cache.get(type);
         if (serializer == null) {
-            serializer = getSerializer(platform, type);
+            serializer = getSerializer(type);
             cache.put(type, serializer);
         }
 
@@ -157,31 +137,6 @@ public final class EventHandlerLoader {
         return cognitoSerializer.get();
     }
 
-
-    private static Platform getPlatform(Context context) {
-        ClientContext cc = context.getClientContext();
-        if (cc == null) {
-            return Platform.UNKNOWN;
-        }
-
-        Map<String, String> env = cc.getEnvironment();
-        if (env == null) {
-            return Platform.UNKNOWN;
-        }
-
-        String platform = env.get("platform");
-        if (platform == null) {
-            return Platform.UNKNOWN;
-        }
-
-        if ("Android".equalsIgnoreCase(platform)) {
-            return Platform.ANDROID;
-        } else if ("iPhoneOS".equalsIgnoreCase(platform)) {
-            return Platform.IOS;
-        } else {
-            return Platform.UNKNOWN;
-        }
-    }
 
     private static boolean isVoid(Type type) {
         return Void.TYPE.equals(type) || (type instanceof Class) && Void.class.isAssignableFrom((Class<?>) type);
@@ -629,11 +584,11 @@ public final class EventHandlerLoader {
 
 
             if (inputType.isPresent()) {
-                getSerializerCached(Platform.UNKNOWN, inputType.get());
+                getSerializerCached(inputType.get());
             }
 
             if (outputType.isPresent()) {
-                getSerializerCached(Platform.UNKNOWN, outputType.get());
+                getSerializerCached(outputType.get());
             }
         }
 
@@ -642,10 +597,9 @@ public final class EventHandlerLoader {
         public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context)
                 throws IOException {
             final Object input;
-            final Platform platform = getPlatform(context);
             try {
                 if (inputType.isPresent()) {
-                    input = getSerializerCached(platform, inputType.get()).fromJson(inputStream);
+                    input = getSerializerCached(inputType.get()).fromJson(inputStream);
                 } else {
                     input = null;
                 }
@@ -662,7 +616,7 @@ public final class EventHandlerLoader {
 
             try {
                 if (outputType.isPresent()) {
-                    PojoSerializer<Object> serializer = getSerializerCached(platform, outputType.get());
+                    PojoSerializer<Object> serializer = getSerializerCached(outputType.get());
                     serializer.toJson(output, outputStream);
                 } else {
                     outputStream.write(_JsonNull);

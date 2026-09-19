@@ -23,4 +23,18 @@ public class POJOHanlderImpl {
     public String twoParamsHandler(String event, Context context) {
         return "success";
     }
+
+    @SuppressWarnings("unused")
+    public PojoOutput pojoOutputHandler(String event) {
+        return new PojoOutput();
+    }
+
+    @SuppressWarnings("unused")
+    public static class PojoOutput {
+        private final String internalField = "field-based-value";
+
+        public String getBeanProperty() {
+            return "property-based-value";
+        }
+    }
 }

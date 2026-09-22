@@ -48,6 +48,9 @@ public abstract class DynamodbEventMixin {
         // needed because Jackson expects "approximateCreationDateTime" instead of "ApproximateCreationDateTime"
         @JsonProperty("ApproximateCreationDateTime") abstract Date getApproximateCreationDateTime();
         @JsonProperty("ApproximateCreationDateTime") abstract void setApproximateCreationDateTime(Date approximateCreationDateTime);
+        // needed because Jackson expects "approximateCreationDateTimePrecision" instead of "ApproximateCreationDateTimePrecision"
+        @JsonProperty("ApproximateCreationDateTimePrecision") abstract String getApproximateCreationDateTimePrecision();
+        @JsonProperty("ApproximateCreationDateTimePrecision") abstract void setApproximateCreationDateTimePrecision(String approximateCreationDateTimePrecision);
 
     }
 

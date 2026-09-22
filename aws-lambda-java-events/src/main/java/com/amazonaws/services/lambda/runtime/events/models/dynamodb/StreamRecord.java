@@ -33,6 +33,14 @@ public class StreamRecord implements Serializable, Cloneable {
     private java.util.Date approximateCreationDateTime;
     /**
      * <p>
+     * The precision of the approximate date and time when the stream record was created. Present when the DynamoDB
+     * table has an explicit <code>ApproximateCreationDateTimePrecision</code> set on its stream. Possible values are
+     * <code>MILLISECOND</code> and <code>MICROSECOND</code>.
+     * </p>
+     */
+    private String approximateCreationDateTimePrecision;
+    /**
+     * <p>
      * The primary key attribute(s) for the DynamoDB item that was modified.
      * </p>
      */
@@ -130,6 +138,46 @@ public class StreamRecord implements Serializable, Cloneable {
      */
     public StreamRecord withApproximateCreationDateTime(java.util.Date approximateCreationDateTime) {
         setApproximateCreationDateTime(approximateCreationDateTime);
+        return this;
+    }
+
+    /**
+     * <p>
+     * The precision of the approximate date and time when the stream record was created. Possible values are
+     * <code>MILLISECOND</code> and <code>MICROSECOND</code>.
+     * </p>
+     *
+     * @param approximateCreationDateTimePrecision
+     *        The precision of the approximate date and time when the stream record was created.
+     */
+    public void setApproximateCreationDateTimePrecision(String approximateCreationDateTimePrecision) {
+        this.approximateCreationDateTimePrecision = approximateCreationDateTimePrecision;
+    }
+
+    /**
+     * <p>
+     * The precision of the approximate date and time when the stream record was created. Possible values are
+     * <code>MILLISECOND</code> and <code>MICROSECOND</code>.
+     * </p>
+     *
+     * @return The precision of the approximate date and time when the stream record was created.
+     */
+    public String getApproximateCreationDateTimePrecision() {
+        return this.approximateCreationDateTimePrecision;
+    }
+
+    /**
+     * <p>
+     * The precision of the approximate date and time when the stream record was created. Possible values are
+     * <code>MILLISECOND</code> and <code>MICROSECOND</code>.
+     * </p>
+     *
+     * @param approximateCreationDateTimePrecision
+     *        The precision of the approximate date and time when the stream record was created.
+     * @return Returns a reference to this object so that method calls can be chained together.
+     */
+    public StreamRecord withApproximateCreationDateTimePrecision(String approximateCreationDateTimePrecision) {
+        setApproximateCreationDateTimePrecision(approximateCreationDateTimePrecision);
         return this;
     }
 
@@ -561,6 +609,8 @@ public class StreamRecord implements Serializable, Cloneable {
         sb.append("{");
         if (getApproximateCreationDateTime() != null)
             sb.append("ApproximateCreationDateTime: ").append(getApproximateCreationDateTime()).append(",");
+        if (getApproximateCreationDateTimePrecision() != null)
+            sb.append("ApproximateCreationDateTimePrecision: ").append(getApproximateCreationDateTimePrecision()).append(",");
         if (getKeys() != null)
             sb.append("Keys: ").append(getKeys()).append(",");
         if (getNewImage() != null)
@@ -590,6 +640,10 @@ public class StreamRecord implements Serializable, Cloneable {
         if (other.getApproximateCreationDateTime() == null ^ this.getApproximateCreationDateTime() == null)
             return false;
         if (other.getApproximateCreationDateTime() != null && other.getApproximateCreationDateTime().equals(this.getApproximateCreationDateTime()) == false)
+            return false;
+        if (other.getApproximateCreationDateTimePrecision() == null ^ this.getApproximateCreationDateTimePrecision() == null)
+            return false;
+        if (other.getApproximateCreationDateTimePrecision() != null && other.getApproximateCreationDateTimePrecision().equals(this.getApproximateCreationDateTimePrecision()) == false)
             return false;
         if (other.getKeys() == null ^ this.getKeys() == null)
             return false;
@@ -624,6 +678,7 @@ public class StreamRecord implements Serializable, Cloneable {
         int hashCode = 1;
 
         hashCode = prime * hashCode + ((getApproximateCreationDateTime() == null) ? 0 : getApproximateCreationDateTime().hashCode());
+        hashCode = prime * hashCode + ((getApproximateCreationDateTimePrecision() == null) ? 0 : getApproximateCreationDateTimePrecision().hashCode());
         hashCode = prime * hashCode + ((getKeys() == null) ? 0 : getKeys().hashCode());
         hashCode = prime * hashCode + ((getNewImage() == null) ? 0 : getNewImage().hashCode());
         hashCode = prime * hashCode + ((getOldImage() == null) ? 0 : getOldImage().hashCode());

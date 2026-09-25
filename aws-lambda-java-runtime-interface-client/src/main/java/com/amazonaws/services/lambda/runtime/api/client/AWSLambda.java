@@ -327,7 +327,9 @@ public class AWSLambda {
 
                 try {
                     ByteArrayOutputStream payload = lambdaRequestHandler.call(request);
-                    runtimeClient.reportInvocationSuccess(request.getId(), payload.toByteArray(), request.getInvocationId());
+                    // Post straight from the backing array: toByteArray() would copy the whole response.
+                    ResponseBufferViewer view = ResponseBufferViewer.of(payload);
+                    runtimeClient.reportInvocationSuccess(request.getId(), view.array(), view.length(), request.getInvocationId());
                     // clear interrupted flag in case if it was set by user's code
                     Thread.interrupted();
                 } catch (Throwable t) {

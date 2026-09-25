@@ -13,6 +13,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,6 +29,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
@@ -38,6 +40,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -358,6 +361,93 @@ public class LambdaRuntimeApiClientImplTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    public void reportInvocationSuccessEmptyBodyTest() throws Exception {
+        assertArrayEquals(new byte[0], postSuccessAndGetBody(new byte[0], null).getBody().readByteArray());
+    }
+
+    @Test
+    public void reportInvocationSuccessLargeBinaryBodyTest() throws Exception {
+        // 6 MB covering every byte value, including zero bytes that a C string would stop at.
+        byte[] response = new byte[6 * 1024 * 1024];
+        for (int i = 0; i < response.length; i++) {
+            response[i] = (byte) i;
+        }
+        assertArrayEquals(response, postSuccessAndGetBody(response, null).getBody().readByteArray());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithInvocationIdTest() throws Exception {
+        String invocationId = "test-invocation-uuid-1234";
+        RecordedRequest recordedRequest = postSuccessAndGetBody("{\"msg\":\"test\"}".getBytes(), invocationId);
+        assertEquals(invocationId, recordedRequest.getHeader("Lambda-Runtime-Invocation-Id"));
+        assertEquals("{\"msg\":\"test\"}", recordedRequest.getBody().readUtf8());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithLengthSendsOnlyLengthBytesTest() throws Exception {
+        // A 6 MB response in an 8 MB backing array, as after the buffer has doubled; the tail must not be sent.
+        int length = 6 * 1024 * 1024;
+        byte[] buffer = new byte[8 * 1024 * 1024];
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = (byte) i;
+        }
+        RecordedRequest recordedRequest = postSuccessWithLengthAndGetRequest(buffer, length, null);
+        assertArrayEquals(Arrays.copyOf(buffer, length), recordedRequest.getBody().readByteArray());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithZeroLengthTest() throws Exception {
+        RecordedRequest recordedRequest = postSuccessWithLengthAndGetRequest("stale".getBytes(), 0, null);
+        assertArrayEquals(new byte[0], recordedRequest.getBody().readByteArray());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithLengthAndInvocationIdTest() throws Exception {
+        String invocationId = "test-invocation-uuid-1234";
+        RecordedRequest recordedRequest = postSuccessWithLengthAndGetRequest("{\"msg\":\"test\"}stale".getBytes(), 14, invocationId);
+        assertEquals(invocationId, recordedRequest.getHeader("Lambda-Runtime-Invocation-Id"));
+        assertEquals("{\"msg\":\"test\"}", recordedRequest.getBody().readUtf8());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithLengthOutOfBoundsTest() {
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, new byte[4], 5, null));
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, new byte[4], -1, null));
+        assertEquals(0, mockWebServer.getRequestCount());
+    }
+
+    @Test
+    public void reportInvocationSuccessWithLengthDefaultMethodCopiesTest() throws Exception {
+        LambdaRuntimeApiClient client = mock(LambdaRuntimeApiClient.class, CALLS_REAL_METHODS);
+        client.reportInvocationSuccess(requestId, "{\"msg\":\"test\"}stale".getBytes(), 14, "id");
+        verify(client).reportInvocationSuccess(requestId, "{\"msg\":\"test\"}".getBytes(), "id");
+    }
+
+    private RecordedRequest postSuccessWithLengthAndGetRequest(byte[] buffer, int length, String invocationId) throws Exception {
+        MockResponse mockResponse = new MockResponse();
+        mockResponse.setResponseCode(HTTP_ACCEPTED);
+        mockWebServer.enqueue(mockResponse);
+
+        lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, buffer, length, invocationId);
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals("/2018-06-01/runtime/invocation/1234/response", recordedRequest.getPath());
+        return recordedRequest;
+    }
+
+    private RecordedRequest postSuccessAndGetBody(byte[] response, String invocationId) throws Exception {
+        MockResponse mockResponse = new MockResponse();
+        mockResponse.setResponseCode(HTTP_ACCEPTED);
+        mockWebServer.enqueue(mockResponse);
+
+        lambdaRuntimeApiClientImpl.reportInvocationSuccess(requestId, response, invocationId);
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals("/2018-06-01/runtime/invocation/1234/response", recordedRequest.getPath());
+        return recordedRequest;
     }
 
     @Test

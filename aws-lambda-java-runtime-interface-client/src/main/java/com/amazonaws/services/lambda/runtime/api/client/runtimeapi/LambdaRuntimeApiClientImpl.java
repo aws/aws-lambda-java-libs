@@ -131,6 +131,12 @@ public class LambdaRuntimeApiClientImpl implements LambdaRuntimeApiClient {
     }
 
     @Override
+    public void reportInvocationSuccess(String requestId, byte[] response, int responseLength, String invocationId) {
+        byte[] invocationIdBytes = invocationId != null ? invocationId.getBytes(UTF_8) : null;
+        NativeClient.postInvocationResponseWithLength(requestId.getBytes(UTF_8), response, responseLength, invocationIdBytes);
+    }
+
+    @Override
     public void reportInvocationError(String requestId, LambdaError error, String invocationId) throws IOException {
         String endpoint = invocationEndpoint + requestId + "/error";
         reportLambdaError(endpoint, error, XRAY_ERROR_CAUSE_MAX_HEADER_SIZE, invocationId);

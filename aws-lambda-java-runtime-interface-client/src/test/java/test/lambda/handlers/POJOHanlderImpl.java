@@ -37,4 +37,27 @@ public class POJOHanlderImpl {
             return "property-based-value";
         }
     }
+
+    @SuppressWarnings("unused")
+    public boolean pojoInputHandler(PojoInput input) {
+        return input.isLocked();
+    }
+
+    @SuppressWarnings("unused")
+    public static class PojoInput {
+        private boolean locked = false;
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isLocked() {
+            return locked;
+        }
+    }
 }

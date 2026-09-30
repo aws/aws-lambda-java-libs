@@ -76,6 +76,18 @@ class EventHandlerLoaderTest {
                 "caller ClientContext must not switch serialization to field-based (Gson), got: " + result);
     }
 
+    @Test
+    void PojoHandler_inputSerializer_bindsOnlyBeanProperties() throws Exception {
+        LambdaRequestHandler handler =
+                getLambdaRequestHandler("test.lambda.handlers.POJOHanlderImpl::pojoInputHandler");
+
+        InvocationRequest request = getTestInvocationRequest();
+        request.setClientContext("{\"env\":{\"platform\":\"Android\"}}");
+        request.setContent("{\"name\":\"x\",\"locked\":true}".getBytes());
+
+        assertEquals("false", handler.call(request).toString());
+    }
+
     private LambdaRequestHandler getLambdaRequestHandler(String handler) throws ClassNotFoundException {
         ClassLoader cl = this.getClass().getClassLoader();
         HandlerInfo handlerInfo = HandlerInfo.fromString(handler, cl);

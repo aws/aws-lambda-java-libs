@@ -1,3 +1,7 @@
+### September 30, 2026
+`2.13.0`
+- **Behavior change:** POJO handler input and output are now always serialized with the runtime's Jackson serializer. Previously, invocations whose client context reported `env.platform` as `Android` (as set by the archived AWS Mobile SDK for Android `LambdaInvokerFactory`) were serialized with Gson, which binds fields directly instead of bean properties. Handlers invoked this way may see different JSON for types that rely on private fields without getters and setters. To keep the previous format, add getters and setters (or public fields) to the affected types. If that is not possible, register a [`CustomPojoSerializer`](https://github.com/aws/aws-lambda-java-libs/tree/main/samples/custom-serialization/gson); note that a custom serializer applies to every invocation of the function, not only to Android callers.
+
 ### September 2, 2026
 `2.12.1`
 - Emit a structured `runtime_worker_pool_initializing` DEBUG log event once during INIT in multi-concurrent (Lambda Managed Instances) mode, reporting the worker pool size (`workerCount`) and the maximum concurrency the execution environment supports (`executionEnvironmentMaxConcurrency`). Only visible when the function log level is DEBUG or lower; not emitted for standard on-demand functions.

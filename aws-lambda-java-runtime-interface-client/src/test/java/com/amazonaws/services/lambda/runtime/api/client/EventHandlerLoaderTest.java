@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EventHandlerLoaderTest {
@@ -57,6 +58,34 @@ class EventHandlerLoaderTest {
         String handler = "test.lambda.handlers.POJOHanlderImpl::twoParamsHandler";
         LambdaRequestHandler lambdaRequestHandler = getLambdaRequestHandler(handler);
         assertSuccessfulInvocation(lambdaRequestHandler);
+    }
+
+    @Test
+    void PojoHandler_outputSerializer_ignoresClientContextPlatform() throws Exception {
+        LambdaRequestHandler handler =
+                getLambdaRequestHandler("test.lambda.handlers.POJOHanlderImpl::pojoOutputHandler");
+
+        InvocationRequest request = getTestInvocationRequest();
+        request.setClientContext("{\"env\":{\"platform\":\"Android\"}}");
+
+        String result = handler.call(request).toString();
+
+        assertTrue(result.contains("beanProperty"),
+                "expected property-based (Jackson) serialization, got: " + result);
+        assertFalse(result.contains("internalField"),
+                "caller ClientContext must not switch serialization to field-based (Gson), got: " + result);
+    }
+
+    @Test
+    void PojoHandler_inputSerializer_bindsOnlyBeanProperties() throws Exception {
+        LambdaRequestHandler handler =
+                getLambdaRequestHandler("test.lambda.handlers.POJOHanlderImpl::pojoInputHandler");
+
+        InvocationRequest request = getTestInvocationRequest();
+        request.setClientContext("{\"env\":{\"platform\":\"Android\"}}");
+        request.setContent("{\"name\":\"x\",\"locked\":true}".getBytes());
+
+        assertEquals("false", handler.call(request).toString());
     }
 
     private LambdaRequestHandler getLambdaRequestHandler(String handler) throws ClassNotFoundException {

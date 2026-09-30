@@ -23,4 +23,41 @@ public class POJOHanlderImpl {
     public String twoParamsHandler(String event, Context context) {
         return "success";
     }
+
+    @SuppressWarnings("unused")
+    public PojoOutput pojoOutputHandler(String event) {
+        return new PojoOutput();
+    }
+
+    @SuppressWarnings("unused")
+    public static class PojoOutput {
+        private final String internalField = "field-based-value";
+
+        public String getBeanProperty() {
+            return "property-based-value";
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public boolean pojoInputHandler(PojoInput input) {
+        return input.isLocked();
+    }
+
+    @SuppressWarnings("unused")
+    public static class PojoInput {
+        private boolean locked = false;
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isLocked() {
+            return locked;
+        }
+    }
 }

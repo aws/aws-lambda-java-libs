@@ -8,9 +8,9 @@ COPY target/aws-lambda-java-runtime-interface-client-*.jar /opt/ric/
 COPY target/aws-lambda-java-core-*.jar /opt/ric/
 COPY target/aws-lambda-java-serialization-*.jar /opt/ric/
 
-COPY test/dockerized/entry.sh /entry.sh
-RUN chmod +x /entry.sh
-
-ENTRYPOINT ["/entry.sh"]
-# Default handler; the test runner overrides this per test case.
+ENTRYPOINT ["/bin/sh", "-c", \
+"exec /usr/local/bin/aws-lambda-rie java \
+-cp \"/opt/ric/*:/var/task\" \
+com.amazonaws.services.lambda.runtime.api.client.AWSLambda \"$@\"", \
+"sh"]
 CMD ["W3CHandler::getW3c"]

@@ -1,0 +1,16 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+ARG BASE_IMAGE=public.ecr.aws/lambda/java:25
+FROM $BASE_IMAGE
+
+COPY target/aws-lambda-java-runtime-interface-client-*.jar /opt/ric/
+COPY target/aws-lambda-java-core-*.jar /opt/ric/
+COPY target/aws-lambda-java-serialization-*.jar /opt/ric/
+
+COPY test/dockerized/entry.sh /entry.sh
+RUN chmod +x /entry.sh
+
+ENTRYPOINT ["/entry.sh"]
+# Default handler; the test runner overrides this per test case.
+CMD ["W3CHandler::getW3c"]

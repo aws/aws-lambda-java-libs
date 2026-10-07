@@ -14,6 +14,7 @@ public class LambdaClientContext implements ClientContext {
     private LambdaClientContextClient client;
     private Map<String, String> custom;
     private Map<String, String> env;
+    private Object w3c;
 
     public Client getClient() {
         return client;
@@ -25,5 +26,11 @@ public class LambdaClientContext implements ClientContext {
 
     public Map<String, String> getEnvironment() {
         return env;
+    }
+
+    Object readAndStripW3c() {
+        Object raw = this.w3c;
+        this.w3c = null;
+        return raw;
     }
 }

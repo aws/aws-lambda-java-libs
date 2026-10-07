@@ -21,10 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Set up JDK 25
+      - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: 25
+          # The core/serialization/RIC builds require a JDK 8 toolchain
+          # (maven-toolchains-plugin: [1.8,9)); 25 is the JVM Maven runs on.
+          java-version: |
+            8
+            25
           distribution: corretto
           cache: maven
 
@@ -44,7 +48,7 @@ jobs:
       - name: Compile the W3C task handler
         working-directory: aws-lambda-java-runtime-interface-client
         run: |
-          javac -cp "$(ls target/aws-lambda-java-core-*.jar)" \
+          javac --release 8 -cp "$(ls target/aws-lambda-java-core-*.jar)" \
             -d test/dockerized/tasks \
             test/dockerized/handler/W3CHandler.java
 
@@ -54,7 +58,7 @@ jobs:
           docker build . \
             -t local/test \
             -f Dockerfile.test \
-            --build-arg BASE_IMAGE=public.ecr.aws/lambda/java:21
+            --build-arg BASE_IMAGE=public.ecr.aws/lambda/java:25
 
       - name: Run dockerized suites
         uses: aws/containerized-test-runner-for-aws-lambda@0863dd17b5fc19585250a2405c0f939a77b4f397 # main

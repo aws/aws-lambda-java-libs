@@ -1,0 +1,16 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+ARG BASE_IMAGE=public.ecr.aws/lambda/java:25
+FROM $BASE_IMAGE
+
+COPY target/aws-lambda-java-runtime-interface-client-*.jar /opt/ric/
+COPY target/aws-lambda-java-core-*.jar /opt/ric/
+COPY target/aws-lambda-java-serialization-*.jar /opt/ric/
+
+ENTRYPOINT ["/bin/sh", "-c", \
+"exec /usr/local/bin/aws-lambda-rie java \
+-cp \"/opt/ric/*:/var/task\" \
+com.amazonaws.services.lambda.runtime.api.client.AWSLambda \"$@\"", \
+"sh"]
+CMD ["W3CHandler::getW3c"]

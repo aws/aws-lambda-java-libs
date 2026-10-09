@@ -1,0 +1,111 @@
+{
+  "tests": [
+    {
+      "name": "w3c_returns_empty_when_no_client_context_header",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "assertions": [
+        { "response": {} }
+      ]
+    },
+
+    {
+      "name": "w3c_returns_empty_when_client_context_has_no_w3c_key",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "clientContext": {
+        "custom": { "value": "test" }
+      },
+      "assertions": [
+        { "response": {} }
+      ]
+    },
+
+    {
+      "name": "w3c_returns_baggage_only",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "clientContext": {
+        "w3c": { "baggage": "userId=alice" }
+      },
+      "assertions": [
+        { "response": { "baggage": "userId=alice" } }
+      ]
+    },
+
+    {
+      "name": "w3c_returns_all_three_allowlisted_fields",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "clientContext": {
+        "w3c": {
+          "traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+          "tracestate": "rojo=00f067aa0ba902b7",
+          "baggage": "userId=alice"
+        }
+      },
+      "assertions": [
+        {
+          "response": {
+            "traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+            "tracestate": "rojo=00f067aa0ba902b7",
+            "baggage": "userId=alice"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "w3c_drops_non_allowlisted_keys_and_non_string_values",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "clientContext": {
+        "w3c": {
+          "baggage": "keep=me",
+          "unknownField": "should-not-appear",
+          "traceparent": 42,
+          "tracestate": null
+        }
+      },
+      "assertions": [
+        { "response": { "baggage": "keep=me" } }
+      ]
+    },
+
+    {
+      "name": "w3c_treats_non_object_payload_as_empty",
+      "handler": "W3CHandler::getW3c",
+      "request": {},
+      "clientContext": {
+        "w3c": "not-an-object"
+      },
+      "assertions": [
+        { "response": {} }
+      ]
+    },
+
+    {
+      "name": "w3c_coexists_with_client_context_custom",
+      "handler": "W3CHandler::getW3cAndCustom",
+      "request": {},
+      "clientContext": {
+        "custom": { "value": "test" },
+        "w3c": {
+          "traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+          "baggage": "userId=alice"
+        }
+      },
+      "assertions": [
+        {
+          "response": {
+            "w3c": {
+              "traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+              "baggage": "userId=alice"
+            },
+            "custom": { "value": "test" }
+          }
+        }
+      ]
+    }
+  ]
+}

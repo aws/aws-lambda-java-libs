@@ -6,6 +6,7 @@
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-lambda-java-events</artifactId>
     <version>3.16.2-SNAPSHOT</version>
+    <!-- lastPublished: 3.16.1 (auto-updated by release.yml) -->
     <packaging>jar</packaging>
 
     <name>AWS Lambda Java Events Library</name>
@@ -183,7 +184,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -202,6 +203,7 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>false</autoPublish>
+                            <deploymentName>${project.groupId}:${project.artifactId}:${project.version}</deploymentName>
                         </configuration>
                     </plugin>
                     <plugin>

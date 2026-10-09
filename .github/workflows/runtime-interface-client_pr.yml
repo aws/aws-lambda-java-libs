@@ -136,6 +136,15 @@ jobs:
               platform: linux/arm64/v8
     name: "integration-test (${{ matrix.buildspec }} / ${{ matrix.arch.label }})"
     steps:
+    - name: Jitter start (stagger matrix shards to spare public.ecr.aws rate limit)
+      # Every shard is scheduled within milliseconds of the others and hits
+      # public.ecr.aws / docker hub inside the same rate-limit window, so they
+      # collectively trip the throttle.
+      run: |
+        jitter=$((RANDOM % 61))
+        echo "Sleeping ${jitter}s to stagger this shard"
+        sleep "${jitter}"
+
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
     - name: Set up Docker Buildx

@@ -88,7 +88,8 @@ public final class EventHandlerLoader {
     }
 
     /**
-     * returns the appropriate serializer for the class based on whether the class is a supported event
+     * returns the serializer for the type: the customer's CustomPojoSerializer if one is registered, the event
+     * serializer if the type is a supported Lambda event, and Jackson otherwise
      *
      * @param type Type of object used
      * @return PojoSerializer

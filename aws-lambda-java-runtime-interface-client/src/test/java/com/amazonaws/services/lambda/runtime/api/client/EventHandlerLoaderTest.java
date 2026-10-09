@@ -2,6 +2,8 @@ package com.amazonaws.services.lambda.runtime.api.client;
 
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -11,9 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EventHandlerLoaderTest {
@@ -60,32 +62,44 @@ class EventHandlerLoaderTest {
         assertSuccessfulInvocation(lambdaRequestHandler);
     }
 
-    @Test
-    void PojoHandler_outputSerializer_ignoresClientContextPlatform() throws Exception {
+    // Before 2.13.0, a client context with env.platform equal to "Android" (case-insensitive) switched POJO
+    // serialization to Gson, which binds fields: pojoOutputHandler returned {"internalField":"field-based-value"}
+    // and pojoInputHandler returned "x:true". Every client context must now produce the Jackson result.
+
+    static Stream<String> clientContexts() {
+        return Stream.of(
+                null,
+                "{\"env\":{\"platform\":\"Android\"}}",
+                "{\"env\":{\"platform\":\"android\"}}",
+                "{\"env\":{\"platform\":\"iPhoneOS\"}}",
+                "{\"env\":{}}",
+                "{}");
+    }
+
+    @ParameterizedTest(name = "clientContext={0}")
+    @MethodSource("clientContexts")
+    void PojoHandler_outputSerializer_ignoresClientContextPlatform(String clientContext) throws Exception {
         LambdaRequestHandler handler =
                 getLambdaRequestHandler("test.lambda.handlers.POJOHanlderImpl::pojoOutputHandler");
 
         InvocationRequest request = getTestInvocationRequest();
-        request.setClientContext("{\"env\":{\"platform\":\"Android\"}}");
+        request.setClientContext(clientContext);
 
-        String result = handler.call(request).toString();
-
-        assertTrue(result.contains("beanProperty"),
-                "expected property-based (Jackson) serialization, got: " + result);
-        assertFalse(result.contains("internalField"),
-                "caller ClientContext must not switch serialization to field-based (Gson), got: " + result);
+        assertEquals("{\"beanProperty\":\"property-based-value\"}", handler.call(request).toString());
     }
 
-    @Test
-    void PojoHandler_inputSerializer_bindsOnlyBeanProperties() throws Exception {
+    @ParameterizedTest(name = "clientContext={0}")
+    @MethodSource("clientContexts")
+    void PojoHandler_inputSerializer_ignoresClientContextPlatform(String clientContext) throws Exception {
         LambdaRequestHandler handler =
                 getLambdaRequestHandler("test.lambda.handlers.POJOHanlderImpl::pojoInputHandler");
 
         InvocationRequest request = getTestInvocationRequest();
-        request.setClientContext("{\"env\":{\"platform\":\"Android\"}}");
+        request.setClientContext(clientContext);
         request.setContent("{\"name\":\"x\",\"locked\":true}".getBytes());
 
-        assertEquals("false", handler.call(request).toString());
+        // name has a setter and binds; locked has only a getter and keeps its default
+        assertEquals("\"x:false\"", handler.call(request).toString());
     }
 
     private LambdaRequestHandler getLambdaRequestHandler(String handler) throws ClassNotFoundException {

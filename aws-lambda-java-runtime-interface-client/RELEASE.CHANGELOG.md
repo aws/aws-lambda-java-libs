@@ -1,6 +1,16 @@
 ### September 30, 2026
 `2.13.0`
-- **Behavior change:** POJO handler input and output are now always serialized with the runtime's Jackson serializer. Previously, invocations whose client context reported `env.platform` as `Android` (as set by the archived AWS Mobile SDK for Android `LambdaInvokerFactory`) were serialized with Gson, which binds fields directly instead of bean properties. Handlers invoked this way may see different JSON for types that rely on private fields without getters and setters. To keep the previous format, add getters and setters (or public fields) to the affected types. If that is not possible, register a [`CustomPojoSerializer`](https://github.com/aws/aws-lambda-java-libs/tree/main/samples/custom-serialization/gson); note that a custom serializer applies to every invocation of the function, not only to Android callers.
+- **Behavior change:** POJO handler input and output are now always serialized with the runtime's Jackson serializer. Previously, invocations whose client context reported `env.platform` as `Android` (as set by the archived AWS Mobile SDK for Android `LambdaInvokerFactory`) were serialized with Gson, which binds fields directly instead of bean properties. Invocations without that client context are unaffected. Android callers now receive the same JSON as every other caller, which differs from before as follows:
+  - Private fields without getters or setters are no longer read from the request or written to the response. Add getters and setters, or make the fields public.
+  - Response keys follow getter names instead of field names: a field `isActive` with `isActive()` becomes `active`, and a field `mName` with `getName()` becomes `name`. Name the accessors after the JSON key (`getIsActive`), or use a public field with that name.
+  - Getters without a backing field, and `transient` fields that have getters, add keys to the response. Rename methods that should not be serialized so they are not getters.
+  - Fields with a getter but no setter keep their default value instead of the request value. Add a setter.
+  - Types without a no-argument constructor fail the invocation with `An error occurred during JSON parsing`. Add a no-argument constructor and setters.
+  - Numbers in `Object` or `Map<String, Object>` fields are read as `Integer`, `Long` or `Double` instead of always `Double`, so `1` is no longer echoed as `1.0`.
+  - `java.util.Date` values are written as numbers instead of formatted text.
+  - All of the above also apply to nested objects and list elements.
+
+  Each case and its fix is covered in [`GsonToJacksonPojoSerializationTest`](https://github.com/aws/aws-lambda-java-libs/blob/main/aws-lambda-java-tests/src/test/java/com/amazonaws/services/lambda/runtime/tests/GsonToJacksonPojoSerializationTest.java). If changing the types is not possible, register a [`CustomPojoSerializer`](https://github.com/aws/aws-lambda-java-libs/tree/main/samples/custom-serialization/gson); note that a custom serializer applies to every invocation of the function, not only to Android callers.
 
 ### September 2, 2026
 `2.12.1`

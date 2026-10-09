@@ -39,8 +39,8 @@ public class POJOHanlderImpl {
     }
 
     @SuppressWarnings("unused")
-    public boolean pojoInputHandler(PojoInput input) {
-        return input.isLocked();
+    public String pojoInputHandler(PojoInput input) {
+        return input.getName() + ":" + input.isLocked();
     }
 
     @SuppressWarnings("unused")

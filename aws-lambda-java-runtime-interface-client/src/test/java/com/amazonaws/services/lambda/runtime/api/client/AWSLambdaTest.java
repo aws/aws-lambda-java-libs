@@ -8,6 +8,7 @@ package com.amazonaws.services.lambda.runtime.api.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -242,7 +243,7 @@ class AWSLambdaTest {
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
         // Success Reports Must Equal number of tasks that ran successfully.
-        verify(runtimeClient, times(7)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(7)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), any());
         // Hashmap keys should equal the number of threads (runtime loops).
         assertEquals(4, SampleHandler.hashMap.size());
         // Hashmap total count should equal all tasks that ran * number of iterations per task
@@ -284,7 +285,7 @@ class AWSLambdaTest {
         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), any());
         
         // Hashmap keys should equal the minumum between(number of threads (runtime loops) AND number of tasks that ran successfully).
         assertEquals(2, SampleHandler.hashMap.size());
@@ -331,7 +332,7 @@ class AWSLambdaTest {
          verify(runtimeClient).reportInvocationError(eq(IOErrorID), any(), any());
          
          // Success Reports Must Equal number of tasks that ran successfully.
-         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+         verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), any());
          
          // Hashmap keys should equal the minumum between(number of threads (runtime loops) AND number of tasks that ran successfully).
          assertEquals(1, SampleHandler.hashMap.size());
@@ -520,7 +521,7 @@ class AWSLambdaTest {
         verify(runtimeClient).reportInvocationError(eq(UserFaultID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and userFaultRequest.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), any());
         verify(runtimeClient, times(2)).reportInvocationError(any(), any(), any());
         
         // Hashmap keys should equal one as it is not multithreaded.
@@ -566,7 +567,7 @@ class AWSLambdaTest {
         verify(runtimeClient).reportInvocationError(eq(IOErrorID), any(), any());
         
         // Success Reports Must Equal number of tasks that ran successfully. And only 2 Error reports for failImmediatelyRequest and virtualMachineErrorRequest.
-        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), any());
+        verify(runtimeClient, times(2)).reportInvocationSuccess(eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), any());
         verify(runtimeClient, times(2)).reportInvocationError(any(), any(), any());
         
         // Hashmap keys should equal one as it is not multithreaded.
@@ -671,7 +672,45 @@ class AWSLambdaTest {
         AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
 
         verify(runtimeClient).reportInvocationSuccess(
-                eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), eq("test-inv-uuid-1234"));
+                eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), any(), anyInt(), eq("test-inv-uuid-1234"));
+    }
+
+    /** Exposes the backing array so tests can check that it is posted as is. */
+    private static final class InspectableByteArrayOutputStream extends ByteArrayOutputStream {
+        byte[] backingArray() {
+            return buf;
+        }
+    }
+
+    private void runOneInvocation(LambdaRequestHandler handler) throws Throwable {
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest request = getFakeInvocationRequest(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE);
+        request.setInvocationId("test-inv-uuid-1234");
+
+        // Fatal error to stop the loop after one successful invocation
+        InvocationRequest fatalRequest = mock(InvocationRequest.class);
+        when(fatalRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn("fatal");
+
+        when(runtimeClient.nextInvocation())
+                .thenReturn(request)
+                .thenReturn(fatalRequest);
+
+        AWSLambda.startRuntimeLoops(handler, lambdaLogger, concurrencyConfig, runtimeClient);
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testResponseBackingArrayIsPostedWithoutCopy() throws Throwable {
+        InspectableByteArrayOutputStream output = new InspectableByteArrayOutputStream();
+        output.write("\"success\"".getBytes());
+
+        runOneInvocation(request -> output);
+
+        // The backing array itself is passed, with the content length, instead of a toByteArray() copy.
+        verify(runtimeClient).reportInvocationSuccess(
+                eq(SampleHandler.ADD_ENTRY_TO_MAP_ID_OP_MODE), same(output.backingArray()), eq(9), eq("test-inv-uuid-1234"));
+        verify(runtimeClient, never()).reportInvocationSuccess(anyString(), any(), any());
     }
 
     @Test

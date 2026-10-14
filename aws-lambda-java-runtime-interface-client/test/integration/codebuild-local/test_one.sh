@@ -62,7 +62,10 @@ main() {
     mkdir -p "$ARTIFACTS_DIR"
 
     LOCAL_AGENT_IMAGE="$(get_local_agent_image)"
-    "$(dirname "$0")"/docker-retry.sh docker pull "$LOCAL_AGENT_IMAGE" || true
+
+    if ! docker image inspect "$LOCAL_AGENT_IMAGE" >/dev/null 2>&1; then
+        "$(dirname "$0")"/docker-retry.sh docker pull "$LOCAL_AGENT_IMAGE"
+    fi
 
     # Run CodeBuild local agent.
     "$(dirname "$0")"/codebuild_build.sh \

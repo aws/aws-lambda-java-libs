@@ -1,9 +1,27 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/aws-lambda-java-runtime-interface"
+    directories:
+      - "/aws-lambda-java-core"
+      - "/aws-lambda-java-events"
+      - "/aws-lambda-java-events-sdk-transformer"
+      - "/aws-lambda-java-log4j2"
+      - "/aws-lambda-java-runtime-interface-client"
+      - "/aws-lambda-java-serialization"
+      - "/aws-lambda-java-tests"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    ignore:
+      # Major versions of common dependencies (Mockito 5, JUnit 6, Jackson 3) drop Java 8 support.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Versions of the libraries published from this repo are managed by the release process.
+      - dependency-name: "com.amazonaws:aws-lambda-java-*"
+    groups:
+      maven-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

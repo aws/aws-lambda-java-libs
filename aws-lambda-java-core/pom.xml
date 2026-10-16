@@ -3,7 +3,7 @@
   
   <groupId>com.amazonaws</groupId>
   <artifactId>aws-lambda-java-core</artifactId>
-  <version>1.4.1</version>
+  <version>1.4.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>AWS Lambda Java Core Library</name>
@@ -22,7 +22,7 @@
     <url>https://github.com/aws/aws-lambda-java-libs.git</url>
     <connection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</connection>
     <developerConnection>scm:git:https://github.com/aws/aws-lambda-java-libs.git</developerConnection>
-    <tag>aws-lambda-java-core-1.4.1</tag>
+    <tag>HEAD</tag>
   </scm>
   <developers>
     <developer>

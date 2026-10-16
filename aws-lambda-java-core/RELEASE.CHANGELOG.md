@@ -1,3 +1,7 @@
+### October 16, 2026
+`1.4.1`
+- Added `w3c()` to `Context` for the W3C trace-context fields (`traceparent`, `tracestate`, `baggage`) ([#657](https://github.com/aws/aws-lambda-java-libs/pull/657))
+
 ### September 3, 2025
 `1.4.0`
 - Getter support for x-ray trace ID through the Context object

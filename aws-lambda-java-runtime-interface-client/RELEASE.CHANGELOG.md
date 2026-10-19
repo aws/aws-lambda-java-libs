@@ -1,3 +1,7 @@
+### October 15, 2026
+`2.12.2`
+- Log a WARN when POJO handler input or output is serialized with Gson for AWS SDK for Android clients. The AWS SDK for Android reached end of support on August 1, 2026, and a future release will use Jackson for all invocations.
+
 ### September 2, 2026
 `2.12.1`
 - Emit a structured `runtime_worker_pool_initializing` DEBUG log event once during INIT in multi-concurrent (Lambda Managed Instances) mode, reporting the worker pool size (`workerCount`) and the maximum concurrency the execution environment supports (`executionEnvironmentMaxConcurrency`). Only visible when the function log level is DEBUG or lower; not emitted for standard on-demand functions.

@@ -8,6 +8,7 @@ package com.amazonaws.services.lambda.runtime.api.client;
 import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.LambdaRuntime;
 import com.amazonaws.services.lambda.runtime.LambdaRuntimeInternal;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -18,6 +19,7 @@ import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import com.amazonaws.services.lambda.runtime.api.client.util.UnsafeUtil;
+import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
 import com.amazonaws.services.lambda.runtime.serialization.factories.GsonFactory;
@@ -121,6 +123,12 @@ public final class EventHandlerLoader {
         }
         // else platform dependent (Android uses GSON but all other platforms use Jackson)
         if (Objects.requireNonNull(platform) == Platform.ANDROID) {
+            LambdaLogger logger = LambdaRuntime.getLogger();
+
+            logger.log("Gson serialization for Android clients is deprecated and will be replaced by Jackson; "
+                + "verify your types serialize the same way with Jackson. "
+                + "See https://github.com/aws/aws-lambda-java-libs/issues/659", LogLevel.WARN);
+
             return GsonFactory.getInstance().getSerializer(type);
         }
         return JacksonFactory.getInstance().getSerializer(type);
@@ -449,7 +457,7 @@ public final class EventHandlerLoader {
      * Implement a comparator for Methods. We sort overloaded handler methods using this comparator, and then pick the
      * lowest sorted method.
      */
-    
+
     private static LambdaRequestHandler loadEventPojoHandler(HandlerInfo handlerInfo) {
         Method[] methods;
         try {
@@ -550,7 +558,7 @@ public final class EventHandlerLoader {
              * @param context the LambdaContext
              */
             private void safeAddContextToLambdaLogger(LambdaContext context) {
-                LambdaLogger logger = com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger();
+                LambdaLogger logger = LambdaRuntime.getLogger();
                 if (logger instanceof LambdaContextLogger) {
                     LambdaContextLogger contextLogger = (LambdaContextLogger) logger;
                     contextLogger.setLambdaContext(context);
@@ -594,8 +602,8 @@ public final class EventHandlerLoader {
                     safeAddRequestIdToLog4j("org.apache.logging.log4j.ThreadContext", request, String.class);
                     // if put method not assigned in either call to safeAddRequestIdtoLog4j then log4jContextPutMethod = null
                     if (log4jContextPutMethod.get() == null) {
-                        System.err.println("Customer using log4j appender but unable to load either " 
-                            + "org.apache.log4j.MDC or org.apache.logging.log4j.ThreadContext. " 
+                        System.err.println("Customer using log4j appender but unable to load either "
+                            + "org.apache.log4j.MDC or org.apache.logging.log4j.ThreadContext. "
                             + "Customer cannot see RequestId in log4j log lines.");
                     }
                 }

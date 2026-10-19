@@ -1,0 +1,107 @@
+name: Replicate source
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Avoid the start of the hour, when scheduled Actions experience higher load.
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: repository-replication
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  replicate:
+    name: Replicate source snapshot
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: replication
+    steps:
+      - name: Check out triggering commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Create immutable source snapshot
+        id: snapshot
+        run: |
+          set -euo pipefail
+          commit="$(git rev-parse HEAD)"
+          archive="/tmp/aws-lambda-java-libs-${commit}.tgz"
+          object_key="aws-lambda-java-libs/source/${commit}.tgz"
+          git archive \
+            --format=tar.gz \
+            --output="${archive}" \
+            "${commit}"
+          gzip -t "${archive}"
+          tar -tzf "${archive}" >/dev/null
+          archive_sha256="$(sha256sum "${archive}" | awk '{print $1}')"
+          echo "archive=${archive}" >> "${GITHUB_OUTPUT}"
+          echo "commit=${commit}" >> "${GITHUB_OUTPUT}"
+          echo "object_key=${object_key}" >> "${GITHUB_OUTPUT}"
+          echo "sha256=${archive_sha256}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify source snapshot integrity
+        env:
+          SOURCE_ARCHIVE: ${{ steps.snapshot.outputs.archive }}
+          SOURCE_COMMIT: ${{ steps.snapshot.outputs.commit }}
+          SOURCE_SHA256: ${{ steps.snapshot.outputs.sha256 }}
+          TRIGGER_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "${SOURCE_COMMIT}" != "${TRIGGER_COMMIT}" ]]; then
+            echo "The snapshot commit does not match the triggering commit." >&2
+            exit 1
+          fi
+          if [[ "${SOURCE_COMMIT}" != "$(git rev-parse HEAD)" ]]; then
+            echo "The snapshot commit does not match the checked-out commit." >&2
+            exit 1
+          fi
+          echo "${SOURCE_SHA256} ${SOURCE_ARCHIVE}" | sha256sum --check --strict
+          gzip -t "${SOURCE_ARCHIVE}"
+          while IFS= read -r archive_path; do
+            if [[ "/${archive_path}/" == *"/.git/"* ]]; then
+              echo "The snapshot unexpectedly contains Git metadata." >&2
+              exit 1
+            fi
+          done < <(tar -tzf "${SOURCE_ARCHIVE}")
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          role-to-assume: ${{ secrets.REPLICATION_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: repository-replication-${{ github.run_id }}
+          mask-aws-account-id: true
+
+      - name: Upload source snapshot
+        env:
+          REPLICATION_BUCKET_NAME: ${{ secrets.REPLICATION_BUCKET_NAME }}
+          SOURCE_ARCHIVE: ${{ steps.snapshot.outputs.archive }}
+          SOURCE_COMMIT: ${{ steps.snapshot.outputs.commit }}
+          SOURCE_KEY: ${{ steps.snapshot.outputs.object_key }}
+          SOURCE_SHA256: ${{ steps.snapshot.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          version_id="$(aws s3api put-object \
+            --bucket "${REPLICATION_BUCKET_NAME}" \
+            --key "${SOURCE_KEY}" \
+            --body "${SOURCE_ARCHIVE}" \
+            --checksum-algorithm SHA256 \
+            --metadata "source-commit=${SOURCE_COMMIT},sha256=${SOURCE_SHA256}" \
+            --query VersionId \
+            --output text)"
+          if [[ -z "${version_id}" || "${version_id}" == "None" || "${version_id}" == "null" ]]; then
+            echo "The upload did not return an S3 object version." >&2
+            exit 1
+          fi

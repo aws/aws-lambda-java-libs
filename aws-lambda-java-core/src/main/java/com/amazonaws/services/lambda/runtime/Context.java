@@ -2,6 +2,9 @@
 
 package com.amazonaws.services.lambda.runtime;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * 
  * The context object allows you to access useful information available within
@@ -118,5 +121,21 @@ public interface Context {
 	 */
 	default String getXrayTraceId() {
 		return null;
+	}
+
+	/**
+	 * Returns the W3C trace-context fields associated with the request at invoke
+	 * time.
+	 * <p>
+	 * The returned map only ever contains the allowlisted W3C trace-context
+	 * keys ({@code traceparent}, {@code tracestate}, {@code baggage}) that were
+	 * carried on the invoke's client context. Any other key, and any allowlisted
+	 * key whose value is not a string, is dropped.
+	 * </p>
+	 *
+	 * @return an unmodifiable map of W3C trace-context fields; empty by default
+	 */
+	default Map<String, String> w3c() {
+		return Collections.emptyMap();
 	}
 }

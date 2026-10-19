@@ -578,6 +578,82 @@ class AWSLambdaTest {
 
     @Test
     @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventEmittedOnceInMultiConcurrentMode() throws Throwable {
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.JSON);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
+        when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(4);
+
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
+                .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        org.mockito.ArgumentCaptor<byte[]> lineCaptor = org.mockito.ArgumentCaptor.forClass(byte[].class);
+        verify(lambdaLogger, times(1)).log(lineCaptor.capture(), eq(LogLevel.DEBUG));
+
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject parsed =
+                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(
+                        new String(lineCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8));
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject message = parsed.getJSONObject("message");
+        assertEquals("runtime_worker_pool_initializing", message.getString("event"));
+        assertEquals(4, message.getInt("workerCount"));
+        assertEquals(4, message.getInt("executionEnvironmentMaxConcurrency"));
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventNotEmittedInNonJsonLogFormat() throws Throwable {
+        // Guard: no emission when the log format is not JSON, even in multi-concurrent mode
+        when(lambdaLogger.getLogFormat()).thenReturn(LogFormat.TEXT);
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(true);
+        when(concurrencyConfig.getNumberOfPlatformThreads()).thenReturn(2);
+
+        when(runtimeClient.nextInvocationWithExponentialBackoff(lambdaLogger))
+                .thenThrow(fakelambdaRuntimeClientMaxRetriesExceededException);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(lambdaLogger, never()).log(any(byte[].class), any(LogLevel.class));
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
+    void testWorkerPoolInitializedEventNotEmittedInSequentialMode() throws Throwable {
+        when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
+
+        InvocationRequest fatalRequest = mock(InvocationRequest.class);
+        when(fatalRequest.getId()).thenThrow(UserFault.makeUserFault(new IOError(new Throwable()), true)).thenReturn("fatal");
+        when(runtimeClient.nextInvocation()).thenReturn(fatalRequest);
+
+        AWSLambda.startRuntimeLoops(lambdaRequestHandler, lambdaLogger, concurrencyConfig, runtimeClient);
+
+        verify(lambdaLogger, never()).log(any(byte[].class), any(LogLevel.class));
+    }
+
+    /*
+     * Pins the exact wire format of the hand-built log line: "message" must be a nested
+     * JSON object with exactly the documented schema, inside a valid envelope.
+     */
+    @Test
+    void testWorkerPoolInitializedEventJsonWireFormat() {
+        String line = new AWSLambda.WorkerPoolInitializedEvent(16, 16).toJsonLogLine();
+        org.junit.jupiter.api.Assertions.assertTrue(line.endsWith("\n"));
+
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject parsed =
+                new com.amazonaws.lambda.thirdparty.org.json.JSONObject(line);
+        assertEquals("DEBUG", parsed.getString("level"));
+        org.junit.jupiter.api.Assertions.assertNotNull(parsed.getString("timestamp"));
+        assertEquals(3, parsed.length());
+
+        com.amazonaws.lambda.thirdparty.org.json.JSONObject message = parsed.getJSONObject("message");
+        assertEquals("runtime_worker_pool_initializing", message.getString("event"));
+        assertEquals(16, message.getInt("workerCount"));
+        assertEquals(16, message.getInt("executionEnvironmentMaxConcurrency"));
+        assertEquals(3, message.length());
+    }
+
+    @Test
+    @Timeout(value = 1, unit = TimeUnit.MINUTES)
     void testInvocationIdIsPassedToReportSuccess() throws Throwable {
         when(concurrencyConfig.isMultiConcurrent()).thenReturn(false);
 

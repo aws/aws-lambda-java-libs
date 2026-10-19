@@ -1,0 +1,68 @@
+name: dockerized-test
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ['*']
+    paths:
+      - 'aws-lambda-java-core/**'
+      - 'aws-lambda-java-serialization/**'
+      - 'aws-lambda-java-runtime-interface-client/**'
+      - '.github/workflows/dockerized-test.yml'
+  workflow_dispatch:
+
+jobs:
+  dockerized-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          # The core/serialization/RIC builds require a JDK 8 toolchain
+          # (maven-toolchains-plugin: [1.8,9)); 25 is the JVM Maven runs on.
+          java-version: |
+            8
+            25
+          distribution: corretto
+          cache: maven
+
+      - name: Build core, serialization and the RIC under test
+        run: |
+          mvn -B -q install -DskipTests --file aws-lambda-java-core/pom.xml
+          mvn -B -q install -DskipTests --file aws-lambda-java-serialization/pom.xml
+          mvn -B -q clean install -DskipTests -DmultiArch=false \
+            --file aws-lambda-java-runtime-interface-client/pom.xml
+          # Stage core + serialization next to the RIC jar so the image build
+          # can pick all three up from a single ./target folder.
+          cp aws-lambda-java-core/target/aws-lambda-java-core-*.jar \
+             aws-lambda-java-runtime-interface-client/target/
+          cp aws-lambda-java-serialization/target/aws-lambda-java-serialization-*.jar \
+             aws-lambda-java-runtime-interface-client/target/
+
+      - name: Compile the W3C task handler
+        working-directory: aws-lambda-java-runtime-interface-client
+        run: |
+          javac --release 8 -cp "$(ls target/aws-lambda-java-core-*.jar)" \
+            -d test/dockerized/tasks \
+            test/dockerized/handler/W3CHandler.java
+
+      - name: Build the test image
+        working-directory: aws-lambda-java-runtime-interface-client
+        run: |
+          docker build . \
+            -t local/test \
+            -f Dockerfile.test \
+            --build-arg BASE_IMAGE=public.ecr.aws/lambda/java:25
+
+      - name: Run dockerized suites
+        uses: aws/containerized-test-runner-for-aws-lambda@0863dd17b5fc19585250a2405c0f939a77b4f397 # main
+        with:
+          suiteFileArray: '["./aws-lambda-java-runtime-interface-client/test/dockerized/suites/*.json"]'
+          dockerImageName: 'local/test'
+          taskFolder: './aws-lambda-java-runtime-interface-client/test/dockerized/tasks'

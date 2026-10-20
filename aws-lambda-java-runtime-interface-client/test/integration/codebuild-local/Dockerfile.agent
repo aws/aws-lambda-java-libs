@@ -1,5 +1,8 @@
-# syntax=docker/dockerfile:1.4
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:8
+# No "# syntax=" directive: it would pull the frontend from Docker Hub, and the
+# built-in one already supports the heredoc below.
+# Set to the ECR pull-through cache by .github/actions/ecr-pull-through-login.
+ARG BASE_REGISTRY=public.ecr.aws
+FROM ${BASE_REGISTRY}/amazoncorretto/amazoncorretto:8
 
 # Install docker and buildx extension.
 # gnupg2 provides gpg/gpgv/gpg-agent so build-jni-lib.sh can GPG-verify the prebuilt assets.

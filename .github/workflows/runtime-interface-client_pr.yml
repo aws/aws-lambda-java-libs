@@ -16,6 +16,9 @@ permissions:
 jobs:
 
   smoke-test-arch:
+    permissions:
+      id-token: write  # ECR pull-through login; forks don't get a token
+      contents: read
     strategy:
       fail-fast: true
       matrix:
@@ -44,6 +47,13 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
+    - name: Log in to the ECR pull-through cache
+      uses: ./.github/actions/ecr-pull-through-login
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ECR_PULL_THROUGH }}
+        aws-region: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+
     - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make pr-${{ matrix.arch }}
@@ -51,6 +61,9 @@ jobs:
         IS_JAVA_8: true
 
   build-arch:
+    permissions:
+      id-token: write  # ECR pull-through login; forks don't get a token
+      contents: read
     strategy:
       fail-fast: true
       matrix:
@@ -84,6 +97,13 @@ jobs:
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
 
+    - name: Log in to the ECR pull-through cache
+      uses: ./.github/actions/ecr-pull-through-login
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ECR_PULL_THROUGH }}
+        aws-region: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+
     - name: Test Runtime Interface Client build - Run 'build-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
       run: make build-${{ matrix.arch }}
@@ -107,12 +127,16 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   integration-test-matrix:
+    permissions:
+      id-token: write  # ECR pull-through login; forks don't get a token
+      contents: read
     runs-on: ${{ matrix.arch.runner }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
-      # Every shard pulls its images anonymously from public.ecr.aws, and shards
-      # started together trip its rate limit (429), so cap how many run at once.
+      # Fork PRs get no OIDC token for the ECR pull-through cache, so their shards
+      # pull anonymously from public.ecr.aws, and shards started together trip
+      # its rate limit (429). Cap how many run at once.
       max-parallel: 4
       matrix:
         buildspec:
@@ -145,6 +169,13 @@ jobs:
       uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       with:
         install: true
+
+    - name: Log in to the ECR pull-through cache
+      uses: ./.github/actions/ecr-pull-through-login
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ECR_PULL_THROUGH }}
+        aws-region: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
 
     - name: Run OS integration test - 'test-integ' target
       working-directory: ./aws-lambda-java-runtime-interface-client

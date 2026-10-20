@@ -1,6 +1,7 @@
 ARG DISTRO_VERSION
+ARG BASE_REGISTRY=public.ecr.aws
 
-FROM public.ecr.aws/docker/library/alpine:${DISTRO_VERSION}
+FROM ${BASE_REGISTRY}/docker/library/alpine:${DISTRO_VERSION}
 
 RUN apk update && \
     apk add openjdk8

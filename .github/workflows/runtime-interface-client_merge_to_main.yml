@@ -17,6 +17,7 @@ on:
     paths:
     - 'aws-lambda-java-runtime-interface-client/**'
     - '.github/workflows/runtime-interface-client_*.yml'
+    - '.github/actions/**'
 
 jobs:
 
@@ -47,7 +48,14 @@ jobs:
 
     - name: Available buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
-          
+
+    - name: Log in to the ECR pull-through cache
+      uses: ./.github/actions/ecr-pull-through-login
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ECR_PULL_THROUGH }}
+        aws-region: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
@@ -96,6 +104,7 @@ jobs:
   # codecov/project status on identical code.
   coverage:
     permissions:
+      id-token: write  # ECR pull-through login
       contents: read
     strategy:
       fail-fast: false
@@ -129,6 +138,13 @@ jobs:
     - name: Build and install serialization dependency locally
       working-directory: ./aws-lambda-java-serialization
       run: mvn clean install
+
+    - name: Log in to the ECR pull-through cache
+      uses: ./.github/actions/ecr-pull-through-login
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ECR_PULL_THROUGH }}
+        aws-region: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
 
     - name: Build Runtime Interface Client - Run 'build-${{ matrix.arch }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client

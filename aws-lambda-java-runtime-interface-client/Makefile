@@ -28,6 +28,7 @@ test:
 setup-codebuild-agent:
 	test/integration/codebuild-local/docker-retry.sh docker build --load -t codebuild-agent \
 	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
+	 --build-arg BASE_REGISTRY=$(or $(BASE_REGISTRY),public.ecr.aws) \
 	 -f test/integration/codebuild-local/Dockerfile.agent \
 	 test/integration/codebuild-local
 

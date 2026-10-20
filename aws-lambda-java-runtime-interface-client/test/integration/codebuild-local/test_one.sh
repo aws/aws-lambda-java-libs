@@ -18,12 +18,15 @@ function usage {
     >&2 echo "  env                    Additional environment variables file."
 }
 
-# codebuild/local-builds images are not multi-architectural
+# codebuild/local-builds images are not multi-architectural.
+# BASE_REGISTRY points at the ECR pull-through cache when
+# .github/actions/ecr-pull-through-login has logged this runner in.
 function get_local_agent_image() {
+    local registry="${BASE_REGISTRY:-public.ecr.aws}"
     if [[ "$(arch)" == "aarch64" ]]; then
-        echo "public.ecr.aws/codebuild/local-builds:aarch64"
+        echo "$registry/codebuild/local-builds:aarch64"
     else
-        echo "public.ecr.aws/codebuild/local-builds:latest"
+        echo "$registry/codebuild/local-builds:latest"
     fi
 }
 
@@ -57,6 +60,16 @@ main() {
         echo "RUNTIME_VERSION=$RUNTIME_VERSION"
         echo "PLATFORM=$PLATFORM"
     }  >> "$ENVFILE"
+
+    # Set by .github/actions/ecr-pull-through-login. The build container has its
+    # own docker config, so it logs in to the pull-through cache with this token
+    # (see the install phase of the buildspecs).
+    if [ -n "${BASE_REGISTRY:-}" ] && [ -f "${ECR_PASSWORD_FILE:-}" ]; then
+        {
+            echo "BASE_REGISTRY=$BASE_REGISTRY"
+            echo "ECR_PASSWORD=$(cat "$ECR_PASSWORD_FILE")"
+        } >> "$ENVFILE"
+    fi
 
     ARTIFACTS_DIR="$CODEBUILD_TEMP_DIR/artifacts"
     mkdir -p "$ARTIFACTS_DIR"

@@ -1,0 +1,97 @@
+name: "Log in to the ECR pull-through cache (OIDC)"
+description: >
+  Assumes the repo's OIDC role, logs Docker in to the ECR pull-through cache and
+  exports BASE_REGISTRY so the native JNI build (src/main/jni/build-jni-lib.sh)
+  pulls its base images from there instead of public.ecr.aws. Anonymous pulls
+  from shared GitHub-hosted runner IPs regularly hit public.ecr.aws's 429
+  "Data limit exceeded".
+
+  Pull requests from forks get neither secrets nor an OIDC token, so role-to-assume
+  arrives empty. The action then does nothing, BASE_REGISTRY stays unset, and the
+  build falls back to its public.ecr.aws default. The calling job needs
+  `permissions: id-token: write`.
+
+  The role's credentials and region are only given to the login step; nothing is
+  exported to the job environment, so later steps (make, mvn test, the docker
+  builds) never see them.
+
+inputs:
+  role-to-assume:
+    description: "ARN of the OIDC role allowed to pull through the cache. Empty skips the login."
+    required: false
+    default: ""
+  aws-region:
+    description: "Region of the pull-through cache."
+    required: false
+    default: ""
+  aws-account-id:
+    description: "Account that owns the pull-through cache."
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Skip ECR login when no role is available
+      if: inputs.role-to-assume == ''
+      shell: bash
+      run: echo "No ECR pull-through role (fork PR or unset secret); base images come from public.ecr.aws."
+
+    - name: Assume the ECR pull-through role
+      id: creds
+      if: inputs.role-to-assume != ''
+      continue-on-error: true
+      uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+      with:
+        aws-region: ${{ inputs.aws-region }}
+        role-to-assume: ${{ inputs.role-to-assume }}
+        role-session-name: GitHubActionsEcrPullThrough
+        output-env-credentials: false
+        output-credentials: true
+
+    # BASE_REGISTRY is only exported once the login succeeds and both JNI base
+    # images resolve through the cache (the first pull of a tag needs
+    # BatchImportUpstreamImage). On any failure the build keeps the
+    # public.ecr.aws default rather than failing on the private registry.
+    - name: Log in and export BASE_REGISTRY
+      if: inputs.role-to-assume != '' && steps.creds.outcome == 'success'
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
+        AWS_SESSION_TOKEN: ${{ steps.creds.outputs.aws-session-token }}
+        AWS_REGION: ${{ inputs.aws-region }}
+        ECR_REGISTRY: ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com
+      run: |
+        if ! password=$(aws ecr get-login-password --region "$AWS_REGION"); then
+          echo "::warning::ECR login failed; base images come from public.ecr.aws."
+          exit 0
+        fi
+        echo "::add-mask::$password"
+        if ! docker login --username AWS --password-stdin "$ECR_REGISTRY" <<< "$password"; then
+          echo "::warning::ECR login failed; base images come from public.ecr.aws."
+          exit 0
+        fi
+        # Same images as src/main/jni/Dockerfile.glibc and Dockerfile.musl, plus the
+        # CodeBuild agent (test/integration/codebuild-local/Dockerfile.agent) and the
+        # local-builds image test_one.sh runs it with (tagged per architecture).
+        if [ "$(uname -m)" = "aarch64" ]; then local_builds_tag=aarch64; else local_builds_tag=latest; fi
+        for image in amazonlinux/amazonlinux:2 docker/library/alpine:3 amazoncorretto/amazoncorretto:8 \
+            "codebuild/local-builds:$local_builds_tag"; do
+          if ! docker buildx imagetools inspect "$ECR_REGISTRY/ecr-public/$image" > /dev/null; then
+            echo "::warning::$image is not reachable through the ECR pull-through cache; base images come from public.ecr.aws."
+            exit 0
+          fi
+        done
+        # The integration tests run docker inside a CodeBuild local container, which
+        # doesn't see this runner's docker login. test_one.sh hands it this
+        # file so the container can log in itself.
+        password_file="$RUNNER_TEMP/ecr-pull-through-password"
+        (umask 077 && printf '%s' "$password" > "$password_file")
+        echo "ECR_PASSWORD_FILE=$password_file" >> "$GITHUB_ENV"
+        echo "BASE_REGISTRY=$ECR_REGISTRY/ecr-public" >> "$GITHUB_ENV"
+
+    - name: Warn on role assumption failure
+      if: inputs.role-to-assume != '' && steps.creds.outcome != 'success'
+      shell: bash
+      run: echo "::warning::Could not assume the ECR pull-through role; base images come from public.ecr.aws."

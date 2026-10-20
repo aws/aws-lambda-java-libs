@@ -22,14 +22,8 @@ batch:
 phases:
   install:
     commands:
-      - >
-        if [[ -z "${DOCKERHUB_USERNAME}" && -z "${DOCKERHUB_PASSWORD}" ]];
-        then
-            echo "DockerHub credentials not set as CodeBuild environment variables. Continuing without docker login."
-        else
-            echo "Performing DockerHub login . . ."
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-        fi
+      # Sourced, not run: it unsets BASE_REGISTRY here when the ECR login fails.
+      - . aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/docker_login.sh
   pre_build:
     commands:
       # Log some environment variables for troubleshooting
@@ -59,7 +53,8 @@ phases:
           -f "${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp" \
           -t "${IMAGE_TAG}" \
           --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
-          --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
+          --build-arg DISTRO_VERSION="${DISTRO_VERSION}" \
+          --build-arg BASE_REGISTRY="${BASE_REGISTRY:-public.ecr.aws}"
   build:
     commands:
       - aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_invocation_test.sh

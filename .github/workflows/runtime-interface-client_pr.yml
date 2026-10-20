@@ -15,12 +15,12 @@ permissions:
 
 jobs:
 
-  # Smoke and integration tests build and run containers, so they run on
-  # CodeBuild-hosted runners (projects aws-lambda-java-libs-pr-integ-<arch>,
-  # managed by the maintainers' AWS infrastructure). Image pulls from
-  # GitHub-hosted runners share IPs with other tenants and hit the
-  # public.ecr.aws anonymous data limit; these pull through an ECR
-  # pull-through cache instead.
+  # Smoke and integration tests build and run containers, so they run on the
+  # same CodeBuild-hosted runners as the release workflows
+  # (aws-lambda-java-libs-test-trigger-<arch>), in an egress-locked network.
+  # Image pulls from GitHub-hosted runners share IPs with other tenants and
+  # hit the public.ecr.aws anonymous data limit; these pull through an ECR
+  # pull-through cache instead, and Maven resolves through CodeArtifact.
   #
   # They are skipped on fork PRs: those runners run in our AWS account. On a
   # fork PR the smoke-test and integration-test checks pass with a notice, and
@@ -35,10 +35,10 @@ jobs:
       matrix:
         arch:
           - name: x86_64
-            runner: x86_64
+            runner: x86
           - name: aarch64
             runner: arm64
-    runs-on: codebuild-aws-lambda-java-libs-pr-integ-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     name: "smoke-test (${{ matrix.arch.name }})"
     # ECR pull-through cache for the base images, as in the release workflow.
     # ECR_REGISTRY is the login target; BASE_REGISTRY (with the /ecr-public
@@ -50,12 +50,21 @@ jobs:
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+    - name: Cache Maven repository
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
-        java-version: 8
-        distribution: corretto
-        cache: maven
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-${{ runner.arch }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-maven-
+
+    # The runners' egress lock blocks the JDK download in actions/setup-java
+    # and Maven Central, so use the image's JDK and the CodeArtifact proxy.
+    - name: Use the runner image's preinstalled Corretto 8
+      uses: ./.github/actions/use-runner-corretto8
+
+    - name: Configure Maven CodeArtifact mirror
+      uses: ./.github/actions/configure-maven-mirror
 
     # Uses the runner role's ambient credentials.
     - name: Log in to Amazon ECR (pull-through cache)
@@ -136,7 +145,7 @@ jobs:
       id: load
       run: |
         MATRIX=$(jq -c '{include: [.[] | .platforms[] as $p | {os, distro, runtime, platform: $p,
-          runner: (if $p == "linux/amd64" then "x86_64" else "arm64" end),
+          runner: (if $p == "linux/amd64" then "x86" else "arm64" end),
           label: (if $p == "linux/amd64" then "x64" else "arm64" end)}]}' \
           aws-lambda-java-runtime-interface-client/test/integration/os-test-matrix.json)
         echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
@@ -144,7 +153,7 @@ jobs:
   integration-test-matrix:
     needs: load-integration-test-matrix
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: codebuild-aws-lambda-java-libs-pr-integ-${{ matrix.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
@@ -162,12 +171,21 @@ jobs:
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+    - name: Cache Maven repository
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
-        java-version: 8
-        distribution: corretto
-        cache: maven
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-${{ runner.arch }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-maven-
+
+    # The runners' egress lock blocks the JDK download in actions/setup-java
+    # and Maven Central, so use the image's JDK and the CodeArtifact proxy.
+    - name: Use the runner image's preinstalled Corretto 8
+      uses: ./.github/actions/use-runner-corretto8
+
+    - name: Configure Maven CodeArtifact mirror
+      uses: ./.github/actions/configure-maven-mirror
 
     # Uses the runner role's ambient credentials.
     - name: Log in to Amazon ECR (pull-through cache)

@@ -37,6 +37,9 @@ setup-codebuild-agent:
 .PHONY: test-smoke
 test-smoke: test-smoke-x86_64 test-smoke-aarch64
 
+# amazoncorretto 11 is left out of the CI integration matrix
+# (buildspec.os.amazoncorretto.yml) because smoke already covers it. Changing it
+# here changes integration coverage too.
 .PHONY: test-smoke-x86_64
 test-smoke-x86_64: setup-codebuild-agent
 	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/amd64
@@ -64,11 +67,13 @@ dev: test
 pr: test test-smoke
 
 # Per-architecture PR checks so CI can run each on a native runner (no QEMU).
+# No `test` here: the required `build` check already runs the unit tests
+# (build-<arch>), so CI would only run them twice.
 .PHONY: pr-x86_64
-pr-x86_64: test test-smoke-x86_64
+pr-x86_64: test-smoke-x86_64
 
 .PHONY: pr-aarch64
-pr-aarch64: test test-smoke-aarch64
+pr-aarch64: test-smoke-aarch64
 
 .PHONY: build
 build: build-x86_64 build-aarch64

@@ -64,13 +64,17 @@ static void throwLambdaRuntimeClientException(JNIEnv *env, std::string message, 
   env->Throw(lambdaRuntimeException);
 }
 
-static std::string toNativeString(JNIEnv *env, jbyteArray jArray) {
-  int length = env->GetArrayLength(jArray);
-  jbyte* bytes = env->GetByteArrayElements(jArray, NULL);
-  std::string nativeString = std::string((char *)bytes, length);
-  env->ReleaseByteArrayElements(jArray, bytes, JNI_ABORT);
+// Copies the first length bytes of the array straight into the string. GetByteArrayElements would usually make a
+// temporary copy first. A length outside the array raises ArrayIndexOutOfBoundsException; callers check for it.
+static std::string toNativeString(JNIEnv *env, jbyteArray jArray, jsize length) {
+  std::string nativeString(length > 0 ? length : 0, '\0');
+  env->GetByteArrayRegion(jArray, 0, length, reinterpret_cast<jbyte*>(&nativeString[0]));
   env->DeleteLocalRef(jArray);
   return nativeString;
+}
+
+static std::string toNativeString(JNIEnv *env, jbyteArray jArray) {
+  return toNativeString(env, jArray, env->GetArrayLength(jArray));
 }
 
 JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_initializeClient(JNIEnv *env, jobject thisObject, jbyteArray userAgent, jbyteArray awsLambdaRuntimeApi) {
@@ -129,12 +133,7 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
       return NULL;
 }
 
-JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponse
-  (JNIEnv *env, jobject thisObject, jbyteArray jrequestId, jbyteArray jresponseArray, jbyteArray jinvocationId) {
-  std::string payload = toNativeString(env, jresponseArray);
-  if ((env)->ExceptionOccurred()){
-    return;
-  }
+static void postInvocationResponse(JNIEnv *env, jbyteArray jrequestId, std::string payload, jbyteArray jinvocationId) {
   std::string requestId =  toNativeString(env, jrequestId);
   if ((env)->ExceptionOccurred()){
     return;
@@ -148,10 +147,28 @@ JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_run
     }
   }
 
-  auto response = aws::lambda_runtime::invocation_response::success(payload, "application/json");
+  auto response = aws::lambda_runtime::invocation_response::success(std::move(payload), "application/json");
   auto outcome = CLIENT->post_success(requestId, response, invocationId);
   if (!outcome.is_success()) {
     std::string errorMessage("Failed to post invocation response.");
     throwLambdaRuntimeClientException(env, errorMessage, outcome.get_failure());
   }
+}
+
+JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponse
+  (JNIEnv *env, jobject thisObject, jbyteArray jrequestId, jbyteArray jresponseArray, jbyteArray jinvocationId) {
+  std::string payload = toNativeString(env, jresponseArray);
+  if ((env)->ExceptionOccurred()){
+    return;
+  }
+  postInvocationResponse(env, jrequestId, std::move(payload), jinvocationId);
+}
+
+JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponseWithLength
+  (JNIEnv *env, jobject thisObject, jbyteArray jrequestId, jbyteArray jresponseArray, jint responseLength, jbyteArray jinvocationId) {
+  std::string payload = toNativeString(env, jresponseArray, responseLength);
+  if ((env)->ExceptionOccurred()){
+    return;
+  }
+  postInvocationResponse(env, jrequestId, std::move(payload), jinvocationId);
 }

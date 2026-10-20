@@ -23,4 +23,7 @@ class NativeClient {
 
     static native void postInvocationResponse(byte[] requestId, byte[] response, byte[] invocationId);
 
+    /** Posts the first responseLength bytes of response, so callers can pass a buffer's backing array without copying it. */
+    static native void postInvocationResponseWithLength(byte[] requestId, byte[] response, int responseLength, byte[] invocationId);
+
 }

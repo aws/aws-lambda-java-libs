@@ -19,6 +19,9 @@ JNIEXPORT jobject JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_
 JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponse
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray);
 
+JNIEXPORT void JNICALL Java_com_amazonaws_services_lambda_runtime_api_client_runtimeapi_NativeClient_postInvocationResponseWithLength
+  (JNIEnv *, jobject, jbyteArray, jbyteArray, jint, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif

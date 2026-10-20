@@ -72,6 +72,9 @@ class EventHandlerLoaderTest {
         String result = resultBytes.toString();
 
         assertEquals("\"success\"", result);
+        // AWSLambda posts this buffer through ResponseBufferViewer, which relies on the JDK's own writeTo. If this
+        // fails, the buffer became a subclass: check that its writeTo still makes a single write(buf, 0, count).
+        assertEquals(ByteArrayOutputStream.class, resultBytes.getClass());
     }
 
     private static InvocationRequest getTestInvocationRequest() {

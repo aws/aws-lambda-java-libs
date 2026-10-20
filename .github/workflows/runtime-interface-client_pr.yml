@@ -17,9 +17,10 @@ jobs:
 
   # Smoke and integration tests build and run containers, so they run on
   # CodeBuild-hosted runners (projects aws-lambda-java-libs-pr-integ-<arch>,
-  # defined in LambdaRuntimeApiClientsCdk). Image pulls from GitHub-hosted
-  # runners share IPs with other tenants and hit the public.ecr.aws anonymous
-  # data limit; pulls from CodeBuild are not capped.
+  # managed by the maintainers' AWS infrastructure). Image pulls from
+  # GitHub-hosted runners share IPs with other tenants and hit the
+  # public.ecr.aws anonymous data limit; these pull through an ECR
+  # pull-through cache instead.
   #
   # They are skipped on fork PRs: those runners run in our AWS account. On a
   # fork PR the smoke-test and integration-test checks pass with a notice, and

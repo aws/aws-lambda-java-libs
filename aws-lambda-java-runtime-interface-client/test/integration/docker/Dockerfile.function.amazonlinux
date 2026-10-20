@@ -1,6 +1,7 @@
+ARG BASE_REGISTRY=public.ecr.aws
 ARG DISTRO_VERSION
 
-FROM public.ecr.aws/amazonlinux/amazonlinux:${DISTRO_VERSION}
+FROM ${BASE_REGISTRY}/amazonlinux/amazonlinux:${DISTRO_VERSION}
 
 RUN yum install -y java-1.8.0-openjdk
 

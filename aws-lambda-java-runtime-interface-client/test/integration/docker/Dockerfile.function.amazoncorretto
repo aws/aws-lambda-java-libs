@@ -1,6 +1,7 @@
+ARG BASE_REGISTRY=public.ecr.aws
 ARG RUNTIME_VERSION
 
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:${RUNTIME_VERSION}
+FROM ${BASE_REGISTRY}/amazoncorretto/amazoncorretto:${RUNTIME_VERSION}
 
 ADD aws-lambda-java-runtime-interface-client/test/integration/test-handler/target/HelloWorld-1.0.jar .
 

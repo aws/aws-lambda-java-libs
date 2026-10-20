@@ -15,17 +15,37 @@ permissions:
 
 jobs:
 
+  # Smoke and integration tests build and run containers, so they run on
+  # CodeBuild-hosted runners (projects aws-lambda-java-libs-pr-integ-<arch>,
+  # defined in LambdaRuntimeApiClientsCdk). Image pulls from GitHub-hosted
+  # runners share IPs with other tenants and hit the public.ecr.aws anonymous
+  # data limit; pulls from CodeBuild are not capped.
+  #
+  # They are skipped on fork PRs: those runners run in our AWS account. On a
+  # fork PR the smoke-test and integration-test checks pass with a notice, and
+  # a maintainer must run the tests before merging by pushing the fork's
+  # commits to a branch here. This `if` only saves a run; the security boundary
+  # is the repository setting that requires maintainer approval before any fork
+  # workflow runs.
   smoke-test-arch:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - arch: x86_64
-            runner: ubuntu-latest
-          - arch: aarch64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    name: "smoke-test (${{ matrix.arch }})"
+        arch:
+          - name: x86_64
+            runner: x86_64
+          - name: aarch64
+            runner: arm64
+    runs-on: codebuild-aws-lambda-java-libs-pr-integ-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
+    name: "smoke-test (${{ matrix.arch.name }})"
+    # ECR pull-through cache for the base images, as in the release workflow.
+    # ECR_REGISTRY is the login target; BASE_REGISTRY (with the /ecr-public
+    # prefix) is read by the JNI build and by run_os_test.sh.
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
+      BASE_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com/ecr-public
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -36,19 +56,15 @@ jobs:
         distribution: corretto
         cache: maven
 
-    - name: Build and install core dependency locally
-      working-directory: ./aws-lambda-java-core
-      run: mvn clean install
+    # Uses the runner role's ambient credentials.
+    - name: Log in to Amazon ECR (pull-through cache)
+      run: |
+        aws ecr get-login-password --region "$AWS_REGION" \
+          | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
-    - name: Build and install serialization dependency locally
-      working-directory: ./aws-lambda-java-serialization
-      run: mvn clean install
-
-    - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch }}' target
+    - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch.name }}' target
       working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr-${{ matrix.arch }}
-      env:
-        IS_JAVA_8: true
+      run: make pr-${{ matrix.arch.name }}
 
   build-arch:
     strategy:
@@ -106,51 +122,65 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  # The OS matrix lives in test/integration/os-test-matrix.json so that
+  # `make test-integ` runs the same combinations locally.
+  load-integration-test-matrix:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.load.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - name: Load OS test matrix
+      id: load
+      run: |
+        MATRIX=$(jq -c '{include: [.[] | .platforms[] as $p | {os, distro, runtime, platform: $p,
+          runner: (if $p == "linux/amd64" then "x86_64" else "arm64" end),
+          label: (if $p == "linux/amd64" then "x64" else "arm64" end)}]}' \
+          aws-lambda-java-runtime-interface-client/test/integration/os-test-matrix.json)
+        echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+
   integration-test-matrix:
-    runs-on: ${{ matrix.arch.runner }}
+    needs: load-integration-test-matrix
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: codebuild-aws-lambda-java-libs-pr-integ-${{ matrix.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
-      # Every shard pulls its images anonymously from public.ecr.aws, and shards
-      # started together trip its rate limit (429), so cap how many run at once.
-      max-parallel: 4
-      matrix:
-        buildspec:
-          - buildspec.os.alpine.yml
-          - buildspec.os.amazoncorretto.yml
-          - buildspec.os.amazonlinux.1.yml
-          - buildspec.os.amazonlinux.2.yml
-          - buildspec.os.debian.yml
-          - buildspec.os.ubuntu.yml
-        arch:
-          - label: x64
-            runner: ubuntu-latest
-            platform: linux/amd64
-          - label: arm64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64/v8
-        exclude:
-          # Amazon Linux 1 was never published for ARM64 (x86_64 only), so
-          # public.ecr.aws/amazonlinux/amazonlinux:1 has no arm64 manifest.
-          - buildspec: buildspec.os.amazonlinux.1.yml
-            arch:
-              label: arm64
-              runner: ubuntu-24.04-arm
-              platform: linux/arm64/v8
-    name: "integration-test (${{ matrix.buildspec }} / ${{ matrix.arch.label }})"
+      # Stay well inside the account's concurrent CodeBuild build quota.
+      max-parallel: 8
+      matrix: ${{ fromJson(needs.load-integration-test-matrix.outputs.matrix) }}
+    name: "integration-test (${{ matrix.os }} ${{ matrix.distro }} / ${{ matrix.label }})"
+    # ECR pull-through cache for the base images, as in the release workflow.
+    # ECR_REGISTRY is the login target; BASE_REGISTRY (with the /ecr-public
+    # prefix) is read by the JNI build and by run_os_test.sh.
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
+      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
+      BASE_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com/ecr-public
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
       with:
-        install: true
+        java-version: 8
+        distribution: corretto
+        cache: maven
 
-    - name: Run OS integration test - 'test-integ' target
-      working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make test-integ BUILDSPEC=test/integration/codebuild/${{ matrix.buildspec }}
+    # Uses the runner role's ambient credentials.
+    - name: Log in to Amazon ECR (pull-through cache)
+      run: |
+        aws ecr get-login-password --region "$AWS_REGION" \
+          | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+    - name: Run OS integration test
+      run: aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_os_test.sh
       env:
-        PLATFORM_FILTER: ${{ matrix.arch.platform }}
+        OS_DISTRIBUTION: ${{ matrix.os }}
+        DISTRO_VERSION: ${{ matrix.distro }}
+        RUNTIME_VERSION: ${{ matrix.runtime }}
+        PLATFORM: ${{ matrix.platform }}
 
   integration-test:
     needs: integration-test-matrix
@@ -158,8 +188,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check integration-test results
+        env:
+          RESULT: ${{ needs.integration-test-matrix.result }}
+          IS_FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
         run: |
-          if [ "${{ needs.integration-test-matrix.result }}" != "success" ]; then
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::notice::Integration tests are skipped on fork PRs. A maintainer must run them before merging, by pushing these commits to a branch in this repository and opening a PR from it."
+            exit 0
+          fi
+          if [ "$RESULT" != "success" ]; then
             echo "Integration tests failed on one or more OS/arch combinations"
             exit 1
           fi
@@ -170,8 +207,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check smoke-test results
+        env:
+          RESULT: ${{ needs.smoke-test-arch.result }}
+          IS_FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
         run: |
-          if [ "${{ needs.smoke-test-arch.result }}" != "success" ]; then
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::notice::Smoke tests are skipped on fork PRs. A maintainer must run them before merging, by pushing these commits to a branch in this repository and opening a PR from it."
+            exit 0
+          fi
+          if [ "$RESULT" != "success" ]; then
             echo "Smoke tests failed on one or more architectures"
             exit 1
           fi

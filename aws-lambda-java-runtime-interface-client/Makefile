@@ -1,9 +1,3 @@
-x86_64_ALIAS := amd64
-aarch64_ALIAS := arm64
-ARCHITECTURE := $(shell arch)
-ARCHITECTURE_ALIAS := $($(shell echo "$(ARCHITECTURE)_ALIAS"))
-ARCHITECTURE_ALIAS := $(or $(ARCHITECTURE_ALIAS),amd64) # on any other archs defaulting to amd64
-
 # Java 8 does not support passing some args (such add --add-opens) so we need to clear them
 ifeq ($(IS_JAVA_8),true)
 	EXTRA_LOAD_ARG := -DargLineForReflectionTestOnly=""
@@ -24,39 +18,40 @@ target:
 test:
 	mvn test $(EXTRA_LOAD_ARG)
 
-.PHONY: setup-codebuild-agent
-setup-codebuild-agent:
-	test/integration/codebuild-local/docker-retry.sh docker build --load -t codebuild-agent \
-	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
-	 -f test/integration/codebuild-local/Dockerfile.agent \
-	 test/integration/codebuild-local
+# OS integration tests. Each run builds the RIC, then builds and invokes a
+# function image for one OS / distro version / runtime / platform (see
+# test/integration/codebuild/scripts/run_os_test.sh). They need docker, maven
+# and a JDK 8. CI runs them on CodeBuild-hosted runners.
+RUN_OS_TEST := test/integration/codebuild/scripts/run_os_test.sh
 
 # Smoke tests are split per-architecture so CI can run each set on a native
-# runner. Running the linux/arm64/v8 combos under QEMU on an x86_64 host makes
-# `mvn install` recompile curl for aarch64 emulated, which takes ~30 minutes.
+# runner. amazoncorretto 11 is left out of the integration matrix
+# (test/integration/os-test-matrix.json) because smoke already covers it.
+# Changing it here changes integration coverage too.
 .PHONY: test-smoke
 test-smoke: test-smoke-x86_64 test-smoke-aarch64
 
-# amazoncorretto 11 is left out of the CI integration matrix
-# (buildspec.os.amazoncorretto.yml) because smoke already covers it. Changing it
-# here changes integration coverage too.
 .PHONY: test-smoke-x86_64
-test-smoke-x86_64: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/amd64
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/amd64
+test-smoke-x86_64:
+	OS_DISTRIBUTION=alpine DISTRO_VERSION=3.15 RUNTIME_VERSION=corretto11 PLATFORM=linux/amd64 $(RUN_OS_TEST)
+	OS_DISTRIBUTION=amazoncorretto DISTRO_VERSION=amazoncorretto RUNTIME_VERSION=11 PLATFORM=linux/amd64 $(RUN_OS_TEST)
 
 .PHONY: test-smoke-aarch64
-test-smoke-aarch64: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
+test-smoke-aarch64:
+	OS_DISTRIBUTION=alpine DISTRO_VERSION=3.15 RUNTIME_VERSION=corretto11 PLATFORM=linux/arm64/v8 $(RUN_OS_TEST)
+	OS_DISTRIBUTION=amazoncorretto DISTRO_VERSION=amazoncorretto RUNTIME_VERSION=11 PLATFORM=linux/arm64/v8 $(RUN_OS_TEST)
 
-# BUILDSPEC can point to the buildspec directory (default, runs every OS) or to a
-# single buildspec file, which is how CI parallelizes the run across OSes.
-BUILDSPEC ?= test/integration/codebuild
-
+# Without arguments, runs every combination in test/integration/os-test-matrix.json
+# (the CI matrix) for the host's platform; PLATFORMS=all runs every platform.
+# With arguments, runs one combination, e.g.
+#   make test-integ OS_DISTRIBUTION=debian DISTRO_VERSION=bookworm RUNTIME_VERSION=corretto11 PLATFORM=linux/amd64
 .PHONY: test-integ
-test-integ: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh $(BUILDSPEC)
+test-integ:
+ifeq ($(OS_DISTRIBUTION),)
+	test/integration/codebuild/scripts/run_all_os_tests.sh
+else
+	OS_DISTRIBUTION=$(OS_DISTRIBUTION) DISTRO_VERSION=$(DISTRO_VERSION) RUNTIME_VERSION=$(RUNTIME_VERSION) PLATFORM=$(PLATFORM) $(RUN_OS_TEST)
+endif
 
 # Command to run everytime you make changes to verify everything works
 .PHONY: dev

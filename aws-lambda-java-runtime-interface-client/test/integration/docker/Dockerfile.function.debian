@@ -1,6 +1,7 @@
+ARG BASE_REGISTRY=public.ecr.aws
 ARG DISTRO_VERSION
 
-FROM public.ecr.aws/debian/debian:${DISTRO_VERSION} as build-image
+FROM ${BASE_REGISTRY}/debian/debian:${DISTRO_VERSION} as build-image
 
 RUN apt-get update && \
     apt-get install -y wget gnupg ca-certificates && \
@@ -9,7 +10,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y java-11-amazon-corretto-jdk
 
-FROM public.ecr.aws/debian/debian:${DISTRO_VERSION}
+FROM ${BASE_REGISTRY}/debian/debian:${DISTRO_VERSION}
     
 COPY --from=build-image /usr/lib/jvm /usr/lib/jvm
 

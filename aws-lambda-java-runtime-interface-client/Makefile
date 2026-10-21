@@ -18,10 +18,7 @@ target:
 test:
 	mvn test $(EXTRA_LOAD_ARG)
 
-# OS integration tests. Each run builds the RIC, then builds and invokes a
-# function image for one OS / distro version / runtime / platform (see
-# test/integration/codebuild/scripts/run_os_test.sh). They need docker, maven
-# and a JDK 8. CI runs them on CodeBuild-hosted runners.
+# OS integration tests (see test/integration/codebuild/scripts/run_os_test.sh).
 RUN_OS_TEST := test/integration/codebuild/scripts/run_os_test.sh
 
 # Smoke tests are split per-architecture so CI can run each set on a native

@@ -1,13 +1,10 @@
 #!/bin/bash
 # Copyright 2026 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-# Runs one OS integration test: builds the RIC and the test handler, builds a
-# function image for the given OS, distro version, runtime and platform with the
-# Runtime Interface Emulator inside, invokes it and checks the response.
-#
-# Used by the RIC PR workflow (on CodeBuild-hosted runners), by the per-OS
-# buildspecs, and locally (`make test-integ`). Needs docker, maven and a JDK 8
-# as JAVA_HOME, plus a JDK 8 maven toolchain (actions/setup-java writes one).
+# Runs one OS integration test: builds the RIC, builds a function image with the
+# Runtime Interface Emulator for one OS / version / runtime / platform, invokes
+# it and checks the response. Needs docker, maven, and JDK 8 as JAVA_HOME and
+# as a maven toolchain.
 #
 # Required environment:
 #   OS_DISTRIBUTION  alpine | amazoncorretto | amazonlinux | debian | ubuntu
@@ -16,9 +13,8 @@
 #   PLATFORM         linux/amd64 | linux/arm64/v8
 #
 # Optional environment:
-#   BASE_REGISTRY    registry the base images come from (default public.ecr.aws).
-#                    CI points it at the ECR pull-through cache; the JNI build
-#                    (src/main/jni/build-jni-lib.sh) reads the same variable.
+#   BASE_REGISTRY    registry for base images (default public.ecr.aws); also read
+#                    by the JNI build.
 
 set -euo pipefail
 
@@ -70,9 +66,7 @@ case "${PLATFORM}" in
 esac
 export RIE
 
-# A platform other than the host's (e.g. arm64 locally on an x86_64 machine)
-# needs a qemu emulator registered with binfmt_misc. CI runs every platform on
-# a native host and skips this.
+# A platform other than the host's needs a qemu emulator registered with binfmt_misc.
 if [[ "$(arch)" != "${QEMU_TARGET}" ]] && [[ ! -e "/proc/sys/fs/binfmt_misc/qemu-${QEMU_TARGET}" ]]; then
     echo "Installing ${EMULATOR} emulator"
     "${SCRIPTS_DIR}/docker-retry.sh" docker pull public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0

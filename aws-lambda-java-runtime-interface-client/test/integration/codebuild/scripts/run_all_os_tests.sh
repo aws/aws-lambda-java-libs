@@ -1,11 +1,9 @@
 #!/bin/bash
 # Copyright 2026 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-# Runs every OS integration test in test/integration/os-test-matrix.json (the
-# matrix CI runs) through run_os_test.sh, one after another. Needs jq.
-#
-# By default only the host's platform runs, since emulated platforms are much
-# slower; set PLATFORMS=all for every platform, or e.g. PLATFORMS=linux/amd64.
+# Runs every combination in test/integration/os-test-matrix.json through
+# run_os_test.sh. Only the host's platform by default (emulation is slow);
+# PLATFORMS=all or e.g. PLATFORMS=linux/amd64 to choose. Needs jq.
 
 set -euo pipefail
 

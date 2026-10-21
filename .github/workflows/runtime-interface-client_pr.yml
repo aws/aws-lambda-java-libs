@@ -15,19 +15,10 @@ permissions:
 
 jobs:
 
-  # Smoke and integration tests build and run containers, so they run on the
-  # same CodeBuild-hosted runners as the release workflows
-  # (aws-lambda-java-libs-test-trigger-<arch>), in an egress-locked network.
-  # Image pulls from GitHub-hosted runners share IPs with other tenants and
-  # hit the public.ecr.aws anonymous data limit; these pull through an ECR
-  # pull-through cache instead, and Maven resolves through CodeArtifact.
-  #
-  # They are skipped on fork PRs: those runners run in our AWS account. On a
-  # fork PR the smoke-test and integration-test checks pass with a notice, and
-  # a maintainer must run the tests before merging by pushing the fork's
-  # commits to a branch here. This `if` only saves a run; the security boundary
-  # is the repository setting that requires maintainer approval before any fork
-  # workflow runs.
+  # Smoke and integration tests run on the release CodeBuild runners, so base
+  # images come from the ECR pull-through cache instead of rate-limited
+  # anonymous public.ecr.aws pulls. Skipped on fork PRs: a maintainer runs them
+  # from a branch in this repository before merging.
   smoke-test-arch:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
@@ -40,9 +31,7 @@ jobs:
             runner: arm64
     runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     name: "smoke-test (${{ matrix.arch.name }})"
-    # ECR pull-through cache for the base images, as in the release workflow.
-    # ECR_REGISTRY is the login target; BASE_REGISTRY (with the /ecr-public
-    # prefix) is read by the JNI build and by run_os_test.sh.
+    # BASE_REGISTRY is read by the JNI build and run_os_test.sh.
     env:
       AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
       ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
@@ -58,8 +47,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ runner.arch }}-maven-
 
-    # The runners' egress lock blocks the JDK download in actions/setup-java
-    # and Maven Central, so use the image's JDK and the CodeArtifact proxy.
+    # The runners can't reach Maven Central or the setup-java JDK downloads.
     - name: Use the runner image's preinstalled Corretto 8
       uses: ./.github/actions/use-runner-corretto8
 
@@ -132,8 +120,7 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # The OS matrix lives in test/integration/os-test-matrix.json so that
-  # `make test-integ` runs the same combinations locally.
+  # Shared with `make test-integ`.
   load-integration-test-matrix:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
@@ -157,13 +144,11 @@ jobs:
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
-      # Stay well inside the account's concurrent CodeBuild build quota.
+      # Stays within the account's concurrent CodeBuild build quota.
       max-parallel: 8
       matrix: ${{ fromJson(needs.load-integration-test-matrix.outputs.matrix) }}
     name: "integration-test (${{ matrix.os }} ${{ matrix.distro }} / ${{ matrix.label }})"
-    # ECR pull-through cache for the base images, as in the release workflow.
-    # ECR_REGISTRY is the login target; BASE_REGISTRY (with the /ecr-public
-    # prefix) is read by the JNI build and by run_os_test.sh.
+    # BASE_REGISTRY is read by the JNI build and run_os_test.sh.
     env:
       AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
       ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
@@ -179,8 +164,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ runner.arch }}-maven-
 
-    # The runners' egress lock blocks the JDK download in actions/setup-java
-    # and Maven Central, so use the image's JDK and the CodeArtifact proxy.
+    # The runners can't reach Maven Central or the setup-java JDK downloads.
     - name: Use the runner image's preinstalled Corretto 8
       uses: ./.github/actions/use-runner-corretto8
 

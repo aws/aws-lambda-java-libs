@@ -4,7 +4,6 @@ version: 0.2
 env:
   variables:
     OS_DISTRIBUTION: amazoncorretto
-    JAVA_BINARY_LOCATION: "/usr/bin/java"
     DOCKER_CLI_EXPERIMENTAL: "enabled"
     DOCKER_CLI_PLUGIN_DIR: "/root/.docker/cli-plugins"
 batch:

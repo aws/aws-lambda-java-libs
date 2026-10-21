@@ -18,15 +18,17 @@ runs:
         path: ${{ runner.temp }}/jni-base-images.tar
         key: jni-base-images-${{ runner.os }}-${{ runner.arch }}-${{ steps.key.outputs.week }}
 
-    - if: steps.cache.outputs.cache-hit == 'true'
-      shell: bash
-      run: docker load -i "${{ runner.temp }}/jni-base-images.tar"
-
-    - if: steps.cache.outputs.cache-hit != 'true'
-      shell: bash
+    # Pulls on a cache miss, or when the cached tar can't be loaded.
+    - shell: bash
+      env:
+        CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+        TAR: ${{ runner.temp }}/jni-base-images.tar
       run: |
+        if [[ "$CACHE_HIT" == "true" ]] && docker load -i "$TAR"; then
+          exit 0
+        fi
         images="public.ecr.aws/amazonlinux/amazonlinux:2 public.ecr.aws/docker/library/alpine:3"
         for image in $images; do
           aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/docker-retry.sh docker pull "$image"
         done
-        docker save -o "${{ runner.temp }}/jni-base-images.tar" $images
+        docker save -o "$TAR" $images

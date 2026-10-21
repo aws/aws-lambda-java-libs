@@ -104,11 +104,6 @@ jobs:
           - target: { os: amazonlinux, distro: "1", runtime: openjdk8 }
             arch: { label: arm64, runner: arm64, platform: linux/arm64/v8 }
     name: "integration-test (${{ matrix.target.os }} ${{ matrix.target.distro }} ${{ matrix.target.runtime }} / ${{ matrix.arch.label }})"
-    # BASE_REGISTRY is read by the JNI build and run_os_test.sh.
-    env:
-      AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
-      ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com
-      BASE_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION_MAVEN_RELEASE }}.amazonaws.com/ecr-public
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -127,11 +122,16 @@ jobs:
     - name: Configure Maven CodeArtifact mirror
       uses: ./.github/actions/configure-maven-mirror
 
-    # Uses the runner role's ambient credentials.
+    # Uses the runner's ambient credentials and region, not repository secrets,
+    # which fork PRs don't get. BASE_REGISTRY is read by run_os_test.sh.
     - name: Log in to Amazon ECR (pull-through cache)
       run: |
-        aws ecr get-login-password --region "$AWS_REGION" \
-          | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+        region="${AWS_REGION:-$AWS_DEFAULT_REGION}"
+        account="$(aws sts get-caller-identity --query Account --output text)"
+        registry="${account}.dkr.ecr.${region}.amazonaws.com"
+        aws ecr get-login-password --region "$region" \
+          | docker login --username AWS --password-stdin "$registry"
+        echo "BASE_REGISTRY=${registry}/ecr-public" >> "$GITHUB_ENV"
 
     - name: Run OS integration test
       run: aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_os_test.sh

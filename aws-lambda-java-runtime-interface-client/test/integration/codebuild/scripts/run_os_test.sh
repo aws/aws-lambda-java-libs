@@ -26,21 +26,6 @@ RIC_DIR="aws-lambda-java-runtime-interface-client"
 cd "${REPO_ROOT}"
 export BASE_REGISTRY="${BASE_REGISTRY:-public.ecr.aws}"
 
-# Where the image's JDK lives.
-case "${OS_DISTRIBUTION}" in
-    alpine | amazoncorretto | amazonlinux)
-        DEFAULT_JAVA_BINARY_LOCATION="/usr/bin/java"
-        ;;
-    debian | ubuntu)
-        DEFAULT_JAVA_BINARY_LOCATION="/usr/lib/jvm/java-11-amazon-corretto/bin/java"
-        ;;
-    *)
-        echo "OS_DISTRIBUTION ${OS_DISTRIBUTION} is not currently supported."
-        exit 1
-        ;;
-esac
-export JAVA_BINARY_LOCATION="${JAVA_BINARY_LOCATION:-${DEFAULT_JAVA_BINARY_LOCATION}}"
-
 case "${PLATFORM}" in
     linux/amd64) RIE="aws-lambda-rie" ;;
     linux/arm64/v8) RIE="aws-lambda-rie-arm64" ;;
@@ -49,19 +34,21 @@ case "${PLATFORM}" in
         exit 1
         ;;
 esac
-export RIE
 
+# Unit tests run in the build job; only the artifacts are needed here.
 mvn -v
-# events is a dependency of serialization
-(cd aws-lambda-java-events && mvn install)
-(cd aws-lambda-java-core && mvn install)
-(cd aws-lambda-java-serialization && mvn install)
-(cd "${RIC_DIR}" && mvn install -DmultiArch=false -DargLineForReflectionTestOnly="")
-(cd "${RIC_DIR}/test/integration/test-handler" && mvn install)
+(cd aws-lambda-java-events && mvn install -DskipTests)
+(cd aws-lambda-java-core && mvn install -DskipTests)
+(cd aws-lambda-java-serialization && mvn install -DskipTests)
+(cd "${RIC_DIR}" && mvn install -DskipTests -DmultiArch=false)
+(cd "${RIC_DIR}/test/integration/test-handler" && mvn install -DskipTests)
 
-export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
+# Unique per combination, so different combinations can run side by side.
+NAME="${OS_DISTRIBUTION}-${DISTRO_VERSION//./-}-${RUNTIME_VERSION//./-}"
+IMAGE_TAG="java-integ-test:${NAME}"
+
 echo "Building image ${IMAGE_TAG}"
-"${SCRIPTS_DIR}/docker-retry.sh" docker build . \
+docker build . \
     -f "${RIC_DIR}/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" \
     -t "${IMAGE_TAG}" \
     --platform="${PLATFORM}" \
@@ -70,5 +57,50 @@ echo "Building image ${IMAGE_TAG}"
     --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
     --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
 
-trap '"${SCRIPTS_DIR}/fetch_test_container_logs.sh"; "${SCRIPTS_DIR}/clean_up.sh"' EXIT
-"${SCRIPTS_DIR}/run_invocation_test.sh"
+cleanup() {
+    for container in "${NAME}-app" "${NAME}-tester"; do
+        echo "--------- Container logs: ${container} ---------"
+        docker logs "${container}" || true
+        docker rm --force "${container}" >/dev/null 2>&1 || true
+    done
+    docker network rm "${NAME}-network" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+docker network create "${NAME}-network"
+docker run \
+    --detach \
+    --name "${NAME}-app" \
+    --network "${NAME}-network" \
+    --entrypoint="" \
+    --platform="${PLATFORM}" \
+    "${IMAGE_TAG}" \
+    sh -c "/usr/bin/${RIE} java -jar ./HelloWorld-1.0.jar helloworld.App"
+sleep 2
+
+# An emulated platform (one that isn't the host's) takes significantly longer.
+# `arch` prints aarch64/x86_64 on Linux, arm64/i386 on macOS.
+case "$(arch)" in
+    aarch64 | arm64) host_platform="linux/arm64/v8" ;;
+    x86_64 | i386) host_platform="linux/amd64" ;;
+    *) host_platform="" ;;
+esac
+if [[ "${PLATFORM}" != "${host_platform}" ]]; then
+    max_time=150
+else
+    max_time=10
+fi
+
+docker run \
+    --name "${NAME}-tester" \
+    --network "${NAME}-network" \
+    --entrypoint="" \
+    --platform="${PLATFORM}" \
+    "${IMAGE_TAG}" \
+    curl -sS -X POST "http://${NAME}-app:8080/2015-03-31/functions/function/invocations" -d "{}" --max-time "${max_time}"
+actual="$(docker logs --tail 1 "${NAME}-tester" | xargs)"
+echo "Response: ${actual}"
+if [[ "${actual}" != "success" ]]; then
+    echo "fail! ${OS_DISTRIBUTION} ${DISTRO_VERSION} ${RUNTIME_VERSION} ${PLATFORM} - expected output success - got ${actual}"
+    exit 1
+fi

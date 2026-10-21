@@ -1,3 +1,4 @@
+# Not used by the GitHub PR workflow, which runs test/integration/os-test-matrix.json.
 version: 0.2
 
 env:

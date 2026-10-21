@@ -75,7 +75,7 @@ docker run \
     --entrypoint="" \
     --platform="${PLATFORM}" \
     "${IMAGE_TAG}" \
-    sh -c "/usr/bin/${RIE} java -jar ./HelloWorld-1.0.jar helloworld.App"
+    sh -c "/usr/bin/${RIE} \$(command -v java) -jar ./HelloWorld-1.0.jar helloworld.App"
 sleep 2
 
 # An emulated platform (one that isn't the host's) takes significantly longer.

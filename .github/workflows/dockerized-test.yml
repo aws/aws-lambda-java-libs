@@ -32,6 +32,10 @@ jobs:
           distribution: corretto
           cache: maven
 
+      # The default buildx driver (docker) uses the local image store.
+      - name: Load the JNI build base images
+        uses: ./.github/actions/cache-jni-base-images
+
       - name: Build core, serialization and the RIC under test
         run: |
           mvn -B -q install -DskipTests --file aws-lambda-java-core/pom.xml

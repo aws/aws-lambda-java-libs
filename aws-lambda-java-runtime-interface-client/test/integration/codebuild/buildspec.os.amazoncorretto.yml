@@ -18,8 +18,8 @@ batch:
           DISTRO_VERSION:
             - "amazoncorretto"
           RUNTIME_VERSION:
-            # 11 is covered by the smoke tests (Makefile, test-smoke-<arch>).
             - "8"
+            - "11"
           PLATFORM:
             - "linux/amd64"
             - "linux/arm64/v8"

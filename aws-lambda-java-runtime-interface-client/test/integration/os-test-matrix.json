@@ -1,6 +1,7 @@
 [
   { "os": "alpine", "distro": "3.15", "runtime": "corretto11", "platforms": ["linux/amd64", "linux/arm64/v8"] },
   { "os": "amazoncorretto", "distro": "amazoncorretto", "runtime": "8", "platforms": ["linux/amd64", "linux/arm64/v8"] },
+  { "os": "amazoncorretto", "distro": "amazoncorretto", "runtime": "11", "platforms": ["linux/amd64", "linux/arm64/v8"] },
   { "os": "amazonlinux", "distro": "1", "runtime": "openjdk8", "platforms": ["linux/amd64"] },
   { "os": "amazonlinux", "distro": "2", "runtime": "openjdk8", "platforms": ["linux/amd64", "linux/arm64/v8"] },
   { "os": "debian", "distro": "bookworm", "runtime": "corretto11", "platforms": ["linux/amd64", "linux/arm64/v8"] },

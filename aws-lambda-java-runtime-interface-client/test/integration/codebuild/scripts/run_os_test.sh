@@ -49,29 +49,14 @@ esac
 export JAVA_BINARY_LOCATION="${JAVA_BINARY_LOCATION:-${DEFAULT_JAVA_BINARY_LOCATION}}"
 
 case "${PLATFORM}" in
-    linux/amd64)
-        RIE="aws-lambda-rie"
-        QEMU_TARGET="x86_64"
-        EMULATOR="amd64"
-        ;;
-    linux/arm64/v8)
-        RIE="aws-lambda-rie-arm64"
-        QEMU_TARGET="aarch64"
-        EMULATOR="arm64"
-        ;;
+    linux/amd64) RIE="aws-lambda-rie" ;;
+    linux/arm64/v8) RIE="aws-lambda-rie-arm64" ;;
     *)
         echo "Platform ${PLATFORM} is not currently supported."
         exit 1
         ;;
 esac
 export RIE
-
-# A platform other than the host's needs a qemu emulator registered with binfmt_misc.
-if [[ "$(arch)" != "${QEMU_TARGET}" ]] && [[ ! -e "/proc/sys/fs/binfmt_misc/qemu-${QEMU_TARGET}" ]]; then
-    echo "Installing ${EMULATOR} emulator"
-    "${SCRIPTS_DIR}/docker-retry.sh" docker pull public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0
-    docker run --rm --privileged public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0 --install "${EMULATOR}"
-fi
 
 mvn -v
 # events is a dependency of serialization

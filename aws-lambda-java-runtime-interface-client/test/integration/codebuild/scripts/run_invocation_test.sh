@@ -18,8 +18,14 @@ docker run \
   sh -c "/usr/bin/${RIE} ${JAVA_BINARY_LOCATION} -jar ${function_jar} ${function_handler}"
 sleep 2
 
-# running on arm64 hosts with x86_64 being emulated takes significantly more time than any other combination
-if [[ "$(arch)" == "aarch64" ]] && [[ "${PLATFORM}" == "linux/amd64" ]]; then
+# An emulated platform (one that isn't the host's) takes significantly longer.
+# `arch` prints aarch64/x86_64 on Linux, arm64/i386 on macOS.
+case "$(arch)" in
+  aarch64 | arm64) host_platform="linux/arm64/v8" ;;
+  x86_64 | i386) host_platform="linux/amd64" ;;
+  *) host_platform="" ;;
+esac
+if [[ "${PLATFORM}" != "${host_platform}" ]]; then
   declare -i time_out=150
 else
   declare -i time_out=10

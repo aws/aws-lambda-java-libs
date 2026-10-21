@@ -1,5 +1,5 @@
 ARG BASE_REGISTRY=public.ecr.aws
-ARG RUNTIME_VERSION
+ARG RUNTIME_VERSION=11
 
 FROM ${BASE_REGISTRY}/amazoncorretto/amazoncorretto:${RUNTIME_VERSION}
 

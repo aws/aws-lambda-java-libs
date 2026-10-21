@@ -1,5 +1,5 @@
 ARG BASE_REGISTRY=public.ecr.aws
-ARG DISTRO_VERSION
+ARG DISTRO_VERSION=24.04
 
 FROM ${BASE_REGISTRY}/ubuntu/ubuntu:${DISTRO_VERSION} as build-image
 

@@ -1,5 +1,5 @@
 ARG BASE_REGISTRY=public.ecr.aws
-ARG DISTRO_VERSION
+ARG DISTRO_VERSION=bookworm
 
 FROM ${BASE_REGISTRY}/debian/debian:${DISTRO_VERSION} as build-image
 

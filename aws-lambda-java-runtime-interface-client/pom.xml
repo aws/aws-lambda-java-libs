@@ -461,15 +461,6 @@
             </build>
         </profile>
         <profile>
-            <id>ci-repo</id>
-            <distributionManagement>
-                <repository>
-                    <id>ci-repo</id>
-                    <url>${env.MAVEN_REPO_URL}</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-        <profile>
             <id>linux-x86_64</id>
             <properties>
                 <target_build_os>linux</target_build_os>

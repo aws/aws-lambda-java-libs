@@ -11,10 +11,6 @@ else
 	EXTRA_LOAD_ARG :=
 endif
 
-# This optional module exports MAVEN_REPO_URL, MAVEN_REPO_USERNAME and MAVEN_REPO_PASSWORD environment variables
-# making it possible to publish resulting artifacts to a codeartifact maven repository
--include ric-dev-environment/codeartifact-repo.mk
-
 .PHONY: target
 target:
 	$(info ${HELP_MESSAGE})
@@ -89,14 +85,6 @@ build-aarch64:
 	mvn clean install -DmultiArch=false $(EXTRA_LOAD_ARG)
 	mvn install -P linux-aarch64 $(EXTRA_LOAD_ARG)
 	mvn install -P linux_musl-aarch64 $(EXTRA_LOAD_ARG)
-
-.PHONY: publish
-publish:
-	./ric-dev-environment/publish_snapshot.sh
-
-.PHONY: publish
-test-publish:
-	./ric-dev-environment/test-platform-specific-jar-snapshot.sh
 
 .PHONY: test-rie
 test-rie:

@@ -26,20 +26,13 @@ RIC_DIR="aws-lambda-java-runtime-interface-client"
 cd "${REPO_ROOT}"
 export BASE_REGISTRY="${BASE_REGISTRY:-public.ecr.aws}"
 
-# Per-OS differences: where the image's JDK lives, and how to add curl (the
-# tester container uses it to invoke the function).
+# Where the image's JDK lives.
 case "${OS_DISTRIBUTION}" in
-    alpine)
+    alpine | amazoncorretto | amazonlinux)
         DEFAULT_JAVA_BINARY_LOCATION="/usr/bin/java"
-        CURL_INSTALL="RUN apk add curl"
         ;;
     debian | ubuntu)
         DEFAULT_JAVA_BINARY_LOCATION="/usr/lib/jvm/java-11-amazon-corretto/bin/java"
-        CURL_INSTALL="RUN apt-get update && apt-get install -y curl"
-        ;;
-    amazoncorretto | amazonlinux)
-        DEFAULT_JAVA_BINARY_LOCATION="/usr/bin/java"
-        CURL_INSTALL=""
         ;;
     *)
         echo "OS_DISTRIBUTION ${OS_DISTRIBUTION} is not currently supported."
@@ -67,25 +60,13 @@ mvn -v
 (cd "${RIC_DIR}/test/integration/test-handler" && mvn install)
 
 export IMAGE_TAG="java-${OS_DISTRIBUTION}-${DISTRO_VERSION}:${RUNTIME_VERSION}"
-echo "Extracting and including Runtime Interface Emulator"
-SCRATCH_DIR=".scratch"
-rm -rf "${SCRATCH_DIR}"
-mkdir "${SCRATCH_DIR}"
-tar -xvf "${RIC_DIR}/test/integration/resources/${RIE}.tar.gz" --directory "${SCRATCH_DIR}"
-
-DOCKERFILE="${SCRATCH_DIR}/Dockerfile.function.${OS_DISTRIBUTION}.tmp"
-cp "${RIC_DIR}/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" "${DOCKERFILE}"
-echo "COPY ${SCRATCH_DIR}/${RIE} /usr/bin/${RIE}" >> "${DOCKERFILE}"
-if [[ -n "${CURL_INSTALL}" ]]; then
-    echo "${CURL_INSTALL}" >> "${DOCKERFILE}"
-fi
-
 echo "Building image ${IMAGE_TAG}"
 "${SCRIPTS_DIR}/docker-retry.sh" docker build . \
-    -f "${DOCKERFILE}" \
+    -f "${RIC_DIR}/test/integration/docker/Dockerfile.function.${OS_DISTRIBUTION}" \
     -t "${IMAGE_TAG}" \
     --platform="${PLATFORM}" \
     --build-arg BASE_REGISTRY="${BASE_REGISTRY}" \
+    --build-arg RIE="${RIE}" \
     --build-arg RUNTIME_VERSION="${RUNTIME_VERSION}" \
     --build-arg DISTRO_VERSION="${DISTRO_VERSION}"
 

@@ -14,9 +14,14 @@ FROM ${BASE_REGISTRY}/debian/debian:${DISTRO_VERSION}
     
 COPY --from=build-image /usr/lib/jvm /usr/lib/jvm
 
+RUN apt-get update && apt-get install -y curl
+
 ADD aws-lambda-java-runtime-interface-client/test/integration/test-handler/target/HelloWorld-1.0.jar .
 
 ENV PATH=/usr/lib/jvm/java-11-amazon-corretto/bin/:$PATH
+
+ARG RIE
+ADD aws-lambda-java-runtime-interface-client/test/integration/resources/${RIE}.tar.gz /usr/bin/
 
 ENTRYPOINT ["java", "-jar", "./HelloWorld-1.0.jar"]
 

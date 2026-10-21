@@ -71,34 +71,34 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # Shared with `make test-integ`.
-  load-integration-test-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.load.outputs.matrix }}
-    steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-    - name: Load OS test matrix
-      id: load
-      run: |
-        MATRIX=$(jq -c '{include: [.[] | .platforms[] as $p | {os, distro, runtime, platform: $p,
-          runner: (if $p == "linux/amd64" then "x86" else "arm64" end),
-          label: (if $p == "linux/amd64" then "x64" else "arm64" end)}]}' \
-          aws-lambda-java-runtime-interface-client/test/integration/os-test-matrix.json)
-        echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
-
   # Runs on the release CodeBuild runners, so base images come from the ECR
   # pull-through cache instead of rate-limited anonymous public.ecr.aws pulls.
   integration-test-matrix:
-    needs: load-integration-test-matrix
-    runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
       # Stays within the account's concurrent CodeBuild build quota.
       max-parallel: 8
-      matrix: ${{ fromJson(needs.load-integration-test-matrix.outputs.matrix) }}
-    name: "integration-test (${{ matrix.os }} ${{ matrix.distro }} / ${{ matrix.label }})"
+      matrix:
+        target:
+          - { os: alpine, distro: "3.15", runtime: corretto11 }
+          - { os: amazoncorretto, distro: amazoncorretto, runtime: "8" }
+          - { os: amazoncorretto, distro: amazoncorretto, runtime: "11" }
+          - { os: amazonlinux, distro: "1", runtime: openjdk8 }
+          - { os: amazonlinux, distro: "2", runtime: openjdk8 }
+          - { os: debian, distro: bookworm, runtime: corretto11 }
+          - { os: debian, distro: trixie, runtime: corretto11 }
+          - { os: ubuntu, distro: "22.04", runtime: corretto11 }
+          - { os: ubuntu, distro: "24.04", runtime: corretto11 }
+        arch:
+          - { label: x64, runner: x86, platform: linux/amd64 }
+          - { label: arm64, runner: arm64, platform: linux/arm64/v8 }
+        exclude:
+          # Amazon Linux 1 has no arm64 image.
+          - target: { os: amazonlinux, distro: "1", runtime: openjdk8 }
+            arch: { label: arm64, runner: arm64, platform: linux/arm64/v8 }
+    name: "integration-test (${{ matrix.target.os }} ${{ matrix.target.distro }} ${{ matrix.target.runtime }} / ${{ matrix.arch.label }})"
     # BASE_REGISTRY is read by the JNI build and run_os_test.sh.
     env:
       AWS_REGION: ${{ vars.AWS_REGION_MAVEN_RELEASE }}
@@ -131,10 +131,10 @@ jobs:
     - name: Run OS integration test
       run: aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_os_test.sh
       env:
-        OS_DISTRIBUTION: ${{ matrix.os }}
-        DISTRO_VERSION: ${{ matrix.distro }}
-        RUNTIME_VERSION: ${{ matrix.runtime }}
-        PLATFORM: ${{ matrix.platform }}
+        OS_DISTRIBUTION: ${{ matrix.target.os }}
+        DISTRO_VERSION: ${{ matrix.target.distro }}
+        RUNTIME_VERSION: ${{ matrix.target.runtime }}
+        PLATFORM: ${{ matrix.arch.platform }}
 
   integration-test:
     needs: integration-test-matrix

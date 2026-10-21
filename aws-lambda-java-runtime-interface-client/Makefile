@@ -18,18 +18,14 @@ target:
 test:
 	mvn test $(EXTRA_LOAD_ARG)
 
-# OS integration tests for the host's platform (see
-# test/integration/codebuild/scripts/run_os_test.sh). Without arguments, runs
-# every combination in test/integration/os-test-matrix.json; with arguments,
-# one combination, e.g.
+# One OS integration test (see test/integration/codebuild/scripts/run_os_test.sh;
+# the combinations CI runs are in .github/workflows/runtime-interface-client_pr.yml), e.g.
 #   make test-integ OS_DISTRIBUTION=debian DISTRO_VERSION=bookworm RUNTIME_VERSION=corretto11 PLATFORM=linux/amd64
+# A PLATFORM other than the host's needs emulation: built into Docker Desktop; on
+# Linux, run once: docker run --rm --privileged public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0 --install all
 .PHONY: test-integ
 test-integ:
-ifeq ($(OS_DISTRIBUTION),)
-	test/integration/codebuild/scripts/run_all_os_tests.sh
-else
 	OS_DISTRIBUTION=$(OS_DISTRIBUTION) DISTRO_VERSION=$(DISTRO_VERSION) RUNTIME_VERSION=$(RUNTIME_VERSION) PLATFORM=$(PLATFORM) test/integration/codebuild/scripts/run_os_test.sh
-endif
 
 # Command to run everytime you make changes to verify everything works
 .PHONY: dev

@@ -1,4 +1,4 @@
-# Not used by the GitHub PR workflow, which runs test/integration/os-test-matrix.json.
+# Not used by the GitHub PR workflow (.github/workflows/runtime-interface-client_pr.yml).
 version: 0.2
 
 env:

@@ -1,5 +1,5 @@
 # This workflow builds and tests the aws-lambda-java-runtime-interface-client package.
-# It runs on every pull request (no path filter) so that the smoke-test and
+# It runs on every pull request (no path filter) so that the build and
 # integration-test required status checks always report a result and never get
 # stuck "pending" on PRs that don't touch the RIC/core/serialization paths.
 
@@ -14,41 +14,6 @@ permissions:
   contents: read
 
 jobs:
-
-  smoke-test-arch:
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - arch: x86_64
-            runner: ubuntu-latest
-          - arch: aarch64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    name: "smoke-test (${{ matrix.arch }})"
-    steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-      with:
-        java-version: 8
-        distribution: corretto
-        cache: maven
-
-    - name: Build and install core dependency locally
-      working-directory: ./aws-lambda-java-core
-      run: mvn clean install
-
-    - name: Build and install serialization dependency locally
-      working-directory: ./aws-lambda-java-serialization
-      run: mvn clean install
-
-    - name: Runtime Interface Client smoke tests - Run 'pr-${{ matrix.arch }}' target
-      working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make pr-${{ matrix.arch }}
-      env:
-        IS_JAVA_8: true
 
   build-arch:
     strategy:
@@ -75,6 +40,11 @@ jobs:
       uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       with:
         install: true
+        # Uses the local image store, so the JNI build reuses the cached base images.
+        driver: docker
+
+    - name: Load the JNI build base images
+      uses: ./.github/actions/cache-jni-base-images
 
     - name: Build and install core dependency locally
       working-directory: ./aws-lambda-java-core
@@ -106,51 +76,70 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  # Runs on the release CodeBuild runners, so base images come from the ECR
+  # pull-through cache instead of rate-limited anonymous public.ecr.aws pulls.
   integration-test-matrix:
-    runs-on: ${{ matrix.arch.runner }}
+    runs-on: codebuild-aws-lambda-java-libs-test-trigger-${{ matrix.arch.runner }}-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       # Run every OS/arch combination to completion so one failure doesn't mask the others.
       fail-fast: false
-      # Every shard pulls its images anonymously from public.ecr.aws, and shards
-      # started together trip its rate limit (429), so cap how many run at once.
-      max-parallel: 4
+      # Stays within the account's concurrent CodeBuild build quota.
+      max-parallel: 8
       matrix:
-        buildspec:
-          - buildspec.os.alpine.yml
-          - buildspec.os.amazoncorretto.yml
-          - buildspec.os.amazonlinux.1.yml
-          - buildspec.os.amazonlinux.2.yml
-          - buildspec.os.debian.yml
-          - buildspec.os.ubuntu.yml
+        target:
+          - { os: alpine, distro: "3.15", runtime: corretto11 }
+          - { os: amazoncorretto, distro: amazoncorretto, runtime: "8" }
+          - { os: amazoncorretto, distro: amazoncorretto, runtime: "11" }
+          - { os: amazonlinux, distro: "1", runtime: openjdk8 }
+          - { os: amazonlinux, distro: "2", runtime: openjdk8 }
+          - { os: debian, distro: bookworm, runtime: corretto11 }
+          - { os: debian, distro: trixie, runtime: corretto11 }
+          - { os: ubuntu, distro: "22.04", runtime: corretto11 }
+          - { os: ubuntu, distro: "24.04", runtime: corretto11 }
         arch:
-          - label: x64
-            runner: ubuntu-latest
-            platform: linux/amd64
-          - label: arm64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64/v8
+          - { label: x64, runner: x86, platform: linux/amd64 }
+          - { label: arm64, runner: arm64, platform: linux/arm64/v8 }
         exclude:
-          # Amazon Linux 1 was never published for ARM64 (x86_64 only), so
-          # public.ecr.aws/amazonlinux/amazonlinux:1 has no arm64 manifest.
-          - buildspec: buildspec.os.amazonlinux.1.yml
-            arch:
-              label: arm64
-              runner: ubuntu-24.04-arm
-              platform: linux/arm64/v8
-    name: "integration-test (${{ matrix.buildspec }} / ${{ matrix.arch.label }})"
+          # Amazon Linux 1 has no arm64 image.
+          - target: { os: amazonlinux, distro: "1", runtime: openjdk8 }
+            arch: { label: arm64, runner: arm64, platform: linux/arm64/v8 }
+    name: "integration-test (${{ matrix.target.os }} ${{ matrix.target.distro }} ${{ matrix.target.runtime }} / ${{ matrix.arch.label }})"
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+    - name: Cache Maven repository
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
-        install: true
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-${{ runner.arch }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-maven-
 
-    - name: Run OS integration test - 'test-integ' target
-      working-directory: ./aws-lambda-java-runtime-interface-client
-      run: make test-integ BUILDSPEC=test/integration/codebuild/${{ matrix.buildspec }}
+    # The runners can't reach Maven Central or the setup-java JDK downloads.
+    - name: Use the runner image's preinstalled Corretto 8
+      uses: ./.github/actions/use-runner-corretto8
+
+    - name: Configure Maven CodeArtifact mirror
+      uses: ./.github/actions/configure-maven-mirror
+
+    # Uses the runner's ambient credentials and region, not repository secrets,
+    # which fork PRs don't get. BASE_REGISTRY is read by run_os_test.sh.
+    - name: Log in to Amazon ECR (pull-through cache)
+      run: |
+        region="${AWS_REGION:-$AWS_DEFAULT_REGION}"
+        account="$(aws sts get-caller-identity --query Account --output text)"
+        registry="${account}.dkr.ecr.${region}.amazonaws.com"
+        aws ecr get-login-password --region "$region" \
+          | docker login --username AWS --password-stdin "$registry"
+        echo "BASE_REGISTRY=${registry}/ecr-public" >> "$GITHUB_ENV"
+
+    - name: Run OS integration test
+      run: aws-lambda-java-runtime-interface-client/test/integration/codebuild/scripts/run_os_test.sh
       env:
-        PLATFORM_FILTER: ${{ matrix.arch.platform }}
+        OS_DISTRIBUTION: ${{ matrix.target.os }}
+        DISTRO_VERSION: ${{ matrix.target.distro }}
+        RUNTIME_VERSION: ${{ matrix.target.runtime }}
+        PLATFORM: ${{ matrix.arch.platform }}
 
   integration-test:
     needs: integration-test-matrix
@@ -161,18 +150,6 @@ jobs:
         run: |
           if [ "${{ needs.integration-test-matrix.result }}" != "success" ]; then
             echo "Integration tests failed on one or more OS/arch combinations"
-            exit 1
-          fi
-
-  smoke-test:
-    needs: smoke-test-arch
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check smoke-test results
-        run: |
-          if [ "${{ needs.smoke-test-arch.result }}" != "success" ]; then
-            echo "Smoke tests failed on one or more architectures"
             exit 1
           fi
 

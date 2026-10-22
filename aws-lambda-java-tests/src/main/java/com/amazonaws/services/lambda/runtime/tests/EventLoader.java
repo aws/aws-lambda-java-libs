@@ -1,12 +1,11 @@
 /* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved. */
 package com.amazonaws.services.lambda.runtime.tests;
 
+import com.amazonaws.services.lambda.runtime.events.*;
 import com.amazonaws.services.lambda.runtime.serialization.PojoSerializer;
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers;
 
 import java.io.*;
-
-import com.amazonaws.services.lambda.runtime.events.*;
 
 /**
  * Load events from json files and serialize them in Events
@@ -117,6 +116,10 @@ public class EventLoader {
         return loadEvent(filename, ScheduledEvent.class);
     }
 
+    public static ScheduledV2Event loadScheduledV2Event(String filename) {
+        return loadEvent(filename, ScheduledV2Event.class);
+    }
+
     public static SNSEvent loadSNSEvent(String filename) {
         return loadEvent(filename, SNSEvent.class);
     }
@@ -147,7 +150,7 @@ public class EventLoader {
         }
         if (stream == null) {
             try {
-                stream = new FileInputStream(new File(filename));
+                stream = new FileInputStream(filename);
             } catch (FileNotFoundException e) {
                 throw new EventLoadingException("Cannot load " + filename, e);
             }

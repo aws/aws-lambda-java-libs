@@ -161,6 +161,34 @@ This single command will:
 
 The test uses a simple EchoHandler that returns the input event, making it easy to verify the runtime interface client is working correctly.
 
+### OS Integration Tests
+
+CI runs the runtime interface client on a matrix of base images (Alpine, Amazon Corretto, Amazon Linux, Debian, Ubuntu), JDKs and platforms; the combinations are in `.github/workflows/runtime-interface-client_pr.yml`. Each test builds the RIC, builds a function image with RIE for one combination, invokes it and checks the response.
+
+*Prerequisites:*
+- Docker, Maven and a JDK 8 as `JAVA_HOME`
+- The same JDK declared as the JDK 8 Maven toolchain in `~/.m2/toolchains.xml`:
+
+```xml
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides><version>8</version></provides>
+    <configuration><jdkHome>/path/to/jdk8</jdkHome></configuration>
+  </toolchain>
+</toolchains>
+```
+
+*To run one combination:*
+
+```shell script
+make test-integ OS_DISTRIBUTION=debian DISTRO_VERSION=bookworm RUNTIME_VERSION=corretto11 PLATFORM=linux/amd64
+```
+
+`PLATFORM` is `linux/amd64` or `linux/arm64/v8`. A platform other than your machine's runs under emulation, which is much slower:
+- macOS and Windows: Docker Desktop emulates it out of the box. On Windows, run the commands inside WSL2.
+- Linux: register the emulator once with `docker run --rm --privileged public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0 --install all`.
+
 ## Test Coverage
 
 This project uses JaCoCo for code coverage analysis. To exclude classes from JaCoCo coverage, add them to the `jacoco-maven-plugin` configuration:

@@ -13,6 +13,7 @@ on:
       - 'aws-lambda-java-serialization/**'
       - 'aws-lambda-java-runtime-interface-client/**'
       - '.github/workflows/dockerized-test.yml'
+      - '.github/actions/cache-jni-base-images/**'
   workflow_dispatch:
 
 jobs:
@@ -31,6 +32,10 @@ jobs:
             25
           distribution: corretto
           cache: maven
+
+      # The default buildx driver (docker) uses the local image store.
+      - name: Load the JNI build base images
+        uses: ./.github/actions/cache-jni-base-images
 
       - name: Build core, serialization and the RIC under test
         run: |

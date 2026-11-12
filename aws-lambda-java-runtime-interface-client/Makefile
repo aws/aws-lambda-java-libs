@@ -1,9 +1,3 @@
-x86_64_ALIAS := amd64
-aarch64_ALIAS := arm64
-ARCHITECTURE := $(shell arch)
-ARCHITECTURE_ALIAS := $($(shell echo "$(ARCHITECTURE)_ALIAS"))
-ARCHITECTURE_ALIAS := $(or $(ARCHITECTURE_ALIAS),amd64) # on any other archs defaulting to amd64
-
 # Java 8 does not support passing some args (such add --add-opens) so we need to clear them
 ifeq ($(IS_JAVA_8),true)
 	EXTRA_LOAD_ARG := -DargLineForReflectionTestOnly=""
@@ -20,39 +14,14 @@ target:
 test:
 	mvn test $(EXTRA_LOAD_ARG)
 
-.PHONY: setup-codebuild-agent
-setup-codebuild-agent:
-	test/integration/codebuild-local/docker-retry.sh docker build --load -t codebuild-agent \
-	 --build-arg ARCHITECTURE=$(ARCHITECTURE_ALIAS) \
-	 -f test/integration/codebuild-local/Dockerfile.agent \
-	 test/integration/codebuild-local
-
-# Smoke tests are split per-architecture so CI can run each set on a native
-# runner. Running the linux/arm64/v8 combos under QEMU on an x86_64 host makes
-# `mvn install` recompile curl for aarch64 emulated, which takes ~30 minutes.
-.PHONY: test-smoke
-test-smoke: test-smoke-x86_64 test-smoke-aarch64
-
-# amazoncorretto 11 is left out of the CI integration matrix
-# (buildspec.os.amazoncorretto.yml) because smoke already covers it. Changing it
-# here changes integration coverage too.
-.PHONY: test-smoke-x86_64
-test-smoke-x86_64: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/amd64
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/amd64
-
-.PHONY: test-smoke-aarch64
-test-smoke-aarch64: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.alpine.yml alpine 3.15 corretto11 linux/arm64/v8
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_one.sh test/integration/codebuild/buildspec.os.amazoncorretto.yml amazoncorretto amazoncorretto 11 linux/arm64/v8
-
-# BUILDSPEC can point to the buildspec directory (default, runs every OS) or to a
-# single buildspec file, which is how CI parallelizes the run across OSes.
-BUILDSPEC ?= test/integration/codebuild
-
+# One OS integration test (see test/integration/codebuild/scripts/run_os_test.sh;
+# the combinations CI runs are in .github/workflows/runtime-interface-client_pr.yml), e.g.
+#   make test-integ OS_DISTRIBUTION=debian DISTRO_VERSION=bookworm RUNTIME_VERSION=corretto11 PLATFORM=linux/amd64
+# A PLATFORM other than the host's needs emulation: built into Docker Desktop; on
+# Linux, run once: docker run --rm --privileged public.ecr.aws/eks-distro-build-tooling/binfmt-misc:qemu-v6.1.0 --install all
 .PHONY: test-integ
-test-integ: setup-codebuild-agent
-	CODEBUILD_IMAGE_TAG=codebuild-agent test/integration/codebuild-local/test_all.sh $(BUILDSPEC)
+test-integ:
+	OS_DISTRIBUTION=$(OS_DISTRIBUTION) DISTRO_VERSION=$(DISTRO_VERSION) RUNTIME_VERSION=$(RUNTIME_VERSION) PLATFORM=$(PLATFORM) test/integration/codebuild/scripts/run_os_test.sh
 
 # Command to run everytime you make changes to verify everything works
 .PHONY: dev
@@ -60,16 +29,7 @@ dev: test
 
 # Verifications to run before sending a pull request
 .PHONY: pr
-pr: test test-smoke
-
-# Per-architecture PR checks so CI can run each on a native runner (no QEMU).
-# No `test` here: the required `build` check already runs the unit tests
-# (build-<arch>), so CI would only run them twice.
-.PHONY: pr-x86_64
-pr-x86_64: test-smoke-x86_64
-
-.PHONY: pr-aarch64
-pr-aarch64: test-smoke-aarch64
+pr: test
 
 .PHONY: build
 build: build-x86_64 build-aarch64

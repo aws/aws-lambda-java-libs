@@ -1,0 +1,27 @@
+name: Use the runner image's preinstalled Corretto 8
+description: >
+  Point JAVA_HOME at the CodeBuild image's Corretto 8 and declare it as the JDK 8
+  maven toolchain. For CodeBuild-hosted runners in the egress-locked network,
+  where actions/setup-java cannot download a JDK.
+
+runs:
+  using: composite
+  steps:
+    # The image ships Corretto 8 at $JAVA_8_HOME (per arch) but defaults
+    # JAVA_HOME to a newer JDK.
+    - shell: bash
+      run: |
+        echo "JAVA_HOME=$JAVA_8_HOME" >> "$GITHUB_ENV"
+        echo "$JAVA_8_HOME/bin" >> "$GITHUB_PATH"
+        "$JAVA_8_HOME/bin/java" -version
+        mkdir -p "$HOME/.m2"
+        cat > "$HOME/.m2/toolchains.xml" <<TOOLCHAINS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <toolchains>
+          <toolchain>
+            <type>jdk</type>
+            <provides><version>8</version></provides>
+            <configuration><jdkHome>$JAVA_8_HOME</jdkHome></configuration>
+          </toolchain>
+        </toolchains>
+        TOOLCHAINS

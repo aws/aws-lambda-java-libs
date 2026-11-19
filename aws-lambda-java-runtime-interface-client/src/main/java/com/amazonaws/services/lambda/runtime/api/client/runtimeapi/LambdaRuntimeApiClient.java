@@ -7,6 +7,7 @@ package com.amazonaws.services.lambda.runtime.api.client.runtimeapi;
 import com.amazonaws.services.lambda.runtime.api.client.logging.LambdaContextLogger;
 import com.amazonaws.services.lambda.runtime.api.client.runtimeapi.dto.InvocationRequest;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Java interface for 
@@ -37,6 +38,17 @@ public interface LambdaRuntimeApiClient {
      * @param invocationId invocation id for cross-wiring protection (may be null)
      */
     void reportInvocationSuccess(String requestId, byte[] response, String invocationId) throws IOException;
+
+    /**
+     * Report invocation success with the first responseLength bytes of response
+     * @param requestId request id
+     * @param response byte array whose first responseLength bytes are the response
+     * @param responseLength number of bytes of response to send
+     * @param invocationId invocation id for cross-wiring protection (may be null)
+     */
+    default void reportInvocationSuccess(String requestId, byte[] response, int responseLength, String invocationId) throws IOException {
+        reportInvocationSuccess(requestId, Arrays.copyOf(response, responseLength), invocationId);
+    }
 
     /**
      * Report invocation error

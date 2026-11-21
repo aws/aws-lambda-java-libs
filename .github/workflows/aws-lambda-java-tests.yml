@@ -44,4 +44,7 @@ jobs:
 
     # Package target module
     - name: Package tests with Maven
-      run: mvn -B package --file aws-lambda-java-tests/pom.xml
+      run: |
+        MOD_VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file aws-lambda-java-serialization/pom.xml)
+        MOD_VER="${MOD_VER//[$'\r\n']/}"
+        mvn -B package -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml

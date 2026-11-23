@@ -42,7 +42,10 @@ jobs:
       - name: Install serialization with Maven
         run: mvn -B install --file aws-lambda-java-serialization/pom.xml
       - name: Install tests with Maven
-        run: mvn -B install --file aws-lambda-java-tests/pom.xml
+        run: |
+          MOD_VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file aws-lambda-java-serialization/pom.xml)
+          MOD_VER="${MOD_VER//[$'\r\n']/}"
+          mvn -B install -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
 
       # Install samples
       - name: Install Kinesis Firehose Sample with Maven

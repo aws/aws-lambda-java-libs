@@ -289,7 +289,7 @@ public class S3EventSerializer<T> implements OrgJsonSerializer<T> {
         String awsRegion = jsonObject.optString("awsRegion");
         String eventName = jsonObject.optString("eventName");
         String eventSource = jsonObject.optString("eventSource");
-        String eventTime = jsonObject.optString("eventTime");
+        String eventTime = jsonObject.optString("eventTime", null);
         String eventVersion = jsonObject.optString("eventVersion");
         E requestParameters = deserializeRequestParameters(jsonObject.optJSONObject("requestParameters"), requestParametersClass);
         F responseElements = deserializeResponseElements(jsonObject.optJSONObject("responseElements"), responseElementsClass);

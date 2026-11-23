@@ -44,4 +44,7 @@ jobs:
 
     # Run tests
     - name: Run tests from aws-lambda-java-tests
-      run: mvn test --file aws-lambda-java-tests/pom.xml
+      run: |
+        MOD_VER=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version --file aws-lambda-java-serialization/pom.xml)
+        MOD_VER="${MOD_VER//[$'\r\n']/}"
+        mvn test -Daws-lambda-java-serialization.version="$MOD_VER" --file aws-lambda-java-tests/pom.xml
